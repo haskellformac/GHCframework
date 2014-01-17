@@ -18,6 +18,7 @@
 		E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B2B1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */; };
+		E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B391888D1C000D79087 /* HFMProject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,8 @@
 		E7A13B2A1888006C00D79087 /* HaskellForMacTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HaskellForMacTests-Info.plist"; sourceTree = "<group>"; };
 		E7A13B2C1888006C00D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HaskellForMacTests.m; sourceTree = "<group>"; };
+		E7A13B381888D1C000D79087 /* HFMProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProject.h; sourceTree = "<group>"; };
+		E7A13B391888D1C000D79087 /* HFMProject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProject.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +123,8 @@
 				E7A13B191888006C00D79087 /* MainMenu.xib */,
 				E7A13B1C1888006C00D79087 /* Images.xcassets */,
 				E7A13B0B1888006C00D79087 /* Supporting Files */,
+				E7A13B381888D1C000D79087 /* HFMProject.h */,
+				E7A13B391888D1C000D79087 /* HFMProject.m */,
 			);
 			path = HaskellForMac;
 			sourceTree = "<group>";
@@ -256,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 			);
