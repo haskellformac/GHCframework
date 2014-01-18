@@ -10,4 +10,26 @@
 
 @implementation HFMProject
 
+
+#pragma mark -
+#pragma mark Initialisation
+
+- (instancetype)initWithCopy:(HFMProject *)project
+{
+  self = [super init];
+  if (self) {
+    _name = project.name;
+  }
+  return self;
+}
+
+
+#pragma mark -
+#pragma mark NSCopying protocol
+
+- (instancetype)copyWithZone:(NSZone *)zone
+{
+  return [[HFMProject allocWithZone:zone] initWithCopy:self];
+}
+
 @end
