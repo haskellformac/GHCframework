@@ -19,6 +19,10 @@
 		E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B2B1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */; };
 		E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B391888D1C000D79087 /* HFMProject.m */; };
+		E7A13B3E188E6ED000D79087 /* Interpreter.hs in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B3D188E6ED000D79087 /* Interpreter.hs */; };
+		E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */; };
+		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
+		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +57,12 @@
 		E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HaskellForMacTests.m; sourceTree = "<group>"; };
 		E7A13B381888D1C000D79087 /* HFMProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProject.h; sourceTree = "<group>"; };
 		E7A13B391888D1C000D79087 /* HFMProject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProject.m; sourceTree = "<group>"; };
+		E7A13B3D188E6ED000D79087 /* Interpreter.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Interpreter.hs; sourceTree = "<group>"; };
+		E7A13B3F188E6FE600D79087 /* HFMHaskellSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMHaskellSession.h; sourceTree = "<group>"; };
+		E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMHaskellSession.m; sourceTree = "<group>"; };
+		E7A13B45188E7BED00D79087 /* HFMWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMWindowController.h; sourceTree = "<group>"; };
+		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
+		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,13 +128,18 @@
 		E7A13B0A1888006C00D79087 /* HaskellForMac */ = {
 			isa = PBXGroup;
 			children = (
+				E7A13B3C188E6ED000D79087 /* GHC */,
 				E7A13B161888006C00D79087 /* HFMAppDelegate.h */,
 				E7A13B171888006C00D79087 /* HFMAppDelegate.m */,
-				E7A13B191888006C00D79087 /* MainMenu.xib */,
-				E7A13B1C1888006C00D79087 /* Images.xcassets */,
-				E7A13B0B1888006C00D79087 /* Supporting Files */,
+				E7A13B3F188E6FE600D79087 /* HFMHaskellSession.h */,
+				E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */,
 				E7A13B381888D1C000D79087 /* HFMProject.h */,
 				E7A13B391888D1C000D79087 /* HFMProject.m */,
+				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
+				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
+				E7A13B4A188E7F1C00D79087 /* Interfaces */,
+				E7A13B0B1888006C00D79087 /* Supporting Files */,
+				E7A13B1C1888006C00D79087 /* Images.xcassets */,
 			);
 			path = HaskellForMac;
 			sourceTree = "<group>";
@@ -157,6 +172,23 @@
 				E7A13B2B1888006C00D79087 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E7A13B3C188E6ED000D79087 /* GHC */ = {
+			isa = PBXGroup;
+			children = (
+				E7A13B3D188E6ED000D79087 /* Interpreter.hs */,
+			);
+			path = GHC;
+			sourceTree = "<group>";
+		};
+		E7A13B4A188E7F1C00D79087 /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				E7A13B191888006C00D79087 /* MainMenu.xib */,
+				E7A13B47188E7BED00D79087 /* ProjectWindow.xib */,
+			);
+			name = Interfaces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,7 +272,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
+				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
+				E7A13B3E188E6ED000D79087 /* Interpreter.hs in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
 				E7A13B1B1888006C00D79087 /* MainMenu.xib in Resources */,
 			);
@@ -261,8 +295,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
+				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

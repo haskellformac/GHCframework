@@ -8,28 +8,27 @@
 
 #import "HFMProject.h"
 
+
 @implementation HFMProject
 
 
 #pragma mark -
 #pragma mark Initialisation
 
-- (instancetype)initWithCopy:(HFMProject *)project
+- (instancetype)init
 {
   self = [super init];
-  if (self) {
-    _name = project.name;
-  }
   return self;
 }
 
 
 #pragma mark -
-#pragma mark NSCopying protocol
+#pragma mark NSDocument methods
 
-- (instancetype)copyWithZone:(NSZone *)zone
+- (NSString *)windowNibName
 {
-  return [[HFMProject allocWithZone:zone] initWithCopy:self];
+  return @"ProjectWindow";
 }
+
 
 @end
