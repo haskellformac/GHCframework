@@ -7,12 +7,21 @@
 //
 
 #import "HFMHaskellSession.h"
+#import "HFMGHCInstance_objc.h"
+
+
+@interface HFMHaskellSession ()
+
+@property (readonly, nonatomic) HFMGHCInstance *ghcInstance;
+
+@end
 
 
 @implementation HFMHaskellSession
 
+
 #pragma mark -
-#pragma Initialisation
+#pragma mark Session startup
 
 + (instancetype)haskellSessionStart
 {
@@ -22,7 +31,22 @@
 - (instancetype)init
 {
   self = [super init];
+  if (self) {
+
+    _ghcInstance = [HFMGHCInstance ghcInstanceStart];
+
+  }
   return self;
 }
+
+
+#pragma mark -
+#pragma mark Session shutdown
+
+- (void)dealloc
+{
+  [self.ghcInstance stop];
+}
+
 
 @end

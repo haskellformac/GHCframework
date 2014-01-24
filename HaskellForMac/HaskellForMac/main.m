@@ -7,8 +7,18 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "HsFFI.h"
 
-int main(int argc, const char * argv[])
+
+void HFMGHCInstance_initialise(void);
+
+
+int main(int argc, char *argv[])
 {
-  return NSApplicationMain(argc, argv);
+    // Get the Haskell runtime going.
+  hs_init(&argc, &argv);
+  HFMGHCInstance_initialise();
+
+    // Launch the Cocoa application.
+  return NSApplicationMain(argc, (const char **) argv);
 }
