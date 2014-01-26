@@ -7,6 +7,7 @@
 //
 
 #import "HFMProject.h"
+#import "HFMWindowController.h"
 
 
 @implementation HFMProject
@@ -25,10 +26,16 @@
 #pragma mark -
 #pragma mark NSDocument methods
 
-- (NSString *)windowNibName
+  // FIXME: reading and writing document data
+
+- (void)makeWindowControllers
 {
-  return @"ProjectWindow";
+  [self addWindowController:[[HFMWindowController alloc] init]];
 }
+
+  // FIXME: post-nib-loading code
+
+  // Opting into autosaving (at least for the .hsproj file, but really also for code files)
 
 
 @end

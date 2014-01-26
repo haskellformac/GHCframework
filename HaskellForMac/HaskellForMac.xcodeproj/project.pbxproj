@@ -618,7 +618,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -678,7 +678,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -900,6 +900,7 @@
 				E7A13B341888006C00D79087 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7A13B351888006C00D79087 /* Build configuration list for PBXNativeTarget "HaskellForMacTests" */ = {
 			isa = XCConfigurationList;
@@ -908,6 +909,7 @@
 				E7A13B371888006C00D79087 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7A13B9B1890D99100D79087 /* Build configuration list for PBXNativeTarget "HFMGHC" */ = {
 			isa = XCConfigurationList;
@@ -916,6 +918,7 @@
 				E7A13B9D1890D99100D79087 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7A13B9E1890D99100D79087 /* Build configuration list for PBXNativeTarget "HFMGHCTests" */ = {
 			isa = XCConfigurationList;
@@ -924,6 +927,7 @@
 				E7A13BA01890D99100D79087 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

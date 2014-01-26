@@ -26,11 +26,11 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <customView fixedFrame="YES" id="gGI-gq-12z">
-                                <rect key="frame" x="0.0" y="0.0" width="117.5" height="507"/>
+                                <rect key="frame" x="0.0" y="0.0" width="118" height="507"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </customView>
                             <customView id="Ien-Ga-n0M">
-                                <rect key="frame" x="118.5" y="0.0" width="508.5" height="507"/>
+                                <rect key="frame" x="119" y="0.0" width="508" height="507"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <splitView dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="ERt-dW-cL1" userLabel="Vertical Split View">
@@ -53,10 +53,10 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                     <size key="minSize" width="506" height="298"/>
-                                                                    <size key="maxSize" width="506" height="10000000"/>
+                                                                    <size key="maxSize" width="508" height="10000000"/>
                                                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                                     <size key="minSize" width="506" height="298"/>
-                                                                    <size key="maxSize" width="506" height="10000000"/>
+                                                                    <size key="maxSize" width="508" height="10000000"/>
                                                                 </textView>
                                                             </subviews>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -94,10 +94,10 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                     <size key="minSize" width="506" height="184"/>
-                                                                    <size key="maxSize" width="516" height="10000000"/>
+                                                                    <size key="maxSize" width="518" height="10000000"/>
                                                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                                     <size key="minSize" width="506" height="184"/>
-                                                                    <size key="maxSize" width="516" height="10000000"/>
+                                                                    <size key="maxSize" width="518" height="10000000"/>
                                                                 </textView>
                                                             </subviews>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

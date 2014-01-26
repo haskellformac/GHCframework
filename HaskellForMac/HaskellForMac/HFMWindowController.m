@@ -16,14 +16,20 @@
 
 @end
 
+
 @implementation HFMWindowController
 
-- (id)init
+
+#pragma mark -
+#pragma mark Initialisation
+
+- (instancetype)init
 {
   self = [super initWithWindowNibName:@"ProjectWindow"];
   if (self) {
 
     _haskellSession = [HFMHaskellSession haskellSessionStart];
+    NSLog(@"WindowController: session start");
 
   }
   return self;
