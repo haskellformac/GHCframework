@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 
 -- |
--- Module      : HFMGHCInstance
+-- Module      : GHCInstance
 -- Copyright   : [2014] Manuel M T Chakravarty
 -- License     : All rights reserved
 --
@@ -9,7 +9,7 @@
 --
 -- This module implements the Objective-C to Haskell bridge for managing GHC instances.
 
-module HFMGHCInstance () where
+module GHCInstance () where
 
   -- language-c-inline
 import Language.C.Quote.ObjC
@@ -26,7 +26,7 @@ objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
 objc_interface [cunit|
 
-@interface HFMGHCInstance : NSObject
+@interface GHCInstance : NSObject
 
 // Create a new GHC instance.
 //
@@ -45,12 +45,12 @@ objc_interface [cunit|
 
 objc_implementation [] [cunit|
 
-@implementation HFMGHCInstance
+@implementation GHCInstance
 
 + (typename instancetype)ghcInstanceStart
 {
   NSLog(@"GHC instance start");
-  return [[HFMGHCInstance alloc] init];
+  return [[GHCInstance alloc] init];
 }
 
 - (void)stop
@@ -64,4 +64,4 @@ objc_implementation [] [cunit|
 
 objc_emit
 
-foreign export ccall "HFMGHCInstance_initialise" objc_initialise :: IO ()
+foreign export ccall "GHCInstance_initialise" objc_initialise :: IO ()

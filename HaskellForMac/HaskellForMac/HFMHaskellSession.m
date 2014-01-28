@@ -7,12 +7,12 @@
 //
 
 #import "HFMHaskellSession.h"
-#import "HFMGHCInstance_objc.h"
+#import "GHCInstance_objc.h"
 
 
 @interface HFMHaskellSession ()
 
-@property (readonly, nonatomic) HFMGHCInstance *ghcInstance;
+@property (readonly, nonatomic) GHCInstance *ghcInstance;
 
 @end
 
@@ -33,7 +33,7 @@
   self = [super init];
   if (self) {
 
-    _ghcInstance = [HFMGHCInstance ghcInstanceStart];
+    _ghcInstance = [GHCInstance ghcInstanceStart];
 
   }
   return self;

@@ -10,14 +10,16 @@
 #import "HsFFI.h"
 
 
-void HFMGHCInstance_initialise(void);
+void GHCInstance_initialise(void);
+void CBLPackage_initialise(void);
 
 
 int main(int argc, char *argv[])
 {
     // Get the Haskell runtime going.
   hs_init(&argc, &argv);
-  HFMGHCInstance_initialise();
+  GHCInstance_initialise();
+  CBLPackage_initialise();
 
     // Launch the Cocoa application.
   return NSApplicationMain(argc, (const char **) argv);
