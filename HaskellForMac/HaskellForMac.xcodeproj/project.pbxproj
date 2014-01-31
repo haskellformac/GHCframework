@@ -34,6 +34,7 @@
 		E7D29A1A18974B130045A5AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7D29A2218974B430045A5AB /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
 		E7D29A2518974C3C0045A5AB /* libHFMCBL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D29A2118974B130045A5AB /* libHFMCBL.a */; };
+		E7D29A2818974D6D0045A5AB /* HFMCBL-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -63,7 +64,7 @@
 				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.h",
 				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.m",
 			);
-			script = "if /Users/chak/bin/ghc-7.7 -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nfi";
+			script = "if /Users/chak/bin/ghc-7.7 -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 /* End PBXBuildRule section */
 
@@ -134,6 +135,7 @@
 		E7A13BA61890E27200D79087 /* GHCInstance.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GHCInstance.hs; sourceTree = "<group>"; };
 		E7D29A1418974AEF0045A5AB /* CBLPackage.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CBLPackage.hs; sourceTree = "<group>"; };
 		E7D29A2118974B130045A5AB /* libHFMCBL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHFMCBL.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HFMCBL-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,9 +328,18 @@
 			isa = PBXGroup;
 			children = (
 				E7D29A1418974AEF0045A5AB /* CBLPackage.hs */,
+				E7D29A2618974D560045A5AB /* Supporting Files */,
 			);
 			path = HFMCBL;
 			sourceTree = SOURCE_ROOT;
+		};
+		E7D29A2618974D560045A5AB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -344,6 +355,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7D29A2818974D6D0045A5AB /* HFMCBL-Prefix.pch in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,7 +555,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.7 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}";
+			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.7 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} -package Cabal";
 		};
 /* End PBXShellScriptBuildPhase section */
 
