@@ -37,6 +37,11 @@ parseOk (ParseOk _ v)    = Just v
 nameAndVersionOfGenericPackage :: GenericPackageDescription -> String
 nameAndVersionOfGenericPackage = show . package . packageDescription
 
+-- A newly initialised generic package description.
+--
+emptyGenericPackageDescription :: GenericPackageDescription
+emptyGenericPackageDescription = GenericPackageDescription emptyPackageDescription [] Nothing [] [] []
+
 
 -- Objective-C class interface
 -- ---------------------------
@@ -44,6 +49,10 @@ nameAndVersionOfGenericPackage = show . package . packageDescription
 objc_interface [cunit|
 
 @interface CBLPackage : NSObject
+
+// Create a package as a newly untitled Cabal package.
+//
++ (typename instancetype)package;
 
 // Create a package by parsing the given Cabal file string.
 //
@@ -70,7 +79,9 @@ objc_interface [cunit|
 -- Objective-C class implementation
 -- --------------------------------
 
-objc_implementation ['parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 'showPackageDescription] [cunit|
+objc_implementation 
+  ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 'showPackageDescription] 
+  [cunit|
 
 @interface CBLPackage ()
 
@@ -80,9 +91,25 @@ objc_implementation ['parsePackageDescription, 'parseOk, 'nameAndVersionOfGeneri
 
 @implementation CBLPackage
 
++ (typename instancetype)package
+{
+  return [[CBLPackage alloc] init];
+}
+
 + (typename instancetype)packageWithString:(typename NSString *)string
 {
   return [[CBLPackage alloc] initWithString:string];
+}
+
+- (typename instancetype)init
+{
+  self = [super init];
+  if (self)
+  {
+    _genericPackageDescription = emptyGenericPackageDescription();
+  }
+  NSLog(@"Initialised new Cabal package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
+  return self;
 }
 
 - (typename instancetype)initWithString:(typename NSString *)string

@@ -35,6 +35,15 @@
   return self;
 }
 
+  // This initialisation method is invoked if a new document is being created.
+- (instancetype)initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
+{
+  self = [super initWithType:typeName error:outError];
+  if (self)
+    self.package = [CBLPackage package];
+  return self;
+}
+
 
 #pragma mark -
 #pragma mark NSDocument methods
