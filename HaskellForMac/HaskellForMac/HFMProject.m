@@ -106,4 +106,39 @@
   // FIXME: do we need post-nib-loading code?
 
 
+#pragma mark -
+#pragma mark NSOutlineViewdataSource protocol methods
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+{
+
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+{
+
+}
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+{
+
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+
+}
+
+/* Need to implement this if the user should be able to edit the items of the outline view:
+
+- (void)outlineView:(NSOutlineView *)outlineView
+     setObjectValue:(id)object
+     forTableColumn:(NSTableColumn *)tableColumn
+             byItem:(id)item
+{
+}
+ 
+ */
+
+
 @end

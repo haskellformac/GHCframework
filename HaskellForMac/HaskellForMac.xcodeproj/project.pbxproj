@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D4189FCB2100504164 /* TextEditor.xib */; };
+		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
@@ -100,6 +102,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E713E3D4189FCB2100504164 /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
+		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* HaskellForMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HaskellForMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -285,6 +289,8 @@
 			children = (
 				E7A13B191888006C00D79087 /* MainMenu.xib */,
 				E7A13B47188E7BED00D79087 /* ProjectWindow.xib */,
+				E713E3D4189FCB2100504164 /* TextEditor.xib */,
+				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -503,9 +509,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */,
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
+				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
 				E7A13B1B1888006C00D79087 /* MainMenu.xib in Resources */,
 				E7D29A1518974AEF0045A5AB /* CBLPackage.hs in Resources */,
