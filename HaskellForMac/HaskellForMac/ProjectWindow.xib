@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMWindowController">
             <connections>
+                <outlet property="outlineView" destination="xMX-Dm-h40" id="4eD-9D-bXB"/>
                 <outlet property="window" destination="qHE-kS-dao" id="uvl-i4-ztn"/>
             </connections>
         </customObject>
@@ -36,7 +37,7 @@
                                             <rect key="frame" x="1" y="17" width="116" height="489"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" headerView="S0M-bN-s02" indentationPerLevel="16" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
+                                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" headerView="S0M-bN-s02" viewBased="YES" indentationPerLevel="16" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
                                                     <rect key="frame" x="0.0" y="0.0" width="116" height="489"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -55,6 +56,32 @@
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                            <prototypeCellViews>
+                                                                <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
+                                                                    <rect key="frame" x="1" y="1" width="101" height="17"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <subviews>
+                                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eg-Fr-H0x">
+                                                                            <rect key="frame" x="3" y="0.0" width="17" height="17"/>
+                                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSMultipleDocuments" id="3oF-bW-gmO"/>
+                                                                        </imageView>
+                                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Cf-Jk-ZBw">
+                                                                            <rect key="frame" x="25" y="0.0" width="76" height="17"/>
+                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" identifier="cabalCellID" title="Cabal Cell" id="LNu-4Q-ikw">
+                                                                                <font key="font" metaFont="system"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                        </textField>
+                                                                    </subviews>
+                                                                    <connections>
+                                                                        <outlet property="imageView" destination="1eg-Fr-H0x" id="rvs-wf-JhI"/>
+                                                                        <outlet property="textField" destination="9Cf-Jk-ZBw" id="BlH-RZ-08U"/>
+                                                                    </connections>
+                                                                </tableCellView>
+                                                            </prototypeCellViews>
                                                         </tableColumn>
                                                     </tableColumns>
                                                 </outlineView>
@@ -195,4 +222,7 @@
             </connections>
         </window>
     </objects>
+    <resources>
+        <image name="NSMultipleDocuments" width="32" height="32"/>
+    </resources>
 </document>

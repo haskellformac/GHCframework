@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface HFMProject : NSDocument <NSOutlineViewDataSource>
+@interface HFMProject : NSDocument <NSOutlineViewDelegate, NSOutlineViewDataSource>
 
 
 @end

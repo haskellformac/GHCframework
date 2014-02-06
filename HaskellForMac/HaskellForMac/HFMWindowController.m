@@ -12,6 +12,12 @@
 
 @interface HFMWindowController ()
 
+// View in 'ProjectWindow.xib'
+//
+@property (weak, atomic) IBOutlet NSOutlineView *outlineView;
+
+// The GHC session associated with this window.
+//
 @property (nonatomic, readonly) HFMHaskellSession *haskellSession;
 
 @end
@@ -37,9 +43,20 @@
 
 - (void)windowDidLoad
 {
-    [super windowDidLoad];
-    
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+  [super windowDidLoad];
+
+    // Initialise the size and data for the project outline view. The delegate and data source is the document project.
+  [self.outlineView sizeLastColumnToFit];
+  self.outlineView.delegate   = self.document;
+  self.outlineView.dataSource = self.document;
+  [self.outlineView reloadData];
+
+    // Expand all root items without animation.
+  [NSAnimationContext beginGrouping];
+  [[NSAnimationContext currentContext] setDuration:0];
+  [self.outlineView expandItem:nil expandChildren:YES];
+  [NSAnimationContext endGrouping];
+
 }
 
 @end

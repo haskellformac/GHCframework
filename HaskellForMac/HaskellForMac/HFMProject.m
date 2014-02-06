@@ -21,6 +21,11 @@
 @end
 
 
+// XIB file ids
+//
+NSString *kCabalCellID = @"cabalCellID";
+
+
 @implementation HFMProject
 
 
@@ -107,26 +112,52 @@
 
 
 #pragma mark -
-#pragma mark NSOutlineViewdataSource protocol methods
+#pragma mark NSOutlineViewDelegate protocol methods
+
+- (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
+              viewForTableColumn:(NSTableColumn *)tableColumn
+                            item:(NSString *)name
+{
+#pragma unused(tableColumn)     // there is only one column
+
+  NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
+  cell.textField.stringValue = name;
+  return cell;
+}
+
+
+#pragma mark -
+#pragma mark NSOutlineViewDataSource protocol methods
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
+#pragma unused(outlineView, index, item)
 
+  if (!item)
+    return @"ROOT";  // [self.package identifier];  FIXME: it's probably not yet initialised
+  else
+    return @"X"
+    ;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
+#pragma unused(outlineView)
 
+  if (!item)
+    return YES;
+  else
+    return NO;
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
+#pragma unused(outlineView)
 
-}
-
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
-{
-
+  if (!item)
+    return 1;
+  else
+    return 0;
 }
 
 /* Need to implement this if the user should be able to edit the items of the outline view:

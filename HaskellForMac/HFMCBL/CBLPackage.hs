@@ -17,8 +17,10 @@ import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
   -- standard libraries
+import Distribution.Package
 import Distribution.PackageDescription
 import Distribution.PackageDescription.Parse
+import Distribution.Text
 
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
@@ -41,6 +43,11 @@ nameAndVersionOfGenericPackage = show . package . packageDescription
 --
 emptyGenericPackageDescription :: GenericPackageDescription
 emptyGenericPackageDescription = GenericPackageDescription emptyPackageDescription [] Nothing [] [] []
+
+-- Pretty print the package identifier.
+--
+showPackageIdentifier :: GenericPackageDescription -> String
+showPackageIdentifier = display . packageId
 
 
 -- Objective-C class interface
@@ -68,9 +75,18 @@ objc_interface [cunit|
 // FIXME: we need to report errors with more information.
 - (typename instancetype)initWithString:(typename NSString *)string;
 
+
+/* Queries
+ * *******
+ */
+  
 // Pretty print the package into a Cabal file string.
 //
 - (typename NSString *)string;
+
+// Readable package identifier (<package name>-<version>).
+//
+- (typename NSString *)identifier;
 
 @end
 |]
@@ -80,7 +96,8 @@ objc_interface [cunit|
 -- --------------------------------
 
 objc_implementation 
-  ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 'showPackageDescription] 
+  ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 
+   'showPackageDescription, 'showPackageIdentifier] 
   [cunit|
 
 @interface CBLPackage ()
@@ -130,14 +147,19 @@ objc_implementation
   return self;
 }
 
+- (void)dealloc
+{
+  hs_free_stable_ptr(_genericPackageDescription);
+}
+
 - (typename NSString *)string
 {
   return showPackageDescription(self.genericPackageDescription);
 }
 
-- (void)dealloc
+- (typename NSString *)identifier
 {
-  hs_free_stable_ptr(_genericPackageDescription);
+  return showPackageIdentifier(self.genericPackageDescription);
 }
 
 @end
