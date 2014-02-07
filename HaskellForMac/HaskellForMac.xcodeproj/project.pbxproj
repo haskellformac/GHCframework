@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D4189FCB2100504164 /* TextEditor.xib */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
+		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
@@ -104,6 +105,8 @@
 /* Begin PBXFileReference section */
 		E713E3D4189FCB2100504164 /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
+		E713E3D818A491FF00504164 /* HFMProjectViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModel.h; sourceTree = "<group>"; };
+		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* HaskellForMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HaskellForMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -245,6 +248,8 @@
 				E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */,
 				E7A13B381888D1C000D79087 /* HFMProject.h */,
 				E7A13B391888D1C000D79087 /* HFMProject.m */,
+				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
+				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
 				E7A13B4A188E7F1C00D79087 /* Interfaces */,
@@ -572,6 +577,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,

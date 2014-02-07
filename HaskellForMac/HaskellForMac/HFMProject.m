@@ -8,15 +8,14 @@
 
 #import "HFMProject.h"
 #import "HFMWindowController.h"
-#import "CBLPackage_objc.h"
+#import "HFMProjectViewModel.h"
 
 
 @interface HFMProject ()
 
-// The Cabal package describing the project. 'CBLPackage' objects are immutable — i.e., whenever package data changes,
-// this property will be updated.
+// Our view model proxy to the Haskell-side Cabal package representation.
 //
-@property (atomic) CBLPackage *package;
+@property (atomic, readonly) HFMProjectViewModel *projectModel;
 
 @end
 
@@ -32,20 +31,24 @@ NSString *kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark Initialisation
 
-  // FIXME: There are two further init methods that can be overriden and only apply to initialising new documents or
-  //  opened-file documents, respectively.
+  // Don't initialise the propery 'projectModel'. This only happens once when we know whether we open an existing
+  // document or are creating a new one.
 - (instancetype)init
 {
   self = [super init];
   return self;
 }
+  // FIXME: We probably still have to special case the situation where a document was autosaved, but never explicitly saved
+  //  to a particular location. Might have to override 'initForURL:withContentsOfURL:ofType:error:'
+  //  or 'initWithContentsOfURL:ofType:error:'
 
   // This initialisation method is invoked if a new document is being created.
+
 - (instancetype)initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
 {
   self = [super initWithType:typeName error:outError];
   if (self)
-    self.package = [CBLPackage package];
+    _projectModel = [HFMProjectViewModel projectViewModel];
   return self;
 }
 
@@ -78,8 +81,8 @@ NSString *kCabalCellID = @"cabalCellID";
 
   if (fileContents) {
 
-    self.package = [CBLPackage packageWithString:fileContents];
-    if (self.package)
+    _projectModel = [HFMProjectViewModel projectViewModelWithString:fileContents];
+    if (self.projectModel)
       readSuccess = YES;
 
   }
@@ -93,9 +96,7 @@ NSString *kCabalCellID = @"cabalCellID";
 {
 #pragma unused(typeName)
 
-    // FIXME: do we need to synchronise the data model with the view model?
-
-  NSString *fileContents = [self.package string];
+  NSString *fileContents = [self.projectModel string];
   NSData   *data         = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
 
   if (!data && outError)
@@ -116,7 +117,7 @@ NSString *kCabalCellID = @"cabalCellID";
 
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
               viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(NSString *)name
+                            item:(id)name
 {
 #pragma unused(tableColumn)     // there is only one column
 
@@ -133,9 +134,9 @@ NSString *kCabalCellID = @"cabalCellID";
 {
 #pragma unused(outlineView, index, item)
 
-  if (!item)
-    return @"ROOT";  // [self.package identifier];  FIXME: it's probably not yet initialised
-  else
+  if (!item) {
+    return [self.projectModel identifier];
+  } else
     return @"X"
     ;
 }

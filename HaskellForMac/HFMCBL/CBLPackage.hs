@@ -57,7 +57,7 @@ objc_interface [cunit|
 
 @interface CBLPackage : NSObject
 
-// Create a package as a newly untitled Cabal package.
+// Create a package as a new untitled Cabal package.
 //
 + (typename instancetype)package;
 
