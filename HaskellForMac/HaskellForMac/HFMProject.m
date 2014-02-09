@@ -13,14 +13,14 @@
 
 @interface HFMProject ()
 
-// Our view model proxy to the Haskell-side Cabal package representation.
+/// Our view model proxy to the Haskell-side Cabal package representation.
 //
 @property (atomic, readonly) HFMProjectViewModel *projectModel;
 
 @end
 
 
-// XIB file ids
+/// XIB file ids
 //
 NSString *kCabalCellID = @"cabalCellID";
 
@@ -117,13 +117,28 @@ NSString *kCabalCellID = @"cabalCellID";
 
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
               viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(id)name
+                            item:(NSString *)name
 {
 #pragma unused(tableColumn)     // there is only one column
 
   NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
   cell.textField.stringValue = name;
   return cell;
+}
+
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification
+{
+  NSOutlineView       *outlineView      = [notification object];
+  NSInteger           row               = [outlineView selectedRow];
+  HFMWindowController *windowController = [[self windowControllers] firstObject];
+
+  if (windowController && row != -1) {   // If we have got a window and a row is selected...
+
+    if (row == 0) // FIXME: hardcoded here for now
+      [windowController selectEditor:@"PackageHeaderEditor"];
+
+  }
+
 }
 
 

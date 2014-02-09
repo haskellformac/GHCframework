@@ -12,9 +12,16 @@
 
 @interface HFMWindowController ()
 
-// View in 'ProjectWindow.xib'
+// Views in 'ProjectWindow.xib'
 //
 @property (weak, atomic) IBOutlet NSOutlineView *outlineView;
+@property (weak, atomic) IBOutlet NSView        *editorView;
+
+// View controller of the currently displayed editor (which depends on the item selected in the outline view).
+//
+// The corresponding views are specified in separate '.xib' files.
+//
+@property (nonatomic) NSViewController *editorViewController;
 
 // The GHC session associated with this window.
 //
@@ -56,6 +63,24 @@
   [[NSAnimationContext currentContext] setDuration:0];
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
+
+}
+
+
+#pragma mark -
+#pragma mark Controlling the editor component
+
+- (void)selectEditor:(NSString *)nibName
+{
+    // Remove the current editor view.
+  if (self.editorViewController)
+    [[self.editorViewController view] removeFromSuperview];
+
+  self.editorViewController = [[NSViewController alloc] initWithNibName:nibName bundle:nil];
+  NSView *view = [self.editorViewController view];
+  view.frame = self.editorView.bounds;
+  [view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [self.editorView addSubview:view];
 
 }
 
