@@ -19,9 +19,9 @@
 
 // View controller of the currently displayed editor (which depends on the item selected in the outline view).
 //
-// The corresponding views are specified in separate '.xib' files.
+// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
 //
-@property (nonatomic) NSViewController *editorViewController;
+@property (strong, nonatomic) NSViewController *editorViewController;
 
 // The GHC session associated with this window.
 //
@@ -80,7 +80,10 @@
   NSView *view = [self.editorViewController view];
   view.frame = self.editorView.bounds;
   [view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  view.translatesAutoresizingMaskIntoConstraints = YES;
   [self.editorView addSubview:view];
+  self.editorView.needsLayout  = YES;
+  self.editorView.needsDisplay = YES;
 
 }
 

@@ -100,10 +100,10 @@
                                     </scrollView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="fiD-Li-Mgi" firstAttribute="top" secondItem="gGI-gq-12z" secondAttribute="top" id="4lo-MA-NSo"/>
-                                    <constraint firstAttribute="height" secondItem="fiD-Li-Mgi" secondAttribute="height" id="KKU-cP-y7u"/>
-                                    <constraint firstAttribute="centerX" secondItem="fiD-Li-Mgi" secondAttribute="centerX" id="Wog-8U-GVe"/>
-                                    <constraint firstAttribute="width" secondItem="fiD-Li-Mgi" secondAttribute="width" id="mhC-Rk-CRM"/>
+                                    <constraint firstItem="fiD-Li-Mgi" firstAttribute="width" secondItem="gGI-gq-12z" secondAttribute="width" id="9EY-3S-Tys"/>
+                                    <constraint firstItem="fiD-Li-Mgi" firstAttribute="height" secondItem="gGI-gq-12z" secondAttribute="height" id="hBy-9a-tsC"/>
+                                    <constraint firstAttribute="centerY" secondItem="fiD-Li-Mgi" secondAttribute="centerY" id="hjv-gr-HJL"/>
+                                    <constraint firstAttribute="centerX" secondItem="fiD-Li-Mgi" secondAttribute="centerX" id="mir-1d-6yg"/>
                                 </constraints>
                             </customView>
                             <customView id="Ien-Ga-n0M">
@@ -111,32 +111,32 @@
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <splitView dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="ERt-dW-cL1" userLabel="Vertical Split View">
-                                        <rect key="frame" x="0.0" y="0.0" width="508" height="487"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="508" height="507"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <subviews>
                                             <customView fixedFrame="YES" id="UfW-IN-MyS">
-                                                <rect key="frame" x="0.0" y="0.0" width="508" height="300"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="508" height="312.5"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </customView>
                                             <customView id="zI2-9A-Xz4">
-                                                <rect key="frame" x="0.0" y="301" width="508" height="186"/>
+                                                <rect key="frame" x="0.0" y="313.5" width="508" height="193.5"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <scrollView borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O0U-EA-O4Y" userLabel="Bordered Scroll View - REPL">
-                                                        <rect key="frame" x="0.0" y="0.0" width="508" height="186"/>
+                                                        <rect key="frame" x="0.0" y="1" width="508" height="193"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <clipView key="contentView" id="TPB-or-5hf">
-                                                            <rect key="frame" x="1" y="1" width="506" height="184"/>
+                                                            <rect key="frame" x="1" y="1" width="506" height="191"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textView editable="NO" importsGraphics="NO" findStyle="bar" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" id="P27-Fj-ikH">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="516" height="184"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="516" height="191"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                                    <size key="minSize" width="506" height="184"/>
+                                                                    <size key="minSize" width="506" height="191"/>
                                                                     <size key="maxSize" width="518" height="10000000"/>
                                                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                                    <size key="minSize" width="506" height="184"/>
+                                                                    <size key="minSize" width="506" height="191"/>
                                                                     <size key="maxSize" width="518" height="10000000"/>
                                                                 </textView>
                                                             </subviews>
@@ -147,16 +147,16 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="qpI-Jb-tTA">
-                                                            <rect key="frame" x="491" y="1" width="16" height="184"/>
+                                                            <rect key="frame" x="491" y="1" width="16" height="191"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                     </scrollView>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="centerY" secondItem="O0U-EA-O4Y" secondAttribute="centerY" id="5wH-YA-I9c"/>
-                                                    <constraint firstItem="O0U-EA-O4Y" firstAttribute="height" secondItem="zI2-9A-Xz4" secondAttribute="height" id="S50-Mc-zpY"/>
-                                                    <constraint firstAttribute="centerX" secondItem="O0U-EA-O4Y" secondAttribute="centerX" id="Wvg-Pb-xzI"/>
-                                                    <constraint firstItem="O0U-EA-O4Y" firstAttribute="width" secondItem="zI2-9A-Xz4" secondAttribute="width" id="vf9-5a-DBQ"/>
+                                                    <constraint firstAttribute="centerY" secondItem="O0U-EA-O4Y" secondAttribute="centerY" constant="0.25" id="Epz-CK-Iwy"/>
+                                                    <constraint firstItem="O0U-EA-O4Y" firstAttribute="height" secondItem="zI2-9A-Xz4" secondAttribute="height" id="Trf-Yi-uCr"/>
+                                                    <constraint firstAttribute="centerX" secondItem="O0U-EA-O4Y" secondAttribute="centerX" id="dub-bc-ezl"/>
+                                                    <constraint firstItem="O0U-EA-O4Y" firstAttribute="width" secondItem="zI2-9A-Xz4" secondAttribute="width" id="vzu-2H-zhb"/>
                                                 </constraints>
                                             </customView>
                                         </subviews>
@@ -165,24 +165,12 @@
                                             <real value="250"/>
                                         </holdingPriorities>
                                     </splitView>
-                                    <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g9u-sG-zIS">
-                                        <rect key="frame" x="0.0" y="487" width="508" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" id="nAo-Fl-r1G">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <url key="url" string="file://localhost/Applications/"/>
-                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        </pathCell>
-                                    </pathControl>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="g9u-sG-zIS" firstAttribute="width" secondItem="Ien-Ga-n0M" secondAttribute="width" id="4VR-Ta-joz"/>
-                                    <constraint firstAttribute="width" secondItem="ERt-dW-cL1" secondAttribute="width" id="6yB-dA-sLw"/>
-                                    <constraint firstItem="ERt-dW-cL1" firstAttribute="leading" secondItem="Ien-Ga-n0M" secondAttribute="leading" id="G8r-9R-1xj"/>
-                                    <constraint firstAttribute="centerX" secondItem="g9u-sG-zIS" secondAttribute="centerX" id="cqc-K2-BoK"/>
-                                    <constraint firstItem="ERt-dW-cL1" firstAttribute="top" secondItem="g9u-sG-zIS" secondAttribute="bottom" id="mdi-Vx-15m"/>
-                                    <constraint firstItem="g9u-sG-zIS" firstAttribute="top" secondItem="Ien-Ga-n0M" secondAttribute="top" id="pRj-1D-adi"/>
-                                    <constraint firstAttribute="bottom" secondItem="ERt-dW-cL1" secondAttribute="bottom" id="urI-Oh-OW3"/>
+                                    <constraint firstAttribute="width" secondItem="ERt-dW-cL1" secondAttribute="width" id="6YO-jL-byF"/>
+                                    <constraint firstAttribute="height" secondItem="ERt-dW-cL1" secondAttribute="height" id="bJi-RZ-lr6"/>
+                                    <constraint firstAttribute="centerX" secondItem="ERt-dW-cL1" secondAttribute="centerX" id="hWU-xz-8uE"/>
+                                    <constraint firstAttribute="centerY" secondItem="ERt-dW-cL1" secondAttribute="centerY" id="s11-Fq-TL7"/>
                                 </constraints>
                             </customView>
                         </subviews>
@@ -193,10 +181,10 @@
                     </splitView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="XmV-md-A6Y" firstAttribute="top" secondItem="PAm-tW-8ak" secondAttribute="top" id="Pvo-nW-SOX"/>
-                    <constraint firstAttribute="trailing" secondItem="XmV-md-A6Y" secondAttribute="trailing" id="d2a-I6-PHf"/>
-                    <constraint firstAttribute="bottom" secondItem="XmV-md-A6Y" secondAttribute="bottom" id="vCU-cM-yQt"/>
-                    <constraint firstItem="XmV-md-A6Y" firstAttribute="leading" secondItem="PAm-tW-8ak" secondAttribute="leading" id="vMw-vC-rSd"/>
+                    <constraint firstAttribute="trailing" secondItem="XmV-md-A6Y" secondAttribute="trailing" id="ATx-T3-yWJ"/>
+                    <constraint firstAttribute="bottom" secondItem="XmV-md-A6Y" secondAttribute="bottom" id="Qbd-xT-tuK"/>
+                    <constraint firstItem="XmV-md-A6Y" firstAttribute="leading" secondItem="PAm-tW-8ak" secondAttribute="leading" id="ZvA-tq-Jr1"/>
+                    <constraint firstItem="XmV-md-A6Y" firstAttribute="top" secondItem="PAm-tW-8ak" secondAttribute="top" id="oKp-hj-WFk"/>
                 </constraints>
             </view>
             <toolbar key="toolbar" implicitIdentifier="F72F6462-93CE-4BB6-8FE0-4826C9BA64CE" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="mQV-9n-5rW">
