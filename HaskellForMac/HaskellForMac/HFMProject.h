@@ -5,13 +5,18 @@
 //  Created by Manuel M T Chakravarty on 17/01/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
-//  HfM projects are Cabal packages. This class is the controller for the document view. We maintain exactly one window
-//  for each open document.
+//  HfM projects are an 'NSDocument' representation of Cabal packages. They serve as a model view object for the in-app
+//  representation of the actual project data on external storage. We maintain exactly one window for each open
+//  document; hence, we will only ever have one window controller for each document.
+//
+//  The persistent representation (model) of the project structure is its Cabal file. In the view, the project structure
+//  is represented in the outline view. To connect the two, this view model class serves as the data source for the
+//  outline view.
 
 #import <Foundation/Foundation.h>
 
 
-@interface HFMProject : NSDocument <NSOutlineViewDelegate, NSOutlineViewDataSource>
+@interface HFMProject : NSDocument <NSOutlineViewDataSource>
 
 
 @end

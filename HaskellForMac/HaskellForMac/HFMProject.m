@@ -20,11 +20,6 @@
 @end
 
 
-/// XIB file ids
-//
-NSString *kCabalCellID = @"cabalCellID";
-
-
 @implementation HFMProject
 
 
@@ -113,36 +108,6 @@ NSString *kCabalCellID = @"cabalCellID";
 
 
 #pragma mark -
-#pragma mark NSOutlineViewDelegate protocol methods
-
-- (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
-              viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(NSString *)name
-{
-#pragma unused(tableColumn)     // there is only one column
-
-  NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
-  cell.textField.stringValue = name;
-  return cell;
-}
-
-- (void)outlineViewSelectionDidChange:(NSNotification *)notification
-{
-  NSOutlineView       *outlineView      = [notification object];
-  NSInteger           row               = [outlineView selectedRow];
-  HFMWindowController *windowController = [[self windowControllers] firstObject];
-
-  if (windowController && row != -1) {   // If we have got a window and a row is selected...
-
-    if (row == 0) // FIXME: hardcoded here for now
-      [windowController selectEditor:@"PackageHeaderEditor"];
-
-  }
-
-}
-
-
-#pragma mark -
 #pragma mark NSOutlineViewDataSource protocol methods
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
@@ -170,6 +135,10 @@ NSString *kCabalCellID = @"cabalCellID";
 {
 #pragma unused(outlineView)
 
+    // Without a window controller, we do not currently display this document anywhere.
+  if (!self.windowControllers.firstObject)
+    return 0;
+
   if (!item)
     return 1;
   else
@@ -186,6 +155,5 @@ NSString *kCabalCellID = @"cabalCellID";
 }
  
  */
-
 
 @end
