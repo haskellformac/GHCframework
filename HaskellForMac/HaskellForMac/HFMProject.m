@@ -115,7 +115,7 @@
 #pragma unused(outlineView, index, item)
 
   if (!item) {
-    return [self.projectModel identifier];
+    return self.projectModel.identifier;
   } else
     return @"X"
     ;

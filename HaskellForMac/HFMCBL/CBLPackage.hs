@@ -49,6 +49,11 @@ emptyGenericPackageDescription = GenericPackageDescription emptyPackageDescripti
 showPackageIdentifier :: GenericPackageDescription -> String
 showPackageIdentifier = display . packageId
 
+-- Pretty print the package identifier.
+--
+packageName :: GenericPackageDescription -> String
+packageName = show . pkgName . packageId
+
 
 -- Objective-C class interface
 -- ---------------------------
@@ -56,6 +61,17 @@ showPackageIdentifier = display . packageId
 objc_interface [cunit|
 
 @interface CBLPackage : NSObject
+
+/* Properties
+ */
+ 
+// Readable package identifier (<package name>-<version>).
+//
+@property (readonly) typename NSString *identifier;
+
+
+/* Initialisation
+ */
 
 // Create a package as a new untitled Cabal package.
 //
@@ -77,16 +93,11 @@ objc_interface [cunit|
 
 
 /* Queries
- * *******
  */
   
 // Pretty print the package into a Cabal file string.
 //
 - (typename NSString *)string;
-
-// Readable package identifier (<package name>-<version>).
-//
-- (typename NSString *)identifier;
 
 @end
 |]
@@ -152,14 +163,22 @@ objc_implementation
   hs_free_stable_ptr(_genericPackageDescription);
 }
 
-- (typename NSString *)string
-{
-  return showPackageDescription(self.genericPackageDescription);
-}
+
+/* Getters
+ */
 
 - (typename NSString *)identifier
 {
   return showPackageIdentifier(self.genericPackageDescription);
+}
+
+
+/* Queries
+ */
+ 
+- (typename NSString *)string
+{
+  return showPackageDescription(self.genericPackageDescription);
 }
 
 @end
