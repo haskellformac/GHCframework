@@ -17,8 +17,10 @@ import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
   -- standard libraries
-import Distribution.Package
-import Distribution.PackageDescription
+import qualified
+       Distribution.Package            as P
+import qualified 
+       Distribution.PackageDescription as PD
 import Distribution.PackageDescription.Parse
 import Distribution.Text
 
@@ -36,23 +38,26 @@ parseOk (ParseOk _ v)    = Just v
 
 -- Extract the name and version string of a package.
 --
-nameAndVersionOfGenericPackage :: GenericPackageDescription -> String
-nameAndVersionOfGenericPackage = show . package . packageDescription
+nameAndVersionOfGenericPackage :: PD.GenericPackageDescription -> String
+nameAndVersionOfGenericPackage = show . PD.package . PD.packageDescription
 
 -- A newly initialised generic package description.
 --
-emptyGenericPackageDescription :: GenericPackageDescription
-emptyGenericPackageDescription = GenericPackageDescription emptyPackageDescription [] Nothing [] [] []
+emptyGenericPackageDescription :: PD.GenericPackageDescription
+emptyGenericPackageDescription = PD.GenericPackageDescription PD.emptyPackageDescription [] Nothing [] [] []
 
 -- Pretty print the package identifier.
 --
-showPackageIdentifier :: GenericPackageDescription -> String
-showPackageIdentifier = display . packageId
+showPackageIdentifier :: PD.GenericPackageDescription -> String
+showPackageIdentifier = display . P.packageId
 
--- Pretty print the package identifier.
---
-packageName :: GenericPackageDescription -> String
-packageName = show . pkgName . packageId
+-- Getters
+
+packageName :: PD.GenericPackageDescription -> String
+packageName = show . P.packageName
+
+packageVersion :: PD.GenericPackageDescription -> String
+packageVersion = show . P.packageVersion
 
 
 -- Objective-C class interface
@@ -65,9 +70,14 @@ objc_interface [cunit|
 /* Properties
  */
  
-// Readable package identifier (<package name>-<version>).
+// Human readable version of the entire package identifier (<package name>-<version>).
 //
 @property (readonly) typename NSString *identifier;
+
+// Cabal package specification fields
+//
+@property (readonly) typename NSString *name;
+@property (readonly) typename NSString *version;
 
 
 /* Initialisation
@@ -108,7 +118,7 @@ objc_interface [cunit|
 
 objc_implementation 
   ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 
-   'showPackageDescription, 'showPackageIdentifier] 
+   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion] 
   [cunit|
 
 @interface CBLPackage ()
@@ -170,6 +180,16 @@ objc_implementation
 - (typename NSString *)identifier
 {
   return showPackageIdentifier(self.genericPackageDescription);
+}
+
+- (typename NSString *)name
+{
+  return packageName(self.genericPackageDescription);
+}
+
+- (typename NSString *)version
+{
+  return packageVersion(self.genericPackageDescription);
 }
 
 

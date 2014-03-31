@@ -19,6 +19,8 @@
 // Immutable project properties
 //
 @property (readonly, nonatomic) NSString *identifier;    // Project identifier (i.e., package name & version) — lazy
+@property (readonly)            NSString *name;          // Package name
+@property (readonly)            NSString *version;       // Package version; format as def by 'Data.Version.showVersion'
 
 
 #pragma mark -

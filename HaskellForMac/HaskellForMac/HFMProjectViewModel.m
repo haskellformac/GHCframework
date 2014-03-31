@@ -58,12 +58,22 @@
 
 
 #pragma mark -
-#pragma mark Lazy accessors
+#pragma mark Getetrs
 
 - (NSString *)identifier
 {
   if (!_identifier) _identifier = [self.package identifier];
   return _identifier;
+}
+
+- (NSString *)name
+{
+  return self.package.name;
+}
+
+- (NSString *)version
+{
+  return self.package.version;
 }
 
 

@@ -16,8 +16,10 @@
 #pragma mark -
 #pragma mark Controlling the editor component
 
-/// Select the editor to be displayed in this window by way of its nib file name.
+/// Select the editor appropriate to editing files with the given extension.
 //
-- (void)selectEditor:(NSString *)nibName;
+// If no suitable editor is available, remove the current editor view (if any).
+//
+- (void)selectEditor:(NSString *)fileExtension;
 
 @end
