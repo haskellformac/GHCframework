@@ -7,6 +7,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMHeaderEditorController">
             <connections>
+                <outlet property="nameView" destination="YAG-jN-beI" id="xYk-oR-yEB"/>
+                <outlet property="versionView" destination="erg-t0-GI4" id="aNO-bO-544"/>
                 <outlet property="view" destination="1" id="Mpd-Su-dBy"/>
             </connections>
         </customObject>
@@ -244,10 +246,10 @@
                                         </textFieldCell>
                                     </textField>
                                     <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWI-1M-ZX5">
-                                        <rect key="frame" x="161" y="148" width="99" height="26"/>
+                                        <rect key="frame" x="161" y="148" width="135" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="96" id="XAn-Pn-crG"/>
+                                            <constraint firstAttribute="width" constant="132" id="XAn-Pn-crG"/>
                                         </constraints>
                                         <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="D3b-9k-cZJ">
                                             <font key="font" metaFont="system"/>

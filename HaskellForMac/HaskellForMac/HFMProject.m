@@ -8,16 +8,6 @@
 
 #import "HFMProject.h"
 #import "HFMWindowController.h"
-#import "HFMProjectViewModel.h"
-
-
-@interface HFMProject ()
-
-/// Our view model proxy to the Haskell-side Cabal package representation.
-//
-@property (atomic, readonly) HFMProjectViewModel *projectModel;
-
-@end
 
 
 @implementation HFMProject

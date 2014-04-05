@@ -7,6 +7,7 @@
 //
 
 #import "HFMWindowController.h"
+#import "HFMProject.h"
 #import "HFMHeaderEditorController.h"
 #import "HFMTextEditorController.h"
 #import "HFMHaskellSession.h"
@@ -112,11 +113,12 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   NSOutlineView *outlineView = [notification object];
   NSInteger      row         = [outlineView selectedRow];
+  HFMProject    *document    = self.document;
 
   if (row != -1) {   // If a row is selected...
 
     if (row == 0) // FIXME: hardcoded here for now
-      [self selectEditor:@"cabal"];
+      [self selectEditor:document.fileURL];
 
   }
 }
@@ -145,8 +147,10 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark Controlling the editor component
 
-- (void)selectEditor:(NSString *)fileExtension
+- (void)selectEditor:(NSURL *)file
 {
+  NSString *fileExtension = [file pathExtension];
+
     // Remove the current editor view.
   if (self.editorViewController)
     [[self.editorViewController view] removeFromSuperview];
@@ -157,9 +161,15 @@ NSString *const kCabalCellID = @"cabalCellID";
     return;
 
     // Load the new view by way of the matching view controller.
-  if ([nibName isEqual:kPackageHeaderEditor])
-    self.editorViewController = [[HFMHeaderEditorController alloc] initWithNibName:nibName bundle:nil];
-  else if ([nibName isEqual:kTextEditor])
+  if ([nibName isEqual:kPackageHeaderEditor]) {
+
+    HFMProject *project = self.document;
+
+    self.editorViewController = [[HFMHeaderEditorController alloc] initWithNibName:nibName
+                                                                            bundle:nil
+                                                                  projectViewModel:project.projectModel];
+
+  } else if ([nibName isEqual:kTextEditor])
     self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName bundle:nil];
   if (!self.editorView) {
 
