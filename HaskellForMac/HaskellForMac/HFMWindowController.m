@@ -21,6 +21,7 @@
 @property (weak, atomic) IBOutlet NSSplitView   *verticalSplitView;
 @property (weak, atomic) IBOutlet NSSplitView   *horizontalSplitView;
 @property (weak, atomic) IBOutlet NSView        *editorView;
+@property (weak) IBOutlet NSTextField           *noEditorLabel;
 
 // View controller of the currently displayed editor (which depends on the item selected in the outline view).
 //
@@ -152,9 +153,12 @@ NSString *const kCabalCellID = @"cabalCellID";
   NSString *fileExtension = [file pathExtension];
 
     // Remove the current editor view.
-  if (self.editorViewController)
-    [[self.editorViewController view] removeFromSuperview];
+  if (self.editorViewController) {
 
+    [[self.editorViewController view] removeFromSuperview];
+    self.noEditorLabel.hidden = NO;
+
+  }
     // Select suitable editor.
   NSString *nibName = [self.editors objectForKey:fileExtension];
   if (!nibName)
@@ -186,6 +190,8 @@ NSString *const kCabalCellID = @"cabalCellID";
   [self.editorView addSubview:view];
   self.editorView.needsLayout  = YES;
   self.editorView.needsDisplay = YES;
+
+  self.noEditorLabel.hidden = YES;
 
 }
 
