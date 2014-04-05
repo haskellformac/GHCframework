@@ -54,10 +54,10 @@ showPackageIdentifier = display . P.packageId
 -- Getters
 
 packageName :: PD.GenericPackageDescription -> String
-packageName = show . P.packageName
+packageName = display . P.packageName
 
 packageVersion :: PD.GenericPackageDescription -> String
-packageVersion = show . P.packageVersion
+packageVersion = display . P.packageVersion
 
 
 -- Objective-C class interface
