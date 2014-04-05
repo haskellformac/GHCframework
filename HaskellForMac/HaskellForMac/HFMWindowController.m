@@ -17,11 +17,11 @@
 
 // Views in 'ProjectWindow.xib'
 //
-@property (weak, atomic) IBOutlet NSOutlineView *outlineView;
-@property (weak, atomic) IBOutlet NSSplitView   *verticalSplitView;
-@property (weak, atomic) IBOutlet NSSplitView   *horizontalSplitView;
-@property (weak, atomic) IBOutlet NSView        *editorView;
-@property (weak) IBOutlet NSTextField           *noEditorLabel;
+@property (weak) IBOutlet NSOutlineView *outlineView;
+@property (weak) IBOutlet NSSplitView   *verticalSplitView;
+@property (weak) IBOutlet NSSplitView   *horizontalSplitView;
+@property (weak) IBOutlet NSView        *editorView;
+@property (weak) IBOutlet NSTextField   *noEditorLabel;
 
 // View controller of the currently displayed editor (which depends on the item selected in the outline view).
 //
@@ -31,12 +31,12 @@
 
 // The GHC session associated with this window.
 //
-@property (nonatomic, readonly) HFMHaskellSession *haskellSession;
+@property (strong, nonatomic, readonly) HFMHaskellSession *haskellSession;
 
 // A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
 // be the name of their NIB file.
 //
-@property (nonatomic, readonly) NSDictionary *editors;
+@property (strong, nonatomic, readonly) NSDictionary *editors;
 
 @end
 
@@ -169,9 +169,11 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     HFMProject *project = self.document;
 
-    self.editorViewController = [[HFMHeaderEditorController alloc] initWithNibName:nibName
-                                                                            bundle:nil
-                                                                  projectViewModel:project.projectModel];
+    self.editorViewController =
+      [[HFMHeaderEditorController alloc] initWithNibName:nibName
+                                                  bundle:nil
+                                        projectViewModel:project.projectModel
+                                              projectURL:((HFMProject *) self.document).fileURL];
 
   } else if ([nibName isEqual:kTextEditor])
     self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName bundle:nil];

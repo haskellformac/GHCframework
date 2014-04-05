@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="HFMHeaderEditorController">
             <connections>
                 <outlet property="nameView" destination="YAG-jN-beI" id="xYk-oR-yEB"/>
+                <outlet property="pathControl" destination="bl3-rO-GXf" id="C2P-p1-VwX"/>
                 <outlet property="versionView" destination="erg-t0-GI4" id="aNO-bO-544"/>
                 <outlet property="view" destination="1" id="Mpd-Su-dBy"/>
             </connections>
@@ -67,6 +68,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="erg-t0-GI4" id="HqU-fJ-NuE"/>
+                                        </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YTl-Cg-sYt">
                                         <rect key="frame" x="38" y="484" width="116" height="17"/>
@@ -85,6 +89,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="AoF-wh-zDw" id="eFH-W2-aOA"/>
+                                        </connections>
                                     </textField>
                                     <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Api-h7-Juf">
                                         <rect key="frame" x="32" y="470" width="436" height="5"/>
@@ -110,6 +117,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="4qp-sS-Ebm" id="g3i-uo-deF"/>
+                                        </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yPU-Cw-moI">
                                         <rect key="frame" x="38" y="417" width="116" height="17"/>
@@ -128,6 +138,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="syS-KH-nz7" id="4bq-7q-B9u"/>
+                                        </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FMb-IF-zjo">
                                         <rect key="frame" x="38" y="387" width="116" height="17"/>
@@ -146,6 +159,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="Lh7-c0-t9m" id="aqz-nT-8Jk"/>
+                                        </connections>
                                     </textField>
                                     <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="shd-QD-IBh">
                                         <rect key="frame" x="32" y="289" width="436" height="5"/>
@@ -180,6 +196,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="3xZ-o2-reO" id="qVH-hI-8oJ"/>
+                                        </connections>
                                     </textField>
                                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3xZ-o2-reO">
                                         <rect key="frame" x="160" y="237" width="300" height="22"/>
@@ -189,6 +208,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="2sD-sp-I3F" id="22z-Ai-x3Y"/>
+                                        </connections>
                                     </textField>
                                     <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Clv-Z8-XAD">
                                         <rect key="frame" x="20" y="227" width="460" height="4"/>
@@ -244,6 +266,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="EWI-1M-ZX5" id="dOc-gK-3sS"/>
+                                        </connections>
                                     </textField>
                                     <comboBox verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWI-1M-ZX5">
                                         <rect key="frame" x="161" y="148" width="302" height="26"/>
@@ -267,6 +292,9 @@
                                                 <string>LGPL</string>
                                             </objectValues>
                                         </comboBoxCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="ZDC-zs-8xm" id="fAd-qW-Pt2"/>
+                                        </connections>
                                     </comboBox>
                                     <box autoresizesSubviews="NO" horizontalHuggingPriority="248" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="EOz-qW-1Nj">
                                         <rect key="frame" x="20" y="119" width="460" height="4"/>
@@ -304,6 +332,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="RJc-Xr-67F" id="dxR-aQ-Gys"/>
+                                        </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5z5-ri-Vf5">
                                         <rect key="frame" x="38" y="41" width="116" height="17"/>
@@ -322,6 +353,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <outlet property="nextKeyView" destination="RFY-Hf-Xve" id="IJv-5G-UYD"/>
+                                        </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x6o-cB-PQh">
                                         <rect key="frame" x="38" y="11" width="116" height="17"/>

@@ -13,10 +13,15 @@
 
 @interface HFMHeaderEditorController : NSViewController
 
-// Initialise the view controller by loading its NIB file and also set the associated view model.
+// The URL of the path control of the editor.
+//
+@property (strong, nonatomic) NSURL *URL;
+
+// Initialise the view controller by loading its NIB file and also set the associated view model and its URL.
 //
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
-               projectViewModel:(HFMProjectViewModel *)projectModel;
+               projectViewModel:(HFMProjectViewModel *)projectModel
+                     projectURL:(NSURL *)url;
 
 @end
