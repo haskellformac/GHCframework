@@ -14,9 +14,13 @@
 
 // Content views of the header editor
 //
+@property (weak) IBOutlet NSPathControl *pathControl;
 @property (weak) IBOutlet NSTextField   *nameView;
 @property (weak) IBOutlet NSTextField   *versionView;
-@property (weak) IBOutlet NSPathControl *pathControl;
+
+// Object controller of the header editor
+//
+@property (strong) IBOutlet NSObjectController *objectController;
 
 // Our view model and its URL.
 //
@@ -43,11 +47,9 @@
 
 - (void)awakeFromNib
 {
-    // Initialize views with values from the Cabal file
-  self.nameView.stringValue    = self.projectViewModel.name;
-  self.versionView.stringValue = self.projectViewModel.version;
-  self.pathControl.URL         = self.projectURLDuringInit;
-  self.projectURLDuringInit    = nil;
+    // Initialize the path control
+  self.pathControl.URL      = self.projectURLDuringInit;
+  self.projectURLDuringInit = nil;
 }
 
 
@@ -63,5 +65,19 @@
 {
   self.pathControl.URL = url;
 }
+
+
+#pragma mark -
+#pragma mark Action methods
+
+/* Using bindings instead
+
+// This is the action method for all text fields in the header editor.
+//
+- (IBAction)textFieldDidEndEditing:(NSTextField *)sender
+{
+  NSLog(@"editing result: %@, %d", sender.stringValue, sender == self.nameView);
+}
+*/
 
 @end

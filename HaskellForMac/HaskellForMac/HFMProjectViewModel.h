@@ -27,21 +27,21 @@
 #pragma mark Initialisation
 
 /// Create a new, untitled project model.
-///
+//
 + (instancetype)projectViewModel;
 
 /// Create a project model from a Cabal file string.
 ///
 /// Returns 'nil' in case of a parse error.
-///
-/// FIXME: we need to report errors with more information.
+//
+// FIXME: we need to report errors with more information.
 + (instancetype)projectViewModelWithString:(NSString *)string;
 
 /// Initialise a project model from a Cabal file string.
 ///
 /// @Returns 'nil' in case of a parse error.
-///
-/// FIXME: we need to report errors with more information.
+//
+// FIXME: we need to report errors with more information.
 - (instancetype)initWithString:(NSString *)string;
 
 
@@ -49,7 +49,7 @@
 #pragma mark Project serialisation
 
 /// Serialise the project data into a string.
-///
+//
 - (NSString *)string;
 
 

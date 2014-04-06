@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="HFMHeaderEditorController">
             <connections>
                 <outlet property="nameView" destination="YAG-jN-beI" id="xYk-oR-yEB"/>
+                <outlet property="objectController" destination="BsQ-Dr-3CP" id="Hin-19-dMb"/>
                 <outlet property="pathControl" destination="bl3-rO-GXf" id="C2P-p1-VwX"/>
                 <outlet property="versionView" destination="erg-t0-GI4" id="aNO-bO-544"/>
                 <outlet property="view" destination="1" id="Mpd-Su-dBy"/>
@@ -69,6 +70,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.name" id="U5a-Zn-899"/>
                                             <outlet property="nextKeyView" destination="erg-t0-GI4" id="HqU-fJ-NuE"/>
                                         </connections>
                                     </textField>
@@ -90,6 +92,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.version" id="6gQ-An-wgX"/>
                                             <outlet property="nextKeyView" destination="AoF-wh-zDw" id="eFH-W2-aOA"/>
                                         </connections>
                                     </textField>
@@ -500,5 +503,13 @@
                 <constraint firstAttribute="bottom" secondItem="V4Z-Qr-XLH" secondAttribute="bottom" id="sAD-Dd-zL4"/>
             </constraints>
         </customView>
+        <objectController id="BsQ-Dr-3CP">
+            <declaredKeys>
+                <string>version</string>
+            </declaredKeys>
+            <connections>
+                <binding destination="-2" name="contentObject" keyPath="self.projectViewModel" id="vl0-bs-JbL"/>
+            </connections>
+        </objectController>
     </objects>
 </document>

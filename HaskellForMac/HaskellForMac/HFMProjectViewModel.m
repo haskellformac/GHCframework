@@ -58,7 +58,7 @@
 
 
 #pragma mark -
-#pragma mark Getetrs
+#pragma mark Getters
 
 - (NSString *)identifier
 {
