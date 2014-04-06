@@ -17,7 +17,7 @@
 //
 // This is our interface to the Haskell-side data model.
 //
-@property (atomic) CBLPackage *package;
+@property CBLPackage *package;
 
 @end
 
@@ -58,7 +58,7 @@
 
 
 #pragma mark -
-#pragma mark Getters
+#pragma mark Setters and getters
 
 - (NSString *)identifier
 {
@@ -66,9 +66,19 @@
   return _identifier;
 }
 
+- (void)setName:(NSString *)name
+{
+  self.package = [CBLPackage package:self.package withNewName:name];
+}
+
 - (NSString *)name
 {
   return self.package.name;
+}
+
+- (void)setVersion:(NSString *)version
+{
+//  self.package.version = version;
 }
 
 - (NSString *)version

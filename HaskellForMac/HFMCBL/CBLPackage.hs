@@ -51,13 +51,21 @@ emptyGenericPackageDescription = PD.GenericPackageDescription PD.emptyPackageDes
 showPackageIdentifier :: PD.GenericPackageDescription -> String
 showPackageIdentifier = display . P.packageId
 
--- Getters
+-- Projections
 
 packageName :: PD.GenericPackageDescription -> String
 packageName = display . P.packageName
 
 packageVersion :: PD.GenericPackageDescription -> String
 packageVersion = display . P.packageVersion
+
+-- Update functions
+
+updateName :: PD.GenericPackageDescription -> String -> PD.GenericPackageDescription
+updateName gpd name = gpd {PD.packageDescription = pd {PD.package = pid {P.pkgName = P.PackageName name}}}
+  where
+    pd  = PD.packageDescription gpd
+    pid = PD.package pd
 
 
 -- Objective-C class interface
@@ -70,7 +78,7 @@ objc_interface [cunit|
 /* Properties
  */
  
-// Human readable version of the entire package identifier (<package name>-<version>).
+/// Human readable version of the entire package identifier (<package name>-<version>).
 //
 @property (readonly) typename NSString *identifier;
 
@@ -83,29 +91,37 @@ objc_interface [cunit|
 /* Initialisation
  */
 
-// Create a package as a new untitled Cabal package.
+/// Create a package as a new untitled Cabal package.
 //
 + (typename instancetype)package;
 
-// Create a package by parsing the given Cabal file string.
-//
-// Returns 'nil' in case of a parse error.
+/// Create a package by parsing the given Cabal file string.
+///
+/// Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
 + (typename instancetype)packageWithString:(typename NSString *)string;
 
-// Initialises a package object by parsing the given Cabal file string.
+/// Create a new package by updating the name of the existing package.
 //
-// Returns 'nil' in case of a parse error.
++ (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name;
+
+/// Initialises a package object by parsing the given Cabal file string.
+///
+/// Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
 - (typename instancetype)initWithString:(typename NSString *)string;
+
+/// Initialise a new package from an existing package, but updating its name.
+//
+- (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)packageDescriptionPtr;
 
 
 /* Queries
  */
   
-// Pretty print the package into a Cabal file string.
+/// Pretty print the package into a Cabal file string.
 //
 - (typename NSString *)string;
 
@@ -118,7 +134,7 @@ objc_interface [cunit|
 
 objc_implementation 
   ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 
-   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion] 
+   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion, 'updateName] 
   [cunit|
 
 @interface CBLPackage ()
@@ -137,6 +153,11 @@ objc_implementation
 + (typename instancetype)packageWithString:(typename NSString *)string
 {
   return [[CBLPackage alloc] initWithString:string];
+}
+
++ (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name
+{
+  return [[CBLPackage alloc] initWithGenericPackageDescription:updateName(package.genericPackageDescription, name)];
 }
 
 - (typename instancetype)init
@@ -165,6 +186,17 @@ objc_implementation
     //        doesn't fail.
   }
   NSLog(@"Loaded Cabal file for package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
+  return self;
+}
+
+- (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)pd
+{
+  self = [super init];
+  if (self)
+  {
+    _genericPackageDescription = pd;
+  }
+  NSLog(@"Updated Cabal package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
   return self;
 }
 

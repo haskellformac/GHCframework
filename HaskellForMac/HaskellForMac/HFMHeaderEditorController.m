@@ -41,7 +41,7 @@
 {
   self = [self initWithNibName:nibName bundle:nibBundle];
   _projectViewModel     = projectModel;
-  _projectURLDuringInit = url;      // can't assign to 'self.pathControl.URL' yet as 'IBOutlets' are still outstanding
+  _projectURLDuringInit = url;      // can't assign to 'self.pathControl.URL' yet as 'IBOutlets' are not yet initialised
   return self;
 }
 
