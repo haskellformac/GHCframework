@@ -78,7 +78,7 @@
 
 - (void)setVersion:(NSString *)version
 {
-//  self.package.version = version;
+  self.package = [CBLPackage package:self.package withNewVersion:version];
 }
 
 - (NSString *)version

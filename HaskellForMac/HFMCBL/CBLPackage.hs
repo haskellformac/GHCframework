@@ -17,12 +17,14 @@ import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
   -- standard libraries
+import Data.Version
 import qualified
        Distribution.Package            as P
 import qualified 
        Distribution.PackageDescription as PD
 import Distribution.PackageDescription.Parse
 import Distribution.Text
+import Text.ParserCombinators.ReadP
 
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
@@ -67,6 +69,16 @@ updateName gpd name = gpd {PD.packageDescription = pd {PD.package = pid {P.pkgNa
     pd  = PD.packageDescription gpd
     pid = PD.package pd
 
+updateVersion :: PD.GenericPackageDescription -> String -> PD.GenericPackageDescription
+updateVersion gpd versionStr = gpd {PD.packageDescription = pd {PD.package = pid {P.pkgVersion = version}}}
+  where
+    pd  = PD.packageDescription gpd
+    pid = PD.package pd
+
+    version = case filter (null . snd) . readP_to_S parseVersion $ versionStr of
+                [(version, [])] -> version
+                _               -> Version [0] []
+
 
 -- Objective-C class interface
 -- ---------------------------
@@ -103,8 +115,16 @@ objc_interface [cunit|
 + (typename instancetype)packageWithString:(typename NSString *)string;
 
 /// Create a new package by updating the name of the existing package.
+///
+/// The name is *not* validated for well-formedness.
 //
 + (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name;
+
+/// Create a new package by updating the version of the existing package.
+///
+/// The version string is *not* validated for well-formedness.
+//
++ (typename instancetype)package:(typename CBLPackage *)package withNewVersion:(typename NSString *)version;
 
 /// Initialises a package object by parsing the given Cabal file string.
 ///
@@ -134,7 +154,7 @@ objc_interface [cunit|
 
 objc_implementation 
   ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 
-   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion, 'updateName] 
+   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion, 'updateName, 'updateVersion] 
   [cunit|
 
 @interface CBLPackage ()
@@ -158,6 +178,11 @@ objc_implementation
 + (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name
 {
   return [[CBLPackage alloc] initWithGenericPackageDescription:updateName(package.genericPackageDescription, name)];
+}
+
++ (typename instancetype)package:(typename CBLPackage *)package withNewVersion:(typename NSString *)version
+{
+  return [[CBLPackage alloc] initWithGenericPackageDescription:updateVersion(package.genericPackageDescription, version)];
 }
 
 - (typename instancetype)init
