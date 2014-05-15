@@ -133,9 +133,7 @@ objc_interface [cunit|
 // FIXME: we need to report errors with more information.
 - (typename instancetype)initWithString:(typename NSString *)string;
 
-/// Initialise a new package from an existing package, but updating its name.
-//
-- (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)packageDescriptionPtr;
+// - (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)packageDescriptionPtr;
 
 
 /* Queries
