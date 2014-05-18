@@ -14,7 +14,7 @@
 #define CLANG "/Library/Developer/CommandLineTools/usr/bin/clang"
 
 #define C_SOURCE "test.c"
-
+#define C_EXE    "ctest"
 
 @implementation SBTAppDelegate
 
@@ -31,11 +31,31 @@
     else
       chdir("/Users/chak/tmp");
 
-    char *argv[] = {CLANG, "-c", C_SOURCE, NULL};
-    int err = posix_spawn(NULL, CLANG, NULL, NULL, argv, NULL);
-    if (err)
-      NSLog(@"unable to spawn clang: error code %d", err);
+    NSString *tmpdir = NSTemporaryDirectory();
+    char     *tmpenv = malloc([tmpdir length] + 10);
+    sprintf(tmpenv, "TMPDIR=%s", [tmpdir UTF8String]);
+    char     *env[]  = {tmpenv};
 
+    {
+      char *argv[] = {CLANG, "-c", C_SOURCE, NULL};
+      int err = posix_spawn(NULL, CLANG, NULL, NULL, argv, env);
+      if (err)
+        NSLog(@"unable to spawn clang: error code %d", err);
+    }
+
+    {
+      char *argv[] = {CLANG, "-o", C_EXE, C_SOURCE, NULL};
+      int err = posix_spawn(NULL, CLANG, NULL, NULL, argv, env);
+      if (err)
+        NSLog(@"unable to spawn clang: error code %d", err);
+    }
+
+    {
+      char *argv[] = {C_EXE, NULL};
+      int err = posix_spawn(NULL, C_EXE, NULL, NULL, argv, env);
+      if (err)
+        NSLog(@"unable to spawn clang-generated executable: error code %d", err);
+    }
   }];
 }
 
