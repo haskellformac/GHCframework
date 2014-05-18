@@ -16,9 +16,12 @@
 
 #define XCRUN_CLANG "/usr/bin/clang"
 #define CLANG "/Library/Developer/CommandLineTools/usr/bin/clang"
+#define RUNHASKELL "/usr/bin/runhaskell"
 
 #define C_SOURCE "test.c"
 #define C_EXE    "ctest"
+
+#define HS_SOURCE "Hello.hs"
 
 @implementation SBTAppDelegate
 
@@ -89,6 +92,15 @@
       if (err)
         NSLog(@"unable to spawn clang-generated executable: error code %d", err);
 
+    }
+
+    {
+
+      char *argv[] = {RUNHASKELL, HS_SOURCE, NULL};
+      int err = posix_spawn(NULL, RUNHASKELL, NULL, NULL, argv, NULL);
+      if (err)
+        NSLog(@"unable to spawn runhaskell: error code %d", err);
+      
     }
   }];
 }
