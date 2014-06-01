@@ -53,212 +53,124 @@ emptyGenericPackageDescription = PD.GenericPackageDescription PD.emptyPackageDes
 showPackageIdentifier :: PD.GenericPackageDescription -> String
 showPackageIdentifier = display . P.packageId
 
--- Projections
-
-packageName :: PD.GenericPackageDescription -> String
-packageName = display . P.packageName
-
-packageVersion :: PD.GenericPackageDescription -> String
-packageVersion = display . P.packageVersion
-
--- Update functions
-
-updateName :: PD.GenericPackageDescription -> String -> PD.GenericPackageDescription
-updateName gpd name = gpd {PD.packageDescription = pd {PD.package = pid {P.pkgName = P.PackageName name}}}
-  where
-    pd  = PD.packageDescription gpd
-    pid = PD.package pd
-
-updateVersion :: PD.GenericPackageDescription -> String -> PD.GenericPackageDescription
-updateVersion gpd versionStr = gpd {PD.packageDescription = pd {PD.package = pid {P.pkgVersion = version}}}
-  where
-    pd  = PD.packageDescription gpd
-    pid = PD.package pd
-
-    version = case filter (null . snd) . readP_to_S parseVersion $ versionStr of
-                [(version, [])] -> version
-                _               -> Version [0] []
-
-
--- Objective-C class interface
--- ---------------------------
-
-objc_interface [cunit|
-
-@interface CBLPackage : NSObject
-
-/* Properties
- */
- 
-/// Human readable version of the entire package identifier (<package name>-<version>).
-//
-@property (readonly) typename NSString *identifier;
-
-// Cabal package specification fields
-//
-@property (readonly) typename NSString *name;
-@property (readonly) typename NSString *version;
-
-
-/* Initialisation
- */
-
-/// Create a package as a new untitled Cabal package.
-//
-+ (typename instancetype)package;
-
-/// Create a package by parsing the given Cabal file string.
-///
-/// Returns 'nil' in case of a parse error.
-//
-// FIXME: we need to report errors with more information.
-+ (typename instancetype)packageWithString:(typename NSString *)string;
-
-/// Create a new package by updating the name of the existing package.
-///
-/// The name is *not* validated for well-formedness.
-//
-+ (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name;
-
-/// Create a new package by updating the version of the existing package.
-///
-/// The version string is *not* validated for well-formedness.
-//
-+ (typename instancetype)package:(typename CBLPackage *)package withNewVersion:(typename NSString *)version;
-
-/// Initialises a package object by parsing the given Cabal file string.
-///
-/// Returns 'nil' in case of a parse error.
-//
-// FIXME: we need to report errors with more information.
-- (typename instancetype)initWithString:(typename NSString *)string;
-
-// - (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)packageDescriptionPtr;
-
-
-/* Queries
- */
+-- Generate a proxy class that exposes all Cabal package information that the view model needs to represent.
+--
+objc_record "CBL" "Package" ''PD.GenericPackageDescription
+  [Typed 'emptyGenericPackageDescription, Typed 'parsePackageDescription, 
+   'parseOk :> [t|ParseResult PD.GenericPackageDescription -> Maybe PD.GenericPackageDescription|], 
+   Typed 'nameAndVersionOfGenericPackage, Typed 'showPackageDescription, Typed 'showPackageIdentifier]
   
-/// Pretty print the package into a Cabal file string.
-//
-- (typename NSString *)string;
+      -- Cabal package specification fields
+  [ [objcprop| @property (readonly) typename NSString *name; |]    
+      ==> ([t| String |],
+           [| display . P.packageName |],
+           [| \gpd name -> let
+                             pd  = PD.packageDescription gpd
+                             pid = PD.package pd
+                           in
+                           gpd {PD.packageDescription = pd {PD.package = pid {P.pkgName = P.PackageName name}}} |])
+  , [objcprop| @property (readonly) typename NSString *version; |]
+      ==> ([t| String |],
+           [| display . P.packageVersion |],
+           [| \gpd versionStr -> let
+                                   pd  = PD.packageDescription gpd
+                                   pid = PD.package pd
+                                   --
+                                   version = case filter (null . snd) . readP_to_S parseVersion $ versionStr of
+                                               [(version, [])] -> version
+                                               _               -> Version [0] []
+                                 in
+                                 gpd {PD.packageDescription = pd {PD.package = pid {P.pkgVersion = version}}} |])
+  ]
+  [objcifdecls|
+  
+    /// Human readable version of the entire package identifier (<package name>-<version>).
+    //
+    @property (readonly) typename NSString *identifier;
+    
+    /// Create a package as a new untitled Cabal package.
+    //
+    + (instancetype)package;
+    
+    /// Create a package by parsing the given Cabal file string.
+    ///
+    /// Returns 'nil' in case of a parse error.
+    //
+    // FIXME: we need to report errors with more information.
+    + (instancetype)packageWithString:(typename NSString *)string;
+    
+    /// Create a new package by updating the name of the existing package.
+    ///
+    /// The name is *not* validated for well-formedness.
+    //
+// generated
+//    + (instancetype)package:(typename CBLPackage *)package withName:(typename NSString *)name;
+    
+    /// Create a new package by updating the version of the existing package.
+    ///
+    /// The version string is *not* validated for well-formedness.
+    //
+// generated
+//    + (instancetype)package:(typename CBLPackage *)package withVersion:(typename NSString *)version;
+    
+    /// Initialises a package object by parsing the given Cabal file string.
+    ///
+    /// Returns 'nil' in case of a parse error.
+    //
+    // FIXME: we need to report errors with more information.
+    - (instancetype)initWithString:(typename NSString *)string;
+    
+    /* Queries
+     */
+    
+    /// Pretty print the package into a Cabal file string.
+    //
+    - (typename NSString *)string;
 
-@end
-|]
+  |] 
+  [objcimdecls|
 
+    + (instancetype)package
+    {
+      return [[CBLPackage alloc] initWithGenericPackageDescriptionHsPtr:emptyGenericPackageDescription()];
+    }
+    
+    + (instancetype)packageWithString:(typename NSString *)string
+    {
+      return [[CBLPackage alloc] initWithString:string];
+    }
 
--- Objective-C class implementation
--- --------------------------------
+    - (instancetype)initWithString:(typename NSString *)string
+    {
+      self = [super init];
+      if (self)
+      {
+    
+        typename HsStablePtr *result = parsePackageDescription(string);
+        _genericPackageDescriptionHsPtr = parseOk(result);
+        if (!_genericPackageDescriptionHsPtr)
+          return nil;       // initialisation fails if parsing fails
+    
+        // FIXME: We need better error handling. Return errors if parsing fails and also return the warnings, even if it
+        //        doesn't fail.
+      }
+      NSLog(@"Loaded Cabal file for package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescriptionHsPtr));
+      return self;
+    }
+    
+    // Getter for readonly property
+    //
+    - (typename NSString *)identifier
+    {
+      return showPackageIdentifier(self.genericPackageDescriptionHsPtr);
+    }
+    
+    - (typename NSString *)string
+    {
+      return showPackageDescription(self.genericPackageDescriptionHsPtr);
+    }
 
-objc_implementation 
-  ['emptyGenericPackageDescription, 'parsePackageDescription, 'parseOk, 'nameAndVersionOfGenericPackage, 
-   'showPackageDescription, 'showPackageIdentifier, 'packageName, 'packageVersion, 'updateName, 'updateVersion] 
-  [cunit|
-
-@interface CBLPackage ()
-
-@property (readonly, assign, nonatomic) typename HsStablePtr genericPackageDescription;
-
-@end
-
-@implementation CBLPackage
-
-+ (typename instancetype)package
-{
-  return [[CBLPackage alloc] init];
-}
-
-+ (typename instancetype)packageWithString:(typename NSString *)string
-{
-  return [[CBLPackage alloc] initWithString:string];
-}
-
-+ (typename instancetype)package:(typename CBLPackage *)package withNewName:(typename NSString *)name
-{
-  return [[CBLPackage alloc] initWithGenericPackageDescription:updateName(package.genericPackageDescription, name)];
-}
-
-+ (typename instancetype)package:(typename CBLPackage *)package withNewVersion:(typename NSString *)version
-{
-  return [[CBLPackage alloc] initWithGenericPackageDescription:updateVersion(package.genericPackageDescription, version)];
-}
-
-- (typename instancetype)init
-{
-  self = [super init];
-  if (self)
-  {
-    _genericPackageDescription = emptyGenericPackageDescription();
-  }
-  NSLog(@"Initialised new Cabal package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
-  return self;
-}
-
-- (typename instancetype)initWithString:(typename NSString *)string
-{
-  self = [super init];
-  if (self)
-  {
-
-    typename HsStablePtr *result = parsePackageDescription(string);
-    _genericPackageDescription = parseOk(result);
-    if (!_genericPackageDescription)
-      return nil;       // initialisation fails if parsing fails
-
-    // FIXME: We need better error handling. Return errors if parsing fails and also return the warnings, even if it
-    //        doesn't fail.
-  }
-  NSLog(@"Loaded Cabal file for package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
-  return self;
-}
-
-- (typename instancetype)initWithGenericPackageDescription:(typename HsStablePtr)pd
-{
-  self = [super init];
-  if (self)
-  {
-    _genericPackageDescription = pd;
-  }
-  NSLog(@"Updated Cabal package '%@'", nameAndVersionOfGenericPackage(_genericPackageDescription));
-  return self;
-}
-
-- (void)dealloc
-{
-  hs_free_stable_ptr(_genericPackageDescription);
-}
-
-
-/* Getters
- */
-
-- (typename NSString *)identifier
-{
-  return showPackageIdentifier(self.genericPackageDescription);
-}
-
-- (typename NSString *)name
-{
-  return packageName(self.genericPackageDescription);
-}
-
-- (typename NSString *)version
-{
-  return packageVersion(self.genericPackageDescription);
-}
-
-
-/* Queries
- */
- 
-- (typename NSString *)string
-{
-  return showPackageDescription(self.genericPackageDescription);
-}
-
-@end
-|]
-
+  |]
 
 objc_emit
 

@@ -30,7 +30,7 @@ objc_interface [cunit|
 
 // Create a new GHC instance.
 //
-+ (typename instancetype)ghcInstanceStart;
++ (instancetype)ghcInstanceStart;
 
 // Release the resources of this GHC instance. It cannot be used after this.
 //
@@ -47,7 +47,7 @@ objc_implementation [] [cunit|
 
 @implementation GHCInstance
 
-+ (typename instancetype)ghcInstanceStart
++ (instancetype)ghcInstanceStart
 {
   NSLog(@"GHC instance start");
   return [[GHCInstance alloc] init];
