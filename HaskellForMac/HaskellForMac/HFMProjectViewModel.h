@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 //  This class implements the view model interfacing project views (and their controllers) with the Haskell-side model
-//  object encapsualted by the HFMCBL target. The view model is mutable to conform to KVC, whereas the Haskell-side
+//  object encapsulted by the HFMCBL target. The view model is mutable to conform to KVC, whereas the Haskell-side
 //  model is immutable. This class provides the adaptation.
 //
 //  NB: This view model owns all the objects representing items for the outline view. The outline view by itself will

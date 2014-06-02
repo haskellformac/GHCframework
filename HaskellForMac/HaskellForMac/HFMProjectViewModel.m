@@ -69,6 +69,7 @@
 - (void)setName:(NSString *)name
 {
   self.package = [CBLPackage package:self.package withName:name];
+  NSLog(@"Update project name");
 }
 
 - (NSString *)name
@@ -79,6 +80,7 @@
 - (void)setVersion:(NSString *)version
 {
   self.package = [CBLPackage package:self.package withVersion:version];
+  NSLog(@"Update project version");
 }
 
 - (NSString *)version
