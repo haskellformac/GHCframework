@@ -129,6 +129,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.synopsis" id="gPf-ja-wuy"/>
                                             <outlet property="nextKeyView" destination="syS-KH-nz7" id="4bq-7q-B9u"/>
                                         </connections>
                                     </textField>
@@ -148,6 +149,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.fullDescription" id="FHo-h7-8nY"/>
                                             <outlet property="nextKeyView" destination="Lh7-c0-t9m" id="aqz-nT-8Jk"/>
                                         </connections>
                                     </textField>
@@ -181,6 +183,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.author" id="djJ-NF-ROm"/>
                                             <outlet property="nextKeyView" destination="3xZ-o2-reO" id="qVH-hI-8oJ"/>
                                         </connections>
                                     </textField>
@@ -192,6 +195,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.maintainer" id="ahE-IR-QLJ"/>
                                             <outlet property="nextKeyView" destination="2sD-sp-I3F" id="22z-Ai-x3Y"/>
                                         </connections>
                                     </textField>
@@ -244,6 +248,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.copyright" id="NZn-ei-KGW"/>
                                             <outlet property="nextKeyView" destination="EWI-1M-ZX5" id="dOc-gK-3sS"/>
                                         </connections>
                                     </textField>
@@ -269,6 +274,7 @@
                                             </objectValues>
                                         </comboBoxCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.license" id="RLE-rD-XQJ"/>
                                             <outlet property="nextKeyView" destination="ZDC-zs-8xm" id="fAd-qW-Pt2"/>
                                         </connections>
                                     </comboBox>
@@ -305,6 +311,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.homepage" id="x1a-0c-A6e"/>
                                             <outlet property="nextKeyView" destination="RJc-Xr-67F" id="dxR-aQ-Gys"/>
                                         </connections>
                                     </textField>
@@ -324,6 +331,7 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.pkgUrl" id="Nbi-en-0K2"/>
                                             <outlet property="nextKeyView" destination="RFY-Hf-Xve" id="IJv-5G-UYD"/>
                                         </connections>
                                     </textField>
@@ -342,6 +350,9 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
+                                        <connections>
+                                            <binding destination="BsQ-Dr-3CP" name="value" keyPath="selection.bugReports" id="t3X-Bo-HFW"/>
+                                        </connections>
                                     </textField>
                                 </subviews>
                                 <constraints>

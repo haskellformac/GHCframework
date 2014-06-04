@@ -99,6 +99,106 @@
   return self.package.category;
 }
 
+- (void)setSynopsis:(NSString *)synopsis
+{
+  self.package = [CBLPackage package:self.package withSynopsis:synopsis];
+  NSLog(@"Update project synopsis");
+}
+
+- (NSString *)synopsis
+{
+  return self.package.synopsis;
+}
+
+- (void)setFullDescription:(NSString *)fullDescription
+{
+  self.package = [CBLPackage package:self.package withFullDescription:fullDescription];
+  NSLog(@"Update project description");
+}
+
+- (NSString *)fullDescription
+{
+  return self.package.fullDescription;
+}
+
+- (void)setAuthor:(NSString *)author
+{
+  self.package = [CBLPackage package:self.package withFullDescription:author];
+  NSLog(@"Update project author");
+}
+
+- (NSString *)author
+{
+  return self.package.author;
+}
+
+- (void)setMaintainer:(NSString *)maintainer
+{
+  self.package = [CBLPackage package:self.package withMaintainer:maintainer];
+  NSLog(@"Update project maintainer");
+}
+
+- (NSString *)maintainer
+{
+  return self.package.maintainer;
+}
+
+- (void)setCopyright:(NSString *)copyright
+{
+  self.package = [CBLPackage package:self.package withCopyright:copyright];
+  NSLog(@"Update project copyright");
+}
+
+- (NSString *)copyright
+{
+  return self.package.copyright;
+}
+
+- (void)setLicense:(NSString *)license
+{
+  self.package = [CBLPackage package:self.package withLicense:license];
+  NSLog(@"Update project license");
+}
+
+- (NSString *)license
+{
+  return self.package.license;
+}
+
+- (void)setHomepage:(NSString *)homepage
+{
+  self.package = [CBLPackage package:self.package withHomepage:homepage];
+  NSLog(@"Update project homepage");
+}
+
+- (NSString *)homepage
+{
+  return self.package.homepage;
+}
+
+- (void)setPkgUrl:(NSString *)pkgUrl
+{
+  self.package = [CBLPackage package:self.package withPkgUrl:pkgUrl];
+  NSLog(@"Update project package URL");
+}
+
+- (NSString *)pkgUrl
+{
+  return self.package.pkgUrl;
+}
+
+- (void)setBugReports:(NSString *)bugReports
+{
+  self.package = [CBLPackage package:self.package withBugReports:bugReports];
+  NSLog(@"Update project bug reports");
+}
+
+- (NSString *)bugReports
+{
+  return self.package.bugReports;
+}
+
+
 
 #pragma mark -
 #pragma mark Project serialisation
