@@ -81,6 +81,10 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
                                                _               -> Version [0] []
                                  in
                                  gpd {PD.packageDescription = pd {PD.package = pid {P.pkgVersion = version}}} |])
+  , [objcprop| @property (readonly) typename NSString *category; |]
+      ==> ([t| String |],
+           [| PD.category . PD.packageDescription |],
+           [| \gpd category -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.category = category}} |])
   ]
   [objcifdecls|
   

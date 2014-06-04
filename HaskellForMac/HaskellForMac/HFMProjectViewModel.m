@@ -88,6 +88,17 @@
   return self.package.version;
 }
 
+- (void)setCategory:(NSString *)category
+{
+  self.package = [CBLPackage package:self.package withCategory:category];
+  NSLog(@"Update project category");
+}
+
+- (NSString *)category
+{
+  return self.package.category;
+}
+
 
 #pragma mark -
 #pragma mark Project serialisation
