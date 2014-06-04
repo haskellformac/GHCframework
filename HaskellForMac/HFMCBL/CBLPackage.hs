@@ -85,7 +85,7 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| PD.category . PD.packageDescription |],
            [| \gpd category -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.category = category}} |])
-  ]
+  ] 
   [objcifdecls|
   
     /// Human readable version of the entire package identifier (<package name>-<version>).

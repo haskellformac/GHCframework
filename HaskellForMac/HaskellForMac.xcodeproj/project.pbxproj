@@ -577,12 +577,14 @@
 			files = (
 			);
 			inputPaths = (
+				"$(DERIVED_FILE_DIR)/*.o",
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}";
+			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
 		};
 		E7D29A1C18974B130045A5AB /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -590,12 +592,15 @@
 			files = (
 			);
 			inputPaths = (
+				"$(DERIVED_FILE_DIR)/*.o",
 			);
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FULL_PRODUCT_NAME).timestamp",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} -package Cabal";
+			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\n# Seems that we can't use -threaded with -staticlib\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} -package Cabal\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
