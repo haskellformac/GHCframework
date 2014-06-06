@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E70D409719409AB700CA3455 /* CabalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70D409619409AB700CA3455 /* CabalTest.swift */; };
 		E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D4189FCB2100504164 /* TextEditor.xib */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
@@ -74,6 +75,20 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		E7142E3C19415EFF00DB5295 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7A13B001888006C00D79087;
+			remoteInfo = HaskellForMac;
+		};
+		E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7A13B001888006C00D79087;
+			remoteInfo = HaskellForMac;
+		};
 		E7A13B261888006C00D79087 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
@@ -105,6 +120,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E70D409519409AB600CA3455 /* HaskellForMacTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMacTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		E70D409619409AB700CA3455 /* CabalTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CabalTest.swift; sourceTree = "<group>"; };
 		E713E3D4189FCB2100504164 /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
 		E713E3D818A491FF00504164 /* HFMProjectViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModel.h; sourceTree = "<group>"; };
@@ -301,8 +318,10 @@
 		E7A13B281888006C00D79087 /* HaskellForMacTests */ = {
 			isa = PBXGroup;
 			children = (
+				E70D409619409AB700CA3455 /* CabalTest.swift */,
 				E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */,
 				E7A13B291888006C00D79087 /* Supporting Files */,
+				E70D409519409AB600CA3455 /* HaskellForMacTests-Bridging-Header.h */,
 			);
 			path = HaskellForMacTests;
 			sourceTree = "<group>";
@@ -431,6 +450,8 @@
 			);
 			dependencies = (
 				E7A13B271888006C00D79087 /* PBXTargetDependency */,
+				E7142E3D19415EFF00DB5295 /* PBXTargetDependency */,
+				E7142E3F19415F0100DB5295 /* PBXTargetDependency */,
 			);
 			name = HaskellForMacTests;
 			productName = HaskellForMacTests;
@@ -625,6 +646,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */,
+				E70D409719409AB700CA3455 /* CabalTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,6 +677,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		E7142E3D19415EFF00DB5295 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7A13B001888006C00D79087 /* HaskellForMac */;
+			targetProxy = E7142E3C19415EFF00DB5295 /* PBXContainerItemProxy */;
+		};
+		E7142E3F19415F0100DB5295 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7A13B001888006C00D79087 /* HaskellForMac */;
+			targetProxy = E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */;
+		};
 		E7A13B271888006C00D79087 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
@@ -860,6 +892,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -907,6 +940,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -940,6 +974,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HaskellForMac.app/Contents/MacOS/HaskellForMac";
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -952,7 +987,10 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "HaskellForMacTests/HaskellForMacTests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMacTests/HaskellForMacTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -962,6 +1000,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HaskellForMac.app/Contents/MacOS/HaskellForMac";
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -970,7 +1009,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
 				INFOPLIST_FILE = "HaskellForMacTests/HaskellForMacTests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMacTests/HaskellForMacTests-Bridging-Header.h";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -1041,6 +1082,7 @@
 		E7D29A1F18974B130045A5AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEFINES_MODULE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HFMCBL/HFMCBL-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1054,6 +1096,7 @@
 		E7D29A2018974B130045A5AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEFINES_MODULE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HFMCBL/HFMCBL-Prefix.pch";
 				PRODUCT_NAME = HFMCBL;
