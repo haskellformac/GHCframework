@@ -23,20 +23,20 @@
 @property (weak) IBOutlet NSView        *editorView;
 @property (weak) IBOutlet NSTextField   *noEditorLabel;
 
-// View controller of the currently displayed editor (which depends on the item selected in the outline view).
+/// View controller of the currently displayed editor (which depends on the item selected in the outline view).
+///
+/// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
 //
-// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
-//
-@property (strong, nonatomic) NSViewController *editorViewController;
+@property (nonatomic) NSViewController *editorViewController;
 
-// The GHC session associated with this window.
+/// The GHC session associated with this window.
 //
-@property (strong, nonatomic, readonly) HFMHaskellSession *haskellSession;
+@property (nonatomic, readonly) HFMHaskellSession *haskellSession;
 
-// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
-// be the name of their NIB file.
+/// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
+/// be the name of their NIB file.
 //
-@property (strong, nonatomic, readonly) NSDictionary *editors;
+@property (nonatomic, readonly) NSDictionary *editors;
 
 @end
 
@@ -48,6 +48,7 @@ NSString *const kTextEditor          = @"TextEditor";
 
 /// NIB file ids
 //
+NSString *const kGroupCellID = @"groupCellID";
 NSString *const kCabalCellID = @"cabalCellID";
 
 
@@ -92,22 +93,44 @@ NSString *const kCabalCellID = @"cabalCellID";
   [[NSAnimationContext currentContext] setDuration:0];
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
-
 }
 
 
 #pragma mark -
 #pragma mark NSOutlineViewDelegate protocol methods
 
+- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
+{
+#pragma unused(outlineView)
+
+  HFMProject *project = self.document;
+
+  return [project.outlineGroups containsObject:item];
+}
+
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
               viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(NSString *)name
+                            item:(NSString *)label
 {
 #pragma unused(tableColumn)     // there is only one column
 
-  NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
-  cell.textField.stringValue = name;
-  return cell;
+  HFMProject *project = self.document;
+
+    // Do we need a group cell or a cabal cell item?
+  if ([project.outlineGroups containsObject:label]) {
+
+    NSTableCellView *cell = [outlineView makeViewWithIdentifier:kGroupCellID owner:self];
+    cell.textField.stringValue = [label uppercaseString];
+    return cell;
+
+
+  } else {
+
+    NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
+    cell.textField.stringValue = label;
+    return cell;
+
+  }
 }
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
@@ -118,8 +141,14 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (row != -1) {   // If a row is selected...
 
-    if (row == 0) // FIXME: hardcoded here for now
-      [self selectEditor:document.fileURL];
+    NSString *item = [outlineView itemAtRow:row];
+    if ([outlineView parentForItem:item] != nil) {    // ignore root item selections
+
+        //   if ([item equalToString:k???])    FIXME: need to check which item it is
+        [self selectEditor:document.fileURL];
+
+    }
+
 
   }
 }

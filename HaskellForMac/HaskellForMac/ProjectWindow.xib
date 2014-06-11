@@ -54,6 +54,23 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
+                                                        <tableCellView identifier="groupCellID" id="I7u-Bd-71O">
+                                                            <rect key="frame" x="1" y="0.0" width="145" height="17"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctX-vG-lXf">
+                                                                    <rect key="frame" x="1" y="0.0" width="120" height="17"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Group Cell" id="xPj-4c-3fY">
+                                                                        <font key="font" metaFont="system"/>
+                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                </textField>
+                                                            </subviews>
+                                                            <connections>
+                                                                <outlet property="textField" destination="ctX-vG-lXf" id="vLi-he-nQn"/>
+                                                            </connections>
+                                                        </tableCellView>
                                                         <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
                                                             <rect key="frame" x="1" y="0.0" width="145" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

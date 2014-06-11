@@ -10,6 +10,14 @@
 #import "HFMWindowController.h"
 
 
+/// Outline view group ids
+//
+NSString *const kPackageGroupID     = @"Package";
+NSString *const kDataGroupID        = @"Data";
+NSString *const kExecutableGroupID  = @"Executables";
+NSString *const kExtraSourceGroupID = @"Extra sources";
+
+
 @implementation HFMProject
 
 
@@ -21,8 +29,12 @@
 - (instancetype)init
 {
   self = [super init];
+
+  _outlineGroups = @[kPackageGroupID, kDataGroupID, kExecutableGroupID, kExtraSourceGroupID];
+
   return self;
 }
+
   // FIXME: We probably still have to special case the situation where a document was autosaved, but never explicitly saved
   //  to a particular location. Might have to override 'initForURL:withContentsOfURL:ofType:error:'
   //  or 'initWithContentsOfURL:ofType:error:'
@@ -31,9 +43,15 @@
 
 - (instancetype)initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
 {
-  self = [super initWithType:typeName error:outError];
-  if (self)
+#pragma unused(outError)
+
+  self = [self init];
+  if (self) {
+
+    [self setFileType:typeName];
     _projectModel = [HFMProjectViewModel projectViewModel];
+
+  }
   return self;
 }
 
@@ -104,21 +122,31 @@
 {
 #pragma unused(outlineView, index, item)
 
+    // Is this a group item?
   if (!item) {
-    return self.projectModel.identifier;
-  } else
-    return @"X"
-    ;
+
+    return [self.outlineGroups objectAtIndex:(NSUInteger)index];
+
+  } else {
+
+    if ([item isEqualToString:kPackageGroupID]) {
+
+      return self.projectModel.identifier;
+
+    } else
+      return @"X";
+    
+  }
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-#pragma unused(outlineView)
-
-  if (!item)
+    //FIXME: currently only the groups are expandable
+  if ([outlineView parentForItem:item] == nil) {
     return YES;
-  else
+  } else {
     return NO;
+  }
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
@@ -129,10 +157,15 @@
   if (!self.windowControllers.firstObject)
     return 0;
 
-  if (!item)
-    return 1;
-  else
-    return 0;
+  if (!item) {
+    return (NSInteger)[self.outlineGroups count];
+  } else {
+    if ([item isEqualToString:kPackageGroupID]) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }
 
 /* Need to implement this if the user should be able to edit the items of the outline view:

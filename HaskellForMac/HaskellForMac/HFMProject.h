@@ -23,4 +23,9 @@
 //
 @property (atomic, readonly) HFMProjectViewModel *projectModel;
 
+/// An array listing all available group section names.
+//
+@property (nonatomic, readonly) NSArray *outlineGroups;
+
+
 @end
