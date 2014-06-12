@@ -133,7 +133,11 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
       return self.projectModel.identifier;
 
-    } else
+    } else if ([item isEqualToString:kExecutableGroupID]) {
+
+        return self.projectModel.executableName;
+        
+      } else
       return @"X";
     
   }
@@ -161,6 +165,8 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
     return (NSInteger)[self.outlineGroups count];
   } else {
     if ([item isEqualToString:kPackageGroupID]) {
+      return 1;
+    } else if ([item isEqualToString:kExecutableGroupID]) {
       return 1;
     } else {
       return 0;

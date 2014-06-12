@@ -27,6 +27,8 @@ import Distribution.PackageDescription.Parse
 import Distribution.Text
 import Text.ParserCombinators.ReadP
 
+import Debug.Trace
+
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
 
@@ -65,6 +67,28 @@ cabalVersion gpd = case PD.specVersionRaw . PD.packageDescription $ gpd of
 --
 buildType :: PD.GenericPackageDescription -> String
 buildType = maybe "Simple" display . PD.buildType . PD.packageDescription
+
+type CondExecutable = (String, PD.CondTree PD.ConfVar [P.Dependency] PD.Executable)
+
+-- Get a field of the first executable section.
+--
+-- The first argument is a default returned if there is no executable section.
+---
+getCondExecutable :: a -> (CondExecutable -> a) -> PD.GenericPackageDescription -> a
+getCondExecutable dft proj gpd
+  = case PD.condExecutables $ gpd of
+      []      -> dft
+      (exe:_) -> proj exe
+
+-- Set a field of the first executable section.
+--
+-- Create an executable secion if none was present before.
+--
+setCondExecutable :: PD.GenericPackageDescription -> (CondExecutable -> CondExecutable) -> PD.GenericPackageDescription
+setCondExecutable gpd upd
+  = case PD.condExecutables gpd of
+      []         -> gpd {PD.condExecutables = [upd ("", PD.CondNode PD.emptyExecutable [] [])]}
+      (exe:exes) -> gpd {PD.condExecutables = upd exe : exes}
 
 -- Generate a proxy class that exposes all Cabal package information that the view model needs to represent.
 --
@@ -139,6 +163,17 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| PD.bugReports . PD.packageDescription |],
            [| \gpd bugReports -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.bugReports = bugReports}} |])
+  -- executable section (FIXME: for the moment, we assume, there is exactly one)
+  , [objcprop| @property (readonly) typename NSString *executableName; |]
+      ==> ([t| String |],
+           [| getCondExecutable "" fst |],
+           [| \gpd executableName -> setCondExecutable gpd (\(_, cd) -> (executableName, cd)) |])
+  , [objcprop| @property (readonly) typename NSString *modulePath; |]
+      ==> ([t| String |],
+           [| getCondExecutable "" (PD.modulePath . PD.condTreeData . snd) |],
+           [| \gpd modulePath -> 
+                setCondExecutable gpd 
+                  (\(name, cd) -> (name, cd {PD.condTreeData = (PD.condTreeData cd) {PD.modulePath = modulePath}})) |])
   ]
   [objcifdecls|
   

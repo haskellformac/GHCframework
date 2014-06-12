@@ -198,6 +198,30 @@
   return self.package.bugReports;
 }
 
+// executable section
+
+- (void)setExecutableName:(NSString *)executableName
+{
+  self.package = [CBLPackage package:self.package withExecutableName:executableName];
+  NSLog(@"Update project executable name");
+}
+
+- (NSString *)executableName
+{
+  return self.package.executableName;
+}
+
+- (void)setModulePath:(NSString *)modulePath
+{
+  self.package = [CBLPackage package:self.package withModulePath:modulePath];
+  NSLog(@"Update project executable Main module path");
+}
+
+- (NSString *)modulePath
+{
+  return self.package.modulePath;
+}
+
 
 
 #pragma mark -

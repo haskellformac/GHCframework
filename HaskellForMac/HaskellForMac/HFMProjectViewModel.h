@@ -31,6 +31,9 @@
 @property                       NSString *homepage;
 @property                       NSString *pkgUrl;
 @property                       NSString *bugReports;
+// executable section
+@property                       NSString *executableName;
+@property                       NSString *modulePath;
 
 
 #pragma mark -
