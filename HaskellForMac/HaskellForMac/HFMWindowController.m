@@ -99,38 +99,41 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark NSOutlineViewDelegate protocol methods
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(HFMProjectViewModelItem *)item
 {
 #pragma unused(outlineView)
 
-  HFMProject *project = self.document;
-
-  return [project.outlineGroups containsObject:item];
+  return item.tag == PVMItemTagGroup;
 }
 
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
               viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(NSString *)label
+                            item:(HFMProjectViewModelItem *)item
 {
 #pragma unused(tableColumn)     // there is only one column
 
-  HFMProject *project = self.document;
-
     // Do we need a group cell or a cabal cell item?
-  if ([project.outlineGroups containsObject:label]) {
+  if (item.tag == PVMItemTagGroup) {
 
     NSTableCellView *cell = [outlineView makeViewWithIdentifier:kGroupCellID owner:self];
-    cell.textField.stringValue = [label uppercaseString];
+    cell.textField.stringValue = [item.identifier uppercaseString];
     return cell;
 
 
   } else {
 
     NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
-    cell.textField.stringValue = label;
+    cell.textField.stringValue = item.identifier;
     return cell;
 
   }
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(HFMProjectViewModelItem *)item
+{
+#pragma unused(outlineView)
+
+  return item.tag != PVMItemTagGroup;
 }
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
@@ -141,14 +144,10 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (row != -1) {   // If a row is selected...
 
-    NSString *item = [outlineView itemAtRow:row];
-    if ([outlineView parentForItem:item] != nil) {    // ignore root item selections
+    HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
-        //   if ([item equalToString:k???])    FIXME: need to check which item it is
-        [self selectEditor:document.fileURL];
-
-    }
-
+    if (item.tag == PVMItemTagPackage)
+      [self selectEditor:document.fileURL];
 
   }
 }

@@ -7,6 +7,7 @@
 //
 
 #import "HFMProjectViewModel.h"
+#import "HFMProjectViewModelItem.h"
 #import "CBLPackage_objc.h"
 
 
@@ -43,17 +44,48 @@
 - (instancetype)init
 {
   self = [super init];
-  if (self)
+  if (self) {
+
     _package = [CBLPackage package];
+    [self setupGroups];
+
+  }
   return self;
 }
 
 - (instancetype)initWithString:(NSString *)string
 {
   self = [super init];
-  if (self)
+  if (self) {
+
     _package = [CBLPackage packageWithString:string];
+    [self setupGroups];
+
+  }
   return self;
+}
+
+- (void)setupGroups
+{
+    // We initialise the immutable project groups (which forms the root set of the project view model items). Child
+    // items are created on demand.
+  _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kPackageGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kDataGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kExecutableGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kExtraSourceGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  ];
 }
 
 

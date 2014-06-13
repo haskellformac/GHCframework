@@ -36,6 +36,7 @@
 		E7A13B9A1890D99000D79087 /* HFMGHCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B991890D99000D79087 /* HFMGHCTests.m */; };
 		E7A13BA71890E28E00D79087 /* GHCInstance.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7A13BA61890E27200D79087 /* GHCInstance.hs */; };
 		E7A13BAA1891532C00D79087 /* libHFMGHC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B811890D99000D79087 /* libHFMGHC.a */; };
+		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7D29A1518974AEF0045A5AB /* CBLPackage.hs in Resources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
 		E7D29A1A18974B130045A5AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7D29A2218974B430045A5AB /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
@@ -163,6 +164,8 @@
 		E7A13B971890D99000D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7A13B991890D99000D79087 /* HFMGHCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HFMGHCTests.m; sourceTree = "<group>"; };
 		E7A13BA61890E27200D79087 /* GHCInstance.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GHCInstance.hs; sourceTree = "<group>"; };
+		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
+		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7D29A1418974AEF0045A5AB /* CBLPackage.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CBLPackage.hs; sourceTree = "<group>"; };
 		E7D29A2118974B130045A5AB /* libHFMCBL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHFMCBL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HFMCBL-Prefix.pch"; sourceTree = "<group>"; };
@@ -290,6 +293,8 @@
 				E7A13B391888D1C000D79087 /* HFMProject.m */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
+				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
+				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
 				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
 				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
 				E7A13B3F188E6FE600D79087 /* HFMHaskellSession.h */,
@@ -634,6 +639,7 @@
 				E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
+				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,

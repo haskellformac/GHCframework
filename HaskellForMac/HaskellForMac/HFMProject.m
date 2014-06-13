@@ -10,14 +10,6 @@
 #import "HFMWindowController.h"
 
 
-/// Outline view group ids
-//
-NSString *const kPackageGroupID     = @"Package";
-NSString *const kDataGroupID        = @"Data";
-NSString *const kExecutableGroupID  = @"Executables";
-NSString *const kExtraSourceGroupID = @"Extra sources";
-
-
 @implementation HFMProject
 
 
@@ -29,8 +21,6 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 - (instancetype)init
 {
   self = [super init];
-
-  _outlineGroups = @[kPackageGroupID, kDataGroupID, kExecutableGroupID, kExtraSourceGroupID];
 
   return self;
 }
@@ -118,32 +108,32 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 #pragma mark -
 #pragma mark NSOutlineViewDataSource protocol methods
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(HFMProjectViewModelItem *)item
 {
 #pragma unused(outlineView, index, item)
 
-    // Is this a group item?
-  if (!item) {
 
-    return [self.outlineGroups objectAtIndex:(NSUInteger)index];
+  if (!item) {            // If this is a group item, get the static group item from the model
 
-  } else {
+    if ((NSUInteger)index >= self.projectModel.groupItems.count) {
+      NSLog(@"%s: out of bounds access to group item: index = %ld", __func__, (long)index);
+      return nil;
+    }
+    return self.projectModel.groupItems[(NSUInteger)index];
 
-    if ([item isEqualToString:kPackageGroupID]) {
+  } else {                // All non-group items are accessed via their parent
 
-      return self.projectModel.identifier;
+    NSArray *children = item.children;
+    if ((NSUInteger)index >= children.count) {
+      NSLog(@"%s: out of bounds access to children of '%@': index = %ld", __func__, item.identifier, (long)index);
+      return nil;
+    }
+    return children[(NSUInteger)index];
 
-    } else if ([item isEqualToString:kExecutableGroupID]) {
-
-        return self.projectModel.executableName;
-        
-      } else
-      return @"X";
-    
   }
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(HFMProjectViewModelItem *)item
 {
     //FIXME: currently only the groups are expandable
   if ([outlineView parentForItem:item] == nil) {
@@ -153,7 +143,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   }
 }
 
-- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(HFMProjectViewModelItem *)item
 {
 #pragma unused(outlineView)
 
@@ -161,17 +151,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   if (!self.windowControllers.firstObject)
     return 0;
 
-  if (!item) {
-    return (NSInteger)[self.outlineGroups count];
-  } else {
-    if ([item isEqualToString:kPackageGroupID]) {
-      return 1;
-    } else if ([item isEqualToString:kExecutableGroupID]) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
+  if (!item)
+    return (NSInteger)[self.projectModel.groupItems count];
+  else
+    return (NSInteger)item.children.count;
 }
 
 /* Need to implement this if the user should be able to edit the items of the outline view:

@@ -14,6 +14,7 @@
 //  outline view.
 
 #import <Foundation/Foundation.h>
+#import "HFMProjectViewModelItem.h"
 #import "HFMProjectViewModel.h"
 
 
@@ -22,10 +23,5 @@
 /// Our view model proxy to the Haskell-side Cabal package representation.
 //
 @property (atomic, readonly) HFMProjectViewModel *projectModel;
-
-/// An array listing all available group section names.
-//
-@property (nonatomic, readonly) NSArray *outlineGroups;
-
 
 @end

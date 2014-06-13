@@ -17,7 +17,7 @@
 
 @interface HFMProjectViewModel : NSObject
 
-// Immutable project properties
+// Project properties
 //
 @property (readonly, nonatomic) NSString *identifier;    // Project identifier (i.e., package name & version) — lazy
 @property                       NSString *name;          // Package name
@@ -34,6 +34,12 @@
 // executable section
 @property                       NSString *executableName;
 @property                       NSString *modulePath;
+
+// View model group items (they are owned by the view model and keep all active project view model items alive)
+//
+// The groups are fixed; hence, the 'readonly'. However, the contents of the group items is mutable.
+//
+@property (readonly) NSArray/*<HFMProjectViewModelItem>*/ *groupItems;
 
 
 #pragma mark -
