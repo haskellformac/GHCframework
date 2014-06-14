@@ -135,12 +135,9 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(HFMProjectViewModelItem *)item
 {
-    //FIXME: currently only the groups are expandable
-  if ([outlineView parentForItem:item] == nil) {
-    return YES;
-  } else {
-    return NO;
-  }
+#pragma unused(outlineView)
+  
+  return item.children.count > 0;
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(HFMProjectViewModelItem *)item

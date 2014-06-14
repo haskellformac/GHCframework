@@ -87,6 +87,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
     switch (self.tag) {
       case PVMItemTagGroup:
+
         if ([self.identifier isEqualToString:kPackageGroupID]) {
 
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
@@ -105,6 +106,16 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         } else
           _theChildren = [NSMutableArray array];
+
+        break;
+
+      case PVMItemTagExecutable:
+
+        _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
+                                                        projectViewModelItemWithGroup:PVMItemTagFile
+                                                                           identifier:self.model.modulePath
+                                                                               parent:self
+                                                                                model:self.model]];
 
         break;
 
