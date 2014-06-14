@@ -39,7 +39,7 @@
   if (self) {
 
     [self setFileType:typeName];
-    _projectModel = [HFMProjectViewModel projectViewModel];
+    _projectModel  = [HFMProjectViewModel projectViewModelWithCabalFileName:@"MyProject.cabal"];
 
   }
   return self;
@@ -74,7 +74,8 @@
 
   if (fileContents) {
 
-    _projectModel = [HFMProjectViewModel projectViewModelWithString:fileContents];
+    _projectModel  = [HFMProjectViewModel projectViewModelWithCabalFileName:[self.fileURL lastPathComponent]
+                                                                     string:fileContents];
     if (self.projectModel)
       readSuccess = YES;
 

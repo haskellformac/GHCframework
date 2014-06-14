@@ -41,6 +41,12 @@ extern NSString *const kExtraSourceGroupID;
 //
 @property (nonatomic) NSString *identifier;
 
+/// File name identifying the location of the file object backing the item *relative* to the root document.
+///
+/// This property is computed lazily.
+//
+@property (nonatomic, readonly) NSString *fileName;
+
 
 #pragma mark -
 #pragma mark Initialisation

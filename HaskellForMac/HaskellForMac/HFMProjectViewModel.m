@@ -31,61 +31,56 @@
 #pragma mark -
 #pragma mark Initialisation
 
-+ (instancetype)projectViewModel
++ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName
 {
-  return [[HFMProjectViewModel alloc] init];
+  return [[HFMProjectViewModel alloc] initWithCabalFileName:cabalFileName];
 }
 
-+ (instancetype)projectViewModelWithString:(NSString *)string
++ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string
 {
-  return [[HFMProjectViewModel alloc] initWithString:string];
+  return [[HFMProjectViewModel alloc] initWithCabalFileName:cabalFileName string:string];
 }
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
-
-    _package = [CBLPackage package];
-    [self setupGroups];
-
-  }
-  return self;
+  return [self initWithCabalFileName:@"Untitled.cabal"];
 }
 
-- (instancetype)initWithString:(NSString *)string
+- (instancetype)initWithCabalFileName:(NSString *)cabalFileName
+{
+  return [self initWithCabalFileName:cabalFileName string:nil];
+}
+
+- (instancetype)initWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string
 {
   self = [super init];
   if (self) {
 
-    _package = [CBLPackage packageWithString:string];
-    [self setupGroups];
+    _package       = (string) ? [CBLPackage packageWithString:string] : [CBLPackage package];
+    _cabalFileName = cabalFileName;
+
+      // We initialise the immutable project groups (which forms the root set of the project view model items). Child
+      // items are created on demand.
+    _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                                identifier:kPackageGroupID
+                                                                    parent:nil
+                                                                     model:self],
+                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                                identifier:kDataGroupID
+                                                                    parent:nil
+                                                                     model:self],
+                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                                identifier:kExecutableGroupID
+                                                                    parent:nil
+                                                                     model:self],
+                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                                identifier:kExtraSourceGroupID
+                                                                    parent:nil
+                                                                     model:self],
+                    ];
 
   }
   return self;
-}
-
-- (void)setupGroups
-{
-    // We initialise the immutable project groups (which forms the root set of the project view model items). Child
-    // items are created on demand.
-  _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kPackageGroupID
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kDataGroupID
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kExecutableGroupID
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kExtraSourceGroupID
-                                                                  parent:nil
-                                                                   model:self],
-                  ];
 }
 
 

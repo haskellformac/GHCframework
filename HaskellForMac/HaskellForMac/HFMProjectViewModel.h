@@ -17,6 +17,12 @@
 
 @interface HFMProjectViewModel : NSObject
 
+/// The name of the Cabal file *relative* to the root document.
+///
+/// NB: The basename of the file may be different from the project identifier.
+//
+@property (nonatomic, readonly) NSString *cabalFileName;
+
 // Project properties
 //
 @property (readonly, nonatomic) NSString *identifier;    // Project identifier (i.e., package name & version) — lazy
@@ -47,21 +53,26 @@
 
 /// Create a new, untitled project model.
 //
-+ (instancetype)projectViewModel;
++ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName;
 
 /// Create a project model from a Cabal file string.
 ///
-/// Returns 'nil' in case of a parse error.
+/// @Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
-+ (instancetype)projectViewModelWithString:(NSString *)string;
++ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string;
+
+/// Initialise a new, untitled model.
+///
+// FIXME: we need to report errors with more information.
+- (instancetype)initWithCabalFileName:(NSString *)cabalFileName;
 
 /// Initialise a project model from a Cabal file string.
 ///
 /// @Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
-- (instancetype)initWithString:(NSString *)string;
+- (instancetype)initWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string;
 
 
 #pragma mark -

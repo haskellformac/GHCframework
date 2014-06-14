@@ -43,6 +43,9 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 @implementation HFMProjectViewModelItem
 
+@synthesize fileName = _fileName;
+
+
 #pragma mark Initialisation
 
 + (instancetype)projectViewModelItemWithGroup:(PVMItemTag)tag
@@ -79,6 +82,23 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 - (void)setIdentifier:(NSString *)identifier
 {
   NSLog(@"%s: identifier = %@ : setting of project view model items NOT IMPLEMENTED YET", __func__, identifier);
+}
+
+- (NSString *)fileName
+{
+  if (!_fileName) {
+
+    NSString *parentFileName = self.parent.fileName;
+
+    if (self.tag == PVMItemTagPackage)
+      _fileName = self.model.cabalFileName;
+    else if (self.tag == PVMItemTagFile)
+      _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
+    else
+      _fileName = @"";
+
+  }
+  return _fileName;
 }
 
 - (NSArray/*<HFMProjectModelItem>*/ *)children

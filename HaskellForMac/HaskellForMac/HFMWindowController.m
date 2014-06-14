@@ -146,8 +146,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
-    if (item.tag == PVMItemTagPackage)
-      [self selectEditor:document.fileURL];
+    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile))
+        // FIXME: once we open a folder (and not .cabal file), drop the 'URLByDeletingLastPathComponent'!!!
+      [self selectEditor:[[document.fileURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:item.fileName]];
 
   }
 }
@@ -179,6 +180,8 @@ NSString *const kCabalCellID = @"cabalCellID";
 - (void)selectEditor:(NSURL *)file
 {
   NSString *fileExtension = [file pathExtension];
+
+  if (!file) return;
 
     // Remove the current editor view.
   if (self.editorViewController) {
