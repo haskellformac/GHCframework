@@ -37,6 +37,7 @@
 @property                       NSString     *homepage;
 @property                       NSString     *pkgUrl;
 @property                       NSString     *bugReports;
+@property                       NSDictionary *dataFiles;       // Folders as tree of dictionaries (leafs = empty dicts)
 @property                       NSDictionary *extraSrcFiles;   // Folders as tree of dictionaries (leafs = empty dicts)
 // executable section
 @property                       NSString     *executableName;

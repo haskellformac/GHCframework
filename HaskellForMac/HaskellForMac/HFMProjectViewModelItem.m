@@ -134,6 +134,11 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
             // Extra source group: multiple files in a folder hierarchy
           _theChildren = [self childrenFromDictionary:self.model.extraSrcFiles];
 
+        } else if ([self.identifier isEqualToString:kDataGroupID]) {
+
+            // Data files group: multiple files in a folder hierarchy
+          _theChildren = [self childrenFromDictionary:self.model.dataFiles];
+          
         } else
           _theChildren = [NSMutableArray array];
 
@@ -198,8 +203,9 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   }
 
-  NSDictionary *dict = [current.identifier isEqualToString:kExtraSourceGroupID] ? current.model.extraSrcFiles
-                                                                                : nil;
+  NSDictionary *dict = ([current.identifier isEqualToString:kExtraSourceGroupID]) ? current.model.extraSrcFiles :
+                       ([current.identifier isEqualToString:kDataGroupID])        ? current.model.dataFiles
+                                                                                  : nil;
 
   if (dict)
     for (NSString *identifier in path)

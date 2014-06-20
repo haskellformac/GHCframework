@@ -230,6 +230,17 @@ NSArray      *dictTreeToStrings(NSDictionary *dicts);
   return self.package.bugReports;
 }
 
+- (void)setDataFiles:(NSDictionary *)dataFiles
+{
+  self.package = [CBLPackage package:self.package withDataFiles:dictTreeToStrings(dataFiles)];
+  NSLog(@"Update project data files");
+}
+
+- (NSDictionary *)dataFiles
+{
+  return stringsToDictTree(self.package.dataFiles);
+}
+
 - (void)setExtraSrcFiles:(NSDictionary *)extraSrcFiles
 {
   self.package = [CBLPackage package:self.package withExtraSrcFiles:dictTreeToStrings(extraSrcFiles)];

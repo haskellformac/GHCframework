@@ -12,11 +12,9 @@
 
 module CBLPackage () where
 
-  -- language-c-inline
-import Language.C.Quote.ObjC
-import Language.C.Inline.ObjC
-
   -- standard libraries
+import Data.List
+import Data.Maybe
 import Data.Typeable
 import Data.Version
 import qualified
@@ -27,6 +25,11 @@ import qualified
 import Distribution.PackageDescription.Parse
 import Distribution.Text
 import Text.ParserCombinators.ReadP
+import System.FilePath
+
+  -- language-c-inline
+import Language.C.Quote.ObjC
+import Language.C.Inline.ObjC
 
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
@@ -129,6 +132,28 @@ setCondExecutable gpd upd
       []         -> gpd {PD.condExecutables = [upd ("", PD.CondNode PD.emptyExecutable [] [])]}
       (exe:exes) -> gpd {PD.condExecutables = upd exe : exes}
 
+-- Get the list of data files with the common data directory 'dataDir' prepended.
+--
+getDataFiles :: PD.GenericPackageDescription -> [String]
+getDataFiles gpd
+  = map (PD.dataDir pd </>) (PD.dataFiles pd)
+  where
+    pd = PD.packageDescription gpd
+
+-- Set the list of data files stripping a common directory prefix of into 'dataDir'.
+--
+setDataFiles :: PD.GenericPackageDescription -> [String] -> PD.GenericPackageDescription
+setDataFiles gpd dataFiles
+  = gpd {PD.packageDescription = pd { PD.dataFiles = strippedDataFiles
+                                    , PD.dataDir   = dataDir}}
+  where
+    pd                = PD.packageDescription gpd
+    dataDir           = commonPrefix dataFiles
+    strippedDataFiles = map (fromJust . stripPrefix dataDir) dataFiles
+    
+    -- FIXME: determine common directory prefix of the data files (if it is less than two files, the prefix is empty)
+    commonPrefix _ = ""
+
 -- Generate a proxy class that exposes all Cabal package information that the view model needs to represent.
 --
 objc_record "CBL" "Package" ''PD.GenericPackageDescription
@@ -202,6 +227,10 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| PD.bugReports . PD.packageDescription |],
            [| \gpd bugReports -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.bugReports = bugReports}} |])
+  , [objcprop| @property (readonly) typename NSArray *dataFiles; |]
+      ==> ([t| [String] |],
+           [| getDataFiles |],
+           [| setDataFiles |])
   , [objcprop| @property (readonly) typename NSArray *extraSrcFiles; |]
       ==> ([t| [String] |],
            [| PD.extraSrcFiles . PD.packageDescription |],
