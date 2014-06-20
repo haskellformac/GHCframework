@@ -29,7 +29,7 @@
                     <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View">
                         <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                         <subviews>
-                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
+                            <scrollView autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
                                 <rect key="frame" x="0.0" y="0.0" width="150" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" id="oc1-de-xrA">
@@ -101,6 +101,9 @@
                                     </subviews>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </clipView>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Kxb-hE-J9g"/>
+                                </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
                                     <rect key="frame" x="1" y="490" width="18.5" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -110,16 +113,16 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <splitView fixedFrame="YES" dividerStyle="thin" id="7gu-en-3wm" userLabel="Horizontal Split View">
+                            <splitView dividerStyle="thin" id="7gu-en-3wm" userLabel="Horizontal Split View">
                                 <rect key="frame" x="151" y="0.0" width="476" height="507"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <customView id="hVH-bJ-KGO" userLabel="Editor View">
-                                        <rect key="frame" x="0.0" y="0.0" width="476" height="399.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="476" height="400"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <subviews>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-C3-ErB">
-                                                <rect key="frame" x="177" y="183.5" width="122" height="30"/>
+                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-C3-ErB">
+                                                <rect key="frame" x="177" y="185" width="122" height="30"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="No Editor" id="ZV6-Ek-WYQ">
                                                     <font key="font" metaFont="system" size="25"/>
                                                     <color key="textColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -128,30 +131,34 @@
                                             </textField>
                                         </subviews>
                                         <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="5Fr-g8-h3O"/>
                                             <constraint firstAttribute="centerX" secondItem="sSz-C3-ErB" secondAttribute="centerX" id="NBG-Kf-BMh"/>
                                             <constraint firstAttribute="centerY" secondItem="sSz-C3-ErB" secondAttribute="centerY" id="hAI-WE-BGh"/>
                                         </constraints>
                                     </customView>
-                                    <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="Obu-SR-1gp" userLabel="Bordered Scroll View - REPL">
-                                        <rect key="frame" x="0.0" y="400.5" width="476" height="106.5"/>
+                                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="Obu-SR-1gp" userLabel="Bordered Scroll View - REPL">
+                                        <rect key="frame" x="0.0" y="401" width="476" height="106"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <clipView key="contentView" id="zIK-7c-ku9">
                                             <rect key="frame" x="1" y="1" width="223" height="133"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <textView importsGraphics="NO" horizontallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="BEt-gL-dGo">
-                                                    <rect key="frame" x="0.0" y="0.0" width="223" height="133"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="474" height="104"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <size key="minSize" width="0.0" height="104.5"/>
+                                                    <size key="minSize" width="474" height="104"/>
                                                     <size key="maxSize" width="10000000" height="10000000"/>
                                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <size key="minSize" width="0.0" height="104.5"/>
+                                                    <size key="minSize" width="474" height="104"/>
                                                     <size key="maxSize" width="10000000" height="10000000"/>
                                                 </textView>
                                             </subviews>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="FPX-jm-gkT"/>
+                                        </constraints>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="2T9-Qs-R8E">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
@@ -162,6 +169,9 @@
                                         </scroller>
                                     </scrollView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="SLM-kH-WZQ"/>
+                                </constraints>
                                 <holdingPriorities>
                                     <real value="250"/>
                                     <real value="250"/>

@@ -157,21 +157,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark NSSplitViewDelegate protocol methods
 
-- (CGFloat)splitView:(NSSplitView *)sv constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)di
-{
-#pragma unused(di)
-
-  if (sv == self.verticalSplitView)
-    return proposedMin < 150 ? 150 : proposedMin;
-  else if (sv == self.horizontalSplitView)
-    return proposedMin < 150 ? 150 : proposedMin;
-  else {
-
-    NSLog(@"%s: unexpected split view: %@", __func__, [sv description]);
-    return proposedMin;
-
-  }
-}
+/* DON'T constraint the size of component views with the delegate methods, as it doesn't work properly with
+ * AutoLayout.
+ */
 
 
 #pragma mark -
