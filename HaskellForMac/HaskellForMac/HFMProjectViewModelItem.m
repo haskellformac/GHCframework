@@ -54,7 +54,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
                                         model:(HFMProjectViewModel *)model
 
 {
-  return [[HFMProjectViewModelItem alloc] initWithGroup:tag identifier:identifier parent:parent model:model];
+  return [[HFMProjectViewModelItem alloc] initWithGroup:tag
+                                             identifier:identifier
+                                                 parent:parent
+                                                  model:model];
 }
 
 - (instancetype)initWithGroup:(PVMItemTag)tag
@@ -92,7 +95,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
     if (self.tag == PVMItemTagPackage)
       _fileName = self.model.cabalFileName;
-    else if (self.tag == PVMItemTagFile)
+    else if (self.tag == PVMItemTagFile || self.tag == PVMItemTagFolder)
       _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
     else
       _fileName = @"";
@@ -110,6 +113,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         if ([self.identifier isEqualToString:kPackageGroupID]) {
 
+            // Package group: 1 child: package header
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                           projectViewModelItemWithGroup:PVMItemTagPackage
                                                                              identifier:self.model.identifier
@@ -118,11 +122,17 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         } else if ([self.identifier isEqualToString:kExecutableGroupID]) {
 
+            // Executable group: 1 child: executable section
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                           projectViewModelItemWithGroup:PVMItemTagExecutable
                                                                              identifier:self.model.executableName
                                                                                  parent:self
                                                                                   model:self.model]];
+
+        } else if ([self.identifier isEqualToString:kExtraSourceGroupID]) {
+
+            // Extra source group: multiple files in a folder hierarchy
+          _theChildren = [self childrenFromDictionary:self.model.extraSrcFiles];
 
         } else
           _theChildren = [NSMutableArray array];
@@ -139,6 +149,14 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         break;
 
+      case PVMItemTagFolder:
+        _theChildren = [self childrenFromDictionary:[self lookupDictionary]];
+        break;
+
+      case PVMItemTagFile:
+        _theChildren = [NSMutableArray array];
+        break;
+
       default:
         _theChildren = [NSMutableArray array];
         break;
@@ -148,5 +166,52 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return _theChildren;
 }
 
+
+#pragma mark -
+#pragma mark Hierarchy
+
+- (NSMutableArray *)childrenFromDictionary:(NSDictionary *)dict
+{
+  NSMutableArray *children = [NSMutableArray array];
+
+  for (NSString *string in dict) {
+
+    enum PVMItemTag tag = ((NSDictionary *)dict[string]).count == 0 ? PVMItemTagFile : PVMItemTagFolder;
+    [children addObject:[HFMProjectViewModelItem projectViewModelItemWithGroup:tag
+                                                                    identifier:string
+                                                                        parent:self
+                                                                         model:self.model]];
+
+  }
+  return children;
+}
+
+- (NSDictionary *)lookupDictionary
+{
+  NSMutableArray          *path    = [NSMutableArray array];
+  HFMProjectViewModelItem *current = self;
+
+  while (current.tag == PVMItemTagFolder || current.tag == PVMItemTagFile) {
+
+    [path insertObject:current.identifier atIndex:0];
+    current = current.parent;
+
+  }
+
+  NSDictionary *dict = [current.identifier isEqualToString:kExtraSourceGroupID] ? current.model.extraSrcFiles
+                                                                                : nil;
+
+  if (dict)
+    for (NSString *identifier in path)
+      dict = dict[identifier];
+
+  if (!dict) {
+
+    NSLog(@"%s: couldn't find root", __func__);
+    return [NSDictionary dictionary];
+
+  } else
+    return dict;
+}
 
 @end

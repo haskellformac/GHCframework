@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable #-}
 
 -- |
 -- Module      : CBLPackage
@@ -17,6 +17,7 @@ import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
   -- standard libraries
+import Data.Typeable
 import Data.Version
 import qualified
        Distribution.Package            as P
@@ -27,9 +28,47 @@ import Distribution.PackageDescription.Parse
 import Distribution.Text
 import Text.ParserCombinators.ReadP
 
-import Debug.Trace
-
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
+
+
+-- Marshalling support
+-- -------------------
+-- FIXME: this should go into a general library
+
+newtype NSString = NSString (ForeignPtr NSString)
+  deriving Typeable   -- needed for now until migrating to new TH
+
+newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
+  deriving Typeable   -- needed for now until migrating to new TH
+newtype NSArray        e = NSArray        (ForeignPtr (NSArray        e))
+  deriving Typeable   -- needed for now until migrating to new TH
+
+unsafeFreezeNSMutableArray :: NSMutableArray e -> NSArray e
+unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
+
+objc_typecheck
+
+listOfStringToNSArray :: [String] -> IO (NSArray NSString)
+listOfStringToNSArray strs
+  = do
+    { marr <- $(objc [] $ Class [t|NSMutableArray NSString|] <: [cexp| [NSMutableArray arrayWithCapacity:50] |])
+    ; mapM_ (addElement marr) strs
+    ; return $ unsafeFreezeNSMutableArray marr
+    }
+  where
+    addElement marr str
+      = $(objc ['marr :> Class [t|NSMutableArray NSString|], 'str :> ''String] $ void [cexp| [marr addObject:str] |])
+
+nsArrayTolistOfString :: NSArray NSString -> IO [String]
+nsArrayTolistOfString arr
+  = do
+    { n <- $(objc ['arr :> Class [t|NSArray NSString|]] $ ''Int <: [cexp| (int)arr.count |])
+    ; sequence [ $(objc ['arr :> Class [t|NSArray NSString|], 'i :> ''Int] $ 
+                     ''String <: [cexp| arr[(typename NSUInteger)i] |]) 
+               | i <- [0..n-1]]
+    }
+
+objc_marshaller 'listOfStringToNSArray 'nsArrayTolistOfString
 
 
 -- Haskell helpers
@@ -96,7 +135,7 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
   [Typed 'emptyGenericPackageDescription, Typed 'parsePackageDescription, 
    'parseOk :> [t|ParseResult PD.GenericPackageDescription -> Maybe PD.GenericPackageDescription|], 
    Typed 'nameAndVersionOfGenericPackage, Typed 'showPackageDescription, Typed 'showPackageIdentifier,
-   Typed 'cabalVersion, Typed 'buildType]
+   Typed 'cabalVersion, Typed 'buildType {-, Typed 'projExtraSrcFiles, Typed 'updExtraSrcFiles-}]
   
       -- Cabal package specification fields
   [ [objcprop| @property (readonly) typename NSString *name; |]    
@@ -163,6 +202,11 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| PD.bugReports . PD.packageDescription |],
            [| \gpd bugReports -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.bugReports = bugReports}} |])
+  , [objcprop| @property (readonly) typename NSArray *extraSrcFiles; |]
+      ==> ([t| [String] |],
+           [| PD.extraSrcFiles . PD.packageDescription |],
+           [| \gpd extraSrcFiles -> gpd {PD.packageDescription 
+                                           = (PD.packageDescription gpd) {PD.extraSrcFiles = extraSrcFiles}} |])
   -- executable section (FIXME: for the moment, we assume, there is exactly one)
   , [objcprop| @property (readonly) typename NSString *executableName; |]
       ==> ([t| String |],
@@ -191,21 +235,7 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
     //
     // FIXME: we need to report errors with more information.
     + (instancetype)packageWithString:(typename NSString *)string;
-    
-    /// Create a new package by updating the name of the existing package.
-    ///
-    /// The name is *not* validated for well-formedness.
-    //
-// generated
-//    + (instancetype)package:(typename CBLPackage *)package withName:(typename NSString *)name;
-    
-    /// Create a new package by updating the version of the existing package.
-    ///
-    /// The version string is *not* validated for well-formedness.
-    //
-// generated
-//    + (instancetype)package:(typename CBLPackage *)package withVersion:(typename NSString *)version;
-    
+        
     /// Initialises a package object by parsing the given Cabal file string.
     ///
     /// Returns 'nil' in case of a parse error.
@@ -260,7 +290,7 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
     {
       return showPackageIdentifier(self.genericPackageDescriptionHsPtr);
     }
-    
+
     - (typename NSString *)string
     {
       return showPackageDescription(self.genericPackageDescriptionHsPtr);

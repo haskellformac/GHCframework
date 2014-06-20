@@ -23,6 +23,11 @@
 @end
 
 
+// Function prototypes
+NSDictionary *stringsToDictTree(NSArray      *strings);
+NSArray      *dictTreeToStrings(NSDictionary *dicts);
+
+
 @implementation HFMProjectViewModel
 
 @synthesize identifier = _identifier;
@@ -225,6 +230,17 @@
   return self.package.bugReports;
 }
 
+- (void)setExtraSrcFiles:(NSDictionary *)extraSrcFiles
+{
+  self.package = [CBLPackage package:self.package withExtraSrcFiles:dictTreeToStrings(extraSrcFiles)];
+  NSLog(@"Update project extra source files");
+}
+
+- (NSDictionary *)extraSrcFiles
+{
+  return stringsToDictTree(self.package.extraSrcFiles);
+}
+
 // executable section
 
 - (void)setExecutableName:(NSString *)executableName
@@ -250,7 +266,6 @@
 }
 
 
-
 #pragma mark -
 #pragma mark Project serialisation
 
@@ -260,5 +275,44 @@
   return [self.package string];
 }
 
+#pragma mark -
+#pragma mark Data conversions
+
+NSDictionary *stringsToDictTree(NSArray *strings)
+{
+  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+  for (NSString *fname in strings) {
+
+    NSArray             *components = [fname pathComponents];
+    NSMutableDictionary *cursor     = dict;
+    for (NSString *component in components) {
+
+      if (!cursor[component])             // component not yet in the tree
+        cursor[component] = [NSMutableDictionary dictionary];
+
+      cursor = cursor[component];
+
+    }
+  }
+  return [NSDictionary dictionaryWithDictionary:dict];    // freeze
+}
+
+NSArray *dictTreeToStrings(NSDictionary *dicts)
+{
+  NSMutableArray *strings = [NSMutableArray array];
+
+  for (NSString *component in dicts) {
+
+    NSArray *substrings = dictTreeToStrings(dicts[component]);
+    if ([substrings count] == 0)
+      [strings addObject:component];
+    else
+      for (NSString *substring in substrings)
+        [strings addObject:[component stringByAppendingPathComponent:substring]];
+
+  }
+  return [NSArray arrayWithArray:strings];    // freeze
+}
 
 @end

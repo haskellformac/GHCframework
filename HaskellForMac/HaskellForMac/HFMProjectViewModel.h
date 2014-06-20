@@ -25,21 +25,22 @@
 
 // Project properties
 //
-@property (readonly, nonatomic) NSString *identifier;    // Project identifier (i.e., package name & version) — lazy
-@property                       NSString *name;          // Package name
-@property                       NSString *version;       // Package version; format as def by 'Data.Version.showVersion'
-@property                       NSString *category;
-@property                       NSString *synopsis;
-@property                       NSString *fullDescription;
-@property                       NSString *author;
-@property                       NSString *maintainer;
-@property                       NSString *copyright;
-@property                       NSString *homepage;
-@property                       NSString *pkgUrl;
-@property                       NSString *bugReports;
+@property (readonly, nonatomic) NSString     *identifier;    // Project identifier (i.e., package name & version) — lazy
+@property                       NSString     *name;          // Package name
+@property                       NSString     *version;       // Package version; format as def by 'Data.Version.showVersion'
+@property                       NSString     *category;
+@property                       NSString     *synopsis;
+@property                       NSString     *fullDescription;
+@property                       NSString     *author;
+@property                       NSString     *maintainer;
+@property                       NSString     *copyright;
+@property                       NSString     *homepage;
+@property                       NSString     *pkgUrl;
+@property                       NSString     *bugReports;
+@property                       NSDictionary *extraSrcFiles;   // Folders as tree of dictionaries (leafs = empty dicts)
 // executable section
-@property                       NSString *executableName;
-@property                       NSString *modulePath;
+@property                       NSString     *executableName;
+@property                       NSString     *modulePath;
 
 // View model group items (they are owned by the view model and keep all active project view model items alive)
 //
