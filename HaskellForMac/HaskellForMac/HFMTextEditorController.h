@@ -12,4 +12,10 @@
 
 @interface HFMTextEditorController : NSViewController
 
+// Initialise the view controller by loading its NIB file and also set the associated file URL.
+//
+- (instancetype)initWithNibName:(NSString *)nibName
+                         bundle:(NSBundle *)nibBundle
+                        fileURL:(NSURL *)url;
+
 @end

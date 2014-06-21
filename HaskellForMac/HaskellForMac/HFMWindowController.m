@@ -67,7 +67,9 @@ NSString *const kCabalCellID = @"cabalCellID";
     NSLog(@"WindowController: session start");
 
     _editors = @{@"cabal": kPackageHeaderEditor,
-                 @"hs":    kTextEditor};
+                 @"hs":    kTextEditor,
+                 @"txt":   kTextEditor,
+                 @"md":    kTextEditor};
 
   }
   return self;
@@ -192,10 +194,10 @@ NSString *const kCabalCellID = @"cabalCellID";
       [[HFMHeaderEditorController alloc] initWithNibName:nibName
                                                   bundle:nil
                                         projectViewModel:project.projectModel
-                                              projectURL:((HFMProject *) self.document).fileURL];
+                                              projectURL:project.fileURL];
 
   } else if ([nibName isEqual:kTextEditor])
-    self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName bundle:nil];
+    self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName bundle:nil fileURL:file];
   if (!self.editorView) {
 
     NSLog(@"%s: cannot load editor nib %@", __func__, nibName);

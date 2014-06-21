@@ -5,6 +5,7 @@
 //  Created by Manuel M T Chakravarty on 31/03/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
+//  The view is connected to the view model via bindings.
 
 #import "HFMHeaderEditorController.h"
 #import "HFMProjectViewModel.h"
@@ -15,8 +16,6 @@
 // Content views of the header editor
 //
 @property (weak) IBOutlet NSPathControl *pathControl;
-@property (weak) IBOutlet NSTextField   *nameView;
-@property (weak) IBOutlet NSTextField   *versionView;
 
 // Object controller of the header editor
 //
@@ -66,18 +65,5 @@
   self.pathControl.URL = url;
 }
 
-
-#pragma mark -
-#pragma mark Action methods
-
-/* Using bindings instead
-
-// This is the action method for all text fields in the header editor.
-//
-- (IBAction)textFieldDidEndEditing:(NSTextField *)sender
-{
-  NSLog(@"editing result: %@, %d", sender.stringValue, sender == self.nameView);
-}
-*/
 
 @end
