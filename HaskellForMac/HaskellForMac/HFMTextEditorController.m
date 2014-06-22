@@ -39,11 +39,24 @@
 
 - (void)awakeFromNib
 {
+  NSError *error;
+
     // Initialize the path control
-  self.pathControl.URL      = self.fileURLDuringInit;
+  self.pathControl.URL   = self.fileURLDuringInit;
   self.fileURLDuringInit = nil;
+
+    // FIXME: quick and dirty setting of the contents — implement properly handle file data through the model layer
+  NSString *contents = [NSString stringWithContentsOfURL:self.pathControl.URL encoding:NSUTF8StringEncoding error:&error];
+  if (!contents)
+    NSLog(@"%s: error loading file %@: %@", __func__, self.pathControl.URL, error);
+  else {
+
+    NSFont             *menlo13      = [NSFont fontWithName:@"Menlo-Regular" size:13];
+    NSAttributedString *attrContents = [[NSAttributedString alloc] initWithString:contents
+                                                                       attributes:@{ NSFontAttributeName : menlo13 }];
+    [self.textView.textStorage appendAttributedString:attrContents];
+
+  }
 }
-
-
 
 @end
