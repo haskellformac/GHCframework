@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable, RecordWildCards #-}
 
 -- |
 -- Module      : CBLPackage
@@ -22,14 +22,20 @@ import qualified
 import Distribution.License            as PD
 import qualified 
        Distribution.PackageDescription as PD
-import Distribution.PackageDescription.Parse
+import qualified
+       Distribution.PackageDescription.Parse as PD 
+import Distribution.PackageDescription.Parse hiding (showPackageDescription)
+import Distribution.ParseUtils (ppFields) 
 import Distribution.Text
 import Text.ParserCombinators.ReadP
+import Text.PrettyPrint                as PP
 import System.FilePath
 
   -- language-c-inline
 import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
+
+import Debug.Trace
 
 objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
 
@@ -82,6 +88,27 @@ objc_marshaller 'listOfStringToNSArray 'nsArrayTolistOfString
 parseOk :: ParseResult a -> Maybe a
 parseOk (ParseFailed {}) = Nothing
 parseOk (ParseOk _ v)    = Just v
+
+-- Cabal currently (1.20) doesn't have a function to pretty-print a generic package description. It only handles non-generic
+-- ones.
+--
+-- FIXME: The pretty printed is only partial.
+showPackageDescription :: PD.GenericPackageDescription -> String
+showPackageDescription gpd
+  = PD.showPackageDescription pd ++ showCondExecutables (PD.condExecutables gpd)
+  where
+    pd = PD.packageDescription gpd
+    --
+    showCondExecutables []             = ""
+    showCondExecutables ((name, cd):_)                -- we currently ignore every one except the first
+      = "\nExecutable " ++ name ++ "\n" ++ indent 2 (PP.render (showCondTree showExecutable cd))
+      where
+        indent n = unlines . map (replicate n ' ' ++) . lines   -- FIXME: inefficient; must be done in Doc
+    --
+    showCondTree showData (PD.CondNode {..}) = showData condTreeData  -- FIXME: ignoring two fields
+    --
+    showExecutable = ppFields executableFieldDescrs
+    -- showExecutable (Executable {..}) = "  main-is:\t" ++ modulePath  -- FIXME: ignoring two fields
 
 -- Extract the name and version string of a package.
 --
@@ -160,7 +187,7 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
   [Typed 'emptyGenericPackageDescription, Typed 'parsePackageDescription, 
    'parseOk :> [t|ParseResult PD.GenericPackageDescription -> Maybe PD.GenericPackageDescription|], 
    Typed 'nameAndVersionOfGenericPackage, Typed 'showPackageDescription, Typed 'showPackageIdentifier,
-   Typed 'cabalVersion, Typed 'buildType {-, Typed 'projExtraSrcFiles, Typed 'updExtraSrcFiles-}]
+   Typed 'cabalVersion, Typed 'buildType]
   
       -- Cabal package specification fields
   [ [objcprop| @property (readonly) typename NSString *name; |]    
