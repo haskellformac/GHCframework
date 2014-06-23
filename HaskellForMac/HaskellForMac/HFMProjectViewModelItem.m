@@ -216,7 +216,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
             // Data files group: multiple files in a folder hierarchy
           _theChildren = [self childrenFromDictionary:self.model.dataFiles];
 
-        } else if (self.parent.tag == PVMItemTagGroup && [self.parent.identifier isEqualToString:kDataGroupID]) {
+        } else if (self.parent.tag == PVMItemTagExecutable) {
             // We are currently in the file group representing the 'source-dir:' field
 
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
