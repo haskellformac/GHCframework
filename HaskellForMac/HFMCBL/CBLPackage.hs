@@ -159,28 +159,6 @@ setCondExecutable gpd upd
       []         -> gpd {PD.condExecutables = [upd ("", PD.CondNode PD.emptyExecutable [] [])]}
       (exe:exes) -> gpd {PD.condExecutables = upd exe : exes}
 
--- Get the list of data files with the common data directory 'dataDir' prepended.
---
-getDataFiles :: PD.GenericPackageDescription -> [String]
-getDataFiles gpd
-  = map (PD.dataDir pd </>) (PD.dataFiles pd)
-  where
-    pd = PD.packageDescription gpd
-
--- Set the list of data files stripping a common directory prefix of into 'dataDir'.
---
-setDataFiles :: PD.GenericPackageDescription -> [String] -> PD.GenericPackageDescription
-setDataFiles gpd dataFiles
-  = gpd {PD.packageDescription = pd { PD.dataFiles = strippedDataFiles
-                                    , PD.dataDir   = dataDir}}
-  where
-    pd                = PD.packageDescription gpd
-    dataDir           = commonPrefix dataFiles
-    strippedDataFiles = map (fromJust . stripPrefix dataDir) dataFiles
-    
-    -- FIXME: determine common directory prefix of the data files (if it is less than two files, the prefix is empty)
-    commonPrefix _ = ""
-
 -- Generate a proxy class that exposes all Cabal package information that the view model needs to represent.
 --
 objc_record "CBL" "Package" ''PD.GenericPackageDescription
@@ -254,10 +232,17 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| PD.bugReports . PD.packageDescription |],
            [| \gpd bugReports -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.bugReports = bugReports}} |])
+  , [objcprop| @property (readonly) typename NSString *dataDir; |]
+      ==> ([t| Maybe String |],
+           [| \gpd -> let dir = PD.dataDir . PD.packageDescription $ gpd
+                      in
+                      if null dir then Nothing else Just dir |],
+           [| \gpd maybeDataDir -> gpd {PD.packageDescription 
+                                          = (PD.packageDescription gpd) {PD.dataDir = maybe "" id maybeDataDir}} |])
   , [objcprop| @property (readonly) typename NSArray *dataFiles; |]
       ==> ([t| [String] |],
-           [| getDataFiles |],
-           [| setDataFiles |])
+           [| PD.dataFiles . PD.packageDescription |],
+           [| \gpd dataFiles -> gpd {PD.packageDescription = (PD.packageDescription gpd) {PD.dataFiles = dataFiles}} |])
   , [objcprop| @property (readonly) typename NSArray *extraSrcFiles; |]
       ==> ([t| [String] |],
            [| PD.extraSrcFiles . PD.packageDescription |],
@@ -268,6 +253,23 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
       ==> ([t| String |],
            [| getCondExecutable "" fst |],
            [| \gpd executableName -> setCondExecutable gpd (\(_, cd) -> (executableName, cd)) |])
+  , [objcprop| @property (readonly) typename NSString *sourceDir; |]
+      ==> ([t| Maybe String |],
+           [| \gpd -> let dirs = getCondExecutable [] (PD.hsSourceDirs . PD.buildInfo . PD.condTreeData . snd) gpd
+                      in 
+                      if null dirs then Nothing else Just $ head dirs |],
+           [| (\gpd maybeSourceDir -> 
+                setCondExecutable gpd 
+                  (\(name, cd) -> 
+                    let treeData   = PD.condTreeData cd
+                        sourceDirs = case (maybeSourceDir, PD.hsSourceDirs . PD.buildInfo $ treeData) of
+                                       (Nothing,  [])     -> []
+                                       (Nothing,  _:dirs) -> dirs
+                                       (Just dir, [])     -> [dir]
+                                       (Just dir, _:dirs) -> dir:dirs
+                    in (name, cd {PD.condTreeData 
+                                    = treeData {PD.buildInfo = (PD.buildInfo treeData) {PD.hsSourceDirs = sourceDirs}}})))
+              :: PD.GenericPackageDescription -> Maybe String -> PD.GenericPackageDescription |])
   , [objcprop| @property (readonly) typename NSString *modulePath; |]
       ==> ([t| String |],
            [| getCondExecutable "" (PD.modulePath . PD.condTreeData . snd) |],

@@ -230,6 +230,17 @@ NSArray      *dictTreeToStrings(NSDictionary *dicts);
   return self.package.bugReports;
 }
 
+- (void)setDataDir:(NSString *)dataDir
+{
+  self.package = [CBLPackage package:self.package withDataDir:dataDir];
+  NSLog(@"Update project data directory");
+}
+
+- (NSString *)dataDir
+{
+  return self.package.dataDir;
+}
+
 - (void)setDataFiles:(NSDictionary *)dataFiles
 {
   self.package = [CBLPackage package:self.package withDataFiles:dictTreeToStrings(dataFiles)];
@@ -263,6 +274,17 @@ NSArray      *dictTreeToStrings(NSDictionary *dicts);
 - (NSString *)executableName
 {
   return self.package.executableName;
+}
+
+- (void)setSourceDir:(NSString *)sourceDir
+{
+  self.package = [CBLPackage package:self.package withSourceDir:sourceDir];
+  NSLog(@"Update project executable source directory");
+}
+
+- (NSString *)sourceDir
+{
+  return self.package.sourceDir;
 }
 
 - (void)setModulePath:(NSString *)modulePath
