@@ -37,10 +37,12 @@
 @property                       NSString     *homepage;
 @property                       NSString     *pkgUrl;
 @property                       NSString     *bugReports;
+@property                       NSString     *dataDir;         // optional (maybe 'nil')
 @property                       NSDictionary *dataFiles;       // Folders as tree of dictionaries (leafs = empty dicts)
 @property                       NSDictionary *extraSrcFiles;   // Folders as tree of dictionaries (leafs = empty dicts)
 // executable section
 @property                       NSString     *executableName;
+@property                       NSString     *sourceDir;       // optional (maybe 'nil')  FIXME: Issue #82: generalise to array of dirs
 @property                       NSString     *modulePath;
 
 // View model group items (they are owned by the view model and keep all active project view model items alive)

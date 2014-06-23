@@ -16,11 +16,12 @@
 /// Tag determining which of several flavours of project view model items we have.
 //
 typedef NS_ENUM(NSUInteger, PVMItemTag) {
-  PVMItemTagGroup,
-  PVMItemTagPackage,
-  PVMItemTagExecutable,
-  PVMItemTagFolder,
-  PVMItemTagFile,
+  PVMItemTagGroup,            // Toplevel group in the outline view
+  PVMItemTagPackage,          // Identifies the Cabal packages itself
+  PVMItemTagExecutable,       // Executable secion of the Cabal package
+  PVMItemTagFileGroup,        // Logical collection of files (wildcard name or source directory or data directory)
+  PVMItemTagFolder,           // File system directory
+  PVMItemTagFile,             // Concrete file that is part of the package
 };
 
 /// Outline view group ids

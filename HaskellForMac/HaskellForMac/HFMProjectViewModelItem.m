@@ -93,12 +93,36 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
     NSString *parentFileName = self.parent.fileName;
 
-    if (self.tag == PVMItemTagPackage)
-      _fileName = self.model.cabalFileName;
-    else if (self.tag == PVMItemTagFile || self.tag == PVMItemTagFolder)
-      _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
-    else
-      _fileName = @"";
+    switch (self.tag) {
+      case PVMItemTagPackage:
+        _fileName = self.model.cabalFileName;
+        break;
+
+      case PVMItemTagFileGroup: {
+
+          // File groups that include wildcards are always filenames (not just directory names) and must drop the
+          // filename wildcard component in their own filename.
+        NSCharacterSet *wildcardChars = [NSCharacterSet characterSetWithCharactersInString:@"*"];
+        NSString *lastComponent = [self.identifier lastPathComponent];
+        NSRange  wildcardRange  = [lastComponent rangeOfCharacterFromSet:wildcardChars];
+
+        if (wildcardRange.location == NSNotFound)
+          _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
+        else
+          _fileName = [parentFileName stringByAppendingPathComponent:[self.identifier stringByDeletingLastPathComponent]];
+        break;
+
+      }
+
+      case PVMItemTagFile:
+      case PVMItemTagFolder:
+        _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
+        break;
+
+      default:
+        _fileName = @"";
+        break;
+    }
 
   }
   return _fileName;
@@ -136,9 +160,24 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         } else if ([self.identifier isEqualToString:kDataGroupID]) {
 
-            // Data files group: multiple files in a folder hierarchy
-          _theChildren = [self childrenFromDictionary:self.model.dataFiles];
-          
+            // Depending on whether 'data-dir:' is defined, we either...
+          if (self.model.dataDir) {   // ...start with a file group or...
+
+              // File group: 1 child: 'data-dir:'
+            _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
+                                                            projectViewModelItemWithGroup:PVMItemTagFileGroup
+                                                            identifier:self.model.dataDir
+                                                            parent:self
+                                                            model:self.model]];
+
+
+          } else {                    // ...directly descent into the hierarchy of the data files.
+
+              // Data files group: multiple files in a folder hierarchy
+            _theChildren = [self childrenFromDictionary:self.model.dataFiles];
+
+          }
+
         } else
           _theChildren = [NSMutableArray array];
 
@@ -146,12 +185,52 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
       case PVMItemTagExecutable:
 
-        _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
-                                                        projectViewModelItemWithGroup:PVMItemTagFile
-                                                                           identifier:self.model.modulePath
-                                                                               parent:self
-                                                                                model:self.model]];
+          // Depending on whether 'source-dir:' is defined, we either...
+        if (self.model.sourceDir) {   // ...start with a file group or...
 
+            // File group: 1 child: 'source-dir:'
+          _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
+                                                          projectViewModelItemWithGroup:PVMItemTagFileGroup
+                                                                             identifier:self.model.sourceDir
+                                                                                 parent:self
+                                                                                  model:self.model]];
+
+
+        } else {                    // ...directly display the main module.
+
+          _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
+                                                          projectViewModelItemWithGroup:PVMItemTagFile
+                                                                             identifier:self.model.modulePath
+                                                                                 parent:self
+                                                                                  model:self.model]];
+
+        }
+
+        break;
+
+      case PVMItemTagFileGroup:
+
+        if (self.parent.tag == PVMItemTagGroup && [self.parent.identifier isEqualToString:kDataGroupID]) {
+            // We are currently in the file group representing the 'data-dir:' field
+
+            // Data files group: multiple files in a folder hierarchy
+          _theChildren = [self childrenFromDictionary:self.model.dataFiles];
+
+        } else if (self.parent.tag == PVMItemTagGroup && [self.parent.identifier isEqualToString:kDataGroupID]) {
+            // We are currently in the file group representing the 'source-dir:' field
+
+          _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
+                                                          projectViewModelItemWithGroup:PVMItemTagFile
+                                                                             identifier:self.model.modulePath
+                                                                                 parent:self
+                                                                                  model:self.model]];
+
+        } else {
+
+          NSLog(@"%s: we are in a 'PVMItemTagFileGroup', but with an unrecognised parent item", __func__);
+          _theChildren = [NSMutableArray array];
+
+        }
         break;
 
       case PVMItemTagFolder:
@@ -203,9 +282,11 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   }
 
-  NSDictionary *dict = ([current.identifier isEqualToString:kExtraSourceGroupID]) ? current.model.extraSrcFiles :
-                       ([current.identifier isEqualToString:kDataGroupID])        ? current.model.dataFiles
-                                                                                  : nil;
+  NSDictionary *dict = ([current.identifier isEqualToString:kDataGroupID]
+                        || (self.parent.tag == PVMItemTagGroup
+                            && [self.parent.identifier isEqualToString:kDataGroupID])) ? current.model.dataFiles :
+                       ([current.identifier isEqualToString:kExtraSourceGroupID])      ? current.model.extraSrcFiles
+                                                                                       : nil;
 
   if (dict)
     for (NSString *identifier in path)
