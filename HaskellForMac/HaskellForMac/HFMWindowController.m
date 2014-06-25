@@ -149,8 +149,7 @@ NSString *const kCabalCellID = @"cabalCellID";
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
     if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile))
-        // FIXME: once we open a folder (and not .cabal file), drop the 'URLByDeletingLastPathComponent'!!!
-      [self selectEditor:[[document.fileURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:item.fileName]];
+      [self selectEditor:[document.fileURL URLByAppendingPathComponent:item.fileName]];
 
   }
 }

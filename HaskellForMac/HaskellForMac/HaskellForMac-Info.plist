@@ -9,14 +9,12 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>cabal</string>
+				<string>hsproj</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Haskell Cabal Package</string>
+			<string>Haskell Project</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<integer>0</integer>
 			<key>NSDocumentClass</key>
 			<string>HFMProject</string>
 		</dict>
