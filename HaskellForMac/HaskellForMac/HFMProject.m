@@ -106,34 +106,13 @@
 {
 #pragma unused(typeName)
 
-  NSString *fileContents = [self.projectModel string];
-  NSData   *data         = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
-
-    // FIXME: get the project file wrapper from the view model
-    //    Do we put the 'data' into the file wrapper here or does that happen earlier
-  if (!data && outError)
-    *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileWriteUnknownError userInfo:nil];
-  return nil;  // FIXME: BOOMMMM!!!
-}
-
-- (NSData *)dataOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
-{
-#pragma unused(typeName)
-
-  NSString *fileContents = [self.projectModel string];
-  NSData   *data         = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
-
-  if (!data && outError)
-    *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileWriteUnknownError userInfo:nil];
-  return data;
+  return [self.projectModel fileWrapperWithError:outError];
 }
 
 - (void)makeWindowControllers
 {
   [self addWindowController:[[HFMWindowController alloc] init]];
 }
-
-  // FIXME: do we need post-nib-loading code?
 
 
 #pragma mark -

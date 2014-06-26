@@ -93,6 +93,8 @@ static NSString *cabalFileExtension = @"cabal";
 
       // We initialise the immutable project groups (which forms the root set of the project view model items). Child
       // items are created on demand.
+      //
+      // IMPORTANT: The order here must match that in 'PVMGroupIndex'.
     _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                                 identifier:kPackageGroupID
                                                                     parent:nil
@@ -329,11 +331,22 @@ static NSString *cabalFileExtension = @"cabal";
 #pragma mark -
 #pragma mark Project serialisation
 
-- (NSString *)string
+- (NSFileWrapper *)fileWrapperWithError:(NSError *__autoreleasing *)outError
 {
-    // FIXME: do we still need to synchronise the view model with the model (or the view data)?
-  return [self.package string];
+#pragma unused(outError)
+
+    // Flush any changes in the Cabal file
+  HFMProjectViewModelItem *cabalFileItem = self.groupItems[PVMItemGroupIndexPackage];
+  [cabalFileItem updateItemWithData:[[self.package string] dataUsingEncoding:NSUTF8StringEncoding]];
+   // FIXME: currently we always overwrite the Cabal file, which is bad
+   //   we should rather only do the above 'updateItemWithData:' IFF any data in the Cabal file changed
+
+  NSFileWrapper *projectFileWrapper = self.fileWrapper;
+// FIXME:????  updateFileWrapper(projectFileWrapper, self.groupItems);
+
+  return projectFileWrapper;
 }
+
 
 #pragma mark -
 #pragma mark Data conversions

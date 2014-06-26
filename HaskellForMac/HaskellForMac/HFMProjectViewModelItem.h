@@ -45,8 +45,15 @@ extern NSString *const kExtraSourceGroupID;
 /// File wrapper of the file object backing the item.
 ///
 /// This property is computed lazily.
+///
+/// The reference is weak as the file wrapper object is owned by either its parent directory wrapper or, if it is the
+/// document file wrapper, by the view model object.
 //
-@property (nonatomic, readonly) NSFileWrapper *fileWrapper;
+@property (nonatomic, readonly, weak) NSFileWrapper *fileWrapper;
+
+/// Does this item have unsaved changes?
+//
+@property (readonly) BOOL dirty;
 
 
 #pragma mark -
@@ -68,6 +75,14 @@ extern NSString *const kExtraSourceGroupID;
 
 
 #pragma mark -
+#pragma mark Mutatation
+
+/// Replace the data represented by this item with the argument.
+//
+- (void)updateItemWithData:(NSData *)data;
+
+
+#pragma mark -
 #pragma mark Queries
 
 /// Returns an array containing all child items of the current item.
@@ -77,5 +92,12 @@ extern NSString *const kExtraSourceGroupID;
 /// Returns the item's file name relative to the document root.
 //
 - (NSString *)fileName;
+
+/// Returns an updated file wrapper in case this item is 'dirty'; otherwise, returns 'nil'.
+///
+/// After this method was invoked, the item is not dirty (until the next change) — i.e., discarding the returned
+/// file wrapper will discard any changes since the last save.
+//
+- (NSFileWrapper *)getUpdatedFileWrapper;
 
 @end

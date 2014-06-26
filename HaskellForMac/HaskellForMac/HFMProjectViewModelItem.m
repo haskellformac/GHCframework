@@ -30,6 +30,17 @@
 //
 @property (nonatomic) NSMutableArray/*<HFMProjectViewModelItem>*/ *theChildren;
 
+/// If the associated data has been edited and not yet saved, this file wrapper contains the edited data and ought to be
+/// saved during the next document save operation.
+///
+/// If the associated data remains unchanged, this property is 'nil'. Upon saving any changes, this property's value
+/// goes into 'fileWrapper' and 'dirtyFileWrapper' is reset to 'nil'.
+///
+/// Access must be wrapped in '@synchronized(self){..}'.
+//
+@property NSFileWrapper *dirtyFileWrapper;   // maybe nil
+
+
 @end
 
 
@@ -76,6 +87,19 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   }
   return self;
+}
+
+#pragma mark -
+#pragma mark Mutatation
+
+- (void)updateItemWithData:(NSData *)data
+{
+  NSFileWrapper *newFileWrapper = [[NSFileWrapper alloc] initRegularFileWithContents:data];
+  newFileWrapper.preferredFilename = self.fileWrapper.preferredFilename;
+
+  @synchronized(self) {
+    self.dirtyFileWrapper = newFileWrapper;
+  }
 }
 
 
@@ -130,6 +154,11 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   }
   return _fileWrapper;
+}
+
+- (BOOL)isDirty;
+{
+  return self.dirtyFileWrapper != nil;
 }
 
 - (NSArray/*<HFMProjectModelItem>*/ *)children
@@ -251,7 +280,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
     }
 
   }
-  return _theChildren;
+  return [NSArray arrayWithArray:_theChildren];     // freeze
 }
 
 - (NSString *)fileName
@@ -271,6 +300,18 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   }
 
   return [NSString pathWithComponents:path];
+}
+
+- (NSFileWrapper *)getUpdatedFileWrapper
+{
+  NSFileWrapper *updatedFileWrapper;
+
+  @synchronized(self) {
+    updatedFileWrapper    = self.dirtyFileWrapper;
+    self.dirtyFileWrapper = nil;
+  }
+
+  return updatedFileWrapper;
 }
 
 

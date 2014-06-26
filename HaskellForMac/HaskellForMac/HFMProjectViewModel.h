@@ -15,12 +15,25 @@
 #import <Foundation/Foundation.h>
 
 
+/// The indices of the various fixed toplevel group items.
+//
+//  IMPORTANT: The order here must match that of the initialisation of 'groupItems'.
+//
+typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
+  PVMItemGroupIndexPackage = 0,         // Package group
+  PVMItemGroupIndexData,                // Data group
+  PVMItemGroupIndexExecutable,          // Executable group
+  PVMItemGroupIndexExtraSource          // Extra source group
+};
+
 @interface HFMProjectViewModel : NSObject
 
 /// The file wrapper of the project document and of the Cabal file inside the document as well as the project URL.
+///
+/// We own the project file wrapper, but the Cabal file wrapper is already owned by the project file wrapper.
 //
-@property (readonly) NSFileWrapper *fileWrapper;
-@property (readonly) NSFileWrapper *cabalFileWrapper;
+@property (readonly)       NSFileWrapper *fileWrapper;
+@property (readonly, weak) NSFileWrapper *cabalFileWrapper;
 
 // Project properties
 //
@@ -44,9 +57,11 @@
 @property                       NSString     *sourceDir;       // optional (maybe 'nil')  FIXME: Issue #82: generalise to array of dirs
 @property                       NSString     *modulePath;
 
-// View model group items (they are owned by the view model and keep all active project view model items alive)
-//
-// The groups are fixed; hence, the 'readonly'. However, the contents of the group items is mutable.
+/// View model group items (they are owned by the view model and keep all active project view model items alive)
+///
+/// The groups are fixed; hence, the 'readonly'. However, the contents of the group items is mutable.
+///
+/// The first one is always 'kPackageGroupID'
 //
 @property (readonly) NSArray/*<HFMProjectViewModelItem>*/ *groupItems;
 
@@ -83,9 +98,11 @@
 #pragma mark -
 #pragma mark Project serialisation
 
-/// Serialise the project data into a string.
+/// Turn the entire project document into a directory file wrapper.
+///
+/// To support incremental updating of the persistent representation, we reuse all file wrappers whose contents hasn't
+/// changed.
 //
-- (NSString *)string;
-
+- (NSFileWrapper *)fileWrapperWithError:(NSError *__autoreleasing *)outError;
 
 @end
