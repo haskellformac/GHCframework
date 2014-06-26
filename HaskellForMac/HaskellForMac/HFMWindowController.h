@@ -13,13 +13,4 @@
 
 @interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>
 
-#pragma mark -
-#pragma mark Controlling the editor component
-
-/// Select the editor appropriate to editing the given file; the type of editor is determined by the extension.
-//
-// If no suitable editor is available, remove the current editor view (if any).
-//
-- (void)selectEditor:(NSURL *)file;
-
 @end

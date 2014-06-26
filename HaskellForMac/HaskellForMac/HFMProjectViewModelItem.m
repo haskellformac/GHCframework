@@ -43,7 +43,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 @implementation HFMProjectViewModelItem
 
-@synthesize fileName = _fileName;
+@synthesize fileWrapper = _fileWrapper;
 
 
 #pragma mark Initialisation
@@ -87,45 +87,49 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   NSLog(@"%s: identifier = %@ : setting of project view model items NOT IMPLEMENTED YET", __func__, identifier);
 }
 
-- (NSString *)fileName
+- (NSFileWrapper *)fileWrapper
 {
-  if (!_fileName) {
-
-    NSString *parentFileName = self.parent.fileName;
+  if (!_fileWrapper) {
 
     switch (self.tag) {
       case PVMItemTagPackage:
-        _fileName = self.model.cabalFileName;
+        _fileWrapper = self.model.cabalFileWrapper;
         break;
 
       case PVMItemTagFileGroup: {
 
-          // File groups that include wildcards are always filenames (not just directory names) and must drop the
-          // filename wildcard component in their own filename.
         NSCharacterSet *wildcardChars = [NSCharacterSet characterSetWithCharactersInString:@"*"];
-        NSString *lastComponent = [self.identifier lastPathComponent];
-        NSRange  wildcardRange  = [lastComponent rangeOfCharacterFromSet:wildcardChars];
 
-        if (wildcardRange.location == NSNotFound)
-          _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
-        else
-          _fileName = [parentFileName stringByAppendingPathComponent:[self.identifier stringByDeletingLastPathComponent]];
+          // Chase the path components down the directory hierarchy.
+        NSFileWrapper *fileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
+        for (NSString *component in [self.identifier pathComponents]) {
+
+          if (!fileWrapper) break;
+
+            // File groups that include wildcards are always filenames (not just directory names) and must disregard the
+            // filename wildcard component to determine their directory wrapper.
+          NSRange wildcardRange = [component rangeOfCharacterFromSet:wildcardChars];
+          if (wildcardRange.location != NSNotFound) break;
+
+          fileWrapper = [fileWrapper fileWrappers][component];
+
+        }
+        _fileWrapper = fileWrapper;
+
         break;
-
       }
 
       case PVMItemTagFile:
       case PVMItemTagFolder:
-        _fileName = [parentFileName stringByAppendingPathComponent:self.identifier];
+        _fileWrapper = [self.parent.fileWrapper fileWrappers][self.identifier];
         break;
 
       default:
-        _fileName = @"";
         break;
     }
 
   }
-  return _fileName;
+  return _fileWrapper;
 }
 
 - (NSArray/*<HFMProjectModelItem>*/ *)children
@@ -250,10 +254,31 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return _theChildren;
 }
 
+- (NSString *)fileName
+{
+  NSMutableArray          *path    = [NSMutableArray array];
+  HFMProjectViewModelItem *current = self;
+
+  if (current.tag == PVMItemTagPackage) {
+    [path insertObject:self.model.cabalFileWrapper.filename atIndex:0];
+
+  }
+  while (current.tag == PVMItemTagFileGroup || current.tag == PVMItemTagFolder || current.tag == PVMItemTagFile) {
+
+    [path insertObject:current.identifier atIndex:0];
+    current = current.parent;
+
+  }
+
+  return [NSString pathWithComponents:path];
+}
+
 
 #pragma mark -
 #pragma mark Hierarchy
 
+// Given the identifiers of the current item's children, compute its child items.
+//
 - (NSMutableArray *)childrenFromDictionary:(NSDictionary *)dict
 {
   NSMutableArray *children = [NSMutableArray array];
@@ -270,6 +295,8 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return children;
 }
 
+// Compute the identifier dictionary containing the current item's children.
+//
 - (NSDictionary *)lookupDictionary
 {
   NSMutableArray          *path    = [NSMutableArray array];

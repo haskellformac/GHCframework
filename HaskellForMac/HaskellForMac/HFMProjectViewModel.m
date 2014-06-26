@@ -34,35 +34,62 @@ NSArray      *dictTreeToStrings(NSDictionary *dicts);
 
 
 #pragma mark -
-#pragma mark Initialisation
+#pragma mark Informative class methods
 
-+ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName
+static NSString *cabalFileExtension = @"cabal";
+
++ (NSString *)cabalFileExtension
 {
-  return [[HFMProjectViewModel alloc] initWithCabalFileName:cabalFileName];
+  return cabalFileExtension;
 }
 
-+ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string
+#pragma mark -
+#pragma mark Initialisation
+
++ (instancetype)projectViewModelWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
+                                      cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
 {
-  return [[HFMProjectViewModel alloc] initWithCabalFileName:cabalFileName string:string];
+  return [[HFMProjectViewModel alloc] initWithProjectFileWrapper:projectFileWrapper
+                                                cabalFileWrapper:cabalFileWrapper];
 }
 
 - (instancetype)init
 {
-  return [self initWithCabalFileName:@"Untitled.cabal"];
+  NSLog(@"%s: cannot initialise the view model without a name for the Cabal file", __func__);
+  return nil;
 }
 
-- (instancetype)initWithCabalFileName:(NSString *)cabalFileName
-{
-  return [self initWithCabalFileName:cabalFileName string:nil];
-}
-
-- (instancetype)initWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string
+- (instancetype)initWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
+                          cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
 {
   self = [super init];
   if (self) {
 
-    _package       = (string) ? [CBLPackage packageWithString:string] : [CBLPackage package];
-    _cabalFileName = cabalFileName;
+    _fileWrapper        = projectFileWrapper;
+
+      // If no Cabal file present, create a new, empty Cabal package whose name is derived from the package name and add
+      // it to the file wrapper for the project.
+    if (!cabalFileWrapper) {
+
+        // Create a new empty package description.
+      _package = [CBLPackage package];
+
+        // Wrap it into a new file wrapper.
+      NSString *fname = [[[projectFileWrapper filename] stringByDeletingPathExtension]
+                         stringByAppendingPathExtension:cabalFileExtension];
+      NSData   *data  = [[self.package string] dataUsingEncoding:NSUTF8StringEncoding];
+      [projectFileWrapper addRegularFileWithContents:data preferredFilename:fname];
+      cabalFileWrapper = [projectFileWrapper fileWrappers][fname];
+      
+    } else {
+    
+      NSString *cabalContents = [[NSString alloc] initWithData:[cabalFileWrapper regularFileContents]
+                                                      encoding:NSUTF8StringEncoding];
+
+      _package = [CBLPackage packageWithString:cabalContents];
+
+    }
+    _cabalFileWrapper = cabalFileWrapper;
 
       // We initialise the immutable project groups (which forms the root set of the project view model items). Child
       // items are created on demand.

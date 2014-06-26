@@ -10,11 +10,6 @@
 #import "HFMWindowController.h"
 
 
-// File extension for Cabal files.
-//
-static NSString *cabalFileExtension = @"cabal";
-
-
 @implementation HFMProject
 
 
@@ -44,7 +39,10 @@ static NSString *cabalFileExtension = @"cabal";
   if (self) {
 
     [self setFileType:typeName];
-    _projectModel  = [HFMProjectViewModel projectViewModelWithCabalFileName:@"MyProject.cabal"];
+    NSFileWrapper *projectFileWrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:@{}];
+    [projectFileWrapper setPreferredFilename:@"MyHaskellProject.hsproj"];
+    _projectModel = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
+                                                               cabalFileWrapper:nil];
 
   }
   return self;
@@ -66,7 +64,7 @@ static NSString *cabalFileExtension = @"cabal";
   return YES;
 }
 
-- (BOOL)readFromFileWrapper:(NSFileWrapper *)fileWrapper
+- (BOOL)readFromFileWrapper:(NSFileWrapper *)projectFileWrapper
                      ofType:(NSString *)typeName
                       error:(NSError *__autoreleasing *)outError
 {
@@ -80,7 +78,8 @@ static NSString *cabalFileExtension = @"cabal";
     // a new one.
 
     // Find the Cabal file.
-  NSDictionary  *wrappers  = [fileWrapper fileWrappers];
+  NSString      *cabalFileExtension = [HFMProjectViewModel cabalFileExtension];
+  NSDictionary  *wrappers           = [projectFileWrapper fileWrappers];
   NSFileWrapper *cabalFile;
 
   for (NSString *fname in wrappers)
@@ -91,32 +90,16 @@ static NSString *cabalFileExtension = @"cabal";
 
     }
 
-  if (cabalFile) {
+    // Initialise the project view model with the project and Cabal file wrappers. The latter *may* be nil!
+  _projectModel  = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
+                                                              cabalFileWrapper:cabalFile];
 
-      // Initialise the project view model from the Cabal file.
-    NSString *fileContents = [[NSString alloc] initWithData:[cabalFile regularFileContents]
-                                                   encoding:NSUTF8StringEncoding];
-    _projectModel  = [HFMProjectViewModel projectViewModelWithCabalFileName:[[cabalFile filename] lastPathComponent]
-                                                                     string:fileContents];
-
-  } else {
-
-      // If no Cabal file present, create a new, empty Cabal package whose name is derived from the package name and add
-      // it to the file wrapper for the project.
-    NSString *fname = [[[fileWrapper filename] lastPathComponent] stringByAppendingPathExtension:cabalFileExtension];
-    [fileWrapper addRegularFileWithContents:[NSData data] preferredFilename:fname];
-    _projectModel = [HFMProjectViewModel projectViewModelWithCabalFileName:fname];
-      // FIXME: add this point the file wrapper is dirty as the NSData for the Cabal file wrapper is not up to date.
-
-  }
   if (self.projectModel)
     readSuccess = YES;
 
   if (!readSuccess && outError)
     *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError userInfo:nil];
   return readSuccess;
-
-    // FIXME: we need to pass the file wrapper to the project view model during creation above!
 }
 
 - (NSFileWrapper *)fileWrapperOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError

@@ -11,10 +11,14 @@
 
 @interface HFMTextEditorController ()
 
-// Content views of the header editor
+/// Content views of the header editor
 //
 @property (weak)              IBOutlet NSPathControl *pathControl;
 @property (unsafe_unretained) IBOutlet NSTextView    *textView;
+
+/// File wrapper identifying the edited file.
+//
+@property (readonly) NSFileWrapper *fileWrapper;
 
 // Text file URL.
 //
@@ -29,10 +33,12 @@
 
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
-                        fileURL:(NSURL *)url
+                    fileWrapper:(NSFileWrapper *)fileWrapper
+                        fileURL:(NSURL *)fileURL
 {
   self = [self initWithNibName:nibName bundle:nibBundle];
-  _fileURLDuringInit = url;      // can't assign to 'self.pathControl.URL' yet as 'IBOutlets' are not yet initialised
+  _fileWrapper       = fileWrapper;
+  _fileURLDuringInit = fileURL;
   return self;
 
 }
@@ -42,8 +48,8 @@
   NSError *error;
 
     // Initialize the path control
-  self.pathControl.URL   = self.fileURLDuringInit;
-  self.fileURLDuringInit = nil;
+  self.pathControl.URL = _fileURLDuringInit;
+  _fileURLDuringInit   = nil;
 
     // FIXME: quick and dirty setting of the contents — implement properly handle file data through the model layer
   NSString *contents = [NSString stringWithContentsOfURL:self.pathControl.URL encoding:NSUTF8StringEncoding error:&error];

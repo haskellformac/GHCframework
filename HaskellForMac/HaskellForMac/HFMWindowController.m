@@ -142,14 +142,15 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   NSOutlineView *outlineView = [notification object];
   NSInteger      row         = [outlineView selectedRow];
-  HFMProject    *document    = self.document;
+  HFMProject    *project     = self.document;
+
 
   if (row != -1) {   // If a row is selected...
 
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
     if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile))
-      [self selectEditor:[document.fileURL URLByAppendingPathComponent:item.fileName]];
+      [self selectEditor:item.fileWrapper fileURL:[project.fileURL URLByAppendingPathComponent:item.fileName]];
 
   }
 }
@@ -166,11 +167,15 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark Controlling the editor component
 
-- (void)selectEditor:(NSURL *)file
+/// Select the editor appropriate to editing the given file; the type of editor is determined by the extension.
+//
+// If no suitable editor is available, remove the current editor view (if any).
+//
+- (void)selectEditor:(NSFileWrapper *)fileWrapper fileURL:(NSURL *)fileURL
 {
-  NSString *fileExtension = [file pathExtension];
+  NSString *fileExtension = [[fileWrapper filename] pathExtension];
 
-  if (!file) return;
+  if (!fileWrapper) return;
 
     // Remove the current editor view.
   if (self.editorViewController) {
@@ -193,10 +198,13 @@ NSString *const kCabalCellID = @"cabalCellID";
       [[HFMHeaderEditorController alloc] initWithNibName:nibName
                                                   bundle:nil
                                         projectViewModel:project.projectModel
-                                              projectURL:project.fileURL];
+                                              projectURL:fileURL];
 
   } else if ([nibName isEqual:kTextEditor])
-    self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName bundle:nil fileURL:file];
+    self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName
+                                                                          bundle:nil
+                                                                     fileWrapper:fileWrapper
+                                                                         fileURL:fileURL];
   if (!self.editorView) {
 
     NSLog(@"%s: cannot load editor nib %@", __func__, nibName);

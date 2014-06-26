@@ -16,6 +16,7 @@
 //
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
-                        fileURL:(NSURL *)url;
+                    fileWrapper:(NSFileWrapper *)fileWrapper
+                        fileURL:(NSURL *)fileURL;
 
 @end

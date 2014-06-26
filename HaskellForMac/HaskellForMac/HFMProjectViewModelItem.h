@@ -42,11 +42,11 @@ extern NSString *const kExtraSourceGroupID;
 //
 @property (nonatomic) NSString *identifier;
 
-/// File name identifying the location of the file object backing the item *relative* to the root document.
+/// File wrapper of the file object backing the item.
 ///
 /// This property is computed lazily.
 //
-@property (nonatomic, readonly) NSString *fileName;
+@property (nonatomic, readonly) NSFileWrapper *fileWrapper;
 
 
 #pragma mark -
@@ -73,5 +73,9 @@ extern NSString *const kExtraSourceGroupID;
 /// Returns an array containing all child items of the current item.
 //
 - (NSArray/*<HFMProjectModelItem>*/ *)children;
+
+/// Returns the item's file name relative to the document root.
+//
+- (NSString *)fileName;
 
 @end

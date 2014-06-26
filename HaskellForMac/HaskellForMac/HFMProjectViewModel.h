@@ -17,11 +17,10 @@
 
 @interface HFMProjectViewModel : NSObject
 
-/// The name of the Cabal file *relative* to the root document.
-///
-/// NB: The basename of the file may be different from the project identifier.
+/// The file wrapper of the project document and of the Cabal file inside the document as well as the project URL.
 //
-@property (nonatomic, readonly) NSString *cabalFileName;
+@property (readonly) NSFileWrapper *fileWrapper;
+@property (readonly) NSFileWrapper *cabalFileWrapper;
 
 // Project properties
 //
@@ -53,30 +52,32 @@
 
 
 #pragma mark -
+#pragma mark Informative class methods
+
+/// The file extension of Cabal files.
+//
++ (NSString *)cabalFileExtension;
+
+#pragma mark -
 #pragma mark Initialisation
 
-/// Create a new, untitled project model.
-//
-+ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName;
-
-/// Create a project model from a Cabal file string.
+/// Create a project model for the project given by the file wrappers. The 'cabalFileWrapper' refers to the Cabal
+/// file of the project. The latter *may* be 'nil', in which case, it needs to be created.
 ///
 /// @Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
-+ (instancetype)projectViewModelWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string;
++ (instancetype)projectViewModelWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
+                                      cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper;
 
-/// Initialise a new, untitled model.
-///
-// FIXME: we need to report errors with more information.
-- (instancetype)initWithCabalFileName:(NSString *)cabalFileName;
-
-/// Initialise a project model from a Cabal file string.
+/// Initialise a project model for the project given by the file wrappers. The 'cabalFileWrapper' refers to the Cabal
+/// file of the project. The latter *may* be 'nil', in which case, it needs to be created.
 ///
 /// @Returns 'nil' in case of a parse error.
 //
 // FIXME: we need to report errors with more information.
-- (instancetype)initWithCabalFileName:(NSString *)cabalFileName string:(NSString *)string;
+- (instancetype)initWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
+                          cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper;
 
 
 #pragma mark -
