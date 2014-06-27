@@ -42,14 +42,14 @@ extern NSString *const kExtraSourceGroupID;
 //
 @property (nonatomic) NSString *identifier;
 
-/// File wrapper of the file object backing the item.
+/// *Optional* file wrapper of the file object backing the item.
 ///
-/// This property is computed lazily.
+/// This property is computed lazily. This property is 'nil' for non file-related items.
 ///
 /// The reference is weak as the file wrapper object is owned by either its parent directory wrapper or, if it is the
 /// document file wrapper, by the view model object.
 //
-@property (nonatomic, readonly, weak) NSFileWrapper *fileWrapper;
+@property (nonatomic, readonly, weak) NSFileWrapper *fileWrapper;     // maybe nil
 
 /// Does this item have unsaved changes?
 //
@@ -89,11 +89,13 @@ extern NSString *const kExtraSourceGroupID;
 //
 - (NSArray/*<HFMProjectModelItem>*/ *)children;
 
-/// Returns the item's file name relative to the document root.
+/// Returns the item's file name relative to the document root, or the empty string if the item is not associated with
+/// a file.
 //
 - (NSString *)fileName;
 
-/// Returns an updated file wrapper in case this item is 'dirty'; otherwise, returns 'nil'.
+/// Returns an updated file wrapper in case this item is 'dirty'; otherwise, returns 'nil'. If the item is dirty, the
+/// 'fileWrapper' property will also be updated to refer to the updated wrapper.
 ///
 /// After this method was invoked, the item is not dirty (until the next change) — i.e., discarding the returned
 /// file wrapper will discard any changes since the last save.

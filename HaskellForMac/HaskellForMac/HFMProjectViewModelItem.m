@@ -117,7 +117,9 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
     switch (self.tag) {
       case PVMItemTagPackage:
-        _fileWrapper = self.model.cabalFileWrapper;
+        _fileWrapper = [self.model.fileWrapper fileWrappers][self.model.cabalFileName];
+        if (!_fileWrapper)
+          NSLog(@"%s: cabal file wrapper with filename '%@' disappeared", __func__, self.model.cabalFileName);
         break;
 
       case PVMItemTagFileGroup: {
@@ -288,15 +290,30 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   NSMutableArray          *path    = [NSMutableArray array];
   HFMProjectViewModelItem *current = self;
 
-  if (current.tag == PVMItemTagPackage) {
-    [path insertObject:self.model.cabalFileWrapper.filename atIndex:0];
+  while (current) {
+    switch (current.tag) {
 
-  }
-  while (current.tag == PVMItemTagFileGroup || current.tag == PVMItemTagFolder || current.tag == PVMItemTagFile) {
+      case PVMItemTagGroup:
+        break;
+        
+      case PVMItemTagPackage:
+        [path insertObject:self.model.cabalFileName atIndex:0];
+        break;
 
-    [path insertObject:current.identifier atIndex:0];
+      case PVMItemTagExecutable:
+        break;
+
+      case PVMItemTagFileGroup:
+      case PVMItemTagFolder:
+      case PVMItemTagFile:
+        [path insertObject:current.identifier atIndex:0];
+        break;
+        
+      default:
+        break;
+        
+    }
     current = current.parent;
-
   }
 
   return [NSString pathWithComponents:path];
@@ -310,6 +327,8 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
     updatedFileWrapper    = self.dirtyFileWrapper;
     self.dirtyFileWrapper = nil;
   }
+  if (updatedFileWrapper)
+    _fileWrapper = updatedFileWrapper;
 
   return updatedFileWrapper;
 }

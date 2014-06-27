@@ -28,12 +28,10 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 
 @interface HFMProjectViewModel : NSObject
 
-/// The file wrapper of the project document and of the Cabal file inside the document as well as the project URL.
+/// The file wrapper of the project document and of the name of the Cabal file inside the document.
 ///
-/// We own the project file wrapper, but the Cabal file wrapper is already owned by the project file wrapper.
-//
-@property (readonly)       NSFileWrapper *fileWrapper;
-@property (readonly, weak) NSFileWrapper *cabalFileWrapper;
+@property (readonly) NSFileWrapper *fileWrapper;
+@property (readonly) NSString      *cabalFileName;
 
 // Project properties
 //

@@ -24,6 +24,14 @@
 
 
 // Function prototypes
+
+void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSString *fname, NSArray *items);
+void updateFileWrapper(NSFileWrapper *projectFileWrapper, NSString *fname, HFMProjectViewModelItem *item);
+void replaceFileWrapper(NSFileWrapper *projectFileWrapper,
+                             NSString *fname,
+                        NSFileWrapper *oldFileWrapper,
+                        NSFileWrapper *updatedFileWrapper);
+
 NSDictionary *stringsToDictTree(NSArray      *strings);
 NSArray      *dictTreeToStrings(NSDictionary *dicts);
 
@@ -65,7 +73,7 @@ static NSString *cabalFileExtension = @"cabal";
   self = [super init];
   if (self) {
 
-    _fileWrapper        = projectFileWrapper;
+    _fileWrapper = projectFileWrapper;
 
       // If no Cabal file present, create a new, empty Cabal package whose name is derived from the package name and add
       // it to the file wrapper for the project.
@@ -89,7 +97,7 @@ static NSString *cabalFileExtension = @"cabal";
       _package = [CBLPackage packageWithString:cabalContents];
 
     }
-    _cabalFileWrapper = cabalFileWrapper;
+    _cabalFileName = cabalFileWrapper.preferredFilename;
 
       // We initialise the immutable project groups (which forms the root set of the project view model items). Child
       // items are created on demand.
@@ -336,15 +344,56 @@ static NSString *cabalFileExtension = @"cabal";
 #pragma unused(outError)
 
     // Flush any changes in the Cabal file
-  HFMProjectViewModelItem *cabalFileItem = self.groupItems[PVMItemGroupIndexPackage];
+  HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
+  HFMProjectViewModelItem *cabalFileItem    = packageGroupItem.children[0];
   [cabalFileItem updateItemWithData:[[self.package string] dataUsingEncoding:NSUTF8StringEncoding]];
    // FIXME: currently we always overwrite the Cabal file, which is bad
    //   we should rather only do the above 'updateItemWithData:' IFF any data in the Cabal file changed
 
   NSFileWrapper *projectFileWrapper = self.fileWrapper;
-// FIXME:????  updateFileWrapper(projectFileWrapper, self.groupItems);
+  updateFileWrappers(projectFileWrapper, @"", self.groupItems);
 
   return projectFileWrapper;
+}
+
+void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSString *fname, NSArray *items)
+{
+  for (HFMProjectViewModelItem *item in items)
+    updateFileWrapper(projectFileWrapper, [fname stringByAppendingPathComponent:item.fileName], item);
+}
+
+void updateFileWrapper(NSFileWrapper *projectFileWrapper, NSString *fname, HFMProjectViewModelItem *item)
+{
+  NSFileWrapper *oldFileWrapper     = item.fileWrapper;
+  NSFileWrapper *updatedFileWrapper = item.getUpdatedFileWrapper;
+
+    // FIXME: FOR THE MOMENT, we assume folders and groups cannot be updated (i.e., updated => is a file item).
+  if (updatedFileWrapper)
+    replaceFileWrapper(projectFileWrapper, fname, oldFileWrapper, updatedFileWrapper);
+  else
+    updateFileWrappers(projectFileWrapper, fname, item.children);
+}
+
+void replaceFileWrapper(NSFileWrapper *currentFileWrapper,
+                        NSString      *fname,
+                        NSFileWrapper *oldFileWrapper,
+                        NSFileWrapper *updatedFileWrapper)
+{
+    // Find the directory file wrapper corresponding to 'fname'.
+  for (NSString *component in [[fname stringByDeletingLastPathComponent] pathComponents]) {
+
+    if (!currentFileWrapper || ![currentFileWrapper isDirectory]) break;
+    currentFileWrapper = [currentFileWrapper fileWrappers][component];
+
+  }
+  if (currentFileWrapper && [currentFileWrapper isDirectory]) {
+
+      // Relace the old by the update wrapper.
+    [currentFileWrapper removeFileWrapper:oldFileWrapper];
+    [currentFileWrapper addFileWrapper:updatedFileWrapper];
+
+  } else
+    NSLog(@"%s: couldn't find file wrapper for directory named %@", __func__, fname);
 }
 
 
