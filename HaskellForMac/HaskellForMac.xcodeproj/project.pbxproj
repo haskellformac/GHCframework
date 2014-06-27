@@ -818,7 +818,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.9;
 			};
 			name = Debug;
 		};
@@ -876,7 +876,7 @@
 					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.9;
 			};
 			name = Release;
 		};
