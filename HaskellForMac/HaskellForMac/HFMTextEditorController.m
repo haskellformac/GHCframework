@@ -16,9 +16,9 @@
 @property (weak)              IBOutlet NSPathControl *pathControl;
 @property (unsafe_unretained) IBOutlet NSTextView    *textView;
 
-/// File wrapper identifying the edited file.
+/// Project view model item representing the edited file.
 //
-@property (readonly) NSFileWrapper *fileWrapper;
+@property (readonly) HFMProjectViewModelItem *viewModelItem;
 
 // Text file URL.
 //
@@ -33,11 +33,11 @@
 
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
-                    fileWrapper:(NSFileWrapper *)fileWrapper
+           projectViewModelItem:(HFMProjectViewModelItem *)viewModelItem
                         fileURL:(NSURL *)fileURL
 {
   self = [self initWithNibName:nibName bundle:nibBundle];
-  _fileWrapper       = fileWrapper;
+  _viewModelItem     = viewModelItem;
   _fileURLDuringInit = fileURL;
   return self;
 
@@ -51,8 +51,8 @@
   self.pathControl.URL = _fileURLDuringInit;
   _fileURLDuringInit   = nil;
 
-    // FIXME: quick and dirty setting of the contents — implement properly handle file data through the model layer
-  NSString *contents = [NSString stringWithContentsOfURL:self.pathControl.URL encoding:NSUTF8StringEncoding error:&error];
+  NSFileWrapper *fileWrapper = self.viewModelItem.fileWrapper;
+  NSString *contents = [[NSString alloc] initWithData:[fileWrapper regularFileContents] encoding:NSUTF8StringEncoding];
   if (!contents)
     NSLog(@"%s: error loading file %@: %@", __func__, self.pathControl.URL, error);
   else {

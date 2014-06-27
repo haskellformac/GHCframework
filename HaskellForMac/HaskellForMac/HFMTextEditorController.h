@@ -8,6 +8,7 @@
 //  This is the view controller for the text editor.
 
 #import <Cocoa/Cocoa.h>
+#import "HFMProjectViewModelItem.h"
 
 
 @interface HFMTextEditorController : NSViewController
@@ -16,7 +17,7 @@
 //
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
-                    fileWrapper:(NSFileWrapper *)fileWrapper
+           projectViewModelItem:(HFMProjectViewModelItem *)viewModelItem
                         fileURL:(NSURL *)fileURL;
 
 @end

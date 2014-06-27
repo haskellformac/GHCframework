@@ -116,6 +116,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   if (!_fileWrapper) {
 
     switch (self.tag) {
+      case PVMItemTagGroup:
+        _fileWrapper = self.model.fileWrapper;
+        break;
+        
       case PVMItemTagPackage:
         _fileWrapper = [self.model.fileWrapper fileWrappers][self.model.cabalFileName];
         if (!_fileWrapper)
@@ -144,6 +148,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
         break;
       }
+
+      case PVMItemTagExecutable:
+        _fileWrapper = self.model.fileWrapper;
+        break;
 
       case PVMItemTagFile:
       case PVMItemTagFolder:

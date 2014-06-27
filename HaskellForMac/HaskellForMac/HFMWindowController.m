@@ -142,15 +142,13 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   NSOutlineView *outlineView = [notification object];
   NSInteger      row         = [outlineView selectedRow];
-  HFMProject    *project     = self.document;
-
 
   if (row != -1) {   // If a row is selected...
 
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
     if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile))
-      [self selectEditor:item.fileWrapper fileURL:[project.fileURL URLByAppendingPathComponent:item.fileName]];
+      [self selectEditor:item];
 
   }
 }
@@ -167,15 +165,27 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark Controlling the editor component
 
-/// Select the editor appropriate to editing the given file; the type of editor is determined by the extension.
+/// Select the editor appropriate to editing the file backing the given given view model item; the type of editor is
+/// determined on the basis of the file extension.
+///
+/// If no suitable editor is available, remove the current editor view (if any).
 //
-// If no suitable editor is available, remove the current editor view (if any).
-//
-- (void)selectEditor:(NSFileWrapper *)fileWrapper fileURL:(NSURL *)fileURL
+- (void)selectEditor:(HFMProjectViewModelItem *)item
 {
-  NSString *fileExtension = [[fileWrapper filename] pathExtension];
+  HFMProject *project       = self.document;
+  NSString   *fileName      = item.fileName;
+  NSURL      *fileURL       = [project.fileURL URLByAppendingPathComponent:fileName];
+  NSString   *fileExtension = [fileName pathExtension];
+  NSError    *error;
 
-  if (!fileWrapper) return;
+  if (!fileName) return;
+  if (![item.fileWrapper isRegularFile]) return;
+
+    // Check that the file is still there and force reading its contents. (We'll need it in a sec.)
+  if (![item.fileWrapper readFromURL:fileURL options:NSFileWrapperReadingImmediate error:&error]) {
+    NSLog(@"%s: re-reading file wrapper from %@ failed: %@", __func__, fileURL, error);
+    return;
+  }
 
     // Remove the current editor view.
   if (self.editorViewController) {
@@ -203,7 +213,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   } else if ([nibName isEqual:kTextEditor])
     self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName
                                                                           bundle:nil
-                                                                     fileWrapper:fileWrapper
+                                                            projectViewModelItem:item
                                                                          fileURL:fileURL];
   if (!self.editorView) {
 
