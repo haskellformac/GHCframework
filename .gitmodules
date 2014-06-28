@@ -1,0 +1,3 @@
+[submodule "GHC/GHC/ghc"]
+	path = GHC/GHC/ghc
+	url = https://github.com/mchakravarty/ghc.git
