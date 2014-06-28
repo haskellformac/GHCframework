@@ -64,6 +64,7 @@
 				E7E54FF2195D6CEE0019278B /* Sources */,
 				E7E54FF3195D6CEE0019278B /* Frameworks */,
 				E7E54FF4195D6CEE0019278B /* Resources */,
+				E7E55000195EA0560019278B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -114,6 +115,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E7E55000195EA0560019278B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p $BUILD_ROOT/bin\nln -sf /Users/chak/bin/alex-3.1   $BUILD_ROOT/bin/alex\nln -sf /Users/chak/bin/happy-1.19 $BUILD_ROOT/bin/happy\nexport PATH=$BUILD_ROOT/bin:$PATH\n\n(cd GHC/ghc/utils/lndir/; clang -O -o $BUILD_ROOT/lndir lndir.c)\nmkdir -p $BUILD_ROOT/ghc/\n(cd $BUILD_ROOT/ghc/; ../lndir $SOURCE_ROOT/GHC/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHC/ghc/.git $BUILD_ROOT/ghc/)\n(cd $BUILD_ROOT/ghc/; env PATH=$PATH:/usr/local/bin perl boot)\n(cd $BUILD_ROOT/ghc/; ./configure)\n(cd $BUILD_ROOT/ghc/; make)\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E7E54FF2195D6CEE0019278B /* Sources */ = {
