@@ -9,6 +9,8 @@
 /* Begin PBXFileReference section */
 		E7E54FF6195D6CEE0019278B /* GHC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GHC.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7E54FFA195D6CEE0019278B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7E55001195FD0060019278B /* build.mk.debug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.debug; sourceTree = "<group>"; };
+		E7E55003195FD0170019278B /* build.mk.release */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.release; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +51,8 @@
 		E7E54FF9195D6CEE0019278B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E7E55001195FD0060019278B /* build.mk.debug */,
+				E7E55003195FD0170019278B /* build.mk.release */,
 				E7E54FFA195D6CEE0019278B /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -128,7 +132,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p $BUILD_ROOT/bin\nln -sf /Users/chak/bin/alex-3.1   $BUILD_ROOT/bin/alex\nln -sf /Users/chak/bin/happy-1.19 $BUILD_ROOT/bin/happy\nexport PATH=$BUILD_ROOT/bin:$PATH\n\n(cd GHC/ghc/utils/lndir/; clang -O -o $BUILD_ROOT/lndir lndir.c)\nmkdir -p $BUILD_ROOT/ghc/\n(cd $BUILD_ROOT/ghc/; ../lndir $SOURCE_ROOT/GHC/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHC/ghc/.git $BUILD_ROOT/ghc/)\n(cd $BUILD_ROOT/ghc/; env PATH=$PATH:/usr/local/bin perl boot)\n(cd $BUILD_ROOT/ghc/; ./configure)\n(cd $BUILD_ROOT/ghc/; env CPUS=4 make)\n";
+			shellScript = "TARGET_TEMP_BINDIR=$TARGET_TEMP_DIR/bin\nmkdir -p $TARGET_TEMP_BINDIR\nexport PATH=$TARGET_TEMP_BINDIR:$PATH\n\n# Put a link to Alex and Happy into a bin/ directory in the build arena\nln -sf /Users/chak/bin/alex-3.1   $TARGET_TEMP_BINDIR/alex\nln -sf /Users/chak/bin/happy-1.19 $TARGET_TEMP_BINDIR/happy\n\n# Compile 'lndir' to create the build tree\n(cd GHC/ghc/utils/lndir/; clang -O -o $TARGET_TEMP_BINDIR/lndir lndir.c)\nmkdir -p $TARGET_TEMP_DIR/ghc/\n(cd $TARGET_TEMP_DIR/ghc/; lndir $SOURCE_ROOT/GHC/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHC/ghc/.git $TARGET_TEMP_DIR/ghc/)\n\n# Select the appropriate 'build.mk' setup\nif [ $CONFIGURATION = \"Debug\" ];\nthen\n  cp -f $SOURCE_ROOT/GHC/build.mk.debug $TARGET_TEMP_DIR/ghc/mk/build.mk\nelse\n  cp -f $SOURCE_ROOT/GHC/build.mk.release $TARGET_TEMP_DIR/ghc/mk/build.mk\nfi\n\nPREFIX=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr\n\n# Actual GHC build (we extend PATH to get 'autoreconf')\n(cd $TARGET_TEMP_DIR/ghc; env PATH=$PATH:/usr/local/bin perl boot)\n(cd $TARGET_TEMP_DIR/ghc; ./configure --prefix=$PREFIX)\n(cd $TARGET_TEMP_DIR/ghc; make -j7)\n(cd $TARGET_TEMP_DIR/ghc; make install)\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
