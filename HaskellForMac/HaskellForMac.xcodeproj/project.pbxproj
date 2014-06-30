@@ -131,7 +131,7 @@
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
 		E719C7B918E9287A00586434 /* HFMTextEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMTextEditorController.h; sourceTree = "<group>"; };
 		E719C7BA18E9287A00586434 /* HFMTextEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMTextEditorController.m; sourceTree = "<group>"; };
-		E7A13B011888006C00D79087 /* HaskellForMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HaskellForMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		E7A13B081888006C00D79087 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -255,7 +255,7 @@
 		E7A13B021888006C00D79087 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E7A13B011888006C00D79087 /* HaskellForMac.app */,
+				E7A13B011888006C00D79087 /* Haskell.app */,
 				E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */,
 				E7A13B811890D99000D79087 /* libHFMGHC.a */,
 				E7A13B8D1890D99000D79087 /* HFMGHCTests.xctest */,
@@ -440,7 +440,7 @@
 			);
 			name = HaskellForMac;
 			productName = HaskellForMac;
-			productReference = E7A13B011888006C00D79087 /* HaskellForMac.app */;
+			productReference = E7A13B011888006C00D79087 /* Haskell.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E7A13B211888006C00D79087 /* HaskellForMacTests */ = {
@@ -818,6 +818,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "";
 				SDKROOT = macosx10.9;
 			};
 			name = Debug;
@@ -876,6 +877,7 @@
 					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "";
 				SDKROOT = macosx10.9;
 			};
 			name = Release;
@@ -922,7 +924,7 @@
 					"-liconv",
 					"-Wl,-no_compact_unwind",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -970,7 +972,7 @@
 					"-liconv",
 					"-Wl,-no_compact_unwind",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
