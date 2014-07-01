@@ -25,8 +25,8 @@
 
 // Function prototypes
 
-void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSString *fname, NSArray *items);
-void updateFileWrapper(NSFileWrapper *projectFileWrapper, NSString *fname, HFMProjectViewModelItem *item);
+void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSArray *items);
+void updateFileWrapper(NSFileWrapper *projectFileWrapper, HFMProjectViewModelItem *item);
 void replaceFileWrapper(NSFileWrapper *projectFileWrapper,
                              NSString *fname,
                         NSFileWrapper *oldFileWrapper,
@@ -346,32 +346,32 @@ static NSString *cabalFileExtension = @"cabal";
     // Flush any changes in the Cabal file
   HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
   HFMProjectViewModelItem *cabalFileItem    = packageGroupItem.children[0];
-  [cabalFileItem updateItemWithData:[[self.package string] dataUsingEncoding:NSUTF8StringEncoding]];
+  cabalFileItem.string = [self.package string];
    // FIXME: currently we always overwrite the Cabal file, which is bad
    //   we should rather only do the above 'updateItemWithData:' IFF any data in the Cabal file changed
 
   NSFileWrapper *projectFileWrapper = self.fileWrapper;
-  updateFileWrappers(projectFileWrapper, @"", self.groupItems);
+  updateFileWrappers(projectFileWrapper, self.groupItems);
 
   return projectFileWrapper;
 }
 
-void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSString *fname, NSArray *items)
+void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSArray *items)
 {
   for (HFMProjectViewModelItem *item in items)
-    updateFileWrapper(projectFileWrapper, [fname stringByAppendingPathComponent:item.fileName], item);
+    updateFileWrapper(projectFileWrapper, item);
 }
 
-void updateFileWrapper(NSFileWrapper *projectFileWrapper, NSString *fname, HFMProjectViewModelItem *item)
+void updateFileWrapper(NSFileWrapper *projectFileWrapper, HFMProjectViewModelItem *item)
 {
   NSFileWrapper *oldFileWrapper     = item.fileWrapper;
   NSFileWrapper *updatedFileWrapper = item.getUpdatedFileWrapper;
 
     // FIXME: FOR THE MOMENT, we assume folders and groups cannot be updated (i.e., updated => is a file item).
   if (updatedFileWrapper)
-    replaceFileWrapper(projectFileWrapper, fname, oldFileWrapper, updatedFileWrapper);
+    replaceFileWrapper(projectFileWrapper, item.fileName, oldFileWrapper, updatedFileWrapper);
   else
-    updateFileWrappers(projectFileWrapper, fname, item.children);
+    updateFileWrappers(projectFileWrapper, item.children);
 }
 
 void replaceFileWrapper(NSFileWrapper *currentFileWrapper,

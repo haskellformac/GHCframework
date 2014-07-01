@@ -89,19 +89,6 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return self;
 }
 
-#pragma mark -
-#pragma mark Mutatation
-
-- (void)updateItemWithData:(NSData *)data
-{
-  NSFileWrapper *newFileWrapper = [[NSFileWrapper alloc] initRegularFileWithContents:data];
-  newFileWrapper.preferredFilename = self.fileWrapper.preferredFilename;
-
-  @synchronized(self) {
-    self.dirtyFileWrapper = newFileWrapper;
-  }
-}
-
 
 #pragma mark -
 #pragma mark Setters and getters
@@ -339,6 +326,40 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
     _fileWrapper = updatedFileWrapper;
 
   return updatedFileWrapper;
+}
+
+- (NSString *)string
+{
+  NSData   *data;
+
+  @synchronized(self) {
+      // Obtain the most recent version of the contents.
+    data = (self.dirtyFileWrapper)
+           ? [self.dirtyFileWrapper regularFileContents]
+           : [self.fileWrapper regularFileContents];
+  }
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+- (void)setString:(NSString *)string
+{
+  NSData        *data              = [string dataUsingEncoding:NSUTF8StringEncoding];
+  NSFileWrapper *newFileWrapper    = [[NSFileWrapper alloc] initRegularFileWithContents:data];
+  newFileWrapper.preferredFilename = self.fileWrapper.preferredFilename;
+
+  @synchronized(self) {
+    self.dirtyFileWrapper = newFileWrapper;
+  }
+}
+
+- (NSAttributedString *)attributedString
+{
+  return [[NSAttributedString alloc] initWithString:self.string];
+}
+
+- (void)setAttributedString:(NSAttributedString *)attributedString
+{
+  self.string = [attributedString string];
 }
 
 

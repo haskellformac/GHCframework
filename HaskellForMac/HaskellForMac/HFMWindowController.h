@@ -13,4 +13,10 @@
 
 @interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>
 
+/// View controller of the currently displayed editor if any (which depends on the item selected in the outline view).
+///
+/// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
+//
+@property (nonatomic) NSViewController *editorViewController;     // maybe nil
+
 @end

@@ -45,24 +45,12 @@
 
 - (void)awakeFromNib
 {
-  NSError *error;
-
     // Initialize the path control
   self.pathControl.URL = _fileURLDuringInit;
   _fileURLDuringInit   = nil;
 
-  NSFileWrapper *fileWrapper = self.viewModelItem.fileWrapper;
-  NSString *contents = [[NSString alloc] initWithData:[fileWrapper regularFileContents] encoding:NSUTF8StringEncoding];
-  if (!contents)
-    NSLog(@"%s: error loading file %@: %@", __func__, self.pathControl.URL, error);
-  else {
-
-    NSFont             *menlo13      = [NSFont fontWithName:@"Menlo-Regular" size:13];
-    NSAttributedString *attrContents = [[NSAttributedString alloc] initWithString:contents
-                                                                       attributes:@{ NSFontAttributeName : menlo13 }];
-    [self.textView.textStorage appendAttributedString:attrContents];
-
-  }
+    // For now, we have got a fixed font.
+  self.textView.font = [NSFont fontWithName:@"Menlo-Regular" size:13];
 }
 
 @end

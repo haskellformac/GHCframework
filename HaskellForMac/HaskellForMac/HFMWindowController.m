@@ -23,12 +23,6 @@
 @property (weak) IBOutlet NSView        *editorView;
 @property (weak) IBOutlet NSTextField   *noEditorLabel;
 
-/// View controller of the currently displayed editor (which depends on the item selected in the outline view).
-///
-/// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
-//
-@property (nonatomic) NSViewController *editorViewController;
-
 /// The GHC session associated with this window.
 //
 @property (nonatomic, readonly) HFMHaskellSession *haskellSession;

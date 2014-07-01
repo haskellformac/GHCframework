@@ -55,6 +55,15 @@ extern NSString *const kExtraSourceGroupID;
 //
 @property (readonly) BOOL dirty;
 
+/// The text contained in 'fileWrapper', if not 'dirty'; otherwise, the updated text. When this property is set, the
+/// item becomes dirty (and an updated file wrapper is transparently created, which may be accessed via
+/// 'getUpdatedFileWrapper').
+///
+/// These properties are KVO compliant. Both properties refer to the same data, but present it in different formats.
+//
+@property NSString           *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
+@property NSAttributedString *attributedString;       // 'nil' unless 'fileWrapper' is wrapping a regular file
+
 
 #pragma mark -
 #pragma mark Initialisation
@@ -72,14 +81,6 @@ extern NSString *const kExtraSourceGroupID;
                    identifier:(NSString *)identifier
                        parent:(HFMProjectViewModelItem *)parent
                         model:(HFMProjectViewModel *)model;
-
-
-#pragma mark -
-#pragma mark Mutatation
-
-/// Replace the data represented by this item with the argument.
-//
-- (void)updateItemWithData:(NSData *)data;
 
 
 #pragma mark -

@@ -106,6 +106,10 @@
 {
 #pragma unused(typeName)
 
+    // Flush any pending edits in the editor view. NB: We have got exactly one window controller.
+  HFMWindowController *windowController = self.windowControllers[0];
+  [windowController.editorViewController commitEditing];
+
   return [self.projectModel fileWrapperWithError:outError];
 }
 
