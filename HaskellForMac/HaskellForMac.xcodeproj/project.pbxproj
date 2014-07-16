@@ -54,10 +54,10 @@
 			outputFiles = (
 				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).hi",
 				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.h",
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.m",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.h",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
 			);
-			script = "if /Users/chak/bin/ghc-7.8 -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nfi";
+			script = "if /Users/chak/bin/ghc-7.8 -package ghc -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${INPUT_FILE_DIR} -i${DERIVED_SOURCES_DIR} --make -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 		E7D29A1D18974B130045A5AB /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -164,6 +164,7 @@
 		E7A13B971890D99000D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7A13B991890D99000D79087 /* HFMGHCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HFMGHCTests.m; sourceTree = "<group>"; };
 		E7A13BA61890E27200D79087 /* GHCInstance.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GHCInstance.hs; sourceTree = "<group>"; };
+		E7B0D6E01964075C00795AB0 /* Interpreter.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Interpreter.hs; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7D29A1418974AEF0045A5AB /* CBLPackage.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CBLPackage.hs; sourceTree = "<group>"; };
@@ -355,6 +356,7 @@
 			isa = PBXGroup;
 			children = (
 				E7A13BA61890E27200D79087 /* GHCInstance.hs */,
+				E7B0D6E01964075C00795AB0 /* Interpreter.hs */,
 				E7A13B841890D99000D79087 /* Supporting Files */,
 			);
 			path = HFMGHC;
@@ -610,7 +612,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
+			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -package ghc -package ghc-paths -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/Interpreter.o\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
 		};
 		E7D29A1C18974B130045A5AB /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
