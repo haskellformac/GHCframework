@@ -204,11 +204,18 @@ NSString *const kCabalCellID = @"cabalCellID";
                                         projectViewModel:project.projectModel
                                               projectURL:fileURL];
 
-  } else if ([nibName isEqual:kTextEditor])
+  } else if ([nibName isEqual:kTextEditor]) {
+
     self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName
                                                                           bundle:nil
                                                             projectViewModelItem:item
                                                                          fileURL:fileURL];
+      // FIXME: TEMPORARY HACK
+    item.loadString = ^(NSString *moduleText) {
+      return [self.haskellSession loadModuleFromString:moduleText];
+    };
+
+  }
   if (!self.editorView) {
 
     NSLog(@"%s: cannot load editor nib %@", __func__, nibName);

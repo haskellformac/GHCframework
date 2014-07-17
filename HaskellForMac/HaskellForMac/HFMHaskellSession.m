@@ -49,4 +49,13 @@
 }
 
 
+#pragma mark -
+#pragma mark Code loading
+
+- (NSString *)loadModuleFromString:(NSString *)moduleText
+{
+  return [self.ghcInstance loadModuleFromString:moduleText];
+}
+
+
 @end

@@ -64,6 +64,10 @@ objc_interface [cunit|
 //
 + (instancetype)ghcInstanceStart;
 
+// Load a module given as a string.
+//
+- (typename NSString *)loadModuleFromString:(typename NSString *)moduleText;
+
 // Release the resources of this GHC instance. It cannot be used after this.
 //
 - (void)stop;
@@ -98,6 +102,11 @@ objc_implementation [Typed 'start, Typed 'stop, Typed 'loadModuleText] [cunit|
   if (self)
     self.interpreterSession = start();
   return self;
+}
+
+- (typename NSString *)loadModuleFromString:(typename NSString *)moduleText
+{
+  return loadModuleText(self.interpreterSession, moduleText);
 }
 
 - (void)stop

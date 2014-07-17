@@ -16,4 +16,10 @@
 //
 + (instancetype)haskellSessionStart;
 
+
+#pragma mark -
+#pragma mark Code loading
+
+- (NSString *)loadModuleFromString:(NSString *)moduleText;
+
 @end

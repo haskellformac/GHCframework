@@ -658,7 +658,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -O -package ghc -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${SRCROOT}/HFMGHC -i${DERIVED_SOURCES_DIR} --make -c ${SCRIPT_INPUT_FILE_0};\nthen\n  mv -v ${SRCROOT}/HFMGHC/*_objc.{h,m} ${DERIVED_SOURCES_DIR}\nfi";
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -O -package ghc -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${SRCROOT}/HFMGHC -i${DERIVED_SOURCES_DIR} --make -c ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/HFMGHC/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_SOURCES_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 

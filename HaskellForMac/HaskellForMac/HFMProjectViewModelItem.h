@@ -65,6 +65,10 @@ extern NSString *const kExtraSourceGroupID;
 @property NSAttributedString *attributedString;       // 'nil' unless 'fileWrapper' is wrapping a regular file
 
 
+// FIXME: TEMPORARY HACK
+@property (strong) NSString *(^loadString)(NSString *);
+
+
 #pragma mark -
 #pragma mark Initialisation
 

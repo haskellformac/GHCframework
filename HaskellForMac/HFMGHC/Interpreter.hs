@@ -49,7 +49,13 @@ start
     ; return $ Session inlet
     }
   where
-    startSession inlet = {- Interp.setImports ["Prelude"] >> -} session inlet
+    startSession inlet 
+      = do
+        {   -- Initialise the session by reading the package database
+        ; dflags <- GHC.getSessionDynFlags
+        ; _packageIds <- GHC.setSessionDynFlags dflags
+        ; session inlet
+        }
         
     session inlet
       = do

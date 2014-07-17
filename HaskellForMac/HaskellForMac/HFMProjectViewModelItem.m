@@ -350,6 +350,14 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   @synchronized(self) {
     self.dirtyFileWrapper = newFileWrapper;
   }
+
+    // FIXME: TEMPORARY HACK
+  if (self.loadString) {
+
+    NSString *result = self.loadString(string);
+    NSLog(@"Loading...result: %@", result);
+
+  }
 }
 
 - (NSAttributedString *)attributedString
