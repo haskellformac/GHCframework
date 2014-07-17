@@ -42,6 +42,7 @@
 		E7D29A2218974B430045A5AB /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
 		E7D29A2518974C3C0045A5AB /* libHFMCBL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D29A2118974B130045A5AB /* libHFMCBL.a */; };
 		E7D29A2818974D6D0045A5AB /* HFMCBL-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */; };
+		E7EF892B1976A6C600E4C023 /* Interpreter.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7B0D6E01964075C00795AB0 /* Interpreter.hs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -52,12 +53,9 @@
 			fileType = pattern.proxy;
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).hi",
 				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.h",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
 			);
-			script = "if /Users/chak/bin/ghc-7.8 -package ghc -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${INPUT_FILE_DIR} -i${DERIVED_SOURCES_DIR} --make -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\n# if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n# then\n#   mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n# fi\n# if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n# then\n#   mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n# fi";
 		};
 		E7D29A1D18974B130045A5AB /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -72,6 +70,18 @@
 				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.m",
 			);
 			script = "if /Users/chak/bin/ghc-7.8 -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+		};
+		E7EF892C1976A8CD00E4C023 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*GHCInstance.hs";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
+			);
+			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\necho ...and to compile the _objc.m";
 		};
 /* End PBXBuildRule section */
 
@@ -469,12 +479,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E7A13B9B1890D99100D79087 /* Build configuration list for PBXNativeTarget "HFMGHC" */;
 			buildPhases = (
+				E7EF8928197693EB00E4C023 /* ShellScript */,
 				E7A13B7D1890D99000D79087 /* Sources */,
 				E7A13B7E1890D99000D79087 /* Frameworks */,
 				E7A13B7F1890D99000D79087 /* Headers */,
 				E7A13BA918914DA100D79087 /* ShellScript */,
 			);
 			buildRules = (
+				E7EF892C1976A8CD00E4C023 /* PBXBuildRule */,
 				E7A13BA11890D9E900D79087 /* PBXBuildRule */,
 			);
 			dependencies = (
@@ -605,14 +617,15 @@
 			files = (
 			);
 			inputPaths = (
-				"$(DERIVED_FILE_DIR)/*.o",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/*.o",
+				"$(DERIVED_FILE_DIR)/*.h",
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -package ghc -package ghc-paths -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/Interpreter.o\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
+			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -package ghc -package ghc-paths -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
 		};
 		E7D29A1C18974B130045A5AB /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -629,6 +642,23 @@
 			shellPath = /bin/sh;
 			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} -package Cabal\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
 			showEnvVarsInLog = 0;
+		};
+		E7EF8928197693EB00E4C023 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/HFMGHC/GHCInstance.hs",
+				"$(SRCROOT)/HFMGHC/Interpreter.hs",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.h",
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -O -package ghc -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${SRCROOT}/HFMGHC -i${DERIVED_SOURCES_DIR} --make -c ${SCRIPT_INPUT_FILE_0};\nthen\n  mv -v ${SRCROOT}/HFMGHC/*_objc.{h,m} ${DERIVED_SOURCES_DIR}\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -662,6 +692,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7EF892B1976A6C600E4C023 /* Interpreter.hs in Sources */,
 				E7A13BA71890E28E00D79087 /* GHCInstance.hs in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
