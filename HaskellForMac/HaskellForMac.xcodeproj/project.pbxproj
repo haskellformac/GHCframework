@@ -55,7 +55,7 @@
 			outputFiles = (
 				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
 			);
-			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\n# if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n# then\n#   mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n# fi\n# if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n# then\n#   mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n# fi";
+			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
 		E7D29A1D18974B130045A5AB /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
@@ -78,10 +78,10 @@
 			fileType = pattern.proxy;
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
 				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
 			);
-			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\necho ...and to compile the _objc.m";
+			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\necho ...and to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
 /* End PBXBuildRule section */
 
@@ -655,6 +655,7 @@
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/GHCInstance_objc.h",
 				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/*.o",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

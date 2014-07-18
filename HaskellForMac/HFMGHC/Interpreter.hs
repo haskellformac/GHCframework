@@ -23,10 +23,12 @@ import Control.Monad.Catch
 import System.IO
 
   -- GHC
+import qualified ErrUtils   as GHC
 import qualified HscTypes   as GHC
 import qualified GHC        as GHC
 import qualified GHC.Paths  as Paths
 import qualified MonadUtils as GHC
+import qualified Outputable as GHC
 
 
 -- |Abstract handle of an interpreter session.
@@ -95,7 +97,7 @@ load (Session inlet) target
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (\e -> GHC.liftIO $ putMVar resultMV (Result $ pprError e)) $ do
+        GHC.handleSourceError (handleError resultMV) $ do
         {                  -- demand the result to force any contained exceptions
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
@@ -103,7 +105,13 @@ load (Session inlet) target
         }
     ; takeMVar resultMV
     }
+  where
+    handleError resultMV e
+      = do
+        { dflags <- GHC.getSessionDynFlags
+        ; GHC.liftIO $ putMVar resultMV (Result $ pprError dflags e)
+        }
 
-pprError :: GHC.SourceError -> String
--- pprError err = ??? (srcErrorMessages err)
-pprError err = "Error!" -- FIXME: get the real errors and use a better data structure to return them
+pprError :: GHC.DynFlags -> GHC.SourceError -> String
+pprError dflags err
+  = GHC.showSDoc dflags (GHC.vcat $ GHC.pprErrMsgBagWithLoc (GHC.srcErrorMessages err))

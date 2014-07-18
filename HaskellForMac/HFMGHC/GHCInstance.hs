@@ -47,7 +47,8 @@ loadModuleText session moduleText
     
     target utcTime 
       = GHC.Target
-        { GHC.targetId           = GHC.TargetModule (GHC.mkModuleName "Interactive")
+        -- { GHC.targetId           = GHC.TargetModule (GHC.mkModuleName "Interactive")
+        { GHC.targetId           = GHC.TargetFile "/Users/chak/tmp/BigPixel.hsproj/src/BigPixel.hs" Nothing
         , GHC.targetAllowObjCode = False
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
