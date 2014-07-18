@@ -66,7 +66,7 @@ extern NSString *const kExtraSourceGroupID;
 
 
 // FIXME: TEMPORARY HACK
-@property (strong) NSString *(^loadString)(NSString *);
+@property (strong) void(^loadString)(NSString *);
 
 
 #pragma mark -

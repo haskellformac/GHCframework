@@ -10,6 +10,7 @@
                 <outlet property="horizontalSplitView" destination="7gu-en-3wm" id="VsR-Bj-ldW"/>
                 <outlet property="noEditorLabel" destination="sSz-C3-ErB" id="WTR-XS-YXo"/>
                 <outlet property="outlineView" destination="xMX-Dm-h40" id="4eD-9D-bXB"/>
+                <outlet property="replView" destination="BEt-gL-dGo" id="U1e-rP-QgC"/>
                 <outlet property="verticalSplitView" destination="9kS-X2-FR9" id="AR5-Ju-ORB"/>
                 <outlet property="window" destination="qHE-kS-dao" id="uvl-i4-ztn"/>
             </connections>

@@ -17,11 +17,13 @@
 
 // Views in 'ProjectWindow.xib'
 //
-@property (weak) IBOutlet NSOutlineView *outlineView;
-@property (weak) IBOutlet NSSplitView   *verticalSplitView;
-@property (weak) IBOutlet NSSplitView   *horizontalSplitView;
-@property (weak) IBOutlet NSView        *editorView;
-@property (weak) IBOutlet NSTextField   *noEditorLabel;
+@property (weak)              IBOutlet NSOutlineView *outlineView;
+@property (weak)              IBOutlet NSSplitView   *verticalSplitView;
+@property (weak)              IBOutlet NSSplitView   *horizontalSplitView;
+@property (weak)              IBOutlet NSView        *editorView;
+@property (weak)              IBOutlet NSTextField   *noEditorLabel;
+@property (unsafe_unretained) IBOutlet NSTextView    *replView;
+
 
 /// The GHC session associated with this window.
 //
@@ -212,7 +214,14 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                                          fileURL:fileURL];
       // FIXME: TEMPORARY HACK
     item.loadString = ^(NSString *moduleText) {
-      return [self.haskellSession loadModuleFromString:moduleText];
+
+      NSString           *result = [self.haskellSession loadModuleFromString:moduleText];
+      NSFont             *menlo13  = [NSFont fontWithName:@"Menlo-Regular" size:13];
+      NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
+                                                                     attributes:@{ NSFontAttributeName : menlo13 }];
+      [self.replView.textStorage appendAttributedString:attrText];
+      [self.replView scrollRangeToVisible:NSMakeRange([self.replView.textStorage length], 0)];
+
     };
 
   }

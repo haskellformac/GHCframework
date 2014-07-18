@@ -352,12 +352,8 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   }
 
     // FIXME: TEMPORARY HACK
-  if (self.loadString) {
-
-    NSString *result = self.loadString(string);
-    NSLog(@"Loading...result: %@", result);
-
-  }
+  if (self.loadString)
+    self.loadString(string);  
 }
 
 - (NSAttributedString *)attributedString
