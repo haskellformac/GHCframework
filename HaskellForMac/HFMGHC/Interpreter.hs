@@ -98,10 +98,10 @@ load (Session inlet) target
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (handleError resultMV) $ do
-        {                  -- demand the result to force any contained exceptions
+        {
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
-        ; GHC.liftIO $ putMVar resultMV (Result "")
+        ; GHC.liftIO $ putMVar resultMV (Result "Loaded module successfully.\n")
         }
     ; takeMVar resultMV
     }
