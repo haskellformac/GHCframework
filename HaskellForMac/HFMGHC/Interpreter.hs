@@ -132,6 +132,6 @@ logRef :: IORef [String]
 logRef = unsafePerformIO $ newIORef []
 
 -- logAction :: GHC.LogAction
-logAction dflags _severity _srcSpan _style msg
+logAction dflags severity srcSpan _style msg
   -- = modifyIORef logRef (GHC.showSDoc dflags (GHC.pprLocErrMsg msg) :)
-  = modifyIORef logRef (GHC.showSDoc dflags msg :)
+  = modifyIORef logRef (GHC.showSDoc dflags (GHC.mkLocMessage severity srcSpan msg) :)
