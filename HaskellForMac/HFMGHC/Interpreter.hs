@@ -57,7 +57,11 @@ start
       = do
         {   -- Initialise the session by reading the package database
         ; dflags <- GHC.getSessionDynFlags
-        ; _packageIds <- GHC.setSessionDynFlags (dflags {GHC.log_action =  logAction})
+        ; _packageIds <- GHC.setSessionDynFlags $ dflags 
+                                                  { GHC.hscTarget  = GHC.HscInterpreted
+                                                  , GHC.ghcLink    = GHC.LinkInMemory
+                                                  , GHC.log_action = logAction
+                                                  }
         ; session inlet
         }
         
