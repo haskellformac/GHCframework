@@ -215,7 +215,7 @@ NSString *const kCabalCellID = @"cabalCellID";
       // FIXME: TEMPORARY HACK
     item.loadString = ^(NSString *moduleText) {
 
-      NSString           *result = [self.haskellSession loadModuleFromString:moduleText];
+      NSString           *result   = [[self.haskellSession loadModuleFromString:moduleText] stringByAppendingString:@"\n\n"];
       NSFont             *menlo13  = [NSFont fontWithName:@"Menlo-Regular" size:13];
       NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
                                                                      attributes:@{ NSFontAttributeName : menlo13 }];

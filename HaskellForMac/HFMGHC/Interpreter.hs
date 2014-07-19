@@ -19,7 +19,6 @@ import Control.Concurrent
 import Control.Exception            (SomeException, evaluate)
 import Control.Monad
 import Control.Monad.Catch
-
 import System.IO
 
   -- GHC
@@ -30,6 +29,9 @@ import qualified GHC.Paths  as Paths
 import qualified MonadUtils as GHC
 import qualified Outputable as GHC
 
+-- FIXME: temporary
+import System.IO.Unsafe (unsafePerformIO)
+import Data.IORef
 
 -- |Abstract handle of an interpreter session.
 --
@@ -55,7 +57,7 @@ start
       = do
         {   -- Initialise the session by reading the package database
         ; dflags <- GHC.getSessionDynFlags
-        ; _packageIds <- GHC.setSessionDynFlags dflags
+        ; _packageIds <- GHC.setSessionDynFlags (dflags {GHC.log_action =  logAction})
         ; session inlet
         }
         
@@ -101,7 +103,11 @@ load (Session inlet) target
         {
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
-        ; GHC.liftIO $ putMVar resultMV (Result "Loaded module successfully.\n")
+        ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
+        ; GHC.liftIO $ writeIORef logRef []
+        ; let result | null msgs = Result "Loaded module successfully."
+                     | otherwise = Error $ concat msgs
+        ; GHC.liftIO $ putMVar resultMV result
         }
     ; takeMVar resultMV
     }
@@ -109,9 +115,19 @@ load (Session inlet) target
     handleError resultMV e
       = do
         { dflags <- GHC.getSessionDynFlags
-        ; GHC.liftIO $ putMVar resultMV (Result $ pprError dflags e)
+        ; GHC.liftIO $ putMVar resultMV (Error $ pprError dflags e)
         }
 
 pprError :: GHC.DynFlags -> GHC.SourceError -> String
 pprError dflags err
   = GHC.showSDoc dflags (GHC.vcat $ GHC.pprErrMsgBagWithLoc (GHC.srcErrorMessages err))
+
+-- FIXME: temporary hack
+logRef :: IORef [String]
+{-# NOINLINE logRef #-}
+logRef = unsafePerformIO $ newIORef []
+
+-- logAction :: GHC.LogAction
+logAction dflags _severity _srcSpan _style msg
+  -- = modifyIORef logRef (GHC.showSDoc dflags (GHC.pprLocErrMsg msg) :)
+  = modifyIORef logRef (GHC.showSDoc dflags msg :)
