@@ -122,6 +122,24 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
     cell.textField.stringValue = item.identifier;
+    switch (item.tag) {
+      case PVMItemTagPackage:
+          // FIXME: use the .hsproj icon once we have one
+//        cell.imageView.image = ???;
+        break;
+      case PVMItemTagExecutable:
+        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:@"public.unix-executable"];
+        break;
+      case PVMItemTagFile:
+        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:[item.identifier pathExtension]];
+        break;
+      case PVMItemTagFolder:
+      case PVMItemTagFileGroup:
+        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:(__bridge NSString *)kUTTypeFolder];
+        break;
+      default:
+        break;
+    }
     return cell;
 
   }
