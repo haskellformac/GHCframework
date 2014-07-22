@@ -89,7 +89,16 @@ objc_implementation [Typed 'start, Typed 'stop, Typed 'loadModuleText] [cunit|
 
 @end
 
+void GHCInstance_initialise(void);
+
 @implementation GHCInstance
+
+// FIXME: We only want one hs_init() per application, not one per framework!
++ (void)load
+{
+  hs_init(nil, nil);
+  GHCInstance_initialise();
+}
 
 + (instancetype)ghcInstanceStart
 {
