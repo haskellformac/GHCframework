@@ -14,6 +14,12 @@
 		E70A66E6197E0BA2006D3514 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66E5197E0BA2006D3514 /* libiconv.dylib */; };
 		E70A66E9197E2420006D3514 /* GHCInstance.hs in Resources */ = {isa = PBXBuildFile; fileRef = E70A66E8197E2420006D3514 /* GHCInstance.hs */; };
 		E70A66EA197E24B0006D3514 /* GHCInstance.hs in Sources */ = {isa = PBXBuildFile; fileRef = E70A66E8197E2420006D3514 /* GHCInstance.hs */; };
+		E70A66F5197E272E006D3514 /* CabalKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E70A66F4197E272E006D3514 /* CabalKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E70A6705197E272E006D3514 /* CabalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66F0197E272E006D3514 /* CabalKit.framework */; };
+		E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66F0197E272E006D3514 /* CabalKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E70A6713197E286D006D3514 /* GHCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E70A66D1197CE038006D3514 /* GHCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E70A6714197E2918006D3514 /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E70A670F197E279C006D3514 /* CBLPackage.hs */; };
+		E70A6717197E2E0E006D3514 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A6716197E2E0E006D3514 /* libiconv.dylib */; };
 		E70D409719409AB700CA3455 /* CabalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70D409619409AB700CA3455 /* CabalTest.swift */; };
 		E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D4189FCB2100504164 /* TextEditor.xib */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
@@ -35,13 +41,7 @@
 		E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */; };
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
-		E7A13B821890D99000D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
-		E7D29A1518974AEF0045A5AB /* CBLPackage.hs in Resources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
-		E7D29A1A18974B130045A5AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
-		E7D29A2218974B430045A5AB /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E7D29A1418974AEF0045A5AB /* CBLPackage.hs */; };
-		E7D29A2518974C3C0045A5AB /* libHFMCBL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D29A2118974B130045A5AB /* libHFMCBL.a */; };
-		E7D29A2818974D6D0045A5AB /* HFMCBL-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -56,42 +56,16 @@
 			);
 			script = "echo Tell Xcode to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
-		E7A13BA11890D9E900D79087 /* PBXBuildRule */ = {
+		E70A6711197E2822006D3514 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.hs";
 			fileType = pattern.proxy;
 			isEditable = 1;
 			outputFiles = (
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
 			);
-			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
-		};
-		E7D29A1D18974B130045A5AB /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*.hs";
-			fileType = pattern.proxy;
-			isEditable = 1;
-			outputFiles = (
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE).hi",
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.h",
-				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)_objc.m",
-			);
-			script = "if /Users/chak/bin/ghc-7.8 -O -outputdir ${DERIVED_SOURCES_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -c ${INPUT_FILE_PATH};\nthen\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.h ${DERIVED_FILE_DIR}\n  fi\n  if [ -s ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ]\n  then\n    mv -v ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}_objc.m ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
-		};
-		E7EF892C1976A8CD00E4C023 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*GHCInstance.hs";
-			fileType = pattern.proxy;
-			isEditable = 1;
-			outputFiles = (
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(INPUT_FILE_BASE).o",
-				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
-			);
-			script = "echo Tell Xcode to link ${SCRIPT_OUTPUT_FILE_0}\necho ...and to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
+			script = "echo Tell Xcode to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
 /* End PBXBuildRule section */
 
@@ -109,6 +83,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = E70A66AE197CC340006D3514;
 			remoteInfo = GHCFramework;
+		};
+		E70A6703197E272E006D3514 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E70A66EF197E272E006D3514;
+			remoteInfo = CabalKit;
+		};
+		E70A6707197E272E006D3514 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E70A66EF197E272E006D3514;
+			remoteInfo = CabalKit;
 		};
 		E7142E3C19415EFF00DB5295 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -131,13 +119,6 @@
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
 		};
-		E7D29A2318974C250045A5AB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E7D29A1618974B130045A5AB;
-			remoteInfo = HFMCBL;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -148,6 +129,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				E70A66C5197CC341006D3514 /* GHCKit.framework in Embed Frameworks */,
+				E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +143,11 @@
 		E70A66D8197CE0BE006D3514 /* Interpreter.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Interpreter.hs; path = GHCKit/Interpreter.hs; sourceTree = SOURCE_ROOT; };
 		E70A66E5197E0BA2006D3514 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		E70A66E8197E2420006D3514 /* GHCInstance.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GHCInstance.hs; path = GHCKit/GHCInstance.hs; sourceTree = SOURCE_ROOT; };
+		E70A66F0197E272E006D3514 /* CabalKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CabalKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E70A66F3197E272E006D3514 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E70A66F4197E272E006D3514 /* CabalKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CabalKit.h; sourceTree = "<group>"; };
+		E70A670F197E279C006D3514 /* CBLPackage.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CBLPackage.hs; sourceTree = "<group>"; };
+		E70A6716197E2E0E006D3514 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/lib/libiconv.dylib; sourceTree = DEVELOPER_DIR; };
 		E70D409519409AB600CA3455 /* HaskellForMacTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMacTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		E70D409619409AB700CA3455 /* CabalTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CabalTest.swift; sourceTree = "<group>"; };
 		E713E3D4189FCB2100504164 /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
@@ -197,12 +184,8 @@
 		E7A13B45188E7BED00D79087 /* HFMWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMWindowController.h; sourceTree = "<group>"; };
 		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
-		E7A13B811890D99000D79087 /* libHFMGHC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHFMGHC.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7A13B851890D99000D79087 /* HFMGHC-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HFMGHC-Prefix.pch"; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
-		E7D29A1418974AEF0045A5AB /* CBLPackage.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CBLPackage.hs; sourceTree = "<group>"; };
-		E7D29A2118974B130045A5AB /* libHFMCBL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHFMCBL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7D29A2718974D6D0045A5AB /* HFMCBL-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HFMCBL-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -215,11 +198,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E70A66EC197E272E006D3514 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E70A6717197E2E0E006D3514 /* libiconv.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E7A13AFE1888006C00D79087 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7D29A2518974C3C0045A5AB /* libHFMCBL.a in Frameworks */,
+				E70A6705197E272E006D3514 /* CabalKit.framework in Frameworks */,
 				E70A66C4197CC341006D3514 /* GHCKit.framework in Frameworks */,
 				E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */,
 			);
@@ -231,22 +222,6 @@
 			files = (
 				E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */,
 				E7A13B241888006C00D79087 /* XCTest.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E7A13B7E1890D99000D79087 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E7A13B821890D99000D79087 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E7D29A1918974B130045A5AB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E7D29A1A18974B130045A5AB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +244,24 @@
 			isa = PBXGroup;
 			children = (
 				E70A66D2197CE04B006D3514 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E70A66F1197E272E006D3514 /* CabalKit */ = {
+			isa = PBXGroup;
+			children = (
+				E70A670F197E279C006D3514 /* CBLPackage.hs */,
+				E70A66F4197E272E006D3514 /* CabalKit.h */,
+				E70A66F2197E272E006D3514 /* Supporting Files */,
+			);
+			path = CabalKit;
+			sourceTree = "<group>";
+		};
+		E70A66F2197E272E006D3514 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E70A66F3197E272E006D3514 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -297,9 +290,9 @@
 			children = (
 				E7A13B0A1888006C00D79087 /* HaskellForMac */,
 				E7D29A1318974AEF0045A5AB /* HFMCBL */,
-				E7A13B831890D99000D79087 /* HFMGHC */,
-				E7A13B281888006C00D79087 /* HaskellForMacTests */,
 				E70A66B0197CC341006D3514 /* GHCKit */,
+				E70A66F1197E272E006D3514 /* CabalKit */,
+				E7A13B281888006C00D79087 /* HaskellForMacTests */,
 				E7A13B031888006C00D79087 /* Frameworks */,
 				E7A13B021888006C00D79087 /* Products */,
 			);
@@ -310,9 +303,8 @@
 			children = (
 				E7A13B011888006C00D79087 /* Haskell.app */,
 				E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */,
-				E7A13B811890D99000D79087 /* libHFMGHC.a */,
-				E7D29A2118974B130045A5AB /* libHFMCBL.a */,
 				E70A66AF197CC340006D3514 /* GHCKit.framework */,
+				E70A66F0197E272E006D3514 /* CabalKit.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -320,6 +312,7 @@
 		E7A13B031888006C00D79087 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E70A6716197E2E0E006D3514 /* libiconv.dylib */,
 				E70A66E5197E0BA2006D3514 /* libiconv.dylib */,
 				E7A13B041888006C00D79087 /* Cocoa.framework */,
 				E7A13B231888006C00D79087 /* XCTest.framework */,
@@ -405,26 +398,9 @@
 			name = Interfaces;
 			sourceTree = "<group>";
 		};
-		E7A13B831890D99000D79087 /* HFMGHC */ = {
-			isa = PBXGroup;
-			children = (
-				E7A13B841890D99000D79087 /* Supporting Files */,
-			);
-			path = HFMGHC;
-			sourceTree = "<group>";
-		};
-		E7A13B841890D99000D79087 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				E7A13B851890D99000D79087 /* HFMGHC-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		E7D29A1318974AEF0045A5AB /* HFMCBL */ = {
 			isa = PBXGroup;
 			children = (
-				E7D29A1418974AEF0045A5AB /* CBLPackage.hs */,
 				E7D29A2618974D560045A5AB /* Supporting Files */,
 			);
 			path = HFMCBL;
@@ -441,18 +417,19 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E7A13B7F1890D99000D79087 /* Headers */ = {
+		E70A66ED197E272E006D3514 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E70A66F5197E272E006D3514 /* CabalKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E7D29A1B18974B130045A5AB /* Headers */ = {
+		E70A6712197E285A006D3514 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7D29A2818974D6D0045A5AB /* HFMCBL-Prefix.pch in Headers */,
+				E70A6713197E286D006D3514 /* GHCKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +443,7 @@
 				E70A66DC197DEB45006D3514 /* ShellScript */,
 				E70A66E2197DF7A3006D3514 /* Sources */,
 				E70A66AB197CC340006D3514 /* Frameworks */,
+				E70A6712197E285A006D3514 /* Headers */,
 				E70A66AD197CC340006D3514 /* Resources */,
 			);
 			buildRules = (
@@ -476,6 +454,26 @@
 			name = GHCKit;
 			productName = GHCFramework;
 			productReference = E70A66AF197CC340006D3514 /* GHCKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E70A66EF197E272E006D3514 /* CabalKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E70A6709197E272E006D3514 /* Build configuration list for PBXNativeTarget "CabalKit" */;
+			buildPhases = (
+				E70A6715197E2924006D3514 /* ShellScript */,
+				E70A66EB197E272E006D3514 /* Sources */,
+				E70A66EC197E272E006D3514 /* Frameworks */,
+				E70A66ED197E272E006D3514 /* Headers */,
+				E70A66EE197E272E006D3514 /* Resources */,
+			);
+			buildRules = (
+				E70A6711197E2822006D3514 /* PBXBuildRule */,
+			);
+			dependencies = (
+			);
+			name = CabalKit;
+			productName = CabalKit;
+			productReference = E70A66F0197E272E006D3514 /* CabalKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		E7A13B001888006C00D79087 /* HaskellForMac */ = {
@@ -490,9 +488,10 @@
 			buildRules = (
 			);
 			dependencies = (
-				E7D29A2418974C250045A5AB /* PBXTargetDependency */,
 				E70A66C3197CC341006D3514 /* PBXTargetDependency */,
 				E70A66C7197CC341006D3514 /* PBXTargetDependency */,
+				E70A6704197E272E006D3514 /* PBXTargetDependency */,
+				E70A6708197E272E006D3514 /* PBXTargetDependency */,
 			);
 			name = HaskellForMac;
 			productName = HaskellForMac;
@@ -519,46 +518,6 @@
 			productReference = E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E7A13B801890D99000D79087 /* HFMGHC */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E7A13B9B1890D99100D79087 /* Build configuration list for PBXNativeTarget "HFMGHC" */;
-			buildPhases = (
-				E7EF8928197693EB00E4C023 /* ShellScript */,
-				E7A13B7D1890D99000D79087 /* Sources */,
-				E7A13B7E1890D99000D79087 /* Frameworks */,
-				E7A13B7F1890D99000D79087 /* Headers */,
-				E7A13BA918914DA100D79087 /* ShellScript */,
-			);
-			buildRules = (
-				E7EF892C1976A8CD00E4C023 /* PBXBuildRule */,
-				E7A13BA11890D9E900D79087 /* PBXBuildRule */,
-			);
-			dependencies = (
-			);
-			name = HFMGHC;
-			productName = HFMGHC;
-			productReference = E7A13B811890D99000D79087 /* libHFMGHC.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		E7D29A1618974B130045A5AB /* HFMCBL */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E7D29A1E18974B130045A5AB /* Build configuration list for PBXNativeTarget "HFMCBL" */;
-			buildPhases = (
-				E7D29A1718974B130045A5AB /* Sources */,
-				E7D29A1918974B130045A5AB /* Frameworks */,
-				E7D29A1B18974B130045A5AB /* Headers */,
-				E7D29A1C18974B130045A5AB /* ShellScript */,
-			);
-			buildRules = (
-				E7D29A1D18974B130045A5AB /* PBXBuildRule */,
-			);
-			dependencies = (
-			);
-			name = HFMCBL;
-			productName = HFMGHC;
-			productReference = E7D29A2118974B130045A5AB /* libHFMCBL.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -570,6 +529,10 @@
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {
 					E70A66AE197CC340006D3514 = {
+						CreatedOnToolsVersion = 6.0;
+						DevelopmentTeam = Z3JA6XMHD3;
+					};
+					E70A66EF197E272E006D3514 = {
 						CreatedOnToolsVersion = 6.0;
 						DevelopmentTeam = Z3JA6XMHD3;
 					};
@@ -596,8 +559,7 @@
 			targets = (
 				E7A13B001888006C00D79087 /* HaskellForMac */,
 				E70A66AE197CC340006D3514 /* GHCKit */,
-				E7A13B801890D99000D79087 /* HFMGHC */,
-				E7D29A1618974B130045A5AB /* HFMCBL */,
+				E70A66EF197E272E006D3514 /* CabalKit */,
 				E7A13B211888006C00D79087 /* HaskellForMacTests */,
 			);
 		};
@@ -605,6 +567,13 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		E70A66AD197CC340006D3514 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E70A66EE197E272E006D3514 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -625,7 +594,6 @@
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
 				E7A13B1B1888006C00D79087 /* MainMenu.xib in Resources */,
 				E70A66D9197CE0BE006D3514 /* Interpreter.hs in Resources */,
-				E7D29A1518974AEF0045A5AB /* CBLPackage.hs in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,63 +618,29 @@
 				"$(SRCROOT)/GHCKit/Interpreter.hs",
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/GHCInstance.m_objc.h",
-				"$(DERIVED_FILE_DIR)/GHCInstance.m_objc.m",
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.h",
+				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
 				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/GHCKit.a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -package ghc-paths -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/GHCKit.a -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\n  # Inform the linker that we want to link GHCKit.a\n  echo ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/GHCKit.a >>${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/GHCKit.LinkFileList\nelse\n  exit 1\nfi";
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -package ghc-paths -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\n  # Inform the linker that we want to link the GHC generated .a\n  echo ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a >>${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.LinkFileList\nelse\n  exit 1\nfi";
 		};
-		E7A13BA918914DA100D79087 /* ShellScript */ = {
+		E70A6715197E2924006D3514 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/*.o",
-				"$(DERIVED_FILE_DIR)/*.h",
+				"$(SRCROOT)/CabalKit/CBLPackage.hs",
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp",
+				"$(DERIVED_FILE_DIR)/CBLPackage_objc.h",
+				"$(DERIVED_FILE_DIR)/CBLPackage_objc.m",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -package ghc -package ghc-paths -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME}\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
-		};
-		E7D29A1C18974B130045A5AB /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(DERIVED_FILE_DIR)/*.o",
-			);
-			outputPaths = (
-				"$(TARGET_BUILD_DIR)/$(FULL_PRODUCT_NAME).timestamp",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Copy generated headers to the derived source for the entire project\nmkdir -p ${PROJECT_DERIVED_FILE_DIR}\ncp ${DERIVED_FILE_DIR}/*.h ${PROJECT_DERIVED_FILE_DIR}\n\n# Extend the static library archive with all referenced Haskell libraries\nmv ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/\n/Users/chak/bin/ghc-7.8 -threaded -staticlib -o ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME} ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${FULL_PRODUCT_NAME} -package Cabal\ntouch ${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}.timestamp";
-			showEnvVarsInLog = 0;
-		};
-		E7EF8928197693EB00E4C023 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/HFMGHC/GHCInstance.hs",
-				"$(SRCROOT)/HFMGHC/Interpreter.hs",
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/GHCInstance_objc.h",
-				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/*.o",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -i${SRCROOT}/HFMGHC -i${DERIVED_FILE_DIR} --make -c ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/HFMGHC/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\n  # Inform the linker that we want to link the GHC generated .a\n  echo ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a >>${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.LinkFileList\nelse\n  exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -716,6 +650,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E70A66EA197E24B0006D3514 /* GHCInstance.hs in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E70A66EB197E272E006D3514 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E70A6714197E2918006D3514 /* CBLPackage.hs in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -744,21 +686,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E7A13B7D1890D99000D79087 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E7D29A1718974B130045A5AB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E7D29A2218974B430045A5AB /* CBLPackage.hs in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -771,6 +698,16 @@
 			isa = PBXTargetDependency;
 			target = E70A66AE197CC340006D3514 /* GHCKit */;
 			targetProxy = E70A66C6197CC341006D3514 /* PBXContainerItemProxy */;
+		};
+		E70A6704197E272E006D3514 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E70A66EF197E272E006D3514 /* CabalKit */;
+			targetProxy = E70A6703197E272E006D3514 /* PBXContainerItemProxy */;
+		};
+		E70A6708197E272E006D3514 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E70A66EF197E272E006D3514 /* CabalKit */;
+			targetProxy = E70A6707197E272E006D3514 /* PBXContainerItemProxy */;
 		};
 		E7142E3D19415EFF00DB5295 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -786,11 +723,6 @@
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E7A13B261888006C00D79087 /* PBXContainerItemProxy */;
-		};
-		E7D29A2418974C250045A5AB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E7D29A1618974B130045A5AB /* HFMCBL */;
-			targetProxy = E7D29A2318974C250045A5AB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -886,6 +818,66 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.9;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E70A670A197E272E006D3514 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CabalKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E70A670B197E272E006D3514 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CabalKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1160,52 +1152,6 @@
 			};
 			name = Release;
 		};
-		E7A13B9C1890D99100D79087 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HFMGHC/HFMGHC-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		E7A13B9D1890D99100D79087 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HFMGHC/HFMGHC-Prefix.pch";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		E7D29A1F18974B130045A5AB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEFINES_MODULE = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HFMCBL/HFMCBL-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				PRODUCT_NAME = HFMCBL;
-			};
-			name = Debug;
-		};
-		E7D29A2018974B130045A5AB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEFINES_MODULE = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HFMCBL/HFMCBL-Prefix.pch";
-				PRODUCT_NAME = HFMCBL;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1214,6 +1160,14 @@
 			buildConfigurations = (
 				E70A66C9197CC341006D3514 /* Debug */,
 				E70A66CA197CC341006D3514 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		E70A6709197E272E006D3514 /* Build configuration list for PBXNativeTarget "CabalKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E70A670A197E272E006D3514 /* Debug */,
+				E70A670B197E272E006D3514 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
@@ -1240,24 +1194,6 @@
 			buildConfigurations = (
 				E7A13B361888006C00D79087 /* Debug */,
 				E7A13B371888006C00D79087 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E7A13B9B1890D99100D79087 /* Build configuration list for PBXNativeTarget "HFMGHC" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E7A13B9C1890D99100D79087 /* Debug */,
-				E7A13B9D1890D99100D79087 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E7D29A1E18974B130045A5AB /* Build configuration list for PBXNativeTarget "HFMCBL" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E7D29A1F18974B130045A5AB /* Debug */,
-				E7D29A2018974B130045A5AB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

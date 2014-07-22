@@ -10,14 +10,11 @@
 #import "HsFFI.h"
 
 
-void CBLPackage_initialise(void);
-
-
 int main(int argc, char *argv[])
 {
     // Get the Haskell runtime going.
-  hs_init(&argc, &argv);
-  CBLPackage_initialise();
+    // FIXME: need a shared initialisation again (currently it happens framework local)
+//  hs_init(&argc, &argv);
 
     // Launch the Cocoa application.
   return NSApplicationMain(argc, (const char **) argv);

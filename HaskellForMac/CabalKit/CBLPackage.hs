@@ -311,6 +311,15 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
   |] 
   [objcimdecls|
 
+    void CBLPackage_initialise(void);
+
+    // FIXME: We only want one hs_init() per application, not one per framework!
+    + (void)load
+    {
+      hs_init(nil, nil);
+      CBLPackage_initialise();
+    }
+
     + (instancetype)package
     {
       return [[CBLPackage alloc] initWithGenericPackageDescriptionHsPtr:emptyGenericPackageDescription()];
