@@ -34,6 +34,8 @@
 //
 @property (nonatomic, readonly) NSDictionary *editors;
 
+@property NSUInteger startOfCommand;   // FIXME: provisional starting location of type command in REPL
+
 @end
 
 
@@ -185,7 +187,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   if (aSelector == @selector(insertNewline:)) {
 
-    NSLog(@"RET in REPL");
+    NSString *userCommand = [self.replView.textStorage.string substringFromIndex:self.startOfCommand];
+    NSLog(@"REPL command: %@", userCommand);
+      // FIXME: CONTINUE HERE: (1) put '>' in front of command; (2) execute command; (3) insert result in REPL area
 
   }
   return NO;
@@ -253,10 +257,9 @@ NSString *const kCabalCellID = @"cabalCellID";
       NSFont             *menlo13  = [NSFont fontWithName:@"Menlo-Regular" size:13];
       NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
                                                                      attributes:@{ NSFontAttributeName : menlo13 }];
-      [self.replView selectAll:self];
-      [self.replView deleteToBeginningOfParagraph:self];
-      [self.replView.textStorage appendAttributedString:attrText];
+      [self.replView.textStorage setAttributedString:attrText];
       [self.replView scrollRangeToVisible:NSMakeRange([self.replView.textStorage length], 0)];
+      self.startOfCommand = [self.replView selectedRange].location;
 
     };
 
