@@ -11,7 +11,9 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>
+@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate,
+  NSTextViewDelegate>
+  // ^^^ FIXME: just for now, to keep it simple
 
 /// View controller of the currently displayed editor if any (which depends on the item selected in the outline view).
 ///

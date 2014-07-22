@@ -177,6 +177,22 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 
 #pragma mark -
+#pragma mark NSTextViewDelegate protocol methods
+
+  // FIXME: This is provisionally the delegate for the REPL view while it is so simple.
+
+- (BOOL)textView:(NSTextView *)replTextView doCommandBySelector:(SEL)aSelector
+{
+  if (aSelector == @selector(insertNewline:)) {
+
+    NSLog(@"RET in REPL");
+
+  }
+  return NO;
+}
+
+
+#pragma mark -
 #pragma mark Controlling the editor component
 
 /// Select the editor appropriate to editing the file backing the given given view model item; the type of editor is
@@ -237,6 +253,8 @@ NSString *const kCabalCellID = @"cabalCellID";
       NSFont             *menlo13  = [NSFont fontWithName:@"Menlo-Regular" size:13];
       NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
                                                                      attributes:@{ NSFontAttributeName : menlo13 }];
+      [self.replView selectAll:self];
+      [self.replView deleteToBeginningOfParagraph:self];
       [self.replView.textStorage appendAttributedString:attrText];
       [self.replView scrollRangeToVisible:NSMakeRange([self.replView.textStorage length], 0)];
 
