@@ -53,6 +53,7 @@
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(TARGET_NAME).a",
 			);
 			script = "echo Tell Xcode to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
@@ -64,6 +65,7 @@
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(TARGET_NAME).a",
 			);
 			script = "echo Tell Xcode to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
@@ -620,11 +622,10 @@
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/GHCInstance_objc.h",
 				"$(DERIVED_FILE_DIR)/GHCInstance_objc.m",
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/GHCKit.a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -package ghc-paths -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\n  # Inform the linker that we want to link the GHC generated .a\n  echo ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a >>${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.LinkFileList\nelse\n  exit 1\nfi";
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -package ghc-paths -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 		E70A6715197E2924006D3514 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -637,10 +638,11 @@
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CBLPackage_objc.h",
 				"$(DERIVED_FILE_DIR)/CBLPackage_objc.m",
+				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(TARGET_NAME).a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\n  # Inform the linker that we want to link the GHC generated .a\n  echo ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a >>${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.LinkFileList\nelse\n  exit 1\nfi";
+			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1162,6 +1164,7 @@
 				E70A66CA197CC341006D3514 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E70A6709197E272E006D3514 /* Build configuration list for PBXNativeTarget "CabalKit" */ = {
 			isa = XCConfigurationList;
@@ -1170,6 +1173,7 @@
 				E70A670B197E272E006D3514 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7A13AFC1888006C00D79087 /* Build configuration list for PBXProject "HaskellForMac" */ = {
 			isa = XCConfigurationList;
