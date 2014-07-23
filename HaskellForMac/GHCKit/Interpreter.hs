@@ -84,7 +84,8 @@ stop (Session inlet) = putMVar inlet Nothing
 --
 -- FIXME: improve error reporting
 eval :: Session -> String -> IO Result
-eval = error "eval is not implemented"
+eval session exprString
+  = return $ Result "42"
 
 -- Infer the type of a Haskell expression in the given interpreter session.
 --
@@ -105,6 +106,7 @@ load (Session inlet) target
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (handleError resultMV) $ do
         {
+        ; GHC.liftIO $ rts_revertCAFs
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
         ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
@@ -135,3 +137,9 @@ logRef = unsafePerformIO $ newIORef []
 logAction dflags severity srcSpan _style msg
   -- = modifyIORef logRef (GHC.showSDoc dflags (GHC.pprLocErrMsg msg) :)
   = modifyIORef logRef (GHC.showSDoc dflags (GHC.mkLocMessage severity srcSpan msg) :)
+
+
+-- Runtime system support
+-- ----------------------
+foreign import ccall "revertCAFs" rts_revertCAFs  :: IO ()
+        -- Make it "safe", just in case

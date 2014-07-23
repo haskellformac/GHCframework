@@ -20,6 +20,16 @@
 #pragma mark -
 #pragma mark Code loading
 
+// Load a single module and make it the current evaluation context.
+//
 - (NSString *)loadModuleFromString:(NSString *)moduleText;
+
+
+#pragma mark -
+#pragma mark Code execution
+
+// Evaluate an expression in the current evaluation context.
+//
+- (NSString *)evalExprFromString:(NSString *)exprText;
 
 @end

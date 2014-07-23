@@ -1,13 +1,14 @@
 //
-//  HFMGHC.m
+//  HFMHaskellSession.m
 //  HaskellForMac
 //
 //  Created by Manuel M T Chakravarty on 21/01/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "CabalKit/CabalKit.h"
+#import "GHCKit/GHCKit.h"
 #import "HFMHaskellSession.h"
-#import "GHCInstance_objc.h"
 
 
 @interface HFMHaskellSession ()
@@ -57,5 +58,13 @@
   return [self.ghcInstance loadModuleFromString:moduleText];
 }
 
+
+#pragma mark -
+#pragma mark Code execution
+
+- (NSString *)evalExprFromString:(NSString *)exprText
+{
+  return [self.ghcInstance evalExprFromString:exprText];
+}
 
 @end

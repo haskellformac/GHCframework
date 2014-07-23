@@ -185,11 +185,39 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (BOOL)textView:(NSTextView *)replTextView doCommandBySelector:(SEL)aSelector
 {
+
+  if (replTextView != self.replView) {
+
+    NSLog(@"%s: textView:doCommandBySelector from unexpected text view", __func__);
+    return NO;
+
+  }
+
   if (aSelector == @selector(insertNewline:)) {
 
-    NSString *userCommand = [self.replView.textStorage.string substringFromIndex:self.startOfCommand];
-    NSLog(@"REPL command: %@", userCommand);
-      // FIXME: CONTINUE HERE: (1) put '>' in front of command; (2) execute command; (3) insert result in REPL area
+    NSFont   *menlo13     = [NSFont fontWithName:@"Menlo-Regular" size:13];
+    NSColor  *grey        = [NSColor colorWithWhite:0.5 alpha:1];
+    NSString *userCommand = [replTextView.textStorage.string substringFromIndex:self.startOfCommand];
+
+      // Render the command in grey
+    [replTextView.textStorage addAttribute:NSForegroundColorAttributeName
+                                     value:grey
+                                     range:(NSRange){self.startOfCommand,
+                                                     [replTextView.textStorage length] - self.startOfCommand}];
+
+      // Move insertion point to the end
+    [replTextView setSelectedRange:(NSRange){[replTextView.textStorage length], 0}];
+    [replTextView insertNewline:self];
+
+      // Execute command
+    NSString *evalResult = [self.haskellSession evalExprFromString:userCommand];
+
+      // Insert result in the REPL area
+    [replTextView.textStorage appendAttributedString:[[NSAttributedString alloc]
+                                                      initWithString:evalResult
+                                                      attributes:@{ NSFontAttributeName : menlo13 }]];
+
+    self.startOfCommand = [self.replView selectedRange].location + 1;   // '+1' to account for the newline
 
   }
   return NO;
@@ -258,7 +286,7 @@ NSString *const kCabalCellID = @"cabalCellID";
       NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
                                                                      attributes:@{ NSFontAttributeName : menlo13 }];
       [self.replView.textStorage setAttributedString:attrText];
-      [self.replView scrollRangeToVisible:NSMakeRange([self.replView.textStorage length], 0)];
+      [self.replView scrollRangeToVisible:(NSRange){[self.replView.textStorage length], 0}];
       self.startOfCommand = [self.replView selectedRange].location;
 
     };

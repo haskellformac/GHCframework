@@ -53,6 +53,13 @@ loadModuleText session moduleText
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
 
+evalText :: Session -> String -> IO String
+evalText session exprText 
+  = showResult <$> eval session exprText
+  where
+    showResult (Result res) = res
+    showResult (Error  err) = "ERROR: " ++ err
+
 
 -- Objective-C class interface
 -- ---------------------------
@@ -69,6 +76,10 @@ objc_interface [cunit|
 //
 - (typename NSString *)loadModuleFromString:(typename NSString *)moduleText;
 
+// Evaluate the Haskell expression given as a string.
+//
+- (typename NSString *)evalExprFromString:(typename NSString *)exprText;
+
 // Release the resources of this GHC instance. It cannot be used after this.
 //
 - (void)stop;
@@ -80,7 +91,7 @@ objc_interface [cunit|
 -- Objective-C class implementation
 -- --------------------------------
 
-objc_implementation [Typed 'start, Typed 'stop, Typed 'loadModuleText] [cunit|
+objc_implementation [Typed 'start, Typed 'stop, Typed 'loadModuleText, Typed 'evalText] [cunit|
 
 @interface GHCInstance ()
 
@@ -117,6 +128,11 @@ void GHCInstance_initialise(void);
 - (typename NSString *)loadModuleFromString:(typename NSString *)moduleText
 {
   return loadModuleText(self.interpreterSession, moduleText);
+}
+
+- (typename NSString *)evalExprFromString:(typename NSString *)exprText
+{
+  return evalText(self.interpreterSession, exprText);
 }
 
 - (void)stop

@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "CabalKit/CabalKit.h"
 #import "HFMProjectViewModel.h"
 #import "HFMProjectViewModelItem.h"
-#import "CBLPackage_objc.h"
 
 
 @interface HFMProjectViewModel ()
