@@ -84,8 +84,24 @@ stop (Session inlet) = putMVar inlet Nothing
 --
 -- FIXME: improve error reporting
 eval :: Session -> String -> IO Result
-eval session exprString
-  = return $ Result "42"
+eval (Session inlet) stmt
+  = do
+    { resultMV <- newEmptyMVar
+    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+        GHC.handleSourceError (handleError resultMV) $ do
+        { runResult <- GHC.runStmt stmt GHC.RunToCompletion
+        ; result <- case runResult of
+                     GHC.RunOk names       -> do
+                                              { dflags <- GHC.getSessionDynFlags
+                                              ; let namesStr = GHC.showSDoc dflags (GHC.pprQuotedList names)
+                                              ; return $ Result ("(" ++ namesStr ++ ")")
+                                              }
+                     GHC.RunException _exc -> return $ Error "<exception>"
+                     _                     -> return $ Error "<unexpected break point>"
+        ; GHC.liftIO $ putMVar resultMV result
+        }
+    ; takeMVar resultMV
+    }
 
 -- Infer the type of a Haskell expression in the given interpreter session.
 --
@@ -106,23 +122,36 @@ load (Session inlet) target
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (handleError resultMV) $ do
         {
+            -- Revert CAFs from previous evaluations
         ; GHC.liftIO $ rts_revertCAFs
+
+            -- Load the new target
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
+
+            -- Determine errors if unsuccessful
         ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
         ; GHC.liftIO $ writeIORef logRef []
         ; let result | null msgs = Result "Loaded module successfully."
                      | otherwise = Error $ concat msgs
+
+            -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
+        ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
+        ; case loadedModules of
+            modname:_ -> GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to load one module
+            []        -> return ()
+            
+            -- Communicate the result back to the main thread
         ; GHC.liftIO $ putMVar resultMV result
         }
     ; takeMVar resultMV
     }
-  where
-    handleError resultMV e
-      = do
-        { dflags <- GHC.getSessionDynFlags
-        ; GHC.liftIO $ putMVar resultMV (Error $ pprError dflags e)
-        }
+
+handleError resultMV e
+  = do
+    { dflags <- GHC.getSessionDynFlags
+    ; GHC.liftIO $ putMVar resultMV (Error $ pprError dflags e)
+    }
 
 pprError :: GHC.DynFlags -> GHC.SourceError -> String
 pprError dflags err
