@@ -118,6 +118,42 @@
   [self addWindowController:[[HFMWindowController alloc] init]];
 }
 
+- (void)showWindows
+{
+    // First, do show the window.
+  [super showWindows];
+
+    // Then, get the window controller associated with this document.
+  NSWindowController *myWindowController = [self.windowControllers lastObject];
+  if (!myWindowController) {
+    NSLog(@"%s: window controller of document missing; URL = %@", __func__, self.fileURL);
+    return;
+  }
+
+    // If this is an untitled document, ask the user to configure a new project.
+  if (!self.fileURL) {
+
+    NSWindow *window   = myWindowController.window;
+    NSString *fname    = [self.projectModel.fileWrapper preferredFilename];
+    NSSavePanel* panel = [NSSavePanel savePanel];
+    [panel setNameFieldStringValue:fname];
+    [panel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+
+      switch (result) {
+        case NSFileHandlingPanelOKButton:
+          self.fileURL = [panel URL];
+          break;
+
+        default:
+          [window close];
+          break;
+      }
+      
+    }];
+
+  }
+}
+
 
 #pragma mark -
 #pragma mark NSOutlineViewDataSource protocol methods
