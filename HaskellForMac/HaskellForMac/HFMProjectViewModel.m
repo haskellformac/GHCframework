@@ -83,7 +83,7 @@ static NSString *cabalFileExtension = @"cabal";
       _package = [CBLPackage package];
 
         // Wrap it into a new file wrapper.
-      NSString *fname = [[[projectFileWrapper filename] stringByDeletingPathExtension]
+      NSString *fname = [[[projectFileWrapper preferredFilename] stringByDeletingPathExtension]
                          stringByAppendingPathExtension:cabalFileExtension];
       NSData   *data  = [[self.package string] dataUsingEncoding:NSUTF8StringEncoding];
       [projectFileWrapper addRegularFileWithContents:data preferredFilename:fname];

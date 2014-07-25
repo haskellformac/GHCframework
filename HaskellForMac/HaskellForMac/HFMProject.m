@@ -16,7 +16,7 @@
 #pragma mark -
 #pragma mark Initialisation
 
-  // Don't initialise the propery 'projectModel'. This only happens once when we know whether we open an existing
+  // NB: Don't initialise the propery 'projectModel'. This only happens once when we know whether we open an existing
   // document or are creating a new one.
 - (instancetype)init
 {
@@ -40,7 +40,7 @@
 
     [self setFileType:typeName];
     NSFileWrapper *projectFileWrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:@{}];
-    [projectFileWrapper setPreferredFilename:@"MyHaskellProject.hsproj"];
+    [projectFileWrapper setPreferredFilename:@"Untitled.hsproj"];
     _projectModel = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
                                                                cabalFileWrapper:nil];
 

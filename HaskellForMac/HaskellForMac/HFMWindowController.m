@@ -244,7 +244,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   if (![item.fileWrapper isRegularFile]) return;
 
     // Check that the file is still there and force reading its contents. (We'll need it in a sec.)
-  if (![item.fileWrapper readFromURL:fileURL options:NSFileWrapperReadingImmediate error:&error]) {
+  if (!fileURL || ![item.fileWrapper readFromURL:fileURL options:NSFileWrapperReadingImmediate error:&error]) {
     NSLog(@"%s: re-reading file wrapper from %@ failed: %@", __func__, fileURL, error);
     return;
   }

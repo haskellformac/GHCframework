@@ -65,7 +65,7 @@
                 <menuItem title="File" id="83">
                     <menu key="submenu" title="File" id="81">
                         <items>
-                            <menuItem title="New" keyEquivalent="n" id="82">
+                            <menuItem title="New Project…" keyEquivalent="n" id="82">
                                 <connections>
                                     <action selector="newDocument:" target="-1" id="373"/>
                                 </connections>
