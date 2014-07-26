@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 @property                       NSString     *author;
 @property                       NSString     *maintainer;
 @property                       NSString     *copyright;
+@property                       NSString     *license;
 @property                       NSString     *homepage;
 @property                       NSString     *pkgUrl;
 @property                       NSString     *bugReports;

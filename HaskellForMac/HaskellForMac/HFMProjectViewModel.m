@@ -152,7 +152,7 @@ static NSString *haskellFileExtension = @"hs";
     // Configure basic Cabal fields.
   self.name           = name;
   self.version        = @"1.0";
-  self.copyright      = @"AllRightsReserved";
+  self.license        = @"AllRightsReserved";
   self.executableName = name;
   self.sourceDir      = nil;
   self.modulePath     = [path stringByAppendingPathComponent:mainName];
