@@ -82,11 +82,27 @@ NSString *const kCabalCellID = @"cabalCellID";
   [self.outlineView sizeLastColumnToFit];
   self.outlineView.delegate   = self;
   self.outlineView.dataSource = self.document;
+
   [self.outlineView reloadData];
 
     // Set delegate of the split views is this window controller.
   self.verticalSplitView.delegate   = self;
   self.horizontalSplitView.delegate = self;
+
+    // Expand all root items without animation.
+  [NSAnimationContext beginGrouping];
+  [[NSAnimationContext currentContext] setDuration:0];
+  [self.outlineView expandItem:nil expandChildren:YES];
+  [NSAnimationContext endGrouping];
+}
+
+
+#pragma mark -
+#pragma mark Notifications
+
+- (void)refreshOutlineView
+{
+  [self.outlineView reloadData];
 
     // Expand all root items without animation.
   [NSAnimationContext beginGrouping];

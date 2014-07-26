@@ -330,7 +330,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 - (NSString *)string
 {
-  NSData   *data;
+  NSData *data;
 
   @synchronized(self) {
       // Obtain the most recent version of the contents.
@@ -364,6 +364,25 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 - (void)setAttributedString:(NSAttributedString *)attributedString
 {
   self.string = [attributedString string];
+}
+
+  // NB: We could avoid passing in the child item if we could easily compute it from the file wrapper. This is not
+  //     convenient currently as the children computation computes all children. MAYBE TODO: refactor to be able to
+  //     do this for individual child items.
+- (void)addChild:(HFMProjectViewModelItem *)child fileWrapper:(NSFileWrapper *)childFileWrapper
+{
+  @synchronized(self) {
+
+      // Obtain the most recent version of the file wrapper.
+    NSFileWrapper *currentFileWrapper = (self.dirtyFileWrapper) ? self.dirtyFileWrapper : self.fileWrapper;
+    [currentFileWrapper addFileWrapper:childFileWrapper];
+    self.dirtyFileWrapper = currentFileWrapper;
+      // NB: If the current one was the original 'self.fileWrapper', we still need to assign to
+      //     'self.dirtyFileWrapper'; otherwise, the dirty status is not represented properly.
+
+  }
+  [self children];    // Make sure '_theChildren' is initialised
+  [_theChildren addObject:child];
 }
 
 

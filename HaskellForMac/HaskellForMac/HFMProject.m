@@ -25,12 +25,7 @@
   return self;
 }
 
-  // FIXME: We probably still have to special case the situation where a document was autosaved, but never explicitly saved
-  //  to a particular location. Might have to override 'initForURL:withContentsOfURL:ofType:error:'
-  //  or 'initWithContentsOfURL:ofType:error:'
-
   // This initialisation method is invoked if a new document is being created.
-
 - (instancetype)initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
 {
 #pragma unused(outError)
@@ -40,10 +35,15 @@
 
     [self setFileType:typeName];
     NSFileWrapper *projectFileWrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:@{}];
-    [projectFileWrapper setPreferredFilename:@"Untitled.hsproj"];
+    [projectFileWrapper setPreferredFilename:@"Untitled.hsproj"];   // NB: not an absolute path; needs to be updated before saving
     _projectModel = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
                                                                cabalFileWrapper:nil];
+    if (!_projectModel) {
 
+      NSLog(@"%s: failed to create a new project",__func__);
+      return nil;
+
+    }
   }
   return self;
 }
@@ -124,7 +124,7 @@
   [super showWindows];
 
     // Then, get the window controller associated with this document.
-  NSWindowController *myWindowController = [self.windowControllers lastObject];
+  HFMWindowController *myWindowController = [self.windowControllers lastObject];
   if (!myWindowController) {
     NSLog(@"%s: window controller of document missing; URL = %@", __func__, self.fileURL);
     return;
@@ -142,10 +142,12 @@
       switch (result) {
         case NSFileHandlingPanelOKButton:
           self.fileURL = [panel URL];
+          [self.projectModel createProjectForURL:self.fileURL];
+          [myWindowController refreshOutlineView];
           break;
 
         default:
-          [window close];
+          [window close];     // New project creation has been cancelled.
           break;
       }
       
@@ -194,8 +196,9 @@
 {
 #pragma unused(outlineView)
 
-    // Without a window controller, we do not currently display this document anywhere.
-  if (!self.windowControllers.firstObject)
+    // Without a window controller, we do not currently display this document anywhere and,
+    // if 'self.fileURL' is not set, the data source is not ready yet.
+  if (!self.windowControllers.firstObject || !self.fileURL)
     return 0;
 
   if (!item)

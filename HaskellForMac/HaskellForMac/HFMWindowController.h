@@ -21,4 +21,12 @@
 //
 @property (nonatomic) NSViewController *editorViewController;     // maybe nil
 
+
+#pragma mark -
+#pragma mark Notifications
+
+/// The data source of the outline view change. Bring the view up to date.
+//
+- (void)refreshOutlineView;
+
 @end

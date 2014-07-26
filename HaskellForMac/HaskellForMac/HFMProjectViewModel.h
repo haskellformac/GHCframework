@@ -71,6 +71,11 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 //
 + (NSString *)cabalFileExtension;
 
+/// The file extension of Haskell files.
+//
++ (NSString *)haskellFileExtension;
+
+
 #pragma mark -
 #pragma mark Initialisation
 
@@ -91,6 +96,10 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 // FIXME: we need to report errors with more information.
 - (instancetype)initWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
                           cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper;
+
+/// Configure an initialised, but still empty project as a default Haskell project.
+//
+- (void)createProjectForURL:(NSURL *)url;
 
 
 #pragma mark -

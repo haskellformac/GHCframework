@@ -107,4 +107,14 @@ extern NSString *const kExtraSourceGroupID;
 //
 - (NSFileWrapper *)getUpdatedFileWrapper;
 
+
+#pragma mark -
+#pragma mark Edits
+
+/// Add a child item associated with the given file wrapper.
+///
+/// The current item must be represented by a directory.
+//
+- (void)addChild:(HFMProjectViewModelItem *)child fileWrapper:(NSFileWrapper *)childFileWrapper;
+
 @end

@@ -338,8 +338,10 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
     
         typename HsStablePtr *result = parsePackageDescription(string);
         _genericPackageDescriptionHsPtr = parseOk(result);
-        if (!_genericPackageDescriptionHsPtr)
+        if (!_genericPackageDescriptionHsPtr) {
+          NSLog(@"Loading of Cabal file failed: %@", string);
           return nil;       // initialisation fails if parsing fails
+        }
     
         // FIXME: We need better error handling. Return errors if parsing fails and also return the warnings, even if it
         //        doesn't fail.

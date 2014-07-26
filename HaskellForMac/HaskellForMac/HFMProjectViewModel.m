@@ -45,11 +45,17 @@ NSArray      *dictTreeToStrings(NSDictionary *dicts);
 #pragma mark Informative class methods
 
 static NSString *cabalFileExtension = @"cabal";
-
 + (NSString *)cabalFileExtension
 {
   return cabalFileExtension;
 }
+
+static NSString *haskellFileExtension = @"hs";
++ (NSString *)haskellFileExtension
+{
+  return haskellFileExtension;
+}
+
 
 #pragma mark -
 #pragma mark Initialisation
@@ -95,34 +101,78 @@ static NSString *cabalFileExtension = @"cabal";
                                                       encoding:NSUTF8StringEncoding];
 
       _package = [CBLPackage packageWithString:cabalContents];
+      if (!_package) return nil;    // Bail out if we cannot load the Cabal file
 
     }
     _cabalFileName = cabalFileWrapper.preferredFilename;
 
-      // We initialise the immutable project groups (which forms the root set of the project view model items). Child
-      // items are created on demand.
-      //
-      // IMPORTANT: The order here must match that in 'PVMGroupIndex'.
-    _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                                identifier:kPackageGroupID
-                                                                    parent:nil
-                                                                     model:self],
-                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                                identifier:kDataGroupID
-                                                                    parent:nil
-                                                                     model:self],
-                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                                identifier:kExecutableGroupID
-                                                                    parent:nil
-                                                                     model:self],
-                    [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                                identifier:kExtraSourceGroupID
-                                                                    parent:nil
-                                                                     model:self],
-                    ];
-
+      // Set up the group items
+    [self initGroupItems];
   }
   return self;
+}
+
+- (void)initGroupItems
+{
+    // We initialise the immutable project groups (which forms the root set of the project view model items). Child
+    // items are created on demand.
+    //
+    // IMPORTANT: The order here must match that in 'PVMGroupIndex'.
+  _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kPackageGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kDataGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kExecutableGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kExtraSourceGroupID
+                                                                  parent:nil
+                                                                   model:self],
+                  ];
+}
+
+- (void)createProjectForURL:(NSURL *)url
+{
+  NSString *path         = [url path];
+  NSString *projname     = [path lastPathComponent];
+  NSString *name         = [projname stringByDeletingPathExtension];
+  NSString *mainName     = [name stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
+  NSString *oldCabalName = [self.cabalFileName lastPathComponent];
+  NSString *newCabalName = [name stringByAppendingPathExtension:[HFMProjectViewModel cabalFileExtension]];
+
+    // The URL is where we want to save the project.
+  self.fileWrapper.preferredFilename = projname;
+
+    // Configure basic Cabal fields.
+  self.name           = name;
+  self.version        = @"1.0";
+  self.copyright      = @"AllRightsReserved";
+  self.executableName = name;
+  self.sourceDir      = nil;
+  self.modulePath     = [path stringByAppendingPathComponent:mainName];
+
+    // Create a new file wrapper for the new Cabal file.
+  [self.fileWrapper removeFileWrapper:[self.fileWrapper fileWrappers][oldCabalName]];
+  [self.fileWrapper addRegularFileWithContents:[[self.package string] dataUsingEncoding:NSUTF8StringEncoding]
+                             preferredFilename:newCabalName];
+
+    // Create main Haskell file
+  [self.fileWrapper addRegularFileWithContents:[NSData data] preferredFilename:mainName];
+
+    // Write new project out and recreate the group items.
+  NSError *error;
+  if (![self.fileWrapper writeToURL:url
+                            options:NSFileWrapperWritingWithNameUpdating
+                originalContentsURL:nil
+                              error:&error])
+    NSLog(@"%s: couldn't create project files: %@", __func__, error);
+  [self initGroupItems];
 }
 
 
