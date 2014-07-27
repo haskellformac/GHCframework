@@ -83,11 +83,23 @@ objc_marshaller 'listOfStringToNSArray 'nsArrayTolistOfString
 -- Haskell helpers
 -- ---------------
 
--- Drop detailed errors and warnings for now. FIXME: this is not convenient for the user.
+-- Just the result of parsing if available.
 --
 parseOk :: ParseResult a -> Maybe a
 parseOk (ParseFailed {}) = Nothing
 parseOk (ParseOk _ v)    = Just v
+
+-- Just the parser warnings if any.
+--
+parseWarnings :: ParseResult a -> Maybe String
+parseWarnings (ParseFailed {})  = Nothing
+parseWarnings (ParseOk warns _) = Just . concat . map show $ warns
+
+-- Just the parse errors if any.
+--
+parseErrors :: ParseResult a -> Maybe String
+parseErrors (ParseFailed err) = Just $ show err
+parseErrors (ParseOk _ _)     = Nothing
 
 -- Cabal currently (1.20) doesn't have a function to pretty-print a generic package description. It only handles non-generic
 -- ones.
@@ -118,7 +130,14 @@ nameAndVersionOfGenericPackage = show . PD.package . PD.packageDescription
 -- A newly initialised generic package description.
 --
 emptyGenericPackageDescription :: PD.GenericPackageDescription
-emptyGenericPackageDescription = PD.GenericPackageDescription PD.emptyPackageDescription [] Nothing [] [] []
+emptyGenericPackageDescription = PD.GenericPackageDescription emptyPD [] Nothing [] [] []
+  where
+    emptyPD = PD.emptyPackageDescription
+              { PD.package        = P.PackageIdentifier {pkgName = P.PackageName "Untitled", pkgVersion = Version [0] []}
+              , PD.stability      = "experimental"
+              , PD.specVersionRaw = Left (Version [1, 6] [])
+              , PD.buildType      = Just PD.Simple
+              }
 
 -- Pretty print the package identifier.
 --
@@ -163,7 +182,9 @@ setCondExecutable gpd upd
 --
 objc_record "CBL" "Package" ''PD.GenericPackageDescription
   [Typed 'emptyGenericPackageDescription, Typed 'parsePackageDescription, 
-   'parseOk :> [t|ParseResult PD.GenericPackageDescription -> Maybe PD.GenericPackageDescription|], 
+   'parseOk       :> [t|ParseResult PD.GenericPackageDescription -> Maybe PD.GenericPackageDescription|], 
+   'parseWarnings :> [t|ParseResult PD.GenericPackageDescription -> Maybe String|], 
+   'parseErrors   :> [t|ParseResult PD.GenericPackageDescription -> Maybe String|], 
    Typed 'nameAndVersionOfGenericPackage, Typed 'showPackageDescription, Typed 'showPackageIdentifier,
    Typed 'cabalVersion, Typed 'buildType]
   
@@ -339,9 +360,14 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
         typename HsStablePtr *result = parsePackageDescription(string);
         _genericPackageDescriptionHsPtr = parseOk(result);
         if (!_genericPackageDescriptionHsPtr) {
-          NSLog(@"Loading of Cabal file failed: %@", string);
+          NSLog(@"Loading of Cabal file failed: %@", parseErrors(result));
+          NSLog(@"...malformed Cabal source: %@", string);
           return nil;       // initialisation fails if parsing fails
         }
+        
+        typename NSString *warns = parseWarnings(result);
+        if (!warns)
+          NSLog(@"Cabal parser warnings: %@", warns); 
     
         // FIXME: We need better error handling. Return errors if parsing fails and also return the warnings, even if it
         //        doesn't fail.
