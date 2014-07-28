@@ -345,7 +345,13 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 {
   NSData        *data              = [string dataUsingEncoding:NSUTF8StringEncoding];
   NSFileWrapper *newFileWrapper    = [[NSFileWrapper alloc] initRegularFileWithContents:data];
-  newFileWrapper.preferredFilename = self.fileWrapper.preferredFilename;
+  NSString      *preferredFilename = self.fileWrapper.preferredFilename;
+
+  if (!preferredFilename) {
+    NSLog(@"%s: cannot determine filename", __func__);
+    return;
+  }
+  newFileWrapper.preferredFilename = preferredFilename;
 
   @synchronized(self) {
     self.dirtyFileWrapper = newFileWrapper;

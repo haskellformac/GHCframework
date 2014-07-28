@@ -146,8 +146,9 @@ static NSString *haskellFileExtension = @"hs";
   NSString *oldCabalName = [self.cabalFileName lastPathComponent];
   NSString *newCabalName = [name stringByAppendingPathExtension:[HFMProjectViewModel cabalFileExtension]];
 
-    // The URL is where we want to save the project.
+    // The URL is where we want to save the project and we need to change the cached Cabal filename, too.
   self.fileWrapper.preferredFilename = projname;
+  _cabalFileName                     = newCabalName;
 
     // Configure basic Cabal fields.
   self.name           = name;
@@ -155,7 +156,7 @@ static NSString *haskellFileExtension = @"hs";
   self.license        = @"AllRightsReserved";
   self.executableName = name;
   self.sourceDir      = nil;
-  self.modulePath     = [path stringByAppendingPathComponent:mainName];
+  self.modulePath     = mainName;
 
     // Create a new file wrapper for the new Cabal file.
   [self.fileWrapper removeFileWrapper:[self.fileWrapper fileWrappers][oldCabalName]];
