@@ -16,6 +16,19 @@ int main(int argc, char *argv[])
     // FIXME: need a shared initialisation again (currently it happens framework local)
 //  hs_init(&argc, &argv);
 
+    // Receipt validation
+  NSError  *error;
+  NSBundle *bundle     = [NSBundle mainBundle];
+  NSURL    *receiptURL = [bundle appStoreReceiptURL];
+  if (!receiptURL)
+    NSLog(@"Where is it?");
+  if (![receiptURL checkResourceIsReachableAndReturnError:&error]) {
+
+    NSLog(@"Can't reach it: %@", error);
+    exit(173);    // bye bye
+
+  }
+
     // Launch the Cocoa application.
   return NSApplicationMain(argc, (const char **) argv);
 }

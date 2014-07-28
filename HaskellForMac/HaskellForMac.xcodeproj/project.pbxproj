@@ -802,6 +802,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -831,6 +832,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -863,6 +865,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -891,6 +894,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -960,6 +964,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "";
+				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -1021,6 +1026,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "";
+				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -1069,7 +1075,7 @@
 					"-Wl,-no_compact_unwind",
 				);
 				PRODUCT_NAME = Haskell;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
 				USE_HEADERMAP = NO;
 				WRAPPER_EXTENSION = app;
 			};
@@ -1119,7 +1125,7 @@
 					"-Wl,-no_compact_unwind",
 				);
 				PRODUCT_NAME = Haskell;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
 				USE_HEADERMAP = NO;
 				WRAPPER_EXTENSION = app;
 			};
