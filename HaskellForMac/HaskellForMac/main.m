@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   if (![receiptURL checkResourceIsReachableAndReturnError:&error]) {
 
     NSLog(@"Can't reach it: %@", error);
-    exit(173);    // bye bye
+      //    exit(173);    // bye bye
 
   }
 
