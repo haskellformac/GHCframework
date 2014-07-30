@@ -104,10 +104,8 @@ void GHCInstance_initialise(void);
 
 @implementation GHCInstance
 
-// FIXME: We only want one hs_init() per application, not one per framework!
-+ (void)load
++ (void)initialize
 {
-//  hs_init(nil, nil);
   GHCInstance_initialise();
 }
 

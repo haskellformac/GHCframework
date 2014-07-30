@@ -13,8 +13,7 @@
 int main(int argc, char *argv[])
 {
     // Get the Haskell runtime going.
-    // FIXME: need a shared initialisation again (currently it happens framework local)
-//  hs_init(&argc, &argv);
+  hs_init(&argc, &argv);
 
     // Receipt validation
   NSError  *error;

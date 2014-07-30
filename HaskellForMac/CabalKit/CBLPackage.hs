@@ -334,10 +334,8 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
 
     void CBLPackage_initialise(void);
 
-    // FIXME: We only want one hs_init() per application, not one per framework!
-    + (void)load
+    + (void)initialize
     {
-      hs_init(nil, nil);
       CBLPackage_initialise();
     }
 

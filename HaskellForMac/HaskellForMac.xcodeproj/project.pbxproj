@@ -64,7 +64,6 @@
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)_objc.m",
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(TARGET_NAME).a",
 			);
 			script = "echo Tell Xcode to compile the _objc.m\ntouch ${SCRIPT_OUTPUT_FILE_0}\n";
 		};
@@ -160,11 +159,7 @@
 		E719C7B918E9287A00586434 /* HFMTextEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMTextEditorController.h; sourceTree = "<group>"; };
 		E719C7BA18E9287A00586434 /* HFMTextEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMTextEditorController.m; sourceTree = "<group>"; };
 		E7258C491983CA85004789CF /* Experiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Experiments.playground; sourceTree = "<group>"; };
-		E7258C4C19879631004789CF /* GHCKit.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = GHCKit.dylib; path = "../../../Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Intermediates/HaskellForMac.build/Debug/GHCKit.build/Objects-normal/x86_64/GHCKit.dylib"; sourceTree = "<group>"; };
-		E7258C4E198796BC004789CF /* libHSbase-4.7.0.0-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSbase-4.7.0.0-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/libraries/base/dist-install/build/libHSbase-4.7.0.0-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
 		E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSrts_thr-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
-		E7258C521987B81C004789CF /* libHSrts_thr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libHSrts_thr.a; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr.a"; sourceTree = "<group>"; };
-		E7258C551988DE7A004789CF /* GHCKit.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = GHCKit.dylib; path = "../../../Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/GHCKit.framework/Versions/A/Libraries/GHCKit.dylib"; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -319,11 +314,7 @@
 		E7A13B031888006C00D79087 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E7258C551988DE7A004789CF /* GHCKit.dylib */,
-				E7258C521987B81C004789CF /* libHSrts_thr.a */,
 				E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */,
-				E7258C4E198796BC004789CF /* libHSbase-4.7.0.0-ghc7.8.0.20140317.dylib */,
-				E7258C4C19879631004789CF /* GHCKit.dylib */,
 				E70A6716197E2E0E006D3514 /* libiconv.dylib */,
 				E70A66E5197E0BA2006D3514 /* libiconv.dylib */,
 				E7A13B041888006C00D79087 /* Cocoa.framework */,
@@ -634,11 +625,11 @@
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/CBLPackage_objc.h",
 				"$(DERIVED_FILE_DIR)/CBLPackage_objc.m",
-				"$(OBJECT_FILE_DIR)-$(CURRENT_VARIANT)/$(CURRENT_ARCH)/$(TARGET_NAME).a",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/Libraries/$(TARGET_NAME).dylib",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif /Users/chak/bin/ghc-7.8 -threaded -staticlib -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH}/${TARGET_NAME}.a -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			shellScript = "# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif /Users/chak/bin/ghc-7.8 -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -O -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 		E731EA4D197F76940083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -818,10 +809,6 @@
 					"-U",
 					"-Xlinker",
 					_hs_free_stable_ptr,
-					"-Xlinker",
-					"-U",
-					"-Xlinker",
-					_hs_init,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -860,10 +847,6 @@
 					"-U",
 					"-Xlinker",
 					_hs_free_stable_ptr,
-					"-Xlinker",
-					"-U",
-					"-Xlinker",
-					_hs_init,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -898,6 +881,13 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib",
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_hs_free_stable_ptr,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
@@ -927,6 +917,13 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib",
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_hs_free_stable_ptr,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
@@ -1107,6 +1104,9 @@
 				OTHER_LDFLAGS = (
 					"-liconv",
 					"-Wl,-no_compact_unwind",
+					"/Users/chak/Code/ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib",
+					"-rpath",
+					"/Users/chak/Code/ghc-7.8/rts/dist/build/",
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
@@ -1157,6 +1157,9 @@
 				OTHER_LDFLAGS = (
 					"-liconv",
 					"-Wl,-no_compact_unwind",
+					"/Users/chak/Code/ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib",
+					"-rpath",
+					"/Users/chak/Code/ghc-7.8/rts/dist/build/",
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
