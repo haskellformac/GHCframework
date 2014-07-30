@@ -1,0 +1,18 @@
+Name:                   ghckit-support
+Version:                0.0.2.0
+Cabal-version:          >= 1.9.2
+Build-type:             Simple
+Synopsis:               Haskell side support library for the GHCKit
+License:                AllRightsReserved
+Author:                 Manuel M T Chakravarty
+Maintainer:             Manuel M T Chakravarty <chak@justtesting.org>
+
+Category:               Language, Foreign
+Stability:              Experimental
+
+Library
+  Build-depends:        base              >= 4.0 && < 5,
+                        deepseq,
+                        stm
+  Exposed-modules:      PrintInterceptor
+  C-sources:            stableChanPtr.c

@@ -16,18 +16,26 @@ module Interpreter (
 import Prelude                      hiding (catch)
 import Control.Applicative
 import Control.Concurrent
+import Control.Concurrent.STM
 import Control.Exception            (SomeException, evaluate)
 import Control.Monad
-import Control.Monad.Catch
+import Data.Dynamic  hiding (typeOf)
+import Data.Maybe
 import System.IO
 
   -- GHC
+import qualified DynFlags   as GHC
 import qualified ErrUtils   as GHC
 import qualified HscTypes   as GHC
 import qualified GHC        as GHC
 import qualified GHC.Paths  as Paths
+import qualified GhcMonad   as GHC
 import qualified MonadUtils as GHC
 import qualified Outputable as GHC
+
+  -- GHCKit
+import PrintInterceptor
+
 
 -- FIXME: temporary
 import System.IO.Unsafe (unsafePerformIO)
@@ -57,11 +65,34 @@ start
       = do
         {   -- Initialise the session by reading the package database
         ; dflags <- GHC.getSessionDynFlags
-        ; _packageIds <- GHC.setSessionDynFlags $ dflags 
-                                                  { GHC.hscTarget  = GHC.HscInterpreted
-                                                  , GHC.ghcLink    = GHC.LinkInMemory
-                                                  , GHC.log_action = logAction
-                                                  }
+        ; packageIds <- GHC.setSessionDynFlags $ dflags 
+                                                 { GHC.hscTarget        = GHC.HscInterpreted
+                                                 , GHC.ghcLink          = GHC.LinkInMemory
+                                                 , GHC.log_action       = logAction
+                                                 , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
+                                                 }
+        ; GHC.liftIO $ 
+            putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging
+
+            -- Load 'ghckit-support' and...
+        ; GHC.load GHC.LoadAllTargets
+        ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
+        ; GHC.liftIO $ writeIORef logRef []
+        ; unless (null msgs) $
+            error "PANIC: could not initialise 'ghckit-support'"
+
+            -- ...initialise the interactive print channel
+        ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
+        ; GHC.setContext [GHC.IIDecl interceptor]
+        ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
+        ; dflags <- GHC.getSessionDynFlags
+        ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
+                                    in he {GHC.hsc_IC = new_ic})
+        ; maybe_chan <- fromDynamic <$> GHC.dynCompileExpr "PrintInterceptor.interactivePrintChan"
+        ; case maybe_chan of
+            Nothing   -> error "PANIC: could not get 'interactivePrintChan'"
+            Just chan -> GHC.liftIO $ writeIORef chanRef chan
+
         ; session inlet
         }
         
@@ -91,10 +122,10 @@ eval (Session inlet) stmt
         GHC.handleSourceError (handleError resultMV) $ do
         { runResult <- GHC.runStmt stmt GHC.RunToCompletion
         ; result <- case runResult of
-                     GHC.RunOk names       -> do
-                                              { dflags <- GHC.getSessionDynFlags
-                                              ; let namesStr = GHC.showSDoc dflags (GHC.pprQuotedList names)
-                                              ; return $ Result ("(" ++ namesStr ++ ")")
+                     GHC.RunOk _names      -> do
+                                              { chan  <- GHC.liftIO $ readIORef chanRef
+                                              ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
+                                              ; return $ Result (fromMaybe "<no result>" maybe_value)
                                               }
                      GHC.RunException _exc -> return $ Error "<exception>"
                      _                     -> return $ Error "<unexpected break point>"
@@ -138,7 +169,19 @@ load (Session inlet) target
             -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
         ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
         ; case loadedModules of
-            modname:_ -> GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to load one module
+            modname:_ -> do
+                         {   -- Intercept the interactive printer to get evaluation results
+                             -- (NB: We need to do that again after every 'GHC.load', as that scraps the interactive context.)
+                         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
+                         ; GHC.setContext [GHC.IIDecl interceptor]
+                         ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
+                         ; dflags <- GHC.getSessionDynFlags
+                         ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
+                                                     in he {GHC.hsc_IC = new_ic})
+
+                             -- Only make the user module available for interactive use
+                         ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
+                         }
             []        -> return ()
             
             -- Communicate the result back to the main thread
@@ -166,6 +209,10 @@ logRef = unsafePerformIO $ newIORef []
 logAction dflags severity srcSpan _style msg
   -- = modifyIORef logRef (GHC.showSDoc dflags (GHC.pprLocErrMsg msg) :)
   = modifyIORef logRef (GHC.showSDoc dflags (GHC.mkLocMessage severity srcSpan msg) :)
+
+chanRef :: IORef (TChan String)
+{-# NOINLINE chanRef #-}
+chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initialised")
 
 
 -- Runtime system support
