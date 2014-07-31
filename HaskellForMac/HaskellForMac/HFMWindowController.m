@@ -18,8 +18,7 @@
 // Views in 'ProjectWindow.xib'
 //
 @property (weak)              IBOutlet NSOutlineView *outlineView;
-@property (weak)              IBOutlet NSSplitView   *verticalSplitView;
-@property (weak)              IBOutlet NSSplitView   *horizontalSplitView;
+@property (weak)              IBOutlet NSSplitView   *splitView;
 @property (weak)              IBOutlet NSView        *editorView;
 @property (weak)              IBOutlet NSTextField   *noEditorLabel;
 @property (unsafe_unretained) IBOutlet NSTextView    *replView;
@@ -85,9 +84,8 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   [self.outlineView reloadData];
 
-    // Set delegate of the split views is this window controller.
-  self.verticalSplitView.delegate   = self;
-  self.horizontalSplitView.delegate = self;
+    // Set delegate of the split view to be this window controller.
+  self.splitView.delegate = self;
 
     // Expand all root items without animation.
   [NSAnimationContext beginGrouping];
