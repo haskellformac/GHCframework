@@ -21,6 +21,7 @@
 @property (weak)              IBOutlet NSSplitView   *splitView;
 @property (weak)              IBOutlet NSView        *editorView;
 @property (weak)              IBOutlet NSTextField   *noEditorLabel;
+@property (weak)              IBOutlet NSView        *playgroundView;
 @property (unsafe_unretained) IBOutlet NSTextView    *replView;
 
 
@@ -42,6 +43,7 @@
 //
 NSString *const kPackageHeaderEditor = @"PackageHeaderEditor";
 NSString *const kTextEditor          = @"TextEditor";
+NSString *const kPlayground          = @"Playground";
 
 /// NIB file ids
 //
@@ -263,15 +265,18 @@ NSString *const kCabalCellID = @"cabalCellID";
     return;
   }
 
-    // Remove the current editor view.
+    // Remove the current editor view and playground view.
   if (self.editorViewController) {
 
     [[self.editorViewController view] removeFromSuperview];
     self.noEditorLabel.hidden = NO;
 
   }
+  if (self.playgroundController)
+    [[self.playgroundController view] removeFromSuperview];
+
     // Select suitable editor.
-  NSString *nibName = [self.editors objectForKey:fileExtension];
+  NSString *nibName = self.editors[fileExtension];
   if (!nibName)
     return;
 
@@ -313,14 +318,35 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   }
 
+  if ([fileExtension isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
+
+    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground bundle:nil];
+    if (!self.playgroundController)
+      NSLog(@"%s: cannot load playground nib %@", __func__, nibName);
+
+  }
+
     // Enter editor view into the view hierachy.
-  NSView *view = [self.editorViewController view];
-  view.frame = self.editorView.bounds;
-  [view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  view.translatesAutoresizingMaskIntoConstraints = YES;
-  [self.editorView addSubview:view];
+  NSView *editorContentView = [self.editorViewController view];
+  editorContentView.frame = self.editorView.bounds;
+  [editorContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  editorContentView.translatesAutoresizingMaskIntoConstraints = YES;
+  [self.editorView addSubview:editorContentView];
   self.editorView.needsLayout  = YES;
   self.editorView.needsDisplay = YES;
+
+    // Enter playground view into the view hierachy if available.
+  if (self.playgroundController) {
+
+    NSView *playgroundContentView = [self.playgroundController view];
+    playgroundContentView.frame = self.playgroundView.bounds;
+    [playgroundContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+    playgroundContentView.translatesAutoresizingMaskIntoConstraints = YES;
+    [self.playgroundView addSubview:playgroundContentView];
+    self.playgroundView.needsLayout  = YES;
+    self.playgroundView.needsDisplay = YES;
+
+  }
 
   self.noEditorLabel.hidden = YES;
 

@@ -26,6 +26,7 @@
 		E719C7BB18E9287A00586434 /* HFMTextEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7BA18E9287A00586434 /* HFMTextEditorController.m */; };
 		E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66AF197CC340006D3514 /* GHCKit.framework */; };
 		E7258C4B1983CB72004789CF /* CabalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66F0197E272E006D3514 /* CabalKit.framework */; };
+		E7258C58198A2263004789CF /* Playground.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7258C57198A2263004789CF /* Playground.xib */; };
 		E731EA4E197F7B470083F6C8 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
@@ -42,6 +43,8 @@
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
+		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
+		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -160,6 +163,7 @@
 		E719C7BA18E9287A00586434 /* HFMTextEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMTextEditorController.m; sourceTree = "<group>"; };
 		E7258C491983CA85004789CF /* Experiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Experiments.playground; sourceTree = "<group>"; };
 		E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSrts_thr-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
+		E7258C57198A2263004789CF /* Playground.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Playground.xib; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -188,6 +192,9 @@
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
+		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
+		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
+		E7F79895198B06850063294F /* SynchroScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynchroScrollView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,6 +358,7 @@
 				E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
+				E7F7988B198A609B0063294F /* Playground */,
 				E7A13B4A188E7F1C00D79087 /* Interfaces */,
 				E7A13B0B1888006C00D79087 /* Supporting Files */,
 				E7A13B1C1888006C00D79087 /* Images.xcassets */,
@@ -398,8 +406,19 @@
 				E7A13B47188E7BED00D79087 /* ProjectWindow.xib */,
 				E713E3D4189FCB2100504164 /* TextEditor.xib */,
 				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
+				E7258C57198A2263004789CF /* Playground.xib */,
 			);
 			name = Interfaces;
+			sourceTree = "<group>";
+		};
+		E7F7988B198A609B0063294F /* Playground */ = {
+			isa = PBXGroup;
+			children = (
+				E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */,
+				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
+				E7F79895198B06850063294F /* SynchroScrollView.swift */,
+			);
+			name = Playground;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -578,6 +597,7 @@
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
+				E7258C58198A2263004789CF /* Playground.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
@@ -686,9 +706,11 @@
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
+				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E719C7BB18E9287A00586434 /* HFMTextEditorController.m in Sources */,
+				E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1069,6 +1091,7 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = YES;
@@ -1110,6 +1133,8 @@
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
+				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMac/HaskellForMac-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				USE_HEADERMAP = NO;
 				WRAPPER_EXTENSION = app;
 			};
@@ -1122,6 +1147,7 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = YES;
@@ -1163,6 +1189,7 @@
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
+				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMac/HaskellForMac-Bridging-Header.h";
 				USE_HEADERMAP = NO;
 				WRAPPER_EXTENSION = app;
 			};
