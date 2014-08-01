@@ -39,12 +39,12 @@
 		E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B2B1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */; };
 		E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B391888D1C000D79087 /* HFMProject.m */; };
-		E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */; };
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
 		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
+		E7F79898198B3A010063294F /* HaskellSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79897198B3A010063294F /* HaskellSession.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -185,8 +185,6 @@
 		E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HaskellForMacTests.m; sourceTree = "<group>"; };
 		E7A13B381888D1C000D79087 /* HFMProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProject.h; sourceTree = "<group>"; };
 		E7A13B391888D1C000D79087 /* HFMProject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProject.m; sourceTree = "<group>"; };
-		E7A13B3F188E6FE600D79087 /* HFMHaskellSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMHaskellSession.h; sourceTree = "<group>"; };
-		E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMHaskellSession.m; sourceTree = "<group>"; };
 		E7A13B45188E7BED00D79087 /* HFMWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMWindowController.h; sourceTree = "<group>"; };
 		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
@@ -195,6 +193,7 @@
 		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
 		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
 		E7F79895198B06850063294F /* SynchroScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynchroScrollView.swift; sourceTree = "<group>"; };
+		E7F79897198B3A010063294F /* HaskellSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HaskellSession.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -354,8 +353,7 @@
 				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
 				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
 				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
-				E7A13B3F188E6FE600D79087 /* HFMHaskellSession.h */,
-				E7A13B40188E6FE600D79087 /* HFMHaskellSession.m */,
+				E7F79897198B3A010063294F /* HaskellSession.swift */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
 				E7F7988B198A609B0063294F /* Playground */,
@@ -369,6 +367,7 @@
 		E7A13B0B1888006C00D79087 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */,
 				E7A13B0C1888006C00D79087 /* HaskellForMac-Info.plist */,
 				E7A13B0D1888006C00D79087 /* InfoPlist.strings */,
 				E7A13B101888006C00D79087 /* main.m */,
@@ -414,7 +413,6 @@
 		E7F7988B198A609B0063294F /* Playground */ = {
 			isa = PBXGroup;
 			children = (
-				E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */,
 				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
 				E7F79895198B06850063294F /* SynchroScrollView.swift */,
 			);
@@ -701,7 +699,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
-				E7A13B41188E6FE600D79087 /* HFMHaskellSession.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
@@ -711,6 +708,7 @@
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E719C7BB18E9287A00586434 /* HFMTextEditorController.m in Sources */,
 				E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */,
+				E7F79898198B3A010063294F /* HaskellSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -819,6 +817,11 @@
 					"$(inherited)",
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
+				);
 				INFOPLIST_FILE = GHCKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -857,6 +860,11 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_VERSION = A;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
+				);
 				INFOPLIST_FILE = GHCKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -899,6 +907,11 @@
 					"$(inherited)",
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
+				);
 				INFOPLIST_FILE = CabalKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -935,6 +948,11 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_VERSION = A;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
+				);
 				INFOPLIST_FILE = CabalKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -1012,7 +1030,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1075,7 +1092,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "";
@@ -1120,6 +1136,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DERIVED_FILE_DIR)",
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				INFOPLIST_FILE = "HaskellForMac/HaskellForMac-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -1176,6 +1193,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DERIVED_FILE_DIR)",
+					"/Library/Frameworks/GHC.framework/Versions/7.6.3-x86_64/usr/lib/ghc-7.6.3/include",
 				);
 				INFOPLIST_FILE = "HaskellForMac/HaskellForMac-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";

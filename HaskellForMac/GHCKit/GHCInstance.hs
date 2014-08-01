@@ -26,7 +26,7 @@ import qualified StringBuffer as GHC
   -- friends
 import Interpreter
 
-objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
+objc_import ["<Cocoa/Cocoa.h>"]
 
 
 -- Haskell side support code

@@ -37,7 +37,7 @@ import Language.C.Inline.ObjC
 
 import Debug.Trace
 
-objc_import ["<Cocoa/Cocoa.h>", "HsFFI.h"]
+objc_import ["<Cocoa/Cocoa.h>"]
 
 
 -- Marshalling support

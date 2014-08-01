@@ -10,7 +10,7 @@
 #import "HFMProject.h"
 #import "HFMHeaderEditorController.h"
 #import "HFMTextEditorController.h"
-#import "HFMHaskellSession.h"
+#import "Haskell-Swift.h"
 
 
 @interface HFMWindowController ()
@@ -27,7 +27,7 @@
 
 /// The GHC session associated with this window.
 //
-@property (nonatomic, readonly) HFMHaskellSession *haskellSession;
+@property (nonatomic, readonly) HaskellSession *haskellSession;
 
 /// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
 /// be the name of their NIB file.
@@ -62,7 +62,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   self = [super initWithWindowNibName:@"ProjectWindow"];
   if (self) {
 
-    _haskellSession = [HFMHaskellSession haskellSessionStart];
+    _haskellSession = [HaskellSession haskellSessionStart];
     NSLog(@"WindowController: session start");
 
     _editors = @{@"cabal": kPackageHeaderEditor,
