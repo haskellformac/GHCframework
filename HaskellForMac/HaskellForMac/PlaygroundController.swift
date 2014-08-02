@@ -66,9 +66,6 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
     let attrText   = NSAttributedString(string: loadResult, attributes:[NSFontAttributeName: menlo13])
     resultTextView.textStorage.setAttributedString(attrText)
     resultTextView.scrollRangeToVisible(NSRange(location: resultTextView.textStorage.length, length: 0))
-
-      // Remember the position where the output ended.
-    startOfCommand = resultTextView.selectedRange().location
   }
 
 
@@ -96,11 +93,11 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
 
         // Insert result in the REPL area
       let menlo13    = NSFont(name: "Menlo-Regular", size:13)
-      let attrResult = NSAttributedString(string: evalResult, attributes:[NSFontAttributeName: menlo13])
+      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:[NSFontAttributeName: menlo13])
       resultTextView.textStorage.appendAttributedString(attrResult)
 
-      startOfCommand += 1   // '+1' to account for the newline
-
+        // Remember the position where the output ended.
+      startOfCommand = codeTextView.selectedRange().location + 1  // '+1' to account for the newline
     }
     return false
   }

@@ -56,7 +56,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="groupCellID" id="I7u-Bd-71O">
-                                                            <rect key="frame" x="1" y="0.0" width="98.5" height="17"/>
+                                                            <rect key="frame" x="1" y="0.0" width="98" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctX-vG-lXf">
@@ -73,7 +73,7 @@
                                                             </connections>
                                                         </tableCellView>
                                                         <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
-                                                            <rect key="frame" x="1" y="17" width="98.5" height="17"/>
+                                                            <rect key="frame" x="1" y="17" width="98" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eg-Fr-H0x">
