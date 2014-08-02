@@ -17,24 +17,16 @@
 
 // Views in 'ProjectWindow.xib'
 //
-@property (weak)              IBOutlet NSOutlineView *outlineView;
-@property (weak)              IBOutlet NSSplitView   *splitView;
-@property (weak)              IBOutlet NSView        *editorView;
-@property (weak)              IBOutlet NSTextField   *noEditorLabel;
-@property (weak)              IBOutlet NSView        *playgroundView;
-@property (unsafe_unretained) IBOutlet NSTextView    *replView;
-
-
-/// The GHC session associated with this window.
-//
-@property (nonatomic, readonly) HaskellSession *haskellSession;
+@property (weak) IBOutlet NSOutlineView *outlineView;
+@property (weak) IBOutlet NSSplitView   *splitView;
+@property (weak) IBOutlet NSView        *editorView;
+@property (weak) IBOutlet NSTextField   *noEditorLabel;
+@property (weak) IBOutlet NSView        *playgroundView;
 
 /// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
 /// be the name of their NIB file.
 //
 @property (nonatomic, readonly) NSDictionary *editors;
-
-@property NSUInteger startOfCommand;   // FIXME: provisional starting location of type command in REPL
 
 @end
 
@@ -61,9 +53,6 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   self = [super initWithWindowNibName:@"ProjectWindow"];
   if (self) {
-
-    _haskellSession = [HaskellSession haskellSessionStart];
-    NSLog(@"WindowController: session start");
 
     _editors = @{@"cabal": kPackageHeaderEditor,
                  @"hs":    kTextEditor,
@@ -195,52 +184,6 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 
 #pragma mark -
-#pragma mark NSTextViewDelegate protocol methods
-
-  // FIXME: This is provisionally the delegate for the REPL view while it is so simple.
-
-- (BOOL)textView:(NSTextView *)replTextView doCommandBySelector:(SEL)aSelector
-{
-
-  if (replTextView != self.replView) {
-
-    NSLog(@"%s: textView:doCommandBySelector from unexpected text view", __func__);
-    return NO;
-
-  }
-
-  if (aSelector == @selector(insertNewline:)) {
-
-    NSFont   *menlo13     = [NSFont fontWithName:@"Menlo-Regular" size:13];
-    NSColor  *grey        = [NSColor colorWithWhite:0.5 alpha:1];
-    NSString *userCommand = [replTextView.textStorage.string substringFromIndex:self.startOfCommand];
-
-      // Render the command in grey
-    [replTextView.textStorage addAttribute:NSForegroundColorAttributeName
-                                     value:grey
-                                     range:(NSRange){self.startOfCommand,
-                                                     [replTextView.textStorage length] - self.startOfCommand}];
-
-      // Move insertion point to the end
-    [replTextView setSelectedRange:(NSRange){[replTextView.textStorage length], 0}];
-    [replTextView insertNewline:self];
-
-      // Execute command
-    NSString *evalResult = [self.haskellSession evalExprFromString:userCommand];
-
-      // Insert result in the REPL area
-    [replTextView.textStorage appendAttributedString:[[NSAttributedString alloc]
-                                                      initWithString:evalResult
-                                                      attributes:@{ NSFontAttributeName : menlo13 }]];
-
-    self.startOfCommand = [self.replView selectedRange].location + 1;   // '+1' to account for the newline
-
-  }
-  return NO;
-}
-
-
-#pragma mark -
 #pragma mark Controlling the editor component
 
 /// Select the editor appropriate to editing the file backing the given given view model item; the type of editor is
@@ -297,18 +240,6 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                                           bundle:nil
                                                             projectViewModelItem:item
                                                                          fileURL:fileURL];
-      // FIXME: TEMPORARY HACK
-    item.loadString = ^(NSString *moduleText) {
-
-      NSString           *result   = [[self.haskellSession loadModuleFromString:moduleText] stringByAppendingString:@"\n\n"];
-      NSFont             *menlo13  = [NSFont fontWithName:@"Menlo-Regular" size:13];
-      NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:result
-                                                                     attributes:@{ NSFontAttributeName : menlo13 }];
-      [self.replView.textStorage setAttributedString:attrText];
-      [self.replView scrollRangeToVisible:(NSRange){[self.replView.textStorage length], 0}];
-      self.startOfCommand = [self.replView selectedRange].location;
-
-    };
 
   }
   if (!self.editorView) {
@@ -320,7 +251,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if ([fileExtension isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
 
-    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground bundle:nil];
+    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground bundle:nil item:item];
     if (!self.playgroundController)
       NSLog(@"%s: cannot load playground nib %@", __func__, nibName);
 

@@ -30,7 +30,7 @@ class SynchroScrollView: NSScrollView {
 
       // Register for bounds changed notifications on the synchronised content view.
     NSNotificationCenter.defaultCenter().addObserver(self,
-      selector: "synchronisedViewContentBoundsDidChange",
+      selector: "synchronisedViewContentBoundsDidChange:",
       name: NSViewBoundsDidChangeNotification,
       object: synchronisedContentView)
 

@@ -12,9 +12,7 @@
 #import "Haskell-Swift.h"
 
 
-@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate,
-  NSTextViewDelegate>
-  // ^^^ FIXME: just for now, to keep it simple
+@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>
 
 /// View controller of the currently displayed editor if any (which depends on the item selected in the outline view).
 ///

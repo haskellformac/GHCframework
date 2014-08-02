@@ -3,3 +3,4 @@
 //
 
 #import "HFMProjectViewModel.h"
+#import "HFMProjectViewModelItem.h"

@@ -7,9 +7,9 @@
 //
 //  Each instance of this class represents a GHC session. This class is a view model interfacing the Haskell-side model.
 
-import Foundation
-import GHCKit
+//import Foundation
 
+import GHCKit
 
 @objc class HaskellSession {
 
@@ -32,7 +32,6 @@ import GHCKit
   class func haskellSessionStart() -> HaskellSession {
     return HaskellSession()
   }
-
 
   //MARK: -
   //MARK: Code loading
