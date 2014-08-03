@@ -22,7 +22,11 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
   //
   let haskellSession: HaskellSession
 
-  var startOfCommand: Int = 0   // FIXME: provisional starting location of type command in REPL
+  /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
+  //
+  private let textAttributes: NSDictionary
+
+  private var startOfCommand: Int = 0   // FIXME: provisional starting location of type command in REPL
 
 
   //MARK: -
@@ -32,6 +36,12 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
 
       // Get GHC going.
     haskellSession = HaskellSession()
+
+      // Determine the default text attributes.
+    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
+    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
+    paragraphStyle.lineBreakMode = .ByTruncatingTail
+    textAttributes = [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
 
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
@@ -49,9 +59,19 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
       // Synchronise the scroll views.
     codeScrollView.setSynchronisedScrollView(resultScrollView)
 
+      // The size of the playground text views is fixed. We want them to be rigid.
+    codeTextView.horizontallyResizable   = true
+    resultTextView.horizontallyResizable = true
+
       // For now, we have got a fixed font.
-    codeTextView.font   = NSFont(name: "Menlo-Regular", size:13)
-    resultTextView.font = NSFont(name: "Menlo-Regular", size:13)
+    codeTextView.font   = textAttributes[NSFontAttributeName] as NSFont
+    resultTextView.font = textAttributes[NSFontAttributeName] as NSFont
+
+      // Apply the default style.
+    codeTextView.defaultParagraphStyle   = textAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
+    codeTextView.typingAttributes        = textAttributes
+    resultTextView.defaultParagraphStyle = textAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
+    resultTextView.typingAttributes      = textAttributes
   }
 
   // Module loading
@@ -62,8 +82,7 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
     let loadResult = haskellSession.loadModuleFromString(moduleText) + "\n\n"
 
       // Print any errors to the result view.
-    let menlo13    = NSFont(name: "Menlo-Regular", size:13)
-    let attrText   = NSAttributedString(string: loadResult, attributes:[NSFontAttributeName: menlo13])
+    let attrText = NSAttributedString(string: loadResult, attributes:textAttributes)
     resultTextView.textStorage.setAttributedString(attrText)
     resultTextView.scrollRangeToVisible(NSRange(location: resultTextView.textStorage.length, length: 0))
   }
@@ -92,8 +111,7 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
       let evalResult = haskellSession.evalExprFromString(userCommand)
 
         // Insert result in the REPL area
-      let menlo13    = NSFont(name: "Menlo-Regular", size:13)
-      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:[NSFontAttributeName: menlo13])
+      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
       resultTextView.textStorage.appendAttributedString(attrResult)
 
         // Remember the position where the output ended.

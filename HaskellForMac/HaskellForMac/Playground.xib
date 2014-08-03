@@ -30,7 +30,7 @@
                                 <rect key="frame" x="1" y="1" width="238" height="133"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <textView importsGraphics="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="qo0-xU-zu6">
+                                    <textView importsGraphics="NO" richText="NO" findStyle="panel" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="qo0-xU-zu6">
                                         <rect key="frame" x="0.0" y="0.0" width="249" height="270"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -62,7 +62,7 @@
                                 <rect key="frame" x="1" y="1" width="238" height="133"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <textView importsGraphics="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="Mke-Fv-clH">
+                                    <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" verticallyResizable="YES" id="Mke-Fv-clH">
                                         <rect key="frame" x="0.0" y="0.0" width="254" height="270"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

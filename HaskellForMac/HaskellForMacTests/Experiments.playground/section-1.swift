@@ -2,37 +2,12 @@
 
 import Cocoa
 
-var str = "Hello, playground. I'm writing a very long sentence, so that I run out of space."
+let textView = NSTextView()
+var paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
+paragraphStyle.lineBreakMode = .ByTruncatingTail
+textView.defaultParagraphStyle = paragraphStyle
 
-41
+let menlo13 = NSFont(name: "Menlo-Regular", size:13)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let answer = 42
-
-
-
-
-
+let attributes = [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
 
