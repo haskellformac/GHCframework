@@ -7,6 +7,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="TextEditorController" customModule="Haskell" customModuleProvider="target">
             <connections>
                 <outlet property="pathControl" destination="6Vn-Tc-P0R" id="K0Z-9F-ASs"/>
+                <outlet property="scrollView" destination="z8k-aE-UVe" id="lAp-vM-YY2"/>
                 <outlet property="textView" destination="WT5-I0-Ht9" id="g79-Yc-e5i"/>
                 <outlet property="view" destination="c22-O7-iKe" id="TYe-SH-hdO"/>
             </connections>
@@ -31,7 +32,7 @@
                         <rect key="frame" x="1" y="1" width="223" height="133"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="WT5-I0-Ht9">
+                            <textView importsGraphics="NO" findStyle="bar" incrementalSearchingEnabled="YES" allowsUndo="YES" usesRuler="YES" verticallyResizable="YES" id="WT5-I0-Ht9">
                                 <rect key="frame" x="0.0" y="0.0" width="223" height="250"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

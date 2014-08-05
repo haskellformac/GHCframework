@@ -13,6 +13,7 @@ class TextEditorController: NSViewController {
   /// Content views of the header editor
   //
   @IBOutlet weak var pathControl: NSPathControl!
+  @IBOutlet weak var scrollView:  NSScrollView!
   @IBOutlet      var textView:    NSTextView!
 
   /// Project view model item representing the edited file.
@@ -43,9 +44,13 @@ class TextEditorController: NSViewController {
     fileURLDuringInit = fileURL
 
     super.init(nibName: nibName, bundle: bundle)
+
+      // We use our gutter class as a ruler for the text view.
+    NSScrollView.setRulerViewClass(TextGutterView)
   }
 
   required init(coder: NSCoder!) {
+    NSLog("%s: WARNING: allocating empty project view model item", __FUNCTION__)
     viewModelItem = HFMProjectViewModelItem()
     super.init(coder: coder)
   }
@@ -58,5 +63,9 @@ class TextEditorController: NSViewController {
 
       // Fixed for now.
     textView.font = textAttributes[NSFontAttributeName] as NSFont;
-  }
+
+      // Set up the gutter.
+    scrollView.hasVerticalRuler = true
+    scrollView.rulersVisible    = true
+   }
 }

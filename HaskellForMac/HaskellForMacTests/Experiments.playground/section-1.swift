@@ -2,3 +2,4 @@
 
 import Cocoa
 
+NSLog("Hallo")

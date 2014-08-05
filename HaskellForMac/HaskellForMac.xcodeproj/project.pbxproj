@@ -40,6 +40,7 @@
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
+		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
@@ -186,6 +187,7 @@
 		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
 		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
+		E7B0AB001990B4890057FAD5 /* TextGutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextGutterView.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 		E719C7B818E9285000586434 /* TextEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E7B0AB001990B4890057FAD5 /* TextGutterView.swift */,
 				E7AD6223198F28FD00AFF324 /* TextEditorController.swift */,
 			);
 			name = TextEditor;
@@ -702,6 +705,7 @@
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
+				E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
