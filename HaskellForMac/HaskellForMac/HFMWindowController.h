@@ -9,6 +9,8 @@
 //  toolbar, the outline view, and the split views. Hence, it serves as their delegate.
 
 #import <Cocoa/Cocoa.h>
+#import "HFMProject.h"
+#import "HFMHeaderEditorController.h"
 #import "Haskell-Swift.h"
 
 
@@ -19,6 +21,7 @@
 /// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
 //
 @property (nonatomic) NSViewController *editorViewController;     // maybe nil
+@property (nonatomic) TextEditorController *textEditorViewController;     // maybe nil
 
 /// View controller of the playground if any is currently visible.
 ///

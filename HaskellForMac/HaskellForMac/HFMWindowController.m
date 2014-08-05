@@ -7,10 +7,9 @@
 //
 
 #import "HFMWindowController.h"
-#import "HFMProject.h"
-#import "HFMHeaderEditorController.h"
-#import "HFMTextEditorController.h"
-#import "Haskell-Swift.h"
+//#import "HFMProject.h"
+//#import "HFMHeaderEditorController.h"
+//#import "Haskell-Swift.h"
 
 
 @interface HFMWindowController ()
@@ -236,13 +235,18 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   } else if ([nibName isEqual:kTextEditor]) {
 
-    self.editorViewController = [[HFMTextEditorController alloc] initWithNibName:nibName
-                                                                          bundle:nil
-                                                            projectViewModelItem:item
-                                                                         fileURL:fileURL];
+//    self.editorViewController = [[TextEditorController alloc] initWithNibName:nibName
+//                                                                       bundle:nil
+//                                                         projectViewModelItem:item
+//                                                                      fileURL:fileURL];
+    self.textEditorViewController = [[TextEditorController alloc] initWithNibName:nibName
+                                                                       bundle:nil
+                                                         projectViewModelItem:item
+                                                                      fileURL:fileURL];
 
   }
-  if (!self.editorView) {
+//  if (!self.editorView) {
+  if (!self.textEditorViewController) {
 
     NSLog(@"%s: cannot load editor nib %@", __func__, nibName);
     return;
@@ -251,14 +255,17 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if ([fileExtension isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
 
-    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground bundle:nil item:item];
+    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground
+                                                                       bundle:nil
+                                                         projectViewModelItem:item];
     if (!self.playgroundController)
       NSLog(@"%s: cannot load playground nib %@", __func__, nibName);
 
   }
 
     // Enter editor view into the view hierachy.
-  NSView *editorContentView = [self.editorViewController view];
+//  NSView *editorContentView = self.editorViewController.view;
+  NSView *editorContentView = self.textEditorViewController.view;
   editorContentView.frame = self.editorView.bounds;
   [editorContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   editorContentView.translatesAutoresizingMaskIntoConstraints = YES;
@@ -269,7 +276,7 @@ NSString *const kCabalCellID = @"cabalCellID";
     // Enter playground view into the view hierachy if available.
   if (self.playgroundController) {
 
-    NSView *playgroundContentView = [self.playgroundController view];
+    NSView *playgroundContentView = self.playgroundController.view;
     playgroundContentView.frame = self.playgroundView.bounds;
     [playgroundContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
     playgroundContentView.translatesAutoresizingMaskIntoConstraints = YES;

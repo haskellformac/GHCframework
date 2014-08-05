@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class PlaygroundController: NSViewController, NSTextViewDelegate {
+class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
@@ -20,34 +20,33 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
 
   /// The GHC session associated with this playground.
   //
-  let haskellSession: HaskellSession
+  let haskellSession: HaskellSession = HaskellSession()
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
-  private let textAttributes: NSDictionary
+  private let textAttributes: NSDictionary = { () in
+    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
+    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
+    paragraphStyle.lineBreakMode = .ByTruncatingTail
+    return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
+  }()
 
   private var startOfCommand: Int = 0   // FIXME: provisional starting location of type command in REPL
-
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(nibName: String, bundle: NSBundle, item: HFMProjectViewModelItem) {
-
-      // Get GHC going.
-    haskellSession = HaskellSession()
-
-      // Determine the default text attributes.
-    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
-    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
-    paragraphStyle.lineBreakMode = .ByTruncatingTail
-    textAttributes = [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
+  init(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!) {
 
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
 
       // Register with the model view item that represents the Haskell file providing the context for this playground.
-    item.loadString = loadContextModuleIntoPlayground
+    projectViewModelItem.loadString = loadContextModuleIntoPlayground
+  }
+
+  required init(coder: NSCoder!) {
+    super.init(coder: coder)
   }
 
   deinit {
@@ -87,10 +86,13 @@ class PlaygroundController: NSViewController, NSTextViewDelegate {
     resultTextView.scrollRangeToVisible(NSRange(location: resultTextView.textStorage.length, length: 0))
   }
 
+}
 
-  //MARK: -
-  //MARK: NSTextViewDelegate protocol methods
 
+//MARK: -
+//MARK: NSTextViewDelegate protocol methods
+
+extension PlaygroundController: NSTextViewDelegate {
   //FIXME: This is provisionally the delegate for the REPL view while it is so simple.
 
   func textView(textView: NSTextView, doCommandBySelector selector: Selector) -> Bool {

@@ -19,11 +19,9 @@
 		E70A6714197E2918006D3514 /* CBLPackage.hs in Sources */ = {isa = PBXBuildFile; fileRef = E70A670F197E279C006D3514 /* CBLPackage.hs */; };
 		E70A6717197E2E0E006D3514 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A6716197E2E0E006D3514 /* libiconv.dylib */; };
 		E70D409719409AB700CA3455 /* CabalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70D409619409AB700CA3455 /* CabalTest.swift */; };
-		E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D4189FCB2100504164 /* TextEditor.xib */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
-		E719C7BB18E9287A00586434 /* HFMTextEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7BA18E9287A00586434 /* HFMTextEditorController.m */; };
 		E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66AF197CC340006D3514 /* GHCKit.framework */; };
 		E7258C4B1983CB72004789CF /* CabalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66F0197E272E006D3514 /* CabalKit.framework */; };
 		E7258C58198A2263004789CF /* Playground.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7258C57198A2263004789CF /* Playground.xib */; };
@@ -41,7 +39,9 @@
 		E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B391888D1C000D79087 /* HFMProject.m */; };
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
+		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
+		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
 		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
 		E7F79898198B3A010063294F /* HaskellSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79897198B3A010063294F /* HaskellSession.swift */; };
@@ -153,14 +153,11 @@
 		E70A6716197E2E0E006D3514 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/lib/libiconv.dylib; sourceTree = DEVELOPER_DIR; };
 		E70D409519409AB600CA3455 /* HaskellForMacTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMacTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		E70D409619409AB700CA3455 /* CabalTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CabalTest.swift; sourceTree = "<group>"; };
-		E713E3D4189FCB2100504164 /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
 		E713E3D818A491FF00504164 /* HFMProjectViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModel.h; sourceTree = "<group>"; };
 		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
-		E719C7B918E9287A00586434 /* HFMTextEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMTextEditorController.h; sourceTree = "<group>"; };
-		E719C7BA18E9287A00586434 /* HFMTextEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMTextEditorController.m; sourceTree = "<group>"; };
 		E7258C491983CA85004789CF /* Experiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Experiments.playground; sourceTree = "<group>"; };
 		E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSrts_thr-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
 		E7258C57198A2263004789CF /* Playground.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Playground.xib; sourceTree = "<group>"; };
@@ -188,8 +185,10 @@
 		E7A13B45188E7BED00D79087 /* HFMWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMWindowController.h; sourceTree = "<group>"; };
 		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
+		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
+		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
 		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
 		E7F79895198B06850063294F /* SynchroScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynchroScrollView.swift; sourceTree = "<group>"; };
@@ -288,8 +287,7 @@
 		E719C7B818E9285000586434 /* TextEditor */ = {
 			isa = PBXGroup;
 			children = (
-				E719C7B918E9287A00586434 /* HFMTextEditorController.h */,
-				E719C7BA18E9287A00586434 /* HFMTextEditorController.m */,
+				E7AD6223198F28FD00AFF324 /* TextEditorController.swift */,
 			);
 			name = TextEditor;
 			sourceTree = "<group>";
@@ -403,9 +401,9 @@
 			children = (
 				E7A13B191888006C00D79087 /* MainMenu.xib */,
 				E7A13B47188E7BED00D79087 /* ProjectWindow.xib */,
-				E713E3D4189FCB2100504164 /* TextEditor.xib */,
 				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
 				E7258C57198A2263004789CF /* Playground.xib */,
+				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -591,7 +589,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E713E3D5189FCB2100504164 /* TextEditor.xib in Resources */,
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
@@ -600,6 +597,7 @@
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
 				E731EA4E197F7B470083F6C8 /* MainMenu.xib in Resources */,
+				E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -706,7 +704,7 @@
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
-				E719C7BB18E9287A00586434 /* HFMTextEditorController.m in Sources */,
+				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
 				E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */,
 				E7F79898198B3A010063294F /* HaskellSession.swift in Sources */,
 			);
