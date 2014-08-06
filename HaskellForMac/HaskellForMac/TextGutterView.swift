@@ -75,13 +75,19 @@ class TextGutterView: NSRulerView {
       let lineRange = (string as NSString).lineRangeForRange(NSRange(location: charIndex, length: 0))
 
         // Draw the number for the current line
-      let offset = layoutManager.lineFragmentRectForGlyphAtIndex(layoutManager.glyphIndexForCharacterAtIndex(lineRange.location),
+      let rect = layoutManager.lineFragmentRectForGlyphAtIndex(layoutManager.glyphIndexForCharacterAtIndex(lineRange.location),
                                                                  effectiveRange: nil)
-      drawLineNumber(lineNumber, middleline: offset.origin.y - visibleRect.origin.y + offset.size.height / 2)
+      drawLineNumber(lineNumber, middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2)
 
         // Advance to next line
       lineNumber++
       charIndex = NSMaxRange(lineRange)
+    }
+
+      // Make sure to add an extra line number if we have an empty last line.
+    if ((string as NSString).length == NSMaxRange(charRange)) {
+      let rect = layoutManager.extraLineFragmentRect
+      drawLineNumber(lineNumber, middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2)
     }
   }
 
