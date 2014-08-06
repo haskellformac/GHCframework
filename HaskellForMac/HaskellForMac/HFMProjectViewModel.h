@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 @property                       NSString     *executableName;
 @property                       NSString     *sourceDir;       // optional (maybe 'nil')  FIXME: Issue #82: generalise to array of dirs
 @property                       NSString     *modulePath;
+@property                       NSDictionary *otherModules;    // Folders as tree of dictionaries (leafs = empty dicts)
 
 /// View model group items (they are owned by the view model and keep all active project view model items alive)
 ///

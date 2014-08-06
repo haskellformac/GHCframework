@@ -386,6 +386,17 @@ static NSString *haskellFileExtension = @"hs";
   return self.package.modulePath;
 }
 
+- (void)setOtherModules:(NSDictionary *)otherModules
+{
+  self.package = [CBLPackage package:self.package withOtherModules:dictTreeToStrings(otherModules)];
+  NSLog(@"Update project executable other modules");
+}
+
+- (NSDictionary *)otherModules
+{
+  return stringsToDictTree(self.package.otherModules);
+}
+
 
 #pragma mark -
 #pragma mark Project serialisation
