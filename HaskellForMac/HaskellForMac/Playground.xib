@@ -55,7 +55,7 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                         </scrollView>
-                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="YDV-E3-8zf" userLabel="Bordered Scroll View - Result View">
+                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="YDV-E3-8zf" userLabel="Bordered Scroll View - Result View" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="261.5" y="0.0" width="260.5" height="272"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="jm2-zi-G8J">

@@ -12,11 +12,11 @@ class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
-  @IBOutlet weak var splitView: NSSplitView!
-  @IBOutlet weak var codeScrollView: SynchroScrollView!
-  @IBOutlet weak var resultScrollView: NSScrollView!
-  @IBOutlet      var codeTextView: NSTextView!
-  @IBOutlet      var resultTextView: NSTextView!
+  @IBOutlet weak var splitView:        NSSplitView!
+  @IBOutlet weak var codeScrollView:   SynchroScrollView!
+  @IBOutlet weak var resultScrollView: SynchroScrollView!
+  @IBOutlet      var codeTextView:     NSTextView!
+  @IBOutlet      var resultTextView:   NSTextView!
 
   /// The GHC session associated with this playground.
   //
@@ -57,6 +57,11 @@ class PlaygroundController: NSViewController {
 
       // Synchronise the scroll views.
     codeScrollView.setSynchronisedScrollView(resultScrollView)
+    resultScrollView.setSynchronisedScrollView(codeScrollView)
+
+      // Set up the gutter.
+    codeScrollView.hasVerticalRuler = true
+    codeScrollView.rulersVisible    = true
 
       // The size of the playground text views is fixed. We want them to be rigid.
     codeTextView.horizontallyResizable   = true
