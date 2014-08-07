@@ -20,14 +20,13 @@
 ///
 /// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
 //
-@property (nonatomic) NSViewController *editorViewController;     // maybe nil
-@property (nonatomic) TextEditorController *textEditorViewController;     // maybe nil
+@property (nonatomic) NSViewController *editorViewController;          // maybe nil
 
 /// View controller of the playground if any is currently visible.
 ///
 /// The corresponding views are specified in separate '.xib' files. We need to keep the view controller alive here.
 //
-@property (nonatomic) PlaygroundController *playgroundController;     // maybe nil
+@property (nonatomic) PlaygroundController *playgroundController;      // maybe nil
 
 
 #pragma mark -

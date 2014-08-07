@@ -137,6 +137,7 @@ NSString *const kCabalCellID = @"cabalCellID";
         cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:@"public.unix-executable"];
         break;
       case PVMItemTagFile:
+      case PVMItemTagMainFile:
         cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:[item.identifier pathExtension]];
         break;
       case PVMItemTagFolder:
@@ -167,7 +168,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
-    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile))
+    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile))
       [self selectEditor:item];
 
   }
@@ -235,18 +236,13 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   } else if ([nibName isEqual:kTextEditor]) {
 
-//    self.editorViewController = [[TextEditorController alloc] initWithNibName:nibName
-//                                                                       bundle:nil
-//                                                         projectViewModelItem:item
-//                                                                      fileURL:fileURL];
-    self.textEditorViewController = [[TextEditorController alloc] initWithNibName:nibName
+    self.editorViewController = [[TextEditorController alloc] initWithNibName:nibName
                                                                        bundle:nil
                                                          projectViewModelItem:item
                                                                       fileURL:fileURL];
 
   }
-//  if (!self.editorView) {
-  if (!self.textEditorViewController) {
+  if (!self.editorViewController) {
 
     NSLog(@"%s: cannot load editor nib %@", __func__, nibName);
     return;
@@ -264,8 +260,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   }
 
     // Enter editor view into the view hierachy.
-//  NSView *editorContentView = self.editorViewController.view;
-  NSView *editorContentView = self.textEditorViewController.view;
+  NSView *editorContentView = self.editorViewController.view;
   editorContentView.frame = self.editorView.bounds;
   [editorContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   editorContentView.translatesAutoresizingMaskIntoConstraints = YES;

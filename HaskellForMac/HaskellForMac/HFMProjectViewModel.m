@@ -156,7 +156,7 @@ static NSString *haskellFileExtension = @"hs";
   self.license        = @"AllRightsReserved";
   self.executableName = name;
   self.sourceDir      = nil;
-  self.modulePath     = mainName;
+  self.modules        = @{mainName : @{} };
 
     // Create a new file wrapper for the new Cabal file.
   [self.fileWrapper removeFileWrapper:[self.fileWrapper fileWrappers][oldCabalName]];
@@ -375,26 +375,15 @@ static NSString *haskellFileExtension = @"hs";
   return self.package.sourceDir;
 }
 
-- (void)setModulePath:(NSString *)modulePath
+- (void)setModules:(NSDictionary *)modules
 {
-  self.package = [CBLPackage package:self.package withModulePath:modulePath];
-  NSLog(@"Update project executable Main module path");
+  self.package = [CBLPackage package:self.package withModules:dictTreeToStrings(modules)];
+  NSLog(@"Update project executable modules");
 }
 
-- (NSString *)modulePath
+- (NSDictionary *)modules
 {
-  return self.package.modulePath;
-}
-
-- (void)setOtherModules:(NSDictionary *)otherModules
-{
-  self.package = [CBLPackage package:self.package withOtherModules:dictTreeToStrings(otherModules)];
-  NSLog(@"Update project executable other modules");
-}
-
-- (NSDictionary *)otherModules
-{
-  return stringsToDictTree(self.package.otherModules);
+  return stringsToDictTree(self.package.modules);
 }
 
 

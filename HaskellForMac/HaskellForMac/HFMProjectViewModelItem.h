@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, PVMItemTag) {
   PVMItemTagFileGroup,        // Logical collection of files (wildcard name or source directory or data directory)
   PVMItemTagFolder,           // File system directory
   PVMItemTagFile,             // Concrete file that is part of the package
+  PVMItemTagMainFile,         // Concrete file that is part of the package and the main module of an executable
 };
 
 /// Outline view group ids

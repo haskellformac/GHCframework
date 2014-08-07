@@ -54,8 +54,9 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 // executable section
 @property                       NSString     *executableName;
 @property                       NSString     *sourceDir;       // optional (maybe 'nil')  FIXME: Issue #82: generalise to array of dirs
-@property                       NSString     *modulePath;
-@property                       NSDictionary *otherModules;    // Folders as tree of dictionaries (leafs = empty dicts)
+@property                       NSDictionary *modules;         // Folders as tree of dictionaries (leafs = empty dicts)
+                                                               // Combines Cabal's 'modulePath' and 'otherModules',
+                                                               // where only 'modulePath' (main module) has got a suffix.
 
 /// View model group items (they are owned by the view model and keep all active project view model items alive)
 ///

@@ -157,15 +157,10 @@ cabalVersion gpd = case PD.specVersionRaw . PD.packageDescription $ gpd of
 buildType :: PD.GenericPackageDescription -> String
 buildType = maybe "Simple" display . PD.buildType . PD.packageDescription
 
--- Conversion to a file path with suffix.
+-- Conversion from a file path to a hierachical module name.
 --
-toHSFilePath :: PD.ModuleName -> FilePath
-toHSFilePath =  (<.> "hs") . PD.toFilePath
-
--- Conversion from a file path with suffix to a hierachical module name.
---
-fromHSFilePath :: FilePath -> PD.ModuleName
-fromHSFilePath = fromString . map slashToDot . dropExtensions
+fromFilePath :: FilePath -> PD.ModuleName
+fromFilePath = fromString . map slashToDot
   where
     slashToDot '/' = '.'
     slashToDot c   = c
@@ -305,24 +300,28 @@ objc_record "CBL" "Package" ''PD.GenericPackageDescription
                     in (name, cd {PD.condTreeData 
                                     = treeData {PD.buildInfo = (PD.buildInfo treeData) {PD.hsSourceDirs = sourceDirs}}})))
               :: PD.GenericPackageDescription -> Maybe String -> PD.GenericPackageDescription |])
-  , [objcprop| @property (readonly) typename NSString *modulePath; |]
-      ==> ([t| String |],
-           [| getCondExecutable "" (PD.modulePath . PD.condTreeData . snd) |],
-           [| \gpd modulePath -> 
-                setCondExecutable gpd 
-                  (\(name, cd) -> (name, cd {PD.condTreeData = (PD.condTreeData cd) {PD.modulePath = modulePath}})) |])
-  , [objcprop| @property (readonly) typename NSArray *otherModules; |]
-      ==> -- This requires care: Cabal uses 'ModuleName' to represent hierachical module names. We need to map that to and
-          -- from file paths (including a file suffix) for the project view model.
+  , [objcprop| @property (readonly) typename NSArray *modules; |]
+      ==> -- We merge the path of the main module with 'other-modules:'. The latter requires care as Cabal uses 'ModuleName'
+          -- to represent hierachical module names. We need to map that to and from file paths for the project view model.
+          -- When converting back to Haskell land, we identify the main module by being the only one whose file name has a
+          -- suffix (the other ones can't include dots as they derive from hierachical module names).
           ([t| [String] |],
-           [| map toHSFilePath . getCondExecutable [] (PD.otherModules . PD.buildInfo . PD.condTreeData . snd) |],
-           [| (\gpd otherModulePaths -> 
+           [| \gpd ->
+                let modulePath   = getCondExecutable "" (PD.modulePath . PD.condTreeData . snd) gpd
+                    otherModules = getCondExecutable [] (PD.otherModules . PD.buildInfo . PD.condTreeData . snd) gpd
+                in
+                modulePath : map PD.toFilePath otherModules |],
+           [| (\gpd modulePaths -> 
                 setCondExecutable gpd 
                   (\(name, cd) -> 
                     let treeData     = PD.condTreeData cd
-                        otherModules = map fromHSFilePath otherModulePaths
+                        (ext, noext) = partition hasExtension modulePaths
+                        modulePath   = head (ext ++ [""])     -- use "" if there is no path with an extension
+                        otherModules = map fromFilePath noext
                     in (name, cd {PD.condTreeData 
-                                    = treeData {PD.buildInfo = (PD.buildInfo treeData) {PD.otherModules = otherModules}}})))
+                                    = treeData { PD.modulePath = modulePath
+                                               , PD.buildInfo = (PD.buildInfo treeData) {PD.otherModules = otherModules}
+                                               }})))
               :: PD.GenericPackageDescription -> [String] -> PD.GenericPackageDescription |])
   ]
   [objcifdecls|

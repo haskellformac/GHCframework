@@ -141,6 +141,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
         break;
 
       case PVMItemTagFile:
+      case PVMItemTagMainFile:
       case PVMItemTagFolder:
         _fileWrapper = [self.parent.fileWrapper fileWrappers][self.identifier];
         break;
@@ -186,7 +187,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
         } else if ([self.identifier isEqualToString:kExtraSourceGroupID]) {
 
             // Extra source group: multiple files in a folder hierarchy
-          _theChildren = [self childrenFromDictionary:self.model.extraSrcFiles];
+          _theChildren = [self childrenFromDictionary:self.model.extraSrcFiles asSourceModules:NO];
 
         } else if ([self.identifier isEqualToString:kDataGroupID]) {
 
@@ -204,7 +205,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
           } else {                    // ...directly descent into the hierarchy of the data files.
 
               // Data files group: multiple files in a folder hierarchy
-            _theChildren = [self childrenFromDictionary:self.model.dataFiles];
+            _theChildren = [self childrenFromDictionary:self.model.dataFiles asSourceModules:NO];
 
           }
 
@@ -226,13 +227,9 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
                                                                                   model:self.model]];
 
 
-        } else {                    // ...directly display the main module.
+        } else {                    // ...directly display the main module and other modules.
 
-          _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
-                                                          projectViewModelItemWithGroup:PVMItemTagFile
-                                                                             identifier:self.model.modulePath
-                                                                                 parent:self
-                                                                                  model:self.model]];
+          _theChildren = [self childrenFromDictionary:self.model.modules asSourceModules:YES];
 
         }
 
@@ -244,16 +241,12 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
             // We are currently in the file group representing the 'data-dir:' field
 
             // Data files group: multiple files in a folder hierarchy
-          _theChildren = [self childrenFromDictionary:self.model.dataFiles];
+          _theChildren = [self childrenFromDictionary:self.model.dataFiles asSourceModules:NO];
 
         } else if (self.parent.tag == PVMItemTagExecutable) {
             // We are currently in the file group representing the 'source-dir:' field
 
-          _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
-                                                          projectViewModelItemWithGroup:PVMItemTagFile
-                                                                             identifier:self.model.modulePath
-                                                                                 parent:self
-                                                                                  model:self.model]];
+          _theChildren = [self childrenFromDictionary:self.model.modules asSourceModules:YES];
 
         } else {
 
@@ -264,10 +257,11 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
         break;
 
       case PVMItemTagFolder:
-        _theChildren = [self childrenFromDictionary:[self lookupDictionary]];
+        _theChildren = [self childrenFromDictionary:[self lookupDictionary] asSourceModules:NO];
         break;
 
       case PVMItemTagFile:
+      case PVMItemTagMainFile:
         _theChildren = [NSMutableArray array];
         break;
 
@@ -301,6 +295,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
       case PVMItemTagFileGroup:
       case PVMItemTagFolder:
       case PVMItemTagFile:
+      case PVMItemTagMainFile:
         [path insertObject:current.identifier atIndex:0];
         break;
         
@@ -397,15 +392,25 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 // Given the identifiers of the current item's children, compute its child items.
 //
-- (NSMutableArray *)childrenFromDictionary:(NSDictionary *)dict
+- (NSMutableArray *)childrenFromDictionary:(NSDictionary *)dict asSourceModules:(BOOL)processingSourceModules
 {
-  NSMutableArray *children = [NSMutableArray array];
+  NSMutableArray *children             = [NSMutableArray array];
+  NSString       *haskellFileExtension = [HFMProjectViewModel haskellFileExtension];
 
   for (NSString *string in dict) {
 
-    enum PVMItemTag tag = ((NSDictionary *)dict[string]).count == 0 ? PVMItemTagFile : PVMItemTagFolder;
+    NSString *identifier =  string;
+    enum PVMItemTag tag  = ((NSDictionary *)dict[string]).count == 0 ? PVMItemTagFile : PVMItemTagFolder;
+
+    if (processingSourceModules && tag == PVMItemTagFile)
+    {
+      if ([[string pathExtension] isEqualToString:haskellFileExtension])
+        tag = PVMItemTagMainFile;
+      else
+        identifier = [string stringByAppendingPathExtension:haskellFileExtension];
+    }
     [children addObject:[HFMProjectViewModelItem projectViewModelItemWithGroup:tag
-                                                                    identifier:string
+                                                                    identifier:identifier
                                                                         parent:self
                                                                          model:self.model]];
 
@@ -420,7 +425,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   NSMutableArray          *path    = [NSMutableArray array];
   HFMProjectViewModelItem *current = self;
 
-  while (current.tag == PVMItemTagFolder || current.tag == PVMItemTagFile) {
+  while (current.tag == PVMItemTagFolder || current.tag == PVMItemTagFile || current.tag == PVMItemTagMainFile) {
 
     [path insertObject:current.identifier atIndex:0];
     current = current.parent;
@@ -430,7 +435,9 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   NSDictionary *dict = ([current.identifier isEqualToString:kDataGroupID]
                         || (self.parent.tag == PVMItemTagGroup
                             && [self.parent.identifier isEqualToString:kDataGroupID])) ? current.model.dataFiles :
-                       ([current.identifier isEqualToString:kExtraSourceGroupID])      ? current.model.extraSrcFiles
+                       ([current.identifier isEqualToString:kExtraSourceGroupID])      ? current.model.extraSrcFiles :
+                       (self.parent.tag == PVMItemTagExecutable
+                        || self.parent.tag == PVMItemTagFileGroup)                     ? current.model.modules
                                                                                        : nil;
 
   if (dict)
