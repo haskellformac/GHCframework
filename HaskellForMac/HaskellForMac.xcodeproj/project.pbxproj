@@ -41,6 +41,7 @@
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
 		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
+		E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5766019948C3000E6AAE0 /* Diagnostics.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
@@ -188,6 +189,7 @@
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
 		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
 		E7B0AB001990B4890057FAD5 /* TextGutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextGutterView.swift; sourceTree = "<group>"; };
+		E7C5766019948C3000E6AAE0 /* Diagnostics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
@@ -346,15 +348,10 @@
 			children = (
 				E7A13B161888006C00D79087 /* HFMAppDelegate.h */,
 				E7A13B171888006C00D79087 /* HFMAppDelegate.m */,
-				E7A13B381888D1C000D79087 /* HFMProject.h */,
-				E7A13B391888D1C000D79087 /* HFMProject.m */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
-				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
-				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
-				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
-				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
-				E7F79897198B3A010063294F /* HaskellSession.swift */,
+				E7C5765E19948B3A00E6AAE0 /* Projects */,
+				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
 				E7F7988B198A609B0063294F /* Playground */,
@@ -409,6 +406,28 @@
 				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
 			);
 			name = Interfaces;
+			sourceTree = "<group>";
+		};
+		E7C5765E19948B3A00E6AAE0 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				E7A13B381888D1C000D79087 /* HFMProject.h */,
+				E7A13B391888D1C000D79087 /* HFMProject.m */,
+				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
+				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
+				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
+				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		E7C5765F19948BA800E6AAE0 /* Processor */ = {
+			isa = PBXGroup;
+			children = (
+				E7F79897198B3A010063294F /* HaskellSession.swift */,
+				E7C5766019948C3000E6AAE0 /* Diagnostics.swift */,
+			);
+			name = Processor;
 			sourceTree = "<group>";
 		};
 		E7F7988B198A609B0063294F /* Playground */ = {
@@ -701,6 +720,7 @@
 			files = (
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
+				E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,

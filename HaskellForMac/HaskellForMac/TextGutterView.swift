@@ -11,12 +11,24 @@
 
 import Cocoa
 
+
 class TextGutterView: NSRulerView {
 
+  // All issues currently flagged for the file annotated by this gutter.
+  //
+  private var issues: Issues = [:]
+  
   // Text attributes for line numbers
   //
   private let textAttributes = [NSFontAttributeName:            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
                                 NSForegroundColorAttributeName: NSColor(deviceWhite: 0.5, alpha: 1)]
+
+  // Background colours for issues
+  //
+  private let errorBgColour           = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.5)
+  private let disabledErrorBgColour   = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.2)
+  private let warningBgColour         = NSColor(red: 1, green: 1,   blue: 0, alpha: 0.5)
+  private let disabledWarningBgColour = NSColor(red: 1, green: 1,   blue: 0, alpha: 0.2)
 
   // Gap between the line numbers and the bounding box of the ruler.
   //
@@ -38,6 +50,17 @@ class TextGutterView: NSRulerView {
 
   required init(coder: NSCoder) {
     super.init(coder: coder)
+  }
+
+
+  // MARK: -
+  // MARK: Notifications
+
+  /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
+  ///
+  func notifyOfIssues(newIssues: Issues) {
+    issues       = newIssues
+    needsDisplay = true
   }
 
 
@@ -75,9 +98,17 @@ class TextGutterView: NSRulerView {
       let lineRange = (string as NSString).lineRangeForRange(NSRange(location: charIndex, length: 0))
 
         // Draw the number for the current line
-      let rect = layoutManager.lineFragmentRectForGlyphAtIndex(layoutManager.glyphIndexForCharacterAtIndex(lineRange.location),
-                                                                 effectiveRange: nil)
-      drawLineNumber(lineNumber, middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2)
+      let firstIndex = layoutManager.glyphIndexForCharacterAtIndex(lineRange.location)
+      let firstRect  = layoutManager.lineFragmentRectForGlyphAtIndex(firstIndex,
+                                                                     effectiveRange: nil)
+      let lastIndex  = (lineRange.length == 0) ? firstIndex
+                                               : layoutManager.glyphIndexForCharacterAtIndex(NSMaxRange(lineRange) - 1)
+      let lastRect   = layoutManager.lineFragmentRectForGlyphAtIndex(lastIndex,
+                                                                     effectiveRange: nil)
+      drawLineNumber(lineNumber,
+        top:        firstRect.origin.y - visibleRect.origin.y,
+        middleline: firstRect.origin.y - visibleRect.origin.y + firstRect.size.height / 2,
+        height:     lastRect.origin.y - firstRect.origin.y + lastRect.size.height)
 
         // Advance to next line
       lineNumber++
@@ -87,14 +118,32 @@ class TextGutterView: NSRulerView {
       // Make sure to add an extra line number if we have an empty last line.
     if ((string as NSString).length == NSMaxRange(charRange)) {
       let rect = layoutManager.extraLineFragmentRect
-      drawLineNumber(lineNumber, middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2)
+      drawLineNumber(lineNumber,
+        top:        rect.origin.y - visibleRect.origin.y,
+        middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2,
+        height:     rect.size.height)
     }
   }
 
-  // Draws the given number in the gutter, such that the glyphs' baseline is as specified. The baseline is given
-  // relative to the gutter view.
+  // Draws the given number in the gutter, such that the glyphs' is vertically centred around the given middle line.
+  // The middle line is centred with the first row of the line. The top and height specify the extent of the gutter area
+  // belonging to this line (for background drawing).
   //
-  private func drawLineNumber(lineNumber: Int, middleline: CGFloat) {
+  private func drawLineNumber(lineNumber: UInt, top: CGFloat, middleline: CGFloat, height: CGFloat) {
+
+      // Draw the background
+    if let lineIssue = issues[lineNumber] {
+
+      if (lineIssue.filter{ issue in return (issue.severity == Severity.Error) }).count > 0 {
+        self.errorBgColour.setFill()
+      } else {
+        self.warningBgColour.setFill()
+      }
+      NSBezierPath(rect: NSRect(x: 0, y: top, width: ruleThickness, height: height)).fill()
+
+    }
+
+      // Draw the number
     let numberString = lineNumber.description as NSString
     let size         = numberString.sizeWithAttributes(textAttributes)
     numberString.drawAtPoint(NSPoint(x: ruleThickness - margin - size.width,
@@ -104,7 +153,7 @@ class TextGutterView: NSRulerView {
 }
 
 extension NSString {
-  func lineNumberAtLocation(loc: Int) -> Int {
+  func lineNumberAtLocation(loc: Int) -> UInt {
     switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {
     case 0: return 1
     case let start: return lineNumberAtLocation(start - 1) + 1
