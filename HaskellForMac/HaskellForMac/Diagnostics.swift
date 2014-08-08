@@ -43,6 +43,18 @@ struct Issue {
   let message:  String
 }
 
+/// Determine the highest severity of all given issues (if any).
+///
+func maxSeverityOfIssues(issues: [Issue]) -> Severity? {
+  return issues.reduce(nil){ acc, issue in
+    if let severity = acc {
+      return issue.severity
+    } else {
+      return issue.severity
+    }
+  }
+}
+
 /// A set of issues flagged by the compiler for a single source file can be indexed by line number. All issues
 /// appearing on a single line are sorted by their starting column.
 ///

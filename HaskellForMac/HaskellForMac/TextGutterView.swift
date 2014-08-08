@@ -27,8 +27,11 @@ class TextGutterView: NSRulerView {
   //
   private let errorBgColour           = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.5)
   private let disabledErrorBgColour   = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.2)
-  private let warningBgColour         = NSColor(red: 1, green: 1,   blue: 0, alpha: 0.5)
+  private let warningBgColour         = NSColor(red: 1, green: 1,   blue: 0.3, alpha: 0.5)
   private let disabledWarningBgColour = NSColor(red: 1, green: 1,   blue: 0, alpha: 0.2)
+
+  private let errorSymbol   = "❗️"
+  private let warningSymbol = "❕"
 
   // Gap between the line numbers and the bounding box of the ruler.
   //
@@ -131,24 +134,39 @@ class TextGutterView: NSRulerView {
   //
   private func drawLineNumber(lineNumber: UInt, top: CGFloat, middleline: CGFloat, height: CGFloat) {
 
-      // Draw the background
-    if let lineIssue = issues[lineNumber] {
+      // Draw the background.
+    let lineIssuesOpt = issues[lineNumber]
+    let maxSeverity   = (lineIssuesOpt == nil) ? nil : maxSeverityOfIssues(lineIssuesOpt!)
+    if let severity = maxSeverity {
 
-      if (lineIssue.filter{ issue in return (issue.severity == Severity.Error) }).count > 0 {
-        self.errorBgColour.setFill()
-      } else {
-        self.warningBgColour.setFill()
+      switch severity {
+      case .Error:   self.errorBgColour.setFill()
+      case .Warning: self.warningBgColour.setFill()
       }
       NSBezierPath(rect: NSRect(x: 0, y: top, width: ruleThickness, height: height)).fill()
 
     }
 
-      // Draw the number
+      // Draw the number.
     let numberString = lineNumber.description as NSString
     let size         = numberString.sizeWithAttributes(textAttributes)
     numberString.drawAtPoint(NSPoint(x: ruleThickness - margin - size.width,
                                      y: middleline - size.height / 2),
                              withAttributes: textAttributes)
+
+      // Draw an issue symbol if any.
+    if let severity = maxSeverity {
+
+      var symbol: String
+      switch severity {
+      case .Error:   symbol = errorSymbol
+      case .Warning: symbol = warningSymbol
+      }
+      symbol.drawAtPoint(NSPoint(x: 0,
+                                 y: middleline - size.height / 2),
+                                 withAttributes: textAttributes)
+
+    }
   }
 }
 
