@@ -257,8 +257,12 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
         break;
 
       case PVMItemTagFolder:
-        _theChildren = [self childrenFromDictionary:[self lookupDictionary] asSourceModules:NO];
+      {
+        BOOL asSourceModules;
+        NSDictionary *dict = [self lookupDictionaryMightBeSources:&asSourceModules];
+        _theChildren = [self childrenFromDictionary:dict asSourceModules:asSourceModules];
         break;
+      }
 
       case PVMItemTagFile:
       case PVMItemTagMainFile:
@@ -420,7 +424,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 // Compute the identifier dictionary containing the current item's children.
 //
-- (NSDictionary *)lookupDictionary
+- (NSDictionary *)lookupDictionaryMightBeSources:(BOOL *)asSourceModules
 {
   NSMutableArray          *path    = [NSMutableArray array];
   HFMProjectViewModelItem *current = self;
@@ -432,12 +436,12 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   }
 
+  *asSourceModules = self.parent.tag == PVMItemTagExecutable || self.parent.tag == PVMItemTagFileGroup;
   NSDictionary *dict = ([current.identifier isEqualToString:kDataGroupID]
                         || (self.parent.tag == PVMItemTagGroup
                             && [self.parent.identifier isEqualToString:kDataGroupID])) ? current.model.dataFiles :
                        ([current.identifier isEqualToString:kExtraSourceGroupID])      ? current.model.extraSrcFiles :
-                       (self.parent.tag == PVMItemTagExecutable
-                        || self.parent.tag == PVMItemTagFileGroup)                     ? current.model.modules
+                       (*asSourceModules)                                              ? current.model.modules
                                                                                        : nil;
 
   if (dict)
