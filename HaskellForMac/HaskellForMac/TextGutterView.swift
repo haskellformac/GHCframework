@@ -25,10 +25,10 @@ class TextGutterView: NSRulerView {
 
   // Background colours for issues
   //
-  private let errorBgColour           = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.5)
-  private let disabledErrorBgColour   = NSColor(red: 1, green: 0.4, blue: 0, alpha: 0.2)
+  private let errorBgColour           = NSColor(red: 1, green: 0.4, blue: 0,   alpha: 0.5)
+  private let disabledErrorBgColour   = NSColor(red: 1, green: 0.4, blue: 0,   alpha: 0.2)
   private let warningBgColour         = NSColor(red: 1, green: 1,   blue: 0.3, alpha: 0.5)
-  private let disabledWarningBgColour = NSColor(red: 1, green: 1,   blue: 0, alpha: 0.2)
+  private let disabledWarningBgColour = NSColor(red: 1, green: 1,   blue: 0.3, alpha: 0.2)
 
   private let errorSymbol   = "❗️"
   private let warningSymbol = "❕"
