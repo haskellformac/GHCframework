@@ -36,8 +36,6 @@ import System.FilePath
 import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
-import Debug.Trace
-
 objc_import ["<Cocoa/Cocoa.h>"]
 
 

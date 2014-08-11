@@ -51,10 +51,10 @@ newtype Session = Session (MVar (Maybe (GHC.Ghc ())))
 data Result = Result String
             | Error  String
 
--- |Start a new interpreter session.
+-- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
-start :: IO Session
-start
+start :: (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
+start diagnosticHandler
   = do
     { inlet <- newEmptyMVar
     ; forkIO $ void $ GHC.runGhc (Just Paths.libdir) (startSession inlet)
@@ -64,7 +64,7 @@ start
     startSession inlet 
       = do
         {   -- Initialise the session by reading the package database
-        ; dflags <- GHC.getSessionDynFlags
+        ; dflags     <- GHC.getSessionDynFlags
         ; packageIds <- GHC.setSessionDynFlags $ dflags 
                                                  { GHC.hscTarget        = GHC.HscInterpreted
                                                  , GHC.ghcLink          = GHC.LinkInMemory
@@ -76,10 +76,8 @@ start
 
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
-        ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
-        ; GHC.liftIO $ writeIORef logRef []
-        ; unless (null msgs) $
-            error "PANIC: could not initialise 'ghckit-support'"
+        -- ; unless (???successfully loaded???) $
+        --     error "PANIC: could not initialise 'ghckit-support'"
 
             -- ...initialise the interactive print channel
         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
@@ -95,6 +93,10 @@ start
 
         ; session inlet
         }
+
+    logAction :: GHC.LogAction
+    logAction dflags severity srcSpan _style msg
+      = diagnosticHandler severity srcSpan (GHC.showSDoc dflags msg)
         
     session inlet
       = do
@@ -160,12 +162,6 @@ load (Session inlet) target
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
 
-            -- Determine errors if unsuccessful
-        ; msgs <- reverse <$> GHC.liftIO (readIORef logRef)
-        ; GHC.liftIO $ writeIORef logRef []
-        ; let result | null msgs = Result "Loaded module successfully."
-                     | otherwise = Error $ concat msgs
-
             -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
         ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
         ; case loadedModules of
@@ -181,11 +177,12 @@ load (Session inlet) target
 
                              -- Only make the user module available for interactive use
                          ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
+
+                             -- Communicate the result back to the main thread
+                         ; GHC.liftIO $ 
+                             putMVar resultMV (Result $ "Successfully loaded '" ++ GHC.showSDoc dflags (GHC.ppr modname) ++ "'.")
                          }
-            []        -> return ()
-            
-            -- Communicate the result back to the main thread
-        ; GHC.liftIO $ putMVar resultMV result
+            []        -> GHC.liftIO $ putMVar resultMV (Error "Couldn't load module.")
         }
     ; takeMVar resultMV
     }
@@ -199,16 +196,6 @@ handleError resultMV e
 pprError :: GHC.DynFlags -> GHC.SourceError -> String
 pprError dflags err
   = GHC.showSDoc dflags (GHC.vcat $ GHC.pprErrMsgBagWithLoc (GHC.srcErrorMessages err))
-
--- FIXME: temporary hack
-logRef :: IORef [String]
-{-# NOINLINE logRef #-}
-logRef = unsafePerformIO $ newIORef []
-
--- logAction :: GHC.LogAction
-logAction dflags severity srcSpan _style msg
-  -- = modifyIORef logRef (GHC.showSDoc dflags (GHC.pprLocErrMsg msg) :)
-  = modifyIORef logRef (GHC.showSDoc dflags (GHC.mkLocMessage severity srcSpan msg) :)
 
 chanRef :: IORef (TChan String)
 {-# NOINLINE chanRef #-}

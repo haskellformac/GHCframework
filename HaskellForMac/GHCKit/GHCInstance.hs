@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable #-}
 
 -- |
 -- Module      : GHCInstance
@@ -14,14 +14,19 @@ module GHCInstance () where
   -- standard libraries
 import Control.Applicative
 import Data.Time
+import Data.Typeable
+import Data.Word
+import System.IO.Unsafe (unsafePerformIO)
 
   -- language-c-inline
 import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
   -- GHC
+import qualified FastString   as GHC
 import qualified GHC          as GHC
 import qualified StringBuffer as GHC
+import qualified SrcLoc       as GHC
 
   -- friends
 import Interpreter
@@ -31,6 +36,58 @@ objc_import ["<Cocoa/Cocoa.h>"]
 
 -- Haskell side support code
 -- -------------------------
+
+newtype GHCInstance = GHCInstance (ForeignPtr GHCInstance)
+  deriving Typeable   -- needed for now until migrating to new TH
+
+-- FIXME: This is ugly. We should have an 'objc_class' directive that generates this code.
+objc_interface [cunit| @class GHCInstance; |]
+ghcInstance :: GHCInstance -> IO GHCInstance
+ghcInstance = return
+objc_marshaller 'ghcInstance 'ghcInstance
+
+-- Create a new GHC session that reports diagnostics through the provided object using the method
+--
+startWithHandlerObject :: GHCInstance -> IO Session
+startWithHandlerObject handlerObject
+  = start $ \severity srcSpan msg ->
+      case GHC.srcSpanFileName_maybe srcSpan of
+        Nothing     -> let spanText = GHC.showUserSpan True srcSpan 
+                       in $(objc ['spanText :> ''String, 'msg :> ''String] 
+                            (void [cexp| NSLog(@"%@: %@", spanText, msg) |]))
+        Just fsname -> let fname = GHC.unpackFS fsname
+                       in
+                       $(objc ['handlerObject :> Class ''GHCInstance,
+                               'fname         :> ''String,
+                               'cseverity     :> ''Int,
+                               'line          :> ''Word,
+                               'column        :> ''Word,
+                               'lines         :> ''Word,
+                               'endColumn     :> ''Word,
+                               'msg           :> ''String]
+                         (void [cexp| [handlerObject reportWithSeverity:cseverity
+                                                               filename:fname
+                                                                   line:line
+                                                                 column:column
+                                                                  lines:lines
+                                                              endColumn:endColumn
+                                                                message:msg] |]))
+          where
+            cseverity = unsafePerformIO $ case severity of
+                          GHC.SevOutput      -> $(objc [] (''Int <: [cexp| GHCSeverityOutput |]))
+                          GHC.SevDump        -> $(objc [] (''Int <: [cexp| GHCSeverityDump |]))
+                          GHC.SevInteractive -> $(objc [] (''Int <: [cexp| GHCSeverityInteractive |]))
+                          GHC.SevInfo        -> $(objc [] (''Int <: [cexp| GHCSeverityInfo |]))
+                          GHC.SevWarning     -> $(objc [] (''Int <: [cexp| GHCSeverityWarning |]))
+                          GHC.SevError       -> $(objc [] (''Int <: [cexp| GHCSeverityError |]))
+                          GHC.SevFatal       -> $(objc [] (''Int <: [cexp| GHCSeverityFatal |]))
+
+            GHC.RealSrcLoc startLoc = GHC.srcSpanStart srcSpan
+            GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
+            line                    = GHC.srcLocLine startLoc
+            column                  = GHC.srcLocCol startLoc
+            lines                   = GHC.srcLocLine endLoc - line
+            endColumn               = GHC.srcLocCol endLoc
 
 -- Load a module of which the actual program code is given.
 --
@@ -66,23 +123,56 @@ evalText session exprText
 
 objc_interface [cunit|
 
+// typedef NS_ENUM(NSInteger, GHCSeverity) {
+// spelled out for language-c-quote's benefit
+typedef typename NSInteger GHCSeverity; enum {
+  GHCSeverityOutput,
+  GHCSeverityDump,
+  GHCSeverityInteractive,
+  GHCSeverityInfo,
+  GHCSeverityWarning,
+  GHCSeverityError,
+  GHCSeverityFatal
+};
+
+typedef void(^DiagnosticHandler)(GHCSeverity          severity, 
+                                 typename NSString   *fname,
+                                 typename NSUInteger  line,
+                                 typename NSUInteger  column,
+                                 typename NSUInteger  lines,
+                                 typename NSUInteger  endColumn,
+                                 typename NSString   *msg);
+
 @interface GHCInstance : NSObject
 
-// Create a new GHC instance.
-//
-+ (instancetype)ghcInstanceStart;
+/// Create a new GHC instance.
+///
++ (instancetype)ghcInstanceWithDiagnosticsHandler:(DiagnosticHandler)handler;
 
-// Load a module given as a string.
-//
+/// Initialise a new GHC instance.
+///
+- (instancetype)initWithDiagnosticsHandler:(DiagnosticHandler)handler;
+
+/// Load a module given as a string.
+///
 - (typename NSString *)loadModuleFromString:(typename NSString *)moduleText;
 
-// Evaluate the Haskell expression given as a string.
-//
+/// Evaluate the Haskell expression given as a string.
+///
 - (typename NSString *)evalExprFromString:(typename NSString *)exprText;
 
-// Release the resources of this GHC instance. It cannot be used after this.
+// Framework internal methods
+// --
+
+// GHC diagnostic handler.
 //
-- (void)stop;
+- (void)reportWithSeverity:(typename NSInteger)severity
+                  filename:(typename NSString *)fname
+                      line:(typename NSUInteger)line 
+                    column:(typename NSUInteger)column
+                     lines:(typename NSUInteger)lines
+                 endColumn:(typename NSUInteger)endColumn
+                   message:(typename NSString *)msg;
 
 @end
 |]
@@ -91,14 +181,20 @@ objc_interface [cunit|
 -- Objective-C class implementation
 -- --------------------------------
 
-objc_implementation [Typed 'start, Typed 'stop, Typed 'loadModuleText, Typed 'evalText] [cunit|
+objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'loadModuleText, Typed 'evalText] [cunit|
 
 @interface GHCInstance ()
 
 // Reference to the interpreter session in Haskell land.
 @property (assign) typename HsStablePtr interpreterSession;
 
+// The handler to process diagnostic messages arriving from GHC.
+@property (strong) typename DiagnosticHandler diagnosticHandler;
+
 @end
+
+// Init and deinit
+// --
 
 void GHCInstance_initialise(void);
 
@@ -109,19 +205,38 @@ void GHCInstance_initialise(void);
   GHCInstance_initialise();
 }
 
-+ (instancetype)ghcInstanceStart
++ (instancetype)ghcInstanceWithDiagnosticsHandler:(typename DiagnosticHandler)handler
 {
-  NSLog(@"GHC instance start");
-  return [[GHCInstance alloc] init];
+  return [[GHCInstance alloc] initWithDiagnosticsHandler:handler];
 }
 
 - (instancetype)init
 {
+  return [self initWithDiagnosticsHandler:nil];
+}
+
+- (instancetype)initWithDiagnosticsHandler:(typename DiagnosticHandler)handler
+{
   self = [super init];
-  if (self)
-    self.interpreterSession = start();
+  if (self) {
+    
+    NSLog(@"GHC instance start");
+    self.interpreterSession = startWithHandlerObject(self);
+    self.diagnosticHandler  = handler;
+    
+  }
   return self;
 }
+
+- (void)dealloc
+{
+  stop(self.interpreterSession);
+  NSLog(@"GHC instance stop");
+  hs_free_stable_ptr(self.interpreterSession);
+}
+
+// Public model methods
+// --
 
 - (typename NSString *)loadModuleFromString:(typename NSString *)moduleText
 {
@@ -133,16 +248,18 @@ void GHCInstance_initialise(void);
   return evalText(self.interpreterSession, exprText);
 }
 
-- (void)stop
-{
-  stop(self.interpreterSession);
-  NSLog(@"GHC instance stop");
-}
+// Framework internal methods
+// --
 
-- (void)dealloc
+- (void)reportWithSeverity:(typename NSInteger)severity 
+                  filename:(typename NSString *)fname
+                      line:(typename NSUInteger)line 
+                    column:(typename NSUInteger)column
+                     lines:(typename NSUInteger)lines
+                 endColumn:(typename NSUInteger)endColumn
+                   message:(typename NSString *)msg
 {
-  [self stop];
-  hs_free_stable_ptr(self.interpreterSession);
+  self.diagnosticHandler(severity, fname, line, column, lines, endColumn, msg);
 }
 
 @end
