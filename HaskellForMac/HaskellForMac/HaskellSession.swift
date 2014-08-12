@@ -19,19 +19,10 @@ import GHCKit
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init() {
-    ghcInstance = GHCInstance.ghcInstanceStart()
+  init(diagnosticsHandler: GHCKit.DiagnosticsHandler) {
+    ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler)
   }
 
-  deinit {
-    ghcInstance.stop()
-  }
-
-  /// Convenience constructor for use from Objective-C.
-  //
-  class func haskellSessionStart() -> HaskellSession {
-    return HaskellSession()
-  }
 
   //MARK: -
   //MARK: Code loading
