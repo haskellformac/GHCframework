@@ -31,7 +31,7 @@ import qualified SrcLoc       as GHC
   -- friends
 import Interpreter
 
-objc_import ["<Cocoa/Cocoa.h>"]
+objc_import ["<Cocoa/Cocoa.h>", "GHCSeverity.h"]
 
 
 -- Haskell side support code
@@ -123,35 +123,19 @@ evalText session exprText
 
 objc_interface [cunit|
 
-// typedef NS_ENUM(NSInteger, GHCSeverity) {
-// spelled out for language-c-quote's benefit
-typedef typename NSInteger GHCSeverity; enum {
-  GHCSeverityOutput,
-  GHCSeverityDump,
-  GHCSeverityInteractive,
-  GHCSeverityInfo,
-  GHCSeverityWarning,
-  GHCSeverityError,
-  GHCSeverityFatal
-};
-
-typedef void(^DiagnosticHandler)(GHCSeverity          severity, 
-                                 typename NSString   *fname,
-                                 typename NSUInteger  line,
-                                 typename NSUInteger  column,
-                                 typename NSUInteger  lines,
-                                 typename NSUInteger  endColumn,
-                                 typename NSString   *msg);
+typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity, 
+                                  typename NSString    *fname,
+                                  typename NSUInteger   line,
+                                  typename NSUInteger   column,
+                                  typename NSUInteger   lines,
+                                  typename NSUInteger   endColumn,
+                                  typename NSString    *msg);
 
 @interface GHCInstance : NSObject
 
-/// Create a new GHC instance.
-///
-+ (instancetype)ghcInstanceWithDiagnosticsHandler:(DiagnosticHandler)handler;
-
 /// Initialise a new GHC instance.
 ///
-- (instancetype)initWithDiagnosticsHandler:(DiagnosticHandler)handler;
+- (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler;
 
 /// Load a module given as a string.
 ///
@@ -189,7 +173,7 @@ objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'loadModu
 @property (assign) typename HsStablePtr interpreterSession;
 
 // The handler to process diagnostic messages arriving from GHC.
-@property (strong) typename DiagnosticHandler diagnosticHandler;
+@property (strong) typename DiagnosticsHandler diagnosticsHandler;
 
 @end
 
@@ -205,24 +189,19 @@ void GHCInstance_initialise(void);
   GHCInstance_initialise();
 }
 
-+ (instancetype)ghcInstanceWithDiagnosticsHandler:(typename DiagnosticHandler)handler
-{
-  return [[GHCInstance alloc] initWithDiagnosticsHandler:handler];
-}
-
 - (instancetype)init
 {
   return [self initWithDiagnosticsHandler:nil];
 }
 
-- (instancetype)initWithDiagnosticsHandler:(typename DiagnosticHandler)handler
+- (instancetype)initWithDiagnosticsHandler:(typename DiagnosticsHandler)handler
 {
   self = [super init];
   if (self) {
     
     NSLog(@"GHC instance start");
     self.interpreterSession = startWithHandlerObject(self);
-    self.diagnosticHandler  = handler;
+    self.diagnosticsHandler  = handler;
     
   }
   return self;
@@ -259,7 +238,7 @@ void GHCInstance_initialise(void);
                  endColumn:(typename NSUInteger)endColumn
                    message:(typename NSString *)msg
 {
-  self.diagnosticHandler(severity, fname, line, column, lines, endColumn, msg);
+  self.diagnosticsHandler(severity, fname, line, column, lines, endColumn, msg);
 }
 
 @end
