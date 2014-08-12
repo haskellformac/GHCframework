@@ -9,7 +9,6 @@
 //  toolbar, the outline view, and the split views. Hence, it serves as their delegate.
 
 #import <Cocoa/Cocoa.h>
-#import "Haskell-Swift.h"
 
 
 @interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>

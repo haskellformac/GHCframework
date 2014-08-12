@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "Haskell-Swift.h"
 #import "HFMProject.h"
 #import "HFMWindowController.h"
 
