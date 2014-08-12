@@ -13,7 +13,7 @@
 //  is represented in the outline view. To connect the two, this view model class serves as the data source for the
 //  outline view.
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "HFMProjectViewModelItem.h"
 #import "HFMProjectViewModel.h"
 

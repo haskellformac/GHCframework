@@ -5,8 +5,14 @@
 //  Created by Manuel M T Chakravarty on 31/07/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
+//  A single playground instance is always associated with one context, usually a Haskell module. It never changes its
+//  context. A new context implies the creation of a new playground.
 
 import Cocoa
+import GHCKit
+
+
+func dummyHandler(GHCSeverity, String!, UInt, UInt, UInt, UInt, String!) { }
 
 class PlaygroundController: NSViewController {
 
@@ -20,7 +26,8 @@ class PlaygroundController: NSViewController {
 
   /// The GHC session associated with this playground.
   //
-  let haskellSession: HaskellSession = HaskellSession()
+//  let haskellSession: HaskellSession = HaskellSession(diagnosticsHandler: { severity, filename, line, column, lines, endColumn, message in NSLog("Boo!")})
+  let haskellSession: HaskellSession = HaskellSession(diagnosticsHandler: dummyHandler)
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //

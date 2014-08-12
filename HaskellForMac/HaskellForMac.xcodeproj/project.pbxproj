@@ -43,6 +43,8 @@
 		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
 		E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5766019948C3000E6AAE0 /* Diagnostics.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
+		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
 		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
@@ -192,6 +194,8 @@
 		E7C5766019948C3000E6AAE0 /* Diagnostics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
+		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
+		E7CC64021999B4DD00D8E1CD /* ContextController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextController.swift; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
 		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
@@ -243,6 +247,7 @@
 		E70A66B0197CC341006D3514 /* GHCKit */ = {
 			isa = PBXGroup;
 			children = (
+				E7CC640019999C3E00D8E1CD /* GHCSeverity.h */,
 				E70A66E8197E2420006D3514 /* GHCInstance.hs */,
 				E70A66D8197CE0BE006D3514 /* Interpreter.hs */,
 				E70A66D1197CE038006D3514 /* GHCKit.h */,
@@ -350,11 +355,12 @@
 				E7A13B171888006C00D79087 /* HFMAppDelegate.m */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
+				E7CC64021999B4DD00D8E1CD /* ContextController.swift */,
 				E7C5765E19948B3A00E6AAE0 /* Projects */,
-				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
 				E7F7988B198A609B0063294F /* Playground */,
+				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E7A13B4A188E7F1C00D79087 /* Interfaces */,
 				E7A13B0B1888006C00D79087 /* Supporting Files */,
 				E7A13B1C1888006C00D79087 /* Images.xcassets */,
@@ -454,6 +460,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */,
 				E70A6713197E286D006D3514 /* GHCKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,6 +728,7 @@
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */,
+				E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,

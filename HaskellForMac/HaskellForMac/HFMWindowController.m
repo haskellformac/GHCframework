@@ -6,10 +6,8 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "HFMProject.h"
 #import "HFMWindowController.h"
-//#import "HFMProject.h"
-//#import "HFMHeaderEditorController.h"
-//#import "Haskell-Swift.h"
 
 
 @interface HFMWindowController ()
@@ -22,19 +20,22 @@
 @property (weak) IBOutlet NSTextField   *noEditorLabel;
 @property (weak) IBOutlet NSView        *playgroundView;
 
-/// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
-/// be the name of their NIB file.
+// Our context controller (which we own).
 //
-@property (nonatomic, readonly) NSDictionary *editors;
+@property ContextController *contextController;
+
+// View controllers of the currently displayed editor and playground if any (which depends on the item selected in the
+// outline view).
+//
+// We need to keep the view controllers alive here as we are in charge of entering the corresponding views into the
+// view hierarchy and removing them again.
+//
+@property (nonatomic) NSViewController     *editorViewController;      // maybe nil
+@property (nonatomic) PlaygroundController *playgroundController;      // maybe nil
+
 
 @end
 
-
-/// Editor NIB file names
-//
-NSString *const kPackageHeaderEditor = @"PackageHeaderEditor";
-NSString *const kTextEditor          = @"TextEditor";
-NSString *const kPlayground          = @"Playground";
 
 /// NIB file ids
 //
@@ -50,16 +51,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (instancetype)init
 {
-  self = [super initWithWindowNibName:@"ProjectWindow"];
-  if (self) {
-
-    _editors = @{@"cabal": kPackageHeaderEditor,
-                 @"hs":    kTextEditor,
-                 @"txt":   kTextEditor,
-                 @"md":    kTextEditor};
-
-  }
-  return self;
+  return [super initWithWindowNibName:@"ProjectWindow"];
 }
 
 - (void)windowDidLoad
@@ -82,6 +74,9 @@ NSString *const kCabalCellID = @"cabalCellID";
   [[NSAnimationContext currentContext] setDuration:0];
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
+
+    // We have got one context contoller for the lifetime of our window.
+  self.contextController = [[ContextController alloc] initWithProject:self.document];
 }
 
 
@@ -168,8 +163,14 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
 
-    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile))
-      [self selectEditor:item];
+    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)) {
+
+      NSViewController     *editorController     = nil;
+      PlaygroundController *playgroundController = nil;
+
+      [self.contextController selectItem:item returningEditor:&editorController playground:&playgroundController];
+      [self configureEditor:editorController playground:playgroundController];
+    }
 
   }
 }
@@ -184,91 +185,50 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 
 #pragma mark -
-#pragma mark Controlling the editor component
+#pragma mark NSEditor protocol methods
 
-/// Select the editor appropriate to editing the file backing the given given view model item; the type of editor is
-/// determined on the basis of the file extension.
-///
-/// If no suitable editor is available, remove the current editor view (if any).
-//
-- (void)selectEditor:(HFMProjectViewModelItem *)item
+- (BOOL)commitEditing
 {
-  HFMProject *project       = self.document;
-  NSString   *fileName      = item.fileName;
-  NSURL      *fileURL       = [project.fileURL URLByAppendingPathComponent:fileName];
-  NSString   *fileExtension = [fileName pathExtension];
-  NSError    *error;
+  return [self.contextController commitEditing];
+}
 
-  if (!fileName) return;
-  if (![item.fileWrapper isRegularFile]) return;
 
-    // Check that the file is still there and force reading its contents. (We'll need it in a sec.)
-  if (!fileURL || ![item.fileWrapper readFromURL:fileURL options:NSFileWrapperReadingImmediate error:&error]) {
-    NSLog(@"%s: re-reading file wrapper from %@ failed: %@", __func__, fileURL, error);
-    return;
-  }
+#pragma mark -
+#pragma mark Configuring the editor and playground views
 
+/// Configure a new editor and playground controller.
+///
+/// First removes any old editor and/or playground, and then, installs the new ones (if the arguments are non-nil).
+///
+- (void)configureEditor:(NSViewController *)newEditor playground:(PlaygroundController *)newPlayground
+{
     // Remove the current editor view and playground view.
   if (self.editorViewController) {
 
-    [[self.editorViewController view] removeFromSuperview];
+    [self.editorViewController.view removeFromSuperview];
     self.noEditorLabel.hidden = NO;
 
   }
   if (self.playgroundController)
-    [[self.playgroundController view] removeFromSuperview];
+    [self.playgroundController.view removeFromSuperview];
 
-    // Select suitable editor.
-  NSString *nibName = self.editors[fileExtension];
-  if (!nibName)
-    return;
+    // Enter new editor view into the view hierachy if available.
+  self.editorViewController = newEditor;
+  if (self.editorViewController) {
 
-    // Load the new view by way of the matching view controller.
-  if ([nibName isEqual:kPackageHeaderEditor]) {
-
-    HFMProject *project = self.document;
-
-    self.editorViewController =
-      [[HFMHeaderEditorController alloc] initWithNibName:nibName
-                                                  bundle:nil
-                                        projectViewModel:project.projectModel
-                                              projectURL:fileURL];
-
-  } else if ([nibName isEqual:kTextEditor]) {
-
-    self.editorViewController = [[TextEditorController alloc] initWithNibName:nibName
-                                                                       bundle:nil
-                                                         projectViewModelItem:item
-                                                                      fileURL:fileURL];
+    NSView *editorContentView = self.editorViewController.view;
+    editorContentView.frame = self.editorView.bounds;
+    [editorContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+    editorContentView.translatesAutoresizingMaskIntoConstraints = YES;
+    [self.editorView addSubview:editorContentView];
+    self.editorView.needsLayout  = YES;
+    self.editorView.needsDisplay = YES;
+    self.noEditorLabel.hidden    = YES;
 
   }
-  if (!self.editorViewController) {
-
-    NSLog(@"%s: cannot load editor nib %@", __func__, nibName);
-    return;
-
-  }
-
-  if ([fileExtension isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
-
-    self.playgroundController = [[PlaygroundController alloc] initWithNibName:kPlayground
-                                                                       bundle:nil
-                                                         projectViewModelItem:item];
-    if (!self.playgroundController)
-      NSLog(@"%s: cannot load playground nib %@", __func__, nibName);
-
-  }
-
-    // Enter editor view into the view hierachy.
-  NSView *editorContentView = self.editorViewController.view;
-  editorContentView.frame = self.editorView.bounds;
-  [editorContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  editorContentView.translatesAutoresizingMaskIntoConstraints = YES;
-  [self.editorView addSubview:editorContentView];
-  self.editorView.needsLayout  = YES;
-  self.editorView.needsDisplay = YES;
 
     // Enter playground view into the view hierachy if available.
+  self.playgroundController = newPlayground;
   if (self.playgroundController) {
 
     NSView *playgroundContentView = self.playgroundController.view;
@@ -280,9 +240,6 @@ NSString *const kCabalCellID = @"cabalCellID";
     self.playgroundView.needsDisplay = YES;
 
   }
-
-  self.noEditorLabel.hidden = YES;
-
 }
 
 @end
