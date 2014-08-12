@@ -8,6 +8,7 @@
 //  Model for diagnostics.
 
 import Foundation
+import GHCKit
 
 
 typealias Line   = UInt
@@ -33,7 +34,20 @@ struct SrcSpan {
 
 /// Severity of an issue
 ///
-enum Severity {case Warning, Error}
+enum Severity {case Warning, Error, Other}
+
+/// Convert a GHCKit severity value into one of ours.
+///
+func toSeverity(ghcSeverity: GHCSeverity) -> Severity {
+  switch ghcSeverity {
+  case .Output, .Dump, .Interactive, .Info, .Fatal:
+    return .Other
+  case .Warning:
+    return .Warning
+  case .Error:
+    return .Error
+  }
+}
 
 /// A single source code issue.
 ///
@@ -41,6 +55,26 @@ struct Issue {
   let span:     SrcSpan
   let severity: Severity
   let message:  String
+
+  init(severity:  GHCSeverity,
+       filename:  String,
+       line:      UInt,
+       column:    UInt,
+       lines:     UInt,
+       endColumn: UInt,
+       message:   String) {
+    switch severity {
+    case .Output, .Dump, .Interactive, .Info, .Fatal:
+      NSLog("unrecognised GHC diagnostic %@:", message)
+    default:
+      break
+    }
+    self.span     = SrcSpan(start: SrcLoc(file: filename, line: line, column: column),
+                            lines: lines,
+                            endColumn: endColumn)
+    self.severity = toSeverity(severity)
+    self.message  = message
+  }
 }
 
 /// Determine the highest severity of all given issues (if any).

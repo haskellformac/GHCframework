@@ -142,6 +142,7 @@ class TextGutterView: NSRulerView {
       switch severity {
       case .Error:   self.errorBgColour.setFill()
       case .Warning: self.warningBgColour.setFill()
+      case .Other:   return
       }
       NSBezierPath(rect: NSRect(x: 0, y: top, width: ruleThickness, height: height)).fill()
 
@@ -161,6 +162,7 @@ class TextGutterView: NSRulerView {
       switch severity {
       case .Error:   symbol = errorSymbol
       case .Warning: symbol = warningSymbol
+      case .Other:   return
       }
       symbol.drawAtPoint(NSPoint(x: 0,
                                  y: middleline - size.height / 2),
