@@ -92,15 +92,15 @@ startWithHandlerObject handlerObject
 -- Load a module of which the actual program code is given.
 --
 --FIXME: target set up is very incomplete
-loadModuleText :: Session -> String -> IO String
+loadModuleText :: Session -> String -> IO Bool
 loadModuleText session moduleText
   = do
     { utcTime <- getCurrentTime
     ; showResult <$> load session (target utcTime)
     }
   where
-    showResult (Result res) = res
-    showResult (Error  err) = "ERROR: " ++ err
+    showResult (Result _) = True
+    showResult (Error  _) = False
     
     target utcTime 
       = GHC.Target
@@ -139,7 +139,10 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 
 /// Load a module given as a string.
 ///
-- (typename NSString *)loadModuleFromString:(typename NSString *)moduleText;
+/// Any error messages and warnings are delivered via the diagnostics handler of the current object. The result
+/// indicates whether loading was successful.
+///
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText;
 
 /// Evaluate the Haskell expression given as a string.
 ///
@@ -217,7 +220,7 @@ void GHCInstance_initialise(void);
 // Public model methods
 // --
 
-- (typename NSString *)loadModuleFromString:(typename NSString *)moduleText
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText
 {
   return loadModuleText(self.interpreterSession, moduleText);
 }

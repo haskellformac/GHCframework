@@ -69,3 +69,16 @@ class TextEditorController: NSViewController {
     scrollView.rulersVisible    = true
    }
 }
+
+
+// MARK: -
+// MARK: Notifications
+
+extension TextEditorController {
+
+  /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
+  ///
+  func updateIssues(notification: IssueNotification) {
+    (scrollView.verticalRulerView as TextGutterView).updateIssues(notification)
+  }
+}

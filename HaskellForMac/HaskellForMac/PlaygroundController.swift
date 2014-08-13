@@ -12,8 +12,6 @@ import Cocoa
 import GHCKit
 
 
-func dummyHandler(GHCSeverity, String!, UInt, UInt, UInt, UInt, String!) { }
-
 class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
@@ -26,12 +24,11 @@ class PlaygroundController: NSViewController {
 
   /// The GHC session associated with this playground.
   //
-//  let haskellSession: HaskellSession = HaskellSession(diagnosticsHandler: { severity, filename, line, column, lines, endColumn, message in NSLog("Boo!")})
-  let haskellSession: HaskellSession = HaskellSession(diagnosticsHandler: dummyHandler)
+  let haskellSession: HaskellSession
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
-  private let textAttributes: NSDictionary = { () in
+  private let textAttributes: NSDictionary = {
     let menlo13        = NSFont(name: "Menlo-Regular", size:13)
     let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
     paragraphStyle.lineBreakMode = .ByTruncatingTail
@@ -43,16 +40,30 @@ class PlaygroundController: NSViewController {
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!) {
+  init(
+    nibName:              String!,
+    bundle:               NSBundle!,
+    projectViewModelItem: HFMProjectViewModelItem!,
+    diagnosticsHandler:   Issue -> Void)
+  {
+      // Launch a GHC session for this playground.
+    haskellSession = HaskellSession{severity, filename, line, column, lines, endColumn, message in
+                       diagnosticsHandler(Issue(
+                                            severity: severity,
+                                            filename: filename,
+                                            line: line,
+                                            column: column,
+                                            lines: lines,
+                                            endColumn: endColumn,
+                                            message: message))
+                     }
 
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
-
-      // Register with the model view item that represents the Haskell file providing the context for this playground.
-    projectViewModelItem.loadString = loadContextModuleIntoPlayground
   }
 
   required init(coder: NSCoder!) {
+    haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in })
     super.init(coder: coder)
   }
 
@@ -85,17 +96,16 @@ class PlaygroundController: NSViewController {
     resultTextView.typingAttributes      = textAttributes
   }
 
-  // Module loading
-  //
-  private func loadContextModuleIntoPlayground(moduleText: String!) {
+
+  //MARK: -
+  //MARK: Context module management
+
+  /// Load a new version of the context module.
+  ///
+  func loadContextModuleIntoPlayground(moduleText: String!) -> Bool {
 
       // Load the module text into GHC.
-    let loadResult = haskellSession.loadModuleFromString(moduleText) + "\n\n"
-
-      // Print any errors to the result view.
-    let attrText = NSAttributedString(string: loadResult, attributes:textAttributes)
-    resultTextView.textStorage.setAttributedString(attrText)
-    resultTextView.scrollRangeToVisible(NSRange(location: resultTextView.textStorage.length, length: 0))
+    return haskellSession.loadModuleFromString(moduleText)
   }
 
 }

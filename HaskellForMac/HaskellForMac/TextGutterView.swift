@@ -17,6 +17,10 @@ class TextGutterView: NSRulerView {
   // All issues currently flagged for the file annotated by this gutter.
   //
   private var issues: Issues = [:]
+
+  // Whether the issues set is current or invalidated (i.e., new ones are being computed).
+  //
+  private var markIssuesAsInvalid: Bool = false
   
   // Text attributes for line numbers
   //
@@ -61,8 +65,12 @@ class TextGutterView: NSRulerView {
 
   /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
   ///
-  func notifyOfIssues(newIssues: Issues) {
-    issues       = newIssues
+  func updateIssues(notification: IssueNotification) {
+    switch notification {
+    case .NoIssues:                  markIssuesAsInvalid = false; issues = [:]
+    case .IssuesPending:             markIssuesAsInvalid = true
+    case .Issues(let issuesForFile): markIssuesAsInvalid = false; issues = issuesForFile.issues
+    }
     needsDisplay = true
   }
 
@@ -140,8 +148,8 @@ class TextGutterView: NSRulerView {
     if let severity = maxSeverity {
 
       switch severity {
-      case .Error:   self.errorBgColour.setFill()
-      case .Warning: self.warningBgColour.setFill()
+      case .Error:   (markIssuesAsInvalid ? disabledErrorBgColour   : errorBgColour  ).setFill()
+      case .Warning: (markIssuesAsInvalid ? disabledWarningBgColour : warningBgColour).setFill()
       case .Other:   return
       }
       NSBezierPath(rect: NSRect(x: 0, y: top, width: ruleThickness, height: height)).fill()

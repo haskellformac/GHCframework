@@ -54,6 +54,10 @@ class ContextController : NSObject {
   ///
   private var config = Configuration.NoEditor
 
+  /// Bin to collext issues for the context module.
+  ///
+  private var issues = IssuesForFile(file: "", issues: [:])
+
 
   // MARK: -
   // MARK: Initialisation
@@ -73,10 +77,16 @@ class ContextController : NSObject {
   func selectItem(item:           HFMProjectViewModelItem,
                   returningEditor
                   editor:         AutoreleasingUnsafeMutablePointer<NSViewController>,
-                  playground:     AutoreleasingUnsafeMutablePointer<PlaygroundController>) {
+                  playground:     AutoreleasingUnsafeMutablePointer<PlaygroundController>)
+  {
+      // Purge the previous item association.
+    if let oldItem = self.item {
+      oldItem.loadString = { _ in }     // Remove any old module loading association
+    }
     self.item   = item
     self.config = .NoEditor
 
+      // Get the filename associated with the new item.
     let fileName = item.fileName()
     if fileName == nil { return }
     if !item.fileWrapper.regularFile { return }
@@ -119,9 +129,18 @@ class ContextController : NSObject {
         editor.memory = editorController
         if fileExtension == HFMProjectViewModel.haskellFileExtension() {
 
-          let playgroundController = PlaygroundController(nibName: kPlayground, bundle: nil, projectViewModelItem: item)
+          let playgroundController = PlaygroundController(nibName: kPlayground,
+                                                          bundle: nil,
+                                                          projectViewModelItem: item,
+                                                          diagnosticsHandler: processIssue)
           config            = .HaskellEditor(editorController, playgroundController)
           playground.memory = playgroundController
+
+            // Register with the model view item that represents the Haskell file providing the new context.
+          item.loadString = loadContextModule
+
+            // Initialise the issues bag.
+          issues = IssuesForFile(file: fileURL.path, issues: [:])
 
         } else {
           config = .TextEditor(editorController)
@@ -130,6 +149,53 @@ class ContextController : NSObject {
       default:
         config = .NoEditor
       }
+    }
+  }
+
+
+  // MARK: -
+  // MARK: Module management
+
+  private func loadContextModule(moduleText: String!) {
+
+    switch config {
+    case .HaskellEditor(let editor, let playground):
+
+        // Invalidate old issues
+      editor.updateIssues(.IssuesPending)
+      issues = IssuesForFile(file: issues.file, issues: [:])
+
+        // Load the module.
+      playground.loadContextModuleIntoPlayground(moduleText)
+
+        // Notify the editor of any issues.
+      if issues.issues.isEmpty {
+        editor.updateIssues(.NoIssues)
+      } else {
+        editor.updateIssues(.Issues(issues))
+      }
+
+    default:
+      break
+    }
+  }
+
+
+  // MARK: -
+  // MARK: Diagnostics processing
+
+  // Given an issue for a module in the Cabal project, foward it to the view that is responsible for displaying it.
+  //
+  private func processIssue(issue: Issue) {
+
+    NSLog("issues: %@", issue.message)
+
+      // FIXME: For the moment, we drop anything that does not apply to the module determining the current context?
+    switch config {
+    case .HaskellEditor(let editorController, let _):
+      issues = addIssueForFile(issue, issues)
+
+    default: break
     }
   }
 }
