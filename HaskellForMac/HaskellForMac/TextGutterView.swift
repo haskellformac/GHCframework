@@ -109,17 +109,8 @@ class TextGutterView: NSRulerView {
       let lineRange = (string as NSString).lineRangeForRange(NSRange(location: charIndex, length: 0))
 
         // Draw the number for the current line
-      let firstIndex = layoutManager.glyphIndexForCharacterAtIndex(lineRange.location)
-      let firstRect  = layoutManager.lineFragmentRectForGlyphAtIndex(firstIndex,
-                                                                     effectiveRange: nil)
-      let lastIndex  = (lineRange.length == 0) ? firstIndex
-                                               : layoutManager.glyphIndexForCharacterAtIndex(NSMaxRange(lineRange) - 1)
-      let lastRect   = layoutManager.lineFragmentRectForGlyphAtIndex(lastIndex,
-                                                                     effectiveRange: nil)
-      drawLineNumber(lineNumber,
-        top:        firstRect.origin.y - visibleRect.origin.y,
-        middleline: firstRect.origin.y - visibleRect.origin.y + firstRect.size.height / 2,
-        height:     lastRect.origin.y - firstRect.origin.y + lastRect.size.height)
+      let (gutterRect, middleline) = gutterRectForCharRange(lineRange)
+      drawLineNumber(lineNumber, rect: gutterRect, middleline: middleline)
 
         // Advance to next line
       lineNumber++
@@ -129,18 +120,43 @@ class TextGutterView: NSRulerView {
       // Make sure to add an extra line number if we have an empty last line.
     if ((string as NSString).length == NSMaxRange(charRange)) {
       let rect = layoutManager.extraLineFragmentRect
-      drawLineNumber(lineNumber,
-        top:        rect.origin.y - visibleRect.origin.y,
-        middleline: rect.origin.y - visibleRect.origin.y + rect.size.height / 2,
-        height:     rect.size.height)
+      drawLineNumber(
+        lineNumber,
+        rect: NSRect(x: 0, y: rect.origin.y - visibleRect.origin.y, width: ruleThickness, height: rect.size.height),
+        middleline: rect.size.height / 2)
     }
   }
 
-  // Draws the given number in the gutter, such that the glyphs' is vertically centred around the given middle line.
-  // The middle line is centred with the first row of the line. The top and height specify the extent of the gutter area
-  // belonging to this line (for background drawing).
+  // Computes the rect of the gutter area associated with the given character range (as well as the middle lines of the
+  // first text line) — the overall range may span multiple text lines due to line wrapping.
   //
-  private func drawLineNumber(lineNumber: UInt, top: CGFloat, middleline: CGFloat, height: CGFloat) {
+  private func gutterRectForCharRange(charRange: NSRange) -> (NSRect, CGFloat) {
+    let textView      = self.clientView as NSTextView
+    let layoutManager = textView.layoutManager
+    let textContainer = textView.textContainer
+    let string        = textView.textStorage.string
+    let visibleRect   = self.scrollView.documentVisibleRect
+
+      // Draw the number for the current line
+    let firstIndex = layoutManager.glyphIndexForCharacterAtIndex(charRange.location)
+    let firstRect  = layoutManager.lineFragmentRectForGlyphAtIndex(firstIndex,
+                                                                   effectiveRange: nil)
+    let lastIndex  = (charRange.length == 0) ? firstIndex
+                                             : layoutManager.glyphIndexForCharacterAtIndex(NSMaxRange(charRange) - 1)
+    let lastRect   = layoutManager.lineFragmentRectForGlyphAtIndex(lastIndex,
+                                                                   effectiveRange: nil)
+    return (NSRect(x: 0,
+                   y: firstRect.origin.y - visibleRect.origin.y,
+                   width: ruleThickness,
+                   height: lastRect.origin.y - firstRect.origin.y + lastRect.size.height),
+            firstRect.size.height / 2)
+  }
+
+  // Draws the given number in the gutter, such that the glyphs' is vertically centred around the given middle line.
+  // The middle line is centred with the first row of the line and is relative to the rect, which specifies the extent
+  // of the gutter area belonging to this line (for background drawing).
+  //
+  private func drawLineNumber(lineNumber: UInt, rect: NSRect, middleline: CGFloat) {
 
       // Draw the background.
     let lineIssuesOpt = issues[lineNumber]
@@ -152,15 +168,15 @@ class TextGutterView: NSRulerView {
       case .Warning: (markIssuesAsInvalid ? disabledWarningBgColour : warningBgColour).setFill()
       case .Other:   return
       }
-      NSBezierPath(rect: NSRect(x: 0, y: top, width: ruleThickness, height: height)).fill()
+      NSBezierPath(rect: rect).fill()
 
     }
 
       // Draw the number.
     let numberString = lineNumber.description as NSString
     let size         = numberString.sizeWithAttributes(textAttributes)
-    numberString.drawAtPoint(NSPoint(x: ruleThickness - margin - size.width,
-                                     y: middleline - size.height / 2),
+    numberString.drawAtPoint(NSPoint(x: NSMaxX(rect) - margin - size.width,
+                                     y: rect.origin.y + middleline - size.height / 2),
                              withAttributes: textAttributes)
 
       // Draw an issue symbol if any.
@@ -172,13 +188,28 @@ class TextGutterView: NSRulerView {
       case .Warning: symbol = warningSymbol
       case .Other:   return
       }
-      symbol.drawAtPoint(NSPoint(x: 0,
-                                 y: middleline - size.height / 2),
+      symbol.drawAtPoint(NSPoint(x: rect.origin.x,
+                                 y: rect.origin.y + middleline - size.height / 2),
                                  withAttributes: textAttributes)
 
     }
   }
 }
+
+
+// MARK: -
+// MARK: 'NSView' delegate methods
+
+extension NSRulerView {
+  override public func mouseDown(event: NSEvent!) {
+    NSLog("%lf, %lf", event.locationInWindow.x, event.locationInWindow.y)
+
+  }
+}
+
+
+// MARK: -
+// MARK: Extension to 'NSString' (i.e., the underlying text storage)
 
 extension NSString {
   func lineNumberAtLocation(loc: Int) -> UInt {
