@@ -34,12 +34,26 @@ class TextGutterView: NSRulerView {
   private let warningBgColour         = NSColor(red: 1, green: 1,   blue: 0.3, alpha: 0.5)
   private let disabledWarningBgColour = NSColor(red: 1, green: 1,   blue: 0.3, alpha: 0.2)
 
-  private let errorSymbol   = "❗️"
+  private let errorSymbol   = "⛔️"
   private let warningSymbol = "❕"
 
   // Gap between the line numbers and the bounding box of the ruler.
   //
   private let margin: CGFloat = 3
+
+  /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
+  //
+  // FIXME: Unify with 'TextEditorController.swift'
+  private let diagnosticsTextAttributes: NSDictionary = { () in
+    let menlo12 = NSFont(name: "Menlo-Regular", size:12)
+    return [NSFontAttributeName: menlo12]
+  }()
+
+  // Objects from the diagnostics popover nib.
+  //
+  @IBOutlet private var popover:           NSPopover?           // referenced to retain
+  @IBOutlet private var popoverController: NSViewController!    // referenced to retain
+  @IBOutlet private var popoverTextView:   NSTextView!          // This is where the diagnostics goes.
 
 
   // MARK: -
@@ -97,6 +111,11 @@ class TextGutterView: NSRulerView {
 
       // Line number of first visible line
     let firstLineNumber = string.lineNumberAtLocation(charRange.location)
+
+      // Remove the diagnostics popover if it is visible.
+    if popover != nil && popover!.shown {
+      popover!.close()
+    }
 
       // Iterate through the line numbers of all visible lines
       //
@@ -191,7 +210,6 @@ class TextGutterView: NSRulerView {
       symbol.drawAtPoint(NSPoint(x: rect.origin.x,
                                  y: rect.origin.y + middleline - size.height / 2),
                                  withAttributes: textAttributes)
-
     }
   }
 }
@@ -200,10 +218,44 @@ class TextGutterView: NSRulerView {
 // MARK: -
 // MARK: 'NSView' delegate methods
 
-extension NSRulerView {
-  override public func mouseDown(event: NSEvent!) {
-    NSLog("%lf, %lf", event.locationInWindow.x, event.locationInWindow.y)
+extension TextGutterView {
+  override func mouseDown(event: NSEvent!) {
+    let textView      = self.clientView as NSTextView
+    let layoutManager = textView.layoutManager
+    let textContainer = textView.textContainer
+    let string        = textView.textStorage.string
+    let visibleRect   = self.scrollView.documentVisibleRect
 
+      // Determine the line corresponding to the mouse down event.
+    let rulerLoc   = self.convertPoint(event.locationInWindow, fromView: nil)
+    let textLoc    = NSPoint(x: 0, y: visibleRect.origin.y + rulerLoc.y)
+    let glyphIndex = layoutManager.glyphIndexForPoint(textLoc, inTextContainer: textContainer)
+    let charIndex  = layoutManager.characterIndexForGlyphAtIndex(glyphIndex)
+    let lineNumber = string.lineNumberAtLocation(charIndex)
+
+      // If there is an issue at this line, display the error message in a popup view.
+    if let issues = issues[lineNumber] {
+
+      var objs: NSArray?
+      let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIndex, length: 0))
+      let bundle     = NSBundle.mainBundle()
+      if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
+        NSLog("%@: could not load popover NIB", __FUNCTION__)
+      } else {
+
+        let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
+                                     attributes: diagnosticsTextAttributes)
+        popoverTextView.textStorage.insertAttributedString(msg, atIndex: 0)
+        let textSize    = msg.size
+        let insetSize   = NSSize(width: 0, height: 10)
+        let height      = textSize.height + insetSize.height
+        let contentSize = NSSize(width: textSize.width + insetSize.width + 12, height: height > 100 ? 100 : height)
+        popoverTextView.textContainerInset = insetSize
+        popover?.contentSize               = contentSize
+        popover?.behavior                  = .Semitransient
+        popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
+      }
+    }
   }
 }
 

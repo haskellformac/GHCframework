@@ -180,9 +180,9 @@ load (Session inlet) target
 
                              -- Communicate the result back to the main thread
                          ; GHC.liftIO $ 
-                             putMVar resultMV (Result $ "Successfully loaded '" ++ GHC.showSDoc dflags (GHC.ppr modname) ++ "'.")
+                             putMVar resultMV (Result "")
                          }
-            []        -> GHC.liftIO $ putMVar resultMV (Error "Couldn't load module.")
+            []        -> GHC.liftIO $ putMVar resultMV (Error "")
         }
     ; takeMVar resultMV
     }

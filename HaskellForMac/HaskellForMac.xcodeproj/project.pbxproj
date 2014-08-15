@@ -45,6 +45,7 @@
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
+		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
 		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
@@ -196,6 +197,7 @@
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
 		E7CC64021999B4DD00D8E1CD /* ContextController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextController.swift; sourceTree = "<group>"; };
+		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
 		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
 				E7258C57198A2263004789CF /* Playground.xib */,
 				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
+				E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -621,6 +624,7 @@
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
+				E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */,
 				E7258C58198A2263004789CF /* Playground.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
