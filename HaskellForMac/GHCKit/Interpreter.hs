@@ -113,16 +113,15 @@ stop (Session inlet) = putMVar inlet Nothing
 
 -- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result.
 --
--- If GHC raises an error, we pretty print it.
+-- GHC errors are reported asynchronously through the diagnostics handler.
 --
--- FIXME: improve error reporting
-eval :: Session -> String -> IO Result
-eval (Session inlet) stmt
+eval :: Session -> String -> Int -> String -> IO Result
+eval (Session inlet) source line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (handleError resultMV) $ do
-        { runResult <- GHC.runStmt stmt GHC.RunToCompletion
+        { runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
         ; result <- case runResult of
                      GHC.RunOk _names      -> do
                                               { chan  <- GHC.liftIO $ readIORef chanRef
@@ -146,7 +145,7 @@ typeOf = error "typeOf is not implemented"
 
 -- Load a module into in the given interpreter session.
 --
--- If GHC raises an error, we pretty print it.
+-- GHC errors are reported asynchronously through the diagnostics handler.
 --
 load :: Session -> GHC.Target -> IO Result
 load (Session inlet) target

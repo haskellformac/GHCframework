@@ -110,9 +110,9 @@ loadModuleText session moduleText
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
 
-evalText :: Session -> String -> IO String
-evalText session exprText 
-  = showResult <$> eval session exprText
+evalText :: Session -> String -> Int -> String -> IO String
+evalText session source line exprText 
+  = showResult <$> eval session source line exprText
   where
     showResult (Result res) = res
     showResult (Error  err) = "ERROR: " ++ err
@@ -146,7 +146,9 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 
 /// Evaluate the Haskell expression given as a string.
 ///
-- (typename NSString *)evalExprFromString:(typename NSString *)exprText;
+- (typename NSString *)evalExprFromString:(typename NSString *)exprText 
+                                   source:(typename NSString *)source 
+                                     line:(typename NSUInteger)line;
 
 // Framework internal methods
 // --
@@ -225,9 +227,11 @@ void GHCInstance_initialise(void);
   return loadModuleText(self.interpreterSession, moduleText);
 }
 
-- (typename NSString *)evalExprFromString:(typename NSString *)exprText
+- (typename NSString *)evalExprFromString:(typename NSString *)exprText 
+                                   source:(typename NSString *)source 
+                                     line:(typename NSUInteger)line
 {
-  return evalText(self.interpreterSession, exprText);
+  return evalText(self.interpreterSession, source, (typename NSInteger)line, exprText);
 }
 
 // Framework internal methods

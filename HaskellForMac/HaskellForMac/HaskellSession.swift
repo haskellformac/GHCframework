@@ -28,7 +28,7 @@ import GHCKit
   //MARK: Code loading
 
   /// Load a single module and make it the current evaluation context.
-  //
+  ///
   func loadModuleFromString(moduleText: String) -> Bool {
     return ghcInstance.loadModuleFromString(moduleText)
   }
@@ -38,8 +38,8 @@ import GHCKit
   //MARK: Code execution
 
   /// Evaluate an expression in the current evaluation context.
-  //
-  func evalExprFromString(exprText: String) -> String {
-    return ghcInstance.evalExprFromString(exprText)
+  ///
+  func evalExprFromString(exprText: String, source: String, line: Line) -> String {
+    return ghcInstance.evalExprFromString(exprText, source: source, line: line)
   }
 }

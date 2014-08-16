@@ -12,19 +12,21 @@ import Cocoa
 import GHCKit
 
 
+private let kPlaygroundSource = "<playground>"
+
 class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
-  @IBOutlet weak var splitView:        NSSplitView!
-  @IBOutlet weak var codeScrollView:   SynchroScrollView!
-  @IBOutlet weak var resultScrollView: SynchroScrollView!
-  @IBOutlet      var codeTextView:     NSTextView!
-  @IBOutlet      var resultTextView:   NSTextView!
+  @IBOutlet private weak var splitView:        NSSplitView!
+  @IBOutlet private weak var codeScrollView:   SynchroScrollView!
+  @IBOutlet private weak var resultScrollView: SynchroScrollView!
+  @IBOutlet private      var codeTextView:     NSTextView!
+  @IBOutlet private      var resultTextView:   NSTextView!
 
   /// The GHC session associated with this playground.
   //
-  let haskellSession: HaskellSession
+  private let haskellSession: HaskellSession
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
@@ -132,7 +134,7 @@ extension PlaygroundController: NSTextViewDelegate {
       codeTextView.insertNewline(self)
 
         // Execute command
-      let evalResult = haskellSession.evalExprFromString(userCommand)
+      let evalResult = haskellSession.evalExprFromString(userCommand, source: kPlaygroundSource, line:1)
 
         // Insert result in the REPL area
       let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
