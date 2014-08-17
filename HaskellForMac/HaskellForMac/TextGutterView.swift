@@ -258,16 +258,3 @@ extension TextGutterView {
     }
   }
 }
-
-
-// MARK: -
-// MARK: Extension to 'NSString' (i.e., the underlying text storage)
-
-extension NSString {
-  func lineNumberAtLocation(loc: Int) -> UInt {
-    switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {
-    case 0: return 1
-    case let start: return lineNumberAtLocation(start - 1) + 1
-    }
-  }
-}

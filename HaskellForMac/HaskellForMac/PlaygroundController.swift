@@ -127,21 +127,25 @@ extension PlaygroundController: NSTextViewDelegate {
 
     if (selector == "insertNewline:") {
 
-      let userCommand = (textView.textStorage.string as NSString).substringFromIndex(startOfCommand)
+      let textStorageString = textView.textStorage.string as NSString
+      let userCommand       = textStorageString.substringFromIndex(startOfCommand)
 
         // Move insertion point to the end
       codeTextView.setSelectedRange(NSRange(location: codeTextView.textStorage.length, length: 0))
       codeTextView.insertNewline(self)
 
         // Execute command
-      let evalResult = haskellSession.evalExprFromString(userCommand, source: kPlaygroundSource, line:1)
+      let line       = textStorageString.lineNumberAtLocation(startOfCommand)
+      let evalResult = haskellSession.evalExprFromString(userCommand, source: kPlaygroundSource, line: line)
 
         // Insert result in the REPL area
       let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
       resultTextView.textStorage.appendAttributedString(attrResult)
 
         // Remember the position where the output ended.
-      startOfCommand = codeTextView.selectedRange().location + 1  // '+1' to account for the newline
+      startOfCommand = codeTextView.selectedRange().location // + 1  // '+1' to account for the newline
+
+      return true
     }
     return false
   }
