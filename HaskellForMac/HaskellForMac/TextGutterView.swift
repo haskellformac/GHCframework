@@ -249,7 +249,7 @@ extension TextGutterView {
         let textSize    = msg.size
         let insetSize   = NSSize(width: 0, height: 10)
         let height      = textSize.height + insetSize.height
-        let contentSize = NSSize(width: textSize.width + insetSize.width + 12, height: height > 100 ? 100 : height)
+        let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
         popoverTextView.textContainerInset = insetSize
         popover?.contentSize               = contentSize
         popover?.behavior                  = .Semitransient

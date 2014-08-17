@@ -24,6 +24,7 @@ import Data.Maybe
 import System.IO
 
   -- GHC
+import qualified Bag        as GHC
 import qualified DynFlags   as GHC
 import qualified ErrUtils   as GHC
 import qualified HscTypes   as GHC
@@ -49,7 +50,7 @@ newtype Session = Session (MVar (Maybe (GHC.Ghc ())))
 --
 --FIXME: we want to make this asynchronous...
 data Result = Result String
-            | Error  String
+            | Error
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
@@ -95,8 +96,8 @@ start diagnosticHandler
         }
 
     logAction :: GHC.LogAction
-    logAction dflags severity srcSpan _style msg
-      = diagnosticHandler severity srcSpan (GHC.showSDoc dflags msg)
+    logAction dflags severity srcSpan style msg
+      = diagnosticHandler severity srcSpan (GHC.renderWithStyle dflags msg style)
         
     session inlet
       = do
@@ -120,7 +121,7 @@ eval (Session inlet) source line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (handleError resultMV) $ do
+        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
         { runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
         ; result <- case runResult of
                      GHC.RunOk _names      -> do
@@ -128,8 +129,8 @@ eval (Session inlet) source line stmt
                                               ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
                                               ; return $ Result (fromMaybe "<no result>" maybe_value)
                                               }
-                     GHC.RunException _exc -> return $ Error "<exception>"
-                     _                     -> return $ Error "<unexpected break point>"
+                     GHC.RunException _exc -> return $ Result "<exception>"
+                     _                     -> return $ Result "<unexpected break point>"
         ; GHC.liftIO $ putMVar resultMV result
         }
     ; takeMVar resultMV
@@ -152,7 +153,7 @@ load (Session inlet) target
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (handleError resultMV) $ do
+        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
         {
             -- Revert CAFs from previous evaluations
         ; GHC.liftIO $ rts_revertCAFs
@@ -181,20 +182,26 @@ load (Session inlet) target
                          ; GHC.liftIO $ 
                              putMVar resultMV (Result "")
                          }
-            []        -> GHC.liftIO $ putMVar resultMV (Error "")
+            []        -> GHC.liftIO $ putMVar resultMV Error
         }
     ; takeMVar resultMV
     }
 
-handleError resultMV e
+-- Inject the error messages contained in the given 'SourceError' exception into the asynchronous diagnostics stream.
+-- 
+handleError :: GHC.GhcMonad m => GHC.SourceError -> m ()
+handleError e
   = do
     { dflags <- GHC.getSessionDynFlags
-    ; GHC.liftIO $ putMVar resultMV (Error $ pprError dflags e)
+    ; mapM_ (dispatchErrMsg dflags) (GHC.bagToList . GHC.srcErrorMessages $ e)
     }
-
-pprError :: GHC.DynFlags -> GHC.SourceError -> String
-pprError dflags err
-  = GHC.showSDoc dflags (GHC.vcat $ GHC.pprErrMsgBagWithLoc (GHC.srcErrorMessages err))
+  where
+    dispatchErrMsg dflags errMsg 
+      = GHC.liftIO $ GHC.log_action dflags dflags GHC.SevError srcSpan (GHC.mkErrStyle dflags unqual) doc
+      where
+        srcSpan = GHC.errMsgSpan errMsg
+        doc     = GHC.errMsgShortDoc errMsg GHC.$$ GHC.errMsgExtraInfo errMsg
+        unqual  = GHC.errMsgContext errMsg
 
 chanRef :: IORef (TChan String)
 {-# NOINLINE chanRef #-}

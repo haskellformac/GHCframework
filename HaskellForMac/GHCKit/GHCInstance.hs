@@ -100,7 +100,7 @@ loadModuleText session moduleText
     }
   where
     showResult (Result _) = True
-    showResult (Error  _) = False
+    showResult Error      = False
     
     target utcTime 
       = GHC.Target
@@ -115,7 +115,7 @@ evalText session source line exprText
   = showResult <$> eval session source line exprText
   where
     showResult (Result res) = res
-    showResult (Error  err) = "ERROR: " ++ err
+    showResult Error        = "<ERROR>"
 
 
 -- Objective-C class interface
