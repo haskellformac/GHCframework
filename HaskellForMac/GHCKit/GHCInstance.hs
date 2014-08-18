@@ -115,7 +115,7 @@ evalText session source line exprText
   = showResult <$> eval session source line exprText
   where
     showResult (Result res) = res
-    showResult Error        = "<ERROR>"
+    showResult Error        = ""
 
 
 -- Objective-C class interface

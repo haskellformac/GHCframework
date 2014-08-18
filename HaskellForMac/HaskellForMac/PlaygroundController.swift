@@ -25,8 +25,10 @@ class PlaygroundController: NSViewController {
   @IBOutlet private      var resultTextView:   NSTextView!
 
   /// The GHC session associated with this playground.
-  //
-  private let haskellSession: HaskellSession
+  ///
+  /// NB: We need to use an implcit optional as we can only initialise after calling `super.init` in `init` (as we need
+  ///     to capture `self`).
+  private let haskellSession: HaskellSession!
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
@@ -39,6 +41,11 @@ class PlaygroundController: NSViewController {
 
   private var startOfCommand: Int = 0   // FIXME: provisional starting location of type command in REPL
 
+  /// Bin to collext issues for this playground
+  ///
+  private var issues = IssuesForFile(file: kPlaygroundSource, issues: [:])
+
+
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
@@ -48,20 +55,11 @@ class PlaygroundController: NSViewController {
     projectViewModelItem: HFMProjectViewModelItem!,
     diagnosticsHandler:   Issue -> Void)
   {
-      // Launch a GHC session for this playground.
-    haskellSession = HaskellSession{severity, filename, line, column, lines, endColumn, message in
-                       diagnosticsHandler(Issue(
-                                            severity: severity,
-                                            filename: filename,
-                                            line: line,
-                                            column: column,
-                                            lines: lines,
-                                            endColumn: endColumn,
-                                            message: message))
-                     }
-
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
+
+      // Launch a GHC session for this playground.
+    haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler))
   }
 
   required init(coder: NSCoder!) {
@@ -110,6 +108,28 @@ class PlaygroundController: NSViewController {
     return haskellSession.loadModuleFromString(moduleText)
   }
 
+
+  //MARK: -
+  //MARK: Processing diagnostics
+
+  /// Load a new version of the context module.
+  ///
+  private func processIssue(contextDiagnosticsHandler: Issue -> Void) -> DiagnosticsHandler {
+    return {[weak self] severity, filename, line, column, lines, endColumn, message
+    in
+    let issue = Issue(severity: severity,
+                      filename: filename,
+                      line: line,
+                      column: column,
+                      lines: lines,
+                      endColumn: endColumn,
+                      message: message)
+    if filename == kPlaygroundSource {
+      self?.issues = addIssueForFile(issue, self!.issues)
+    } else {
+      contextDiagnosticsHandler(issue)
+    }}
+  }
 }
 
 
@@ -143,7 +163,12 @@ extension PlaygroundController: NSTextViewDelegate {
       resultTextView.textStorage.appendAttributedString(attrResult)
 
         // Remember the position where the output ended.
-      startOfCommand = codeTextView.selectedRange().location // + 1  // '+1' to account for the newline
+      startOfCommand = codeTextView.selectedRange().location
+
+        // Inject issues into gutter.
+      if !issues.issues.isEmpty {
+        (codeScrollView.verticalRulerView as TextGutterView).updateIssues(.Issues(issues))
+      }
 
       return true
     }
