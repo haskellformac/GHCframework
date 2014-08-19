@@ -96,7 +96,6 @@ class ContextController : NSObject {
 
       // Check that the file is still there and force reading its contents. (We'll need it in a sec.)
     var error: NSError?
-    if fileURL == nil { return }
     if !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
       NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
         error == nil ? "unknown reason" : error!)
@@ -140,7 +139,7 @@ class ContextController : NSObject {
           item.loadString = loadContextModule
 
             // Initialise the issues bag.
-          issues = IssuesForFile(file: fileURL.path, issues: [:])
+          issues = IssuesForFile(file: fileURL.path!, issues: [:])
 
         } else {
           config = .TextEditor(editorController)

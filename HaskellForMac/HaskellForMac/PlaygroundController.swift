@@ -130,6 +130,66 @@ class PlaygroundController: NSViewController {
       contextDiagnosticsHandler(issue)
     }}
   }
+
+
+  //MARK: -
+  //MARK: Playground execution
+
+  /// Execute all commands in the playground from top to bottom.
+  ///
+  /// A command starts in the first column of the playground and extends over all immediately following lines whose
+  /// first character is a whitespace (emulating Haskell's off-side rule).
+  ///
+  func execute() {
+    let layoutManager = codeTextView.layoutManager
+    let textContainer = codeTextView.textContainer
+    let string        = codeTextView.textStorage.string
+    let gutter        = codeScrollView.verticalRulerView as TextGutterView
+
+      // Invalidate old issues.
+    gutter.updateIssues(.IssuesPending)
+    issues = IssuesForFile(file: issues.file, issues: [:])
+
+      // Reset the results view.
+    resultTextView.textStorage.setAttributedString(NSAttributedString())
+
+    // Extracts one command, while advancing the current character index.
+    //
+    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String) {
+      let lineRange = string.lineRangeForRange(charIndex...charIndex)
+      var command   = string[lineRange]
+      charIndex     = lineRange.endIndex
+
+        // Collect lines until you find one that has no white space in the first column.
+        // FIXME: we need to use a proper Unicode whitespace test
+      while string.endIndex > charIndex && (string[charIndex] == " " || string[charIndex] == "\t" || string[charIndex] == "\n") {
+        let lineRange = string.lineRangeForRange(charIndex...charIndex)
+        command      += string[lineRange]
+        charIndex     = lineRange.endIndex
+      }
+      return (charIndex, command)
+    }
+
+    var firstIndexOfNextCommand: String.Index = string.startIndex
+    while string.endIndex > firstIndexOfNextCommand {
+
+      let lineNumber           = string.lineNumberAtLocation(firstIndexOfNextCommand)
+      let (nextIndex, command) = extractCommandAtCharIndex(firstIndexOfNextCommand)
+      firstIndexOfNextCommand  = nextIndex
+
+      let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
+      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
+      resultTextView.textStorage.appendAttributedString(attrResult)
+
+    }
+
+      // Display any diagnostics in the gutter.
+    if issues.issues.isEmpty {
+      gutter.updateIssues(.NoIssues)
+    } else {
+      gutter.updateIssues(.Issues(issues))
+    }
+  }
 }
 
 
@@ -147,30 +207,9 @@ extension PlaygroundController: NSTextViewDelegate {
 
     if (selector == "insertNewline:") {
 
-      let textStorageString = textView.textStorage.string as NSString
-      let userCommand       = textStorageString.substringFromIndex(startOfCommand)
+      self.execute()
+      return false
 
-        // Move insertion point to the end
-      codeTextView.setSelectedRange(NSRange(location: codeTextView.textStorage.length, length: 0))
-      codeTextView.insertNewline(self)
-
-        // Execute command
-      let line       = textStorageString.lineNumberAtLocation(startOfCommand)
-      let evalResult = haskellSession.evalExprFromString(userCommand, source: kPlaygroundSource, line: line)
-
-        // Insert result in the REPL area
-      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
-      resultTextView.textStorage.appendAttributedString(attrResult)
-
-        // Remember the position where the output ended.
-      startOfCommand = codeTextView.selectedRange().location
-
-        // Inject issues into gutter.
-      if !issues.issues.isEmpty {
-        (codeScrollView.verticalRulerView as TextGutterView).updateIssues(.Issues(issues))
-      }
-
-      return true
     }
     return false
   }

@@ -33,7 +33,6 @@
 		E7A13B151888006C00D79087 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B131888006C00D79087 /* Credits.rtf */; };
 		E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B171888006C00D79087 /* HFMAppDelegate.m */; };
 		E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B1C1888006C00D79087 /* Images.xcassets */; };
-		E7A13B241888006C00D79087 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B231888006C00D79087 /* XCTest.framework */; };
 		E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B2B1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B2E1888006C00D79087 /* HaskellForMacTests.m */; };
@@ -115,6 +114,13 @@
 			remoteInfo = HaskellForMac;
 		};
 		E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7A13B001888006C00D79087;
+			remoteInfo = HaskellForMac;
+		};
+		E75DD13919A212A600CDC18F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
 			proxyType = 1;
@@ -241,7 +247,6 @@
 				E7258C4B1983CB72004789CF /* CabalKit.framework in Frameworks */,
 				E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */,
 				E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */,
-				E7A13B241888006C00D79087 /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,6 +557,7 @@
 				E7A13B271888006C00D79087 /* PBXTargetDependency */,
 				E7142E3D19415EFF00DB5295 /* PBXTargetDependency */,
 				E7142E3F19415F0100DB5295 /* PBXTargetDependency */,
+				E75DD13A19A212A600CDC18F /* PBXTargetDependency */,
 			);
 			name = HaskellForMacTests;
 			productName = HaskellForMacTests;
@@ -580,6 +586,7 @@
 						DevelopmentTeam = Z3JA6XMHD3;
 					};
 					E7A13B211888006C00D79087 = {
+						DevelopmentTeam = Z3JA6XMHD3;
 						TestTargetID = E7A13B001888006C00D79087;
 					};
 				};
@@ -791,6 +798,11 @@
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */;
+		};
+		E75DD13A19A212A600CDC18F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7A13B001888006C00D79087 /* HaskellForMac */;
+			targetProxy = E75DD13919A212A600CDC18F /* PBXContainerItemProxy */;
 		};
 		E7A13B271888006C00D79087 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1252,8 +1264,10 @@
 		E7A13B361888006C00D79087 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HaskellForMac.app/Contents/MacOS/HaskellForMac";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -1268,9 +1282,10 @@
 				INFOPLIST_FILE = "HaskellForMacTests/HaskellForMacTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMacTests/HaskellForMacTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -1278,8 +1293,10 @@
 		E7A13B371888006C00D79087 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/HaskellForMac.app/Contents/MacOS/HaskellForMac";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -1290,8 +1307,9 @@
 				INFOPLIST_FILE = "HaskellForMacTests/HaskellForMacTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "HaskellForMacTests/HaskellForMacTests-Bridging-Header.h";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
