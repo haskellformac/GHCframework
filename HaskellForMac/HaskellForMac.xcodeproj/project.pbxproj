@@ -22,10 +22,16 @@
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
+		E71D508519A7065400BD4141 /* Cloudcelerate.hs in Resources */ = {isa = PBXBuildFile; fileRef = E71D508419A7065400BD4141 /* Cloudcelerate.hs */; };
 		E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66AF197CC340006D3514 /* GHCKit.framework */; };
 		E7258C4B1983CB72004789CF /* CabalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70A66F0197E272E006D3514 /* CabalKit.framework */; };
 		E7258C58198A2263004789CF /* Playground.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7258C57198A2263004789CF /* Playground.xib */; };
 		E731EA4E197F7B470083F6C8 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
+		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
+		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
+		E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E743141C19A472CA003A3934 /* CloudcelerateSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743141B19A472CA003A3934 /* CloudcelerateSession.swift */; };
 		E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD13719A07E0300CDC18F /* StringExtensions.swift */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
@@ -120,6 +126,27 @@
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
 		};
+		E743140819A46F70003A3934 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7A13B001888006C00D79087;
+			remoteInfo = HaskellForMac;
+		};
+		E743140F19A46F70003A3934 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E74313FC19A46F70003A3934;
+			remoteInfo = CloudcelerateKit;
+		};
+		E743141319A46F70003A3934 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E74313FC19A46F70003A3934;
+			remoteInfo = CloudcelerateKit;
+		};
 		E75DD13919A212A600CDC18F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
@@ -143,6 +170,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */,
 				E70A66C5197CC341006D3514 /* GHCKit.framework in Embed Frameworks */,
 				E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */,
 			);
@@ -170,9 +198,17 @@
 		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
+		E71D508419A7065400BD4141 /* Cloudcelerate.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cloudcelerate.hs; sourceTree = "<group>"; };
 		E7258C491983CA85004789CF /* Experiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Experiments.playground; sourceTree = "<group>"; };
 		E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSrts_thr-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
 		E7258C57198A2263004789CF /* Playground.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Playground.xib; sourceTree = "<group>"; };
+		E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudcelerateKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E743140019A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E743140119A46F70003A3934 /* CloudcelerateKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudcelerateKit.h; sourceTree = "<group>"; };
+		E743140719A46F70003A3934 /* CloudcelerateKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudcelerateKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E743140C19A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudcelerateKitTests.swift; sourceTree = "<group>"; };
+		E743141B19A472CA003A3934 /* CloudcelerateSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudcelerateSession.swift; sourceTree = "<group>"; };
 		E75DD13719A07E0300CDC18F /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -230,12 +266,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E74313F919A46F70003A3934 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E743140419A46F70003A3934 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E7A13AFE1888006C00D79087 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				E70A6705197E272E006D3514 /* CabalKit.framework in Frameworks */,
 				E70A66C4197CC341006D3514 /* GHCKit.framework in Frameworks */,
+				E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */,
 				E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,13 +362,51 @@
 			name = TextEditor;
 			sourceTree = "<group>";
 		};
+		E74313FE19A46F70003A3934 /* CloudcelerateKit */ = {
+			isa = PBXGroup;
+			children = (
+				E71D508419A7065400BD4141 /* Cloudcelerate.hs */,
+				E743140119A46F70003A3934 /* CloudcelerateKit.h */,
+				E74313FF19A46F70003A3934 /* Supporting Files */,
+				E743141B19A472CA003A3934 /* CloudcelerateSession.swift */,
+			);
+			path = CloudcelerateKit;
+			sourceTree = "<group>";
+		};
+		E74313FF19A46F70003A3934 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E743140019A46F70003A3934 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E743140A19A46F70003A3934 /* CloudcelerateKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */,
+				E743140B19A46F70003A3934 /* Supporting Files */,
+			);
+			path = CloudcelerateKitTests;
+			sourceTree = "<group>";
+		};
+		E743140B19A46F70003A3934 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E743140C19A46F70003A3934 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		E7A13AF81888006C00D79087 = {
 			isa = PBXGroup;
 			children = (
 				E7A13B0A1888006C00D79087 /* HaskellForMac */,
 				E70A66B0197CC341006D3514 /* GHCKit */,
 				E70A66F1197E272E006D3514 /* CabalKit */,
+				E74313FE19A46F70003A3934 /* CloudcelerateKit */,
 				E7A13B281888006C00D79087 /* HaskellForMacTests */,
+				E743140A19A46F70003A3934 /* CloudcelerateKitTests */,
 				E7A13B031888006C00D79087 /* Frameworks */,
 				E7A13B021888006C00D79087 /* Products */,
 			);
@@ -330,6 +419,8 @@
 				E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */,
 				E70A66AF197CC340006D3514 /* GHCKit.framework */,
 				E70A66F0197E272E006D3514 /* CabalKit.framework */,
+				E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */,
+				E743140719A46F70003A3934 /* CloudcelerateKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -476,6 +567,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E74313FA19A46F70003A3934 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -521,6 +620,42 @@
 			productReference = E70A66F0197E272E006D3514 /* CabalKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		E74313FC19A46F70003A3934 /* CloudcelerateKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E743141919A46F70003A3934 /* Build configuration list for PBXNativeTarget "CloudcelerateKit" */;
+			buildPhases = (
+				E74313F819A46F70003A3934 /* Sources */,
+				E74313F919A46F70003A3934 /* Frameworks */,
+				E74313FA19A46F70003A3934 /* Headers */,
+				E74313FB19A46F70003A3934 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CloudcelerateKit;
+			productName = CloudcelerateKit;
+			productReference = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E743140619A46F70003A3934 /* CloudcelerateKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E743141A19A46F70003A3934 /* Build configuration list for PBXNativeTarget "CloudcelerateKitTests" */;
+			buildPhases = (
+				E743140319A46F70003A3934 /* Sources */,
+				E743140419A46F70003A3934 /* Frameworks */,
+				E743140519A46F70003A3934 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E743140919A46F70003A3934 /* PBXTargetDependency */,
+			);
+			name = CloudcelerateKitTests;
+			productName = CloudcelerateKitTests;
+			productReference = E743140719A46F70003A3934 /* CloudcelerateKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E7A13B001888006C00D79087 /* HaskellForMac */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E7A13B321888006C00D79087 /* Build configuration list for PBXNativeTarget "HaskellForMac" */;
@@ -537,6 +672,8 @@
 				E70A66C7197CC341006D3514 /* PBXTargetDependency */,
 				E70A6704197E272E006D3514 /* PBXTargetDependency */,
 				E70A6708197E272E006D3514 /* PBXTargetDependency */,
+				E743141019A46F70003A3934 /* PBXTargetDependency */,
+				E743141419A46F70003A3934 /* PBXTargetDependency */,
 			);
 			name = HaskellForMac;
 			productName = HaskellForMac;
@@ -582,6 +719,14 @@
 						CreatedOnToolsVersion = 6.0;
 						DevelopmentTeam = Z3JA6XMHD3;
 					};
+					E74313FC19A46F70003A3934 = {
+						CreatedOnToolsVersion = 6.0;
+						DevelopmentTeam = Z3JA6XMHD3;
+					};
+					E743140619A46F70003A3934 = {
+						CreatedOnToolsVersion = 6.0;
+						TestTargetID = E7A13B001888006C00D79087;
+					};
 					E7A13B001888006C00D79087 = {
 						DevelopmentTeam = Z3JA6XMHD3;
 					};
@@ -607,7 +752,9 @@
 				E7A13B001888006C00D79087 /* HaskellForMac */,
 				E70A66AE197CC340006D3514 /* GHCKit */,
 				E70A66EF197E272E006D3514 /* CabalKit */,
+				E74313FC19A46F70003A3934 /* CloudcelerateKit */,
 				E7A13B211888006C00D79087 /* HaskellForMacTests */,
+				E743140619A46F70003A3934 /* CloudcelerateKitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -621,6 +768,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E70A66EE197E272E006D3514 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E74313FB19A46F70003A3934 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E71D508519A7065400BD4141 /* Cloudcelerate.hs in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E743140519A46F70003A3934 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -735,6 +897,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E74313F819A46F70003A3934 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E743141C19A472CA003A3934 /* CloudcelerateSession.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E743140319A46F70003A3934 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E7A13AFD1888006C00D79087 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -798,6 +976,21 @@
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */;
+		};
+		E743140919A46F70003A3934 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7A13B001888006C00D79087 /* HaskellForMac */;
+			targetProxy = E743140819A46F70003A3934 /* PBXContainerItemProxy */;
+		};
+		E743141019A46F70003A3934 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E74313FC19A46F70003A3934 /* CloudcelerateKit */;
+			targetProxy = E743140F19A46F70003A3934 /* PBXContainerItemProxy */;
+		};
+		E743141419A46F70003A3934 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E74313FC19A46F70003A3934 /* CloudcelerateKit */;
+			targetProxy = E743141319A46F70003A3934 /* PBXContainerItemProxy */;
 		};
 		E75DD13A19A212A600CDC18F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1020,6 +1213,111 @@
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E743141519A46F70003A3934 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CloudcelerateKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E743141619A46F70003A3934 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CloudcelerateKit/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E743141719A46F70003A3934 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CloudcelerateKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
+			};
+			name = Debug;
+		};
+		E743141819A46F70003A3934 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = CloudcelerateKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
 			};
 			name = Release;
 		};
@@ -1331,6 +1629,24 @@
 			buildConfigurations = (
 				E70A670A197E272E006D3514 /* Debug */,
 				E70A670B197E272E006D3514 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E743141919A46F70003A3934 /* Build configuration list for PBXNativeTarget "CloudcelerateKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E743141519A46F70003A3934 /* Debug */,
+				E743141619A46F70003A3934 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E743141A19A46F70003A3934 /* Build configuration list for PBXNativeTarget "CloudcelerateKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E743141719A46F70003A3934 /* Debug */,
+				E743141819A46F70003A3934 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
