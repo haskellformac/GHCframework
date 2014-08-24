@@ -165,7 +165,9 @@ class ContextController : NSObject {
       issues = IssuesForFile(file: issues.file, issues: [:])
 
         // Load the module.
-      playground.loadContextModuleIntoPlayground(moduleText)
+      if playground.loadContextModuleIntoPlayground(moduleText) {
+        playground.execute()
+      }
 
         // Notify the editor of any issues.
       if issues.issues.isEmpty {
