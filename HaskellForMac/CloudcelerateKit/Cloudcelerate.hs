@@ -14,4 +14,6 @@ module Cloudcelerate (
 
   -- other libraries
 import Data.Aeson
+import Network.Curl
+
 
