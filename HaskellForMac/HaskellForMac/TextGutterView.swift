@@ -137,12 +137,16 @@ class TextGutterView: NSRulerView {
     }
 
       // Make sure to add an extra line number if we have an empty last line.
-    if ((string as NSString).length == NSMaxRange(charRange)) {
+    if (string as NSString).length == NSMaxRange(charRange)
+        && (string as NSString).length > 0
+        && string[advance(string.endIndex, -1)] == "\n" {
       let rect = layoutManager.extraLineFragmentRect
-      drawLineNumber(
-        lineNumber,
-        rect: NSRect(x: 0, y: rect.origin.y - visibleRect.origin.y, width: ruleThickness, height: rect.size.height),
-        middleline: rect.size.height / 2)
+      if rect != NSZeroRect {
+        drawLineNumber(
+          lineNumber,
+          rect: NSRect(x: 0, y: rect.origin.y - visibleRect.origin.y, width: ruleThickness, height: rect.size.height),
+          middleline: rect.size.height / 2)
+      }
     }
   }
 
