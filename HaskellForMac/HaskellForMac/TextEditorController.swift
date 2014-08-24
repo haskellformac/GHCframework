@@ -64,6 +64,17 @@ class TextEditorController: NSViewController {
       // Fixed for now.
     textView.font = textAttributes[NSFontAttributeName] as NSFont;
 
+      // Set up for code editing (not prose).
+    textView.automaticDashSubstitutionEnabled   = false
+    textView.automaticDataDetectionEnabled      = false
+    textView.automaticLinkDetectionEnabled      = false
+    textView.automaticQuoteSubstitutionEnabled  = false
+    textView.automaticSpellingCorrectionEnabled = false
+    textView.automaticTextReplacementEnabled    = false
+
+      // Apply the default style.
+    textView.typingAttributes = textAttributes
+
       // Set up the gutter.
     scrollView.hasVerticalRuler = true
     scrollView.rulersVisible    = true

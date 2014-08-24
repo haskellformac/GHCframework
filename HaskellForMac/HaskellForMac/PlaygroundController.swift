@@ -30,9 +30,16 @@ class PlaygroundController: NSViewController {
   ///     to capture `self`).
   private let haskellSession: HaskellSession!
 
-  /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
-  //
-  private let textAttributes: NSDictionary = {
+  /// The text attributes to be applied to all text in the code text views. (Currently, they are fixed.)
+  ///
+  private let codeTextAttributes: NSDictionary = {
+    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
+    return [NSFontAttributeName: menlo13]
+  }()
+
+  /// The text attributes to be applied to all text in the result text views. (Currently, they are fixed.)
+  ///
+  private let resultTextAttributes: NSDictionary = {
     let menlo13        = NSFont(name: "Menlo-Regular", size:13)
     let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
     paragraphStyle.lineBreakMode = .ByTruncatingTail
@@ -86,14 +93,21 @@ class PlaygroundController: NSViewController {
     resultTextView.horizontallyResizable = true
 
       // For now, we have got a fixed font.
-    codeTextView.font   = textAttributes[NSFontAttributeName] as NSFont
-    resultTextView.font = textAttributes[NSFontAttributeName] as NSFont
+    codeTextView.font   = codeTextAttributes[NSFontAttributeName] as NSFont
+    resultTextView.font = resultTextAttributes[NSFontAttributeName] as NSFont
+
+      // Set up for code editing (not prose).
+    codeTextView.automaticDashSubstitutionEnabled   = false
+    codeTextView.automaticDataDetectionEnabled      = false
+    codeTextView.automaticLinkDetectionEnabled      = false
+    codeTextView.automaticQuoteSubstitutionEnabled  = false
+    codeTextView.automaticSpellingCorrectionEnabled = false
+    codeTextView.automaticTextReplacementEnabled    = false
 
       // Apply the default style.
-    codeTextView.defaultParagraphStyle   = textAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
-    codeTextView.typingAttributes        = textAttributes
-    resultTextView.defaultParagraphStyle = textAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
-    resultTextView.typingAttributes      = textAttributes
+    codeTextView.typingAttributes        = codeTextAttributes
+    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
+    resultTextView.typingAttributes      = resultTextAttributes
   }
 
 
@@ -178,7 +192,7 @@ class PlaygroundController: NSViewController {
       firstIndexOfNextCommand  = nextIndex
 
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:textAttributes)
+      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:resultTextAttributes)
       resultTextView.textStorage.appendAttributedString(attrResult)
 
     }
