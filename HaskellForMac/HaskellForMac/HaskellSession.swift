@@ -29,8 +29,8 @@ import GHCKit
 
   /// Load a single module and make it the current evaluation context.
   ///
-  func loadModuleFromString(moduleText: String) -> Bool {
-    return ghcInstance.loadModuleFromString(moduleText)
+  func loadModuleFromString(moduleText: String, file: String) -> Bool {
+    return ghcInstance.loadModuleFromString(moduleText, file: file)
   }
 
 

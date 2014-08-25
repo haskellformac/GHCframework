@@ -165,8 +165,12 @@ class ContextController : NSObject {
       issues = IssuesForFile(file: issues.file, issues: [:])
 
         // Load the module.
-      if playground.loadContextModuleIntoPlayground(moduleText) {
-        playground.execute()
+      if let item = self.item {
+        // FIXME: We need to add getting the filename as a method
+        let fullFilename = project.fileURL.path?.stringByAppendingPathComponent(item.fileName())
+        if playground.loadContextModuleIntoPlayground(moduleText, file: fullFilename!) {
+          playground.execute()
+        }
       }
 
         // Notify the editor of any issues.

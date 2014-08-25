@@ -89,11 +89,11 @@ startWithHandlerObject handlerObject
             lines                   = GHC.srcLocLine endLoc - line
             endColumn               = GHC.srcLocCol endLoc
 
--- Load a module of which the actual program code is given.
+-- Load a module of which the actual program code is given. The backing path of the module is provided as well.
 --
---FIXME: target set up is very incomplete
-loadModuleText :: Session -> String -> IO Bool
-loadModuleText session moduleText
+-- FIXME: Should be 'FilePath' instead of the first 'String', but language-c-inline doesn't see through type synonyms...
+loadModuleText :: Session -> String -> String -> IO Bool
+loadModuleText session fname moduleText
   = do
     { utcTime <- getCurrentTime
     ; showResult <$> load session (target utcTime)
@@ -104,8 +104,7 @@ loadModuleText session moduleText
     
     target utcTime 
       = GHC.Target
-        -- { GHC.targetId           = GHC.TargetModule (GHC.mkModuleName "Interactive")
-        { GHC.targetId           = GHC.TargetFile "/Users/chak/tmp/BigPixel.hsproj/src/BigPixel.hs" Nothing
+        { GHC.targetId           = GHC.TargetFile fname Nothing
         , GHC.targetAllowObjCode = False
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
@@ -142,7 +141,7 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 /// Any error messages and warnings are delivered via the diagnostics handler of the current object. The result
 /// indicates whether loading was successful.
 ///
-- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText;
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file;
 
 /// Evaluate the Haskell expression given as a string.
 ///
@@ -222,9 +221,9 @@ void GHCInstance_initialise(void);
 // Public model methods
 // --
 
-- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file
 {
-  return loadModuleText(self.interpreterSession, moduleText);
+  return loadModuleText(self.interpreterSession, file, moduleText);
 }
 
 - (typename NSString *)evalExprFromString:(typename NSString *)exprText 
