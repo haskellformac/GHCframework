@@ -7,9 +7,29 @@
 //
 //  Each instance of this class represents a GHC session. This class is a view model interfacing the Haskell-side model.
 
-//import Foundation
-
+import Foundation
 import GHCKit
+
+
+/// Localised token type
+///
+struct Token {
+  let type: GHCToken
+  let span: SrcSpan
+
+  init(type:      GHCToken,
+       filename:  String,
+       line:      UInt,
+       column:    UInt,
+       lines:     UInt,
+       endColumn: UInt)
+  {
+    self.type = type
+    self.span = SrcSpan(start: SrcLoc(file: filename, line: line, column: column),
+                        lines: lines,
+                        endColumn: endColumn)
+  }
+}
 
 @objc class HaskellSession {
 
@@ -21,6 +41,26 @@ import GHCKit
 
   init(diagnosticsHandler: GHCKit.DiagnosticsHandler) {
     ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler)
+  }
+
+
+  //MARK: -
+  //MARK: Syntax support
+
+  /// Tokenise a string of Haskell code.
+  ///
+  /// In case of failure, the resulting array is empty, but a diagnostic message is delivered asynchronously as usual.
+  ///
+  func tokeniseHaskell(text: String, file: String) -> [Token] {
+    return ghcInstance.tokeniseHaskell(text, file: file).map{ locatedToken in
+      let tok = locatedToken as GHCLocatedToken
+      return Token(type: locatedToken.token,
+                   filename: file,
+                   line: tok.line,
+                   column: tok.column,
+                   lines: tok.lines,
+                   endColumn: tok.endColumn)
+    }
   }
 
 

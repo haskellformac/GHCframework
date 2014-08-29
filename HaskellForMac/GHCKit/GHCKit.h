@@ -17,4 +17,5 @@ FOUNDATION_EXPORT const unsigned char GHCKitVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <GHCKit/PublicHeader.h>
 
 #import "GHCKit/GHCSeverity.h"
+#import "GHCKit/GHCToken.h"
 #import "GHCKit/GHCInstance_objc.h"

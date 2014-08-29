@@ -9,7 +9,7 @@
 
 module Interpreter (
   Session, Result(..),
-  start, stop, eval, typeOf, load  
+  start, stop, tokenise, eval, typeOf, load 
 ) where
 
   -- standard libraries
@@ -24,15 +24,17 @@ import Data.Maybe
 import System.IO
 
   -- GHC
-import qualified Bag        as GHC
-import qualified DynFlags   as GHC
-import qualified ErrUtils   as GHC
-import qualified HscTypes   as GHC
-import qualified GHC        as GHC
-import qualified GHC.Paths  as Paths
-import qualified GhcMonad   as GHC
-import qualified MonadUtils as GHC
-import qualified Outputable as GHC
+import qualified Bag          as GHC
+import qualified DynFlags     as GHC
+import qualified ErrUtils     as GHC
+import qualified HscTypes     as GHC
+import qualified GHC          as GHC
+import qualified GHC.Paths    as Paths
+import qualified GhcMonad     as GHC
+import qualified Lexer        as GHC
+import qualified MonadUtils   as GHC
+import qualified StringBuffer as GHC
+import qualified Outputable   as GHC
 
   -- GHCKit
 import PrintInterceptor
@@ -111,6 +113,25 @@ start diagnosticHandler
 --
 stop :: Session -> IO ()
 stop (Session inlet) = putMVar inlet Nothing
+
+-- Tokenise a string of Haskell code.
+--
+tokenise :: Session -> GHC.StringBuffer -> GHC.RealSrcLoc -> IO [GHC.Located GHC.Token]
+tokenise (Session inlet) strbuf loc
+  = do
+    { resultMV <- newEmptyMVar
+    ; putMVar inlet $ Just $ do
+        { dflags <- GHC.getSessionDynFlags
+        ; let result = GHC.lexTokenStream strbuf loc dflags
+        ; case result of
+            GHC.POk _pstate tokens -> GHC.liftIO $ putMVar resultMV tokens
+            GHC.PFailed loc msg    -> do
+            { GHC.liftIO $ GHC.log_action dflags dflags GHC.SevError loc (GHC.defaultErrStyle dflags) msg
+            ; GHC.liftIO $ putMVar resultMV []
+            }
+        }      
+    ; takeMVar resultMV
+    }
 
 -- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result.
 --

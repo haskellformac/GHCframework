@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable, StandaloneDeriving #-}
 
 -- |
 -- Module      : GHCInstance
@@ -25,13 +25,15 @@ import Language.C.Inline.ObjC
   -- GHC
 import qualified FastString   as GHC
 import qualified GHC          as GHC
+import qualified Lexer        as GHC
+import qualified Outputable   as GHC
 import qualified StringBuffer as GHC
 import qualified SrcLoc       as GHC
 
   -- friends
 import Interpreter
 
-objc_import ["<Cocoa/Cocoa.h>", "GHCSeverity.h"]
+objc_import ["<Cocoa/Cocoa.h>", "GHCSeverity.h", "GHCToken.h"]
 
 
 -- Haskell side support code
@@ -49,45 +51,110 @@ objc_marshaller 'ghcInstance 'ghcInstance
 -- Create a new GHC session that reports diagnostics through the provided object using the method
 --
 startWithHandlerObject :: GHCInstance -> IO Session
-startWithHandlerObject handlerObject
-  = start $ \severity srcSpan msg ->
-      case GHC.srcSpanFileName_maybe srcSpan of
-        Nothing     -> let spanText = GHC.showUserSpan True srcSpan 
-                       in $(objc ['spanText :> ''String, 'msg :> ''String] 
-                            (void [cexp| NSLog(@"%@: %@", spanText, msg) |]))
-        Just fsname -> let fname = GHC.unpackFS fsname
-                       in
-                       $(objc ['handlerObject :> Class ''GHCInstance,
-                               'fname         :> ''String,
-                               'cseverity     :> ''Int,
-                               'line          :> ''Word,
-                               'column        :> ''Word,
-                               'lines         :> ''Word,
-                               'endColumn     :> ''Word,
-                               'msg           :> ''String]
-                         (void [cexp| [handlerObject reportWithSeverity:cseverity
-                                                               filename:fname
-                                                                   line:line
-                                                                 column:column
-                                                                  lines:lines
-                                                              endColumn:endColumn
-                                                                message:msg] |]))
-          where
-            cseverity = unsafePerformIO $ case severity of
-                          GHC.SevOutput      -> $(objc [] (''Int <: [cexp| GHCSeverityOutput |]))
-                          GHC.SevDump        -> $(objc [] (''Int <: [cexp| GHCSeverityDump |]))
-                          GHC.SevInteractive -> $(objc [] (''Int <: [cexp| GHCSeverityInteractive |]))
-                          GHC.SevInfo        -> $(objc [] (''Int <: [cexp| GHCSeverityInfo |]))
-                          GHC.SevWarning     -> $(objc [] (''Int <: [cexp| GHCSeverityWarning |]))
-                          GHC.SevError       -> $(objc [] (''Int <: [cexp| GHCSeverityError |]))
-                          GHC.SevFatal       -> $(objc [] (''Int <: [cexp| GHCSeverityFatal |]))
+startWithHandlerObject handlerObject = start (reportDiagnostics handlerObject)
 
-            GHC.RealSrcLoc startLoc = GHC.srcSpanStart srcSpan
-            GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
-            line                    = GHC.srcLocLine startLoc
-            column                  = GHC.srcLocCol startLoc
-            lines                   = GHC.srcLocLine endLoc - line
-            endColumn               = GHC.srcLocCol endLoc
+reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
+reportDiagnostics handlerObject severity srcSpan msg
+  = case GHC.srcSpanFileName_maybe srcSpan of
+      Nothing     -> let spanText = GHC.showUserSpan True srcSpan 
+                     in $(objc ['spanText :> ''String, 'msg :> ''String] 
+                          (void [cexp| NSLog(@"%@: %@", spanText, msg) |]))
+      Just fsname -> let fname = GHC.unpackFS fsname
+                     in
+                     $(objc ['handlerObject :> Class ''GHCInstance,
+                             'fname         :> ''String,
+                             'cseverity     :> ''Int,
+                             'line          :> ''Word,
+                             'column        :> ''Word,
+                             'lines         :> ''Word,
+                             'endColumn     :> ''Word,
+                             'msg           :> ''String]
+                       (void [cexp| [handlerObject reportWithSeverity:cseverity
+                                                             filename:fname
+                                                                 line:line
+                                                               column:column
+                                                                lines:lines
+                                                            endColumn:endColumn
+                                                              message:msg] |]))
+        where
+          cseverity = unsafePerformIO $ case severity of
+                        GHC.SevOutput      -> $(objc [] (''Int <: [cexp| GHCSeverityOutput |]))
+                        GHC.SevDump        -> $(objc [] (''Int <: [cexp| GHCSeverityDump |]))
+                        GHC.SevInteractive -> $(objc [] (''Int <: [cexp| GHCSeverityInteractive |]))
+                        GHC.SevInfo        -> $(objc [] (''Int <: [cexp| GHCSeverityInfo |]))
+                        GHC.SevWarning     -> $(objc [] (''Int <: [cexp| GHCSeverityWarning |]))
+                        GHC.SevError       -> $(objc [] (''Int <: [cexp| GHCSeverityError |]))
+                        GHC.SevFatal       -> $(objc [] (''Int <: [cexp| GHCSeverityFatal |]))
+
+          GHC.RealSrcLoc startLoc = GHC.srcSpanStart srcSpan
+          GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
+          line                    = GHC.srcLocLine startLoc
+          column                  = GHC.srcLocCol startLoc
+          lines                   = GHC.srcLocLine endLoc - line
+          endColumn               = GHC.srcLocCol endLoc
+
+-- FIXME: generalise with NSArray support in 'CBLPackage.hs'
+newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
+  deriving Typeable   -- needed for now until migrating to new TH
+newtype NSArray e = NSArray (ForeignPtr (NSArray e))
+  deriving Typeable   -- needed for now until migrating to new TH
+
+deriving instance (Typeable GHC.Token)
+
+unsafeFreezeNSMutableArray :: NSMutableArray (GHC.Located GHC.Token) -> NSArray (GHC.Located GHC.Token)
+unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
+
+objc_typecheck
+
+tokenListToNSArray :: [GHC.Located GHC.Token] -> IO (NSArray (GHC.Located GHC.Token))
+tokenListToNSArray tokens
+  = do
+    { marr <- $(objc [] $ Class [t|NSMutableArray (GHC.Located GHC.Token)|] <: [cexp| [NSMutableArray arrayWithCapacity:50] |])
+      ; mapM_ (addElement marr) tokens
+      ; return $ unsafeFreezeNSMutableArray marr
+      }
+    where
+      addElement marr locatedToken
+        = $(objc ['marr      :> Class [t|NSMutableArray (GHC.Located GHC.Token)|],
+                  'tok       :> ''Int,
+                  'line      :> ''Word,
+                  'column    :> ''Word,
+                  'lines     :> ''Word,
+                  'endColumn :> ''Word] $ 
+              void [cexp| [marr addObject:[[GHCLocatedToken alloc] initWithToken:tok
+                                                                            line:line 
+                                                                          column:column
+                                                                           lines:lines
+                                                                       endColumn:endColumn]] |])
+        where
+          srcSpan = GHC.getLoc locatedToken
+          token   = GHC.unLoc  locatedToken
+          
+          tok = unsafePerformIO $ case token of
+                  GHC.ITlineComment  _ -> $(objc [] (''Int <: [cexp| GHCTokenLineComment |]))
+                  GHC.ITblockComment _ -> $(objc [] (''Int <: [cexp| GHCTokenBlockComment |]))
+                  _                    -> $(objc [] (''Int <: [cexp| GHCTokenOther |]))
+
+          GHC.RealSrcLoc startLoc = GHC.srcSpanStart srcSpan
+          GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
+          line                    = GHC.srcLocLine startLoc
+          column                  = GHC.srcLocCol startLoc
+          lines                   = GHC.srcLocLine endLoc - line
+          endColumn               = GHC.srcLocCol endLoc
+
+mockNSArrayToTokenList :: NSArray (GHC.Located GHC.Token) -> IO [GHC.Located GHC.Token]
+mockNSArrayToTokenList = error "mockNSArrayToTokenList"
+
+objc_marshaller 'tokenListToNSArray 'mockNSArrayToTokenList
+
+-- Turn a string of Haskell code into an array of tokens.
+--
+-- If tokenisation fails, the array is empty and the diagnostics handler is called with a suitable message.
+--
+-- tokeniseString :: Session -> String -> String -> IO (NSArray (GHC.Located GHC.Token))
+tokeniseString :: Session -> String -> String -> IO [GHC.Located GHC.Token]
+tokeniseString session text fname
+  = tokenise session (GHC.stringToStringBuffer text) (GHC.mkRealSrcLoc (GHC.mkFastString fname) 1 1)
 
 -- Load a module of which the actual program code is given. The backing path of the module is provided as well.
 --
@@ -136,6 +203,12 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 ///
 - (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler;
 
+/// Turn a string of Haskell code into an array of tokens.
+///
+/// If tokenisation fails, the array is empty and the diagnostics handler is called with a suitable message.
+///
+- (typename NSArray *)tokeniseHaskell:(typename NSString*)text file:(typename NSString *)file;
+
 /// Load a module given as a string.
 ///
 /// Any error messages and warnings are delivered via the diagnostics handler of the current object. The result
@@ -169,7 +242,8 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 -- Objective-C class implementation
 -- --------------------------------
 
-objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'loadModuleText, Typed 'evalText] [cunit|
+objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'tokeniseString, Typed 'loadModuleText, Typed 'evalText]
+  [cunit|
 
 @interface GHCInstance ()
 
@@ -220,6 +294,11 @@ void GHCInstance_initialise(void);
 
 // Public model methods
 // --
+
+- (typename NSArray *)tokeniseHaskell:(typename NSString*)text file:(typename NSString *)file
+{
+  return tokeniseString(self.interpreterSession, text, file);
+}
 
 - (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file
 {
