@@ -20,6 +20,12 @@ class TextEditorController: NSViewController {
   //
   dynamic let viewModelItem: HFMProjectViewModelItem
 
+  /// Tokeniser to be used for syntax highlighting if a tokeniser is available for the edited file type.
+  ///
+  /// This variable is set by the context controller.
+  ///
+  var highlightingTokeniser: HighlightingTokeniser?
+
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
   // FIXME: Unify with 'Playground.swift'

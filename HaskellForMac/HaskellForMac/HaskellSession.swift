@@ -14,17 +14,17 @@ import GHCKit
 /// Localised token type
 ///
 struct Token {
-  let type: GHCToken
+  let kind: GHCToken
   let span: SrcSpan
 
-  init(type:      GHCToken,
+  init(kind:      GHCToken,
        filename:  String,
        line:      UInt,
        column:    UInt,
        lines:     UInt,
        endColumn: UInt)
   {
-    self.type = type
+    self.kind = kind
     self.span = SrcSpan(start: SrcLoc(file: filename, line: line, column: column),
                         lines: lines,
                         endColumn: endColumn)
@@ -54,7 +54,7 @@ struct Token {
   func tokeniseHaskell(text: String, file: String) -> [Token] {
     return ghcInstance.tokeniseHaskell(text, file: file).map{ locatedToken in
       let tok = locatedToken as GHCLocatedToken
-      return Token(type: locatedToken.token,
+      return Token(kind: locatedToken.token,
                    filename: file,
                    line: tok.line,
                    column: tok.column,

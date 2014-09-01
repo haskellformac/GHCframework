@@ -33,7 +33,7 @@ class PlaygroundController: NSViewController {
   /// The text attributes to be applied to all text in the code text views. (Currently, they are fixed.)
   ///
   private let codeTextAttributes: NSDictionary = {
-    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
+    let menlo13 = NSFont(name: "Menlo-Regular", size:13)
     return [NSFontAttributeName: menlo13]
   }()
 
@@ -45,8 +45,6 @@ class PlaygroundController: NSViewController {
     paragraphStyle.lineBreakMode = .ByTruncatingTail
     return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
   }()
-
-  private var startOfCommand: Int = 0   // FIXME: provisional starting location of type command in REPL
 
   /// Bin to collext issues for this playground
   ///
@@ -207,8 +205,8 @@ class PlaygroundController: NSViewController {
 }
 
 
-//MARK: -
-//MARK: NSTextViewDelegate protocol methods
+// MARK: -
+// MARK: NSTextViewDelegate protocol methods
 
 extension PlaygroundController: NSTextViewDelegate {
   //FIXME: This is provisionally the delegate for the REPL view while it is so simple.
@@ -226,6 +224,20 @@ extension PlaygroundController: NSTextViewDelegate {
 
     }
     return false
+  }
+
+}
+
+
+// MARK: -
+// MARK: Syntax highlighting support
+
+extension PlaygroundController {
+
+  func tokeniseHaskell(file: String) -> HighlightingTokeniser {
+    return { text in
+      map(self.haskellSession.tokeniseHaskell(text, file: file)){ token in HighlightingToken(ghcToken: token)}
+    }
   }
 
 }
