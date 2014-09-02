@@ -84,6 +84,9 @@ class TextEditorController: NSViewController {
       // Set up the gutter.
     scrollView.hasVerticalRuler = true
     scrollView.rulersVisible    = true
+
+      // Trigger highlighting
+    textView.highlight(highlightingTokeniser!)
    }
 }
 
