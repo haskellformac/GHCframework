@@ -31,4 +31,8 @@ extension String {
       return lineNumberAtLocation(advance(startOfLine, -1)) + 1
     }
   }
+
+  func replicate(n: Int) -> String {
+    return (n <= 0) ? "" : self + self.replicate(n - 1)
+  }
 }

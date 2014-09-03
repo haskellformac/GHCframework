@@ -46,6 +46,11 @@ class PlaygroundController: NSViewController {
     return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
   }()
 
+  private let fontHeight: CGFloat = {
+    let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)])
+    return x.size.height
+  }()
+
   /// Bin to collext issues for this playground
   ///
   private var issues = IssuesForFile(file: kPlaygroundSource, issues: [:])
@@ -167,10 +172,11 @@ class PlaygroundController: NSViewController {
 
     // Extracts one command, while advancing the current character index.
     //
-    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String) {
-      let lineRange = string.lineRangeForRange(charIndex...charIndex)
-      var command   = string[lineRange]
-      charIndex     = lineRange.endIndex
+    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String, Int) {
+      let initialCharIndex = charIndex
+      let lineRange        = string.lineRangeForRange(charIndex...charIndex)
+      var command          = string[lineRange]
+      charIndex            = lineRange.endIndex
 
         // Collect lines until you find one that has no white space in the first column.
         // FIXME: we need to use a proper Unicode whitespace test
@@ -179,18 +185,27 @@ class PlaygroundController: NSViewController {
         command      += string[lineRange]
         charIndex     = lineRange.endIndex
       }
-      return (charIndex, command)
+      let span         = string.startIndex..<initialCharIndex
+      let firstIndex   = string[span].utf16Count
+      let indexLength  = string[initialCharIndex..<charIndex].utf16Count
+      let glyphRange = layoutManager.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
+                                                                 actualCharacterRange: nil)
+      let rect       = layoutManager.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer)
+//      return (charIndex, command, Int(floor(rect.size.height / fontHeight)))
+      return (charIndex, command, Int(floor(rect.size.height / 15)))
     }
 
+      // Traverse all commands.
     var firstIndexOfNextCommand: String.Index = string.startIndex
     while string.endIndex > firstIndexOfNextCommand {
 
-      let lineNumber           = string.lineNumberAtLocation(firstIndexOfNextCommand)
-      let (nextIndex, command) = extractCommandAtCharIndex(firstIndexOfNextCommand)
-      firstIndexOfNextCommand  = nextIndex
+      let lineNumber                  = string.lineNumberAtLocation(firstIndexOfNextCommand)
+      let (nextIndex, command, lines) = extractCommandAtCharIndex(firstIndexOfNextCommand)
+      firstIndexOfNextCommand         = nextIndex
 
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      let attrResult = NSAttributedString(string: evalResult + "\n", attributes:resultTextAttributes)
+      let rets       = "\n".replicate(lines)
+      let attrResult = NSAttributedString(string: evalResult + rets, attributes:resultTextAttributes)
       resultTextView.textStorage.appendAttributedString(attrResult)
 
     }

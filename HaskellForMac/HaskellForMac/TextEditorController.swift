@@ -85,6 +85,10 @@ class TextEditorController: NSViewController {
     scrollView.hasVerticalRuler = true
     scrollView.rulersVisible    = true
 
+
+      // Register ourselves as the delegate for the text storage.
+    textView.layoutManager.textStorage.delegate = self
+
       // Trigger highlighting
     textView.highlight(highlightingTokeniser!)
    }
@@ -102,3 +106,17 @@ extension TextEditorController {
     (scrollView.verticalRulerView as TextGutterView).updateIssues(notification)
   }
 }
+
+
+// MARK: -
+// MARK: NSTextStorageDelegate protocol
+
+extension TextEditorController: NSTextStorageDelegate {
+
+  func textStorageDidProcessEditing(notification: NSNotification) {
+//    textView.highlight(highlightingTokeniser!)
+// ^^^causes an exception (as it claims to do glyph generation before processEditing: is finished)          12
+  }
+
+}
+
