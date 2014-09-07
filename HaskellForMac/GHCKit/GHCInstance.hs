@@ -131,6 +131,30 @@ tokenListToNSArray tokens
           token   = GHC.unLoc  locatedToken
           
           tok = unsafePerformIO $ case token of
+                  GHC.ITas             -> $(objc [] (''Int <: [cexp| GHCTokenAs |]))
+                  GHC.ITcase           -> $(objc [] (''Int <: [cexp| GHCTokenCase |]))
+                  GHC.ITclass          -> $(objc [] (''Int <: [cexp| GHCTokenClass |]))
+                  GHC.ITdata           -> $(objc [] (''Int <: [cexp| GHCTokenData |]))
+                  --
+                  GHC.ITdotdot         -> $(objc [] (''Int <: [cexp| GHCTokenDotdot |]))
+                  GHC.ITcolon          -> $(objc [] (''Int <: [cexp| GHCTokenColon |]))
+                  GHC.ITdcolon         -> $(objc [] (''Int <: [cexp| GHCTokenDcolon |]))
+                  GHC.ITequal          -> $(objc [] (''Int <: [cexp| GHCTokenEqual |]))
+                  --
+                  GHC.ITvarsym       _ -> $(objc [] (''Int <: [cexp| GHCTokenVarsym |]))
+                  GHC.ITconsym       _ -> $(objc [] (''Int <: [cexp| GHCTokenConsym |]))
+                  GHC.ITvarid        _ -> $(objc [] (''Int <: [cexp| GHCTokenVarid |]))
+                  GHC.ITconid        _ -> $(objc [] (''Int <: [cexp| GHCTokenConid |]))
+                  GHC.ITqvarsym      _ -> $(objc [] (''Int <: [cexp| GHCTokenQvarsym |]))
+                  GHC.ITqconsym      _ -> $(objc [] (''Int <: [cexp| GHCTokenQconsym |]))
+                  GHC.ITqvarid       _ -> $(objc [] (''Int <: [cexp| GHCTokenQvarid |]))
+                  GHC.ITqconid       _ -> $(objc [] (''Int <: [cexp| GHCTokenQconid |]))
+                  --
+                  GHC.ITinteger      _ -> $(objc [] (''Int <: [cexp| GHCTokenInteger |]))
+                  GHC.ITrational     _ -> $(objc [] (''Int <: [cexp| GHCTokenRational |]))
+                  --
+                  GHC.ITchar         _ -> $(objc [] (''Int <: [cexp| GHCTokenChar |]))
+                  GHC.ITstring       _ -> $(objc [] (''Int <: [cexp| GHCTokenString |]))
                   GHC.ITlineComment  _ -> $(objc [] (''Int <: [cexp| GHCTokenLineComment |]))
                   GHC.ITblockComment _ -> $(objc [] (''Int <: [cexp| GHCTokenBlockComment |]))
                   _                    -> $(objc [] (''Int <: [cexp| GHCTokenOther |]))

@@ -12,21 +12,35 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, GHCToken) {
+  GHCTokenAs,
+  GHCTokenCase,
+  GHCTokenClass,
+  GHCTokenData,
+
+  GHCTokenDotdot,
+  GHCTokenColon,
+  GHCTokenDcolon,
+  GHCTokenEqual,
+
+  GHCTokenVarsym,
+  GHCTokenConsym,
+  GHCTokenVarid,
+  GHCTokenConid,
+  GHCTokenQvarsym,
+  GHCTokenQconsym,
+  GHCTokenQvarid,
+  GHCTokenQconid,
+
+  GHCTokenInteger,
+  GHCTokenRational,
+
+  GHCTokenChar,
+  GHCTokenString,
   GHCTokenLineComment,
   GHCTokenBlockComment,
   GHCTokenOther             // a token type we are not interested in
 };
 
-/*
-struct GHCLocatedToken {
-  GHCToken   token;
-  NSUInteger line;
-  NSUInteger column;
-  NSUInteger lines;
-  NSUInteger endColumn;
-};
-typedef struct GHCLocatedToken GHCLocatedToken;
- */
 
 @interface GHCLocatedToken : NSObject
 

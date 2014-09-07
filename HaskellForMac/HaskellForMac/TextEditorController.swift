@@ -90,7 +90,9 @@ class TextEditorController: NSViewController {
     textView.layoutManager.textStorage.delegate = self
 
       // Trigger highlighting
-    textView.highlight(highlightingTokeniser!)
+    if let tokeniser = highlightingTokeniser {
+      textView.highlight(tokeniser)
+    }
    }
 }
 
@@ -114,7 +116,9 @@ extension TextEditorController {
 extension TextEditorController: NSTextStorageDelegate {
 
   func textStorageDidProcessEditing(notification: NSNotification) {
-//    textView.highlight(highlightingTokeniser!)
+//    if let tokeniser = highlightingTokeniser {
+//      textView.highlight(tokeniser)
+//    }
 // ^^^causes an exception (as it claims to do glyph generation before processEditing: is finished)          12
   }
 
