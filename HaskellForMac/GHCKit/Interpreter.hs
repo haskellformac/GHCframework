@@ -67,7 +67,9 @@ start diagnosticHandler
     startSession inlet 
       = do
         {   -- Initialise the session by reading the package database
-        ; dflags     <- GHC.getSessionDynFlags
+        ; dflagsRaw  <- GHC.getSessionDynFlags
+        -- FIXME: the following doesn't help with OpenGL in the Playground
+        ; let dflags  = GHC.gopt_unset dflagsRaw GHC.Opt_GhciSandbox
         ; packageIds <- GHC.setSessionDynFlags $ dflags 
                                                  { GHC.hscTarget        = GHC.HscInterpreted
                                                  , GHC.ghcLink          = GHC.LinkInMemory
