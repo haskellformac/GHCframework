@@ -148,7 +148,7 @@ eval (Session inlet) source line stmt
                      GHC.RunOk _names      -> do
                                               { chan  <- GHC.liftIO $ readIORef chanRef
                                               ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
-                                              ; return $ Result (fromMaybe "<no result>" maybe_value)
+                                              ; return $ Result (fromMaybe "" maybe_value)
                                               }
                      GHC.RunException _exc -> return $ Result "<exception>"
                      _                     -> return $ Result "<unexpected break point>"
