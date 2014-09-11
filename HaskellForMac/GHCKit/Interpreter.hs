@@ -74,6 +74,7 @@ start diagnosticHandler
                                                  { GHC.hscTarget        = GHC.HscInterpreted
                                                  , GHC.ghcLink          = GHC.LinkInMemory
                                                  , GHC.log_action       = logAction
+                                                 , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
                                                  }
         ; GHC.liftIO $ 
