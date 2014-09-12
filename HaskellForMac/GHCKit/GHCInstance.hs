@@ -51,7 +51,15 @@ objc_marshaller 'ghcInstance 'ghcInstance
 -- Create a new GHC session that reports diagnostics through the provided object using the method
 --
 startWithHandlerObject :: GHCInstance -> IO Session
-startWithHandlerObject handlerObject = start (reportDiagnostics handlerObject)
+startWithHandlerObject handlerObject 
+  = do
+    { ghcBundlePath <-
+        $(objc [] $ ''String <: 
+           [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
+    ; start ghcBundlePath (reportDiagnostics handlerObject)
+    }
+  where
+
 
 reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
 reportDiagnostics handlerObject severity srcSpan msg

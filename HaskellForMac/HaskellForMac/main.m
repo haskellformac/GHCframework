@@ -12,6 +12,11 @@
 
 int main(int argc, char *argv[])
 {
+
+    // Make sure GHC is properly relocated.
+  NSString *relocate = [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/MacOS/relocateGHC"];
+  system([relocate cStringUsingEncoding:NSUTF8StringEncoding]);
+
     // Get the Haskell runtime going.
   hs_init(&argc, &argv);
 

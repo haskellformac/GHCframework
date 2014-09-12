@@ -21,6 +21,7 @@ import Control.Exception            (SomeException, evaluate)
 import Control.Monad
 import Data.Dynamic  hiding (typeOf)
 import Data.Maybe
+import System.FilePath
 import System.IO
 
   -- GHC
@@ -44,6 +45,11 @@ import PrintInterceptor
 import System.IO.Unsafe (unsafePerformIO)
 import Data.IORef
 
+-- Relative (to the 'GHC.bundle' location) path to the library directory.
+--
+libdir :: String
+libdir = "GHC.bundle/Contents/usr/lib/ghc-7.8.3"
+
 -- |Abstract handle of an interpreter session.
 --
 newtype Session = Session (MVar (Maybe (GHC.Ghc ())))
@@ -56,11 +62,13 @@ data Result = Result String
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
-start :: (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
-start diagnosticHandler
+-- The file path specifies the 'GHC.bundle' location (from where we locate the package database).
+--
+start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
+start ghcBundlePath diagnosticHandler
   = do
     { inlet <- newEmptyMVar
-    ; forkIO $ void $ GHC.runGhc (Just Paths.libdir) (startSession inlet)
+    ; forkIO $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet)
     ; return $ Session inlet
     }
   where
