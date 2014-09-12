@@ -31,6 +31,7 @@
 		E7258C58198A2263004789CF /* Playground.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7258C57198A2263004789CF /* Playground.xib */; };
 		E72F536D19C176FB002692E6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
 		E72F537119C1C081002692E6 /* GHC.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E72F536F19C178D9002692E6 /* GHC.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E72F538D19C28A8D002692E6 /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E72F538C19C28A8D002692E6 /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
@@ -182,6 +183,16 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E72F538B19C28A76002692E6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				E72F538D19C28A8D002692E6 /* RelocateGHC in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -211,6 +222,7 @@
 		E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libHSrts_thr-ghc7.8.0.20140317.dylib"; path = "../../ghc-7.8/rts/dist/build/libHSrts_thr-ghc7.8.0.20140317.dylib"; sourceTree = "<group>"; };
 		E7258C57198A2263004789CF /* Playground.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Playground.xib; sourceTree = "<group>"; };
 		E72F536F19C178D9002692E6 /* GHC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; name = GHC.bundle; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/GHC.bundle"; sourceTree = "<absolute>"; };
+		E72F538C19C28A8D002692E6 /* RelocateGHC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = RelocateGHC; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/RelocateGHC"; sourceTree = "<absolute>"; };
 		E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudcelerateKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E743140019A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E743140119A46F70003A3934 /* CloudcelerateKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudcelerateKit.h; sourceTree = "<group>"; };
@@ -413,6 +425,7 @@
 		E7A13AF81888006C00D79087 = {
 			isa = PBXGroup;
 			children = (
+				E72F538C19C28A8D002692E6 /* RelocateGHC */,
 				E72F536F19C178D9002692E6 /* GHC.bundle */,
 				E7A13B0A1888006C00D79087 /* HaskellForMac */,
 				E70A66B0197CC341006D3514 /* GHCKit */,
@@ -679,6 +692,7 @@
 				E7A13AFE1888006C00D79087 /* Frameworks */,
 				E7A13AFF1888006C00D79087 /* Resources */,
 				E70A66CB197CC341006D3514 /* Embed Frameworks */,
+				E72F538B19C28A76002692E6 /* CopyFiles */,
 			);
 			buildRules = (
 			);

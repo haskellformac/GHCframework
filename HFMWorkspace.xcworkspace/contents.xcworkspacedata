@@ -7,4 +7,7 @@
    <FileRef
       location = "group:GHC/GHC.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:HaskellForMac/../RelocateGHC/RelocateGHC.xcodeproj">
+   </FileRef>
 </Workspace>
