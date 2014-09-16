@@ -91,13 +91,19 @@ extern NSString *const kExtraSourceGroupID;
 #pragma mark -
 #pragma mark Queries
 
+/// The index of the current item in the children array of its parent.
+///
+/// `NSNotFound` if it has no parent.
+///
+- (NSUInteger)index;
+
 /// Returns an array containing all child items of the current item.
-//
+///
 - (NSArray/*<HFMProjectModelItem>*/ *)children;
 
 /// Returns the item's file name relative to the document root, or the empty string if the item is not associated with
 /// a file.
-//
+///
 - (NSString *)fileName;
 
 /// Returns an updated file wrapper in case this item is 'dirty'; otherwise, returns 'nil'. If the item is dirty, the
@@ -105,7 +111,7 @@ extern NSString *const kExtraSourceGroupID;
 ///
 /// After this method was invoked, the item is not dirty (until the next change) — i.e., discarding the returned
 /// file wrapper will discard any changes since the last save.
-//
+///
 - (NSFileWrapper *)getUpdatedFileWrapper;
 
 
@@ -115,7 +121,19 @@ extern NSString *const kExtraSourceGroupID;
 /// Add a child item associated with the given file wrapper.
 ///
 /// The current item must be represented by a directory.
-//
+///
 - (void)addChild:(HFMProjectViewModelItem *)child fileWrapper:(NSFileWrapper *)childFileWrapper;
+
+/// Move the current item to the trash and remove from the parent.
+///
+/// @Returns: Was the operation sucessful?
+///
+- (BOOL)moveToTrash;
+
+/// Remove the current given item from the children of the current item.
+///
+/// @Returns: Was the operation sucessful?
+///
+- (BOOL)removeChild:(HFMProjectViewModelItem *)childItem;
 
 @end

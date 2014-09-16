@@ -171,7 +171,7 @@
         </window>
         <menu id="Eat-Zy-XcC" userLabel="Outline View Context Menu">
             <items>
-                <menuItem title="New Haskell file..." id="riO-uK-qYK" userLabel="Add Haskell file...">
+                <menuItem title="New Haskell file" id="riO-uK-qYK" userLabel="Add Haskell file">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="newFile:" target="-2" id="AhZ-Hf-EEj"/>

@@ -186,7 +186,34 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (IBAction)delete:(NSMenuItem *)sender
 {
-  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+#pragma unused(sender)
+
+  NSInteger row = [self.outlineView clickedRow];
+  if (row < 0) return;    // didn't click on an item
+
+  HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:row];
+  NSUInteger               itemIndex = [item index];
+
+    // Set up confirmation alert.
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.informativeText = [NSString stringWithFormat:@"Do you really want to move the file '%@' to the Trash?",
+                           item.identifier];
+  [alert addButtonWithTitle:@"Move to Trash"];
+  [alert addButtonWithTitle:@"Cancel"];
+
+  if ([alert runModal] == NSAlertFirstButtonReturn) {   // Move to Trash
+
+      // Remove the file and if successful...
+    if ([item moveToTrash]) {
+
+        // Update the UI.
+      [self.outlineView beginUpdates];
+      [self.outlineView removeItemsAtIndexes:[NSIndexSet indexSetWithIndex:itemIndex]
+                                    inParent:[self.outlineView parentForItem:item]
+                               withAnimation:NSTableViewAnimationSlideUp];
+      [self.outlineView endUpdates];
+    }
+  }
 }
 
 

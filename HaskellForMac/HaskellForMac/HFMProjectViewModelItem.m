@@ -159,6 +159,13 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return self.dirtyFileWrapper != nil;
 }
 
+- (NSUInteger)index
+{
+  if (!self.parent) return NSNotFound;
+
+  return [self.parent.children indexOfObject:self];
+}
+
 - (NSArray/*<HFMProjectModelItem>*/ *)children
 {
   if (!_theChildren) {
@@ -371,6 +378,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   self.string = [attributedString string];
 }
 
+
+#pragma mark -
+#pragma mark Edits
+
   // NB: We could avoid passing in the child item if we could easily compute it from the file wrapper. This is not
   //     convenient currently as the children computation computes all children. MAYBE TODO: refactor to be able to
   //     do this for individual child items.
@@ -388,6 +399,41 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   }
   [self children];    // Make sure '_theChildren' is initialised
   [_theChildren addObject:child];
+}
+
+- (BOOL)moveToTrash
+{
+
+    // FIXME: Move the file/folder on the file system.
+
+    // Remove this item from the hierarchy.
+  return [self.parent removeChild:self];
+}
+
+- (BOOL)removeChild:(HFMProjectViewModelItem *)childItem
+{
+    // FIXME: save everything before deleting!! (so that the files moving to Trash are up to date)
+
+  if (childItem.dirty) {
+    NSLog(@"%s: the child item '%@' was still dirty after save", __func__, childItem.identifier);
+    return NO;
+  }
+  if (self.dirty) {
+    NSLog(@"%s: the item '%@' was still dirty after save", __func__, self);
+    return NO;
+  }
+
+  @synchronized(self) {
+
+    [self.fileWrapper removeFileWrapper:childItem.fileWrapper];
+    self.dirtyFileWrapper = self.fileWrapper;
+      // NB: We still need to assign to 'self.dirtyFileWrapper'; otherwise, the new dirty status is not represented properly.
+
+  }
+  if (![self.children containsObject:childItem]) return NO;
+  [_theChildren removeObject:childItem];
+
+  return YES;
 }
 
 
