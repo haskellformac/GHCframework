@@ -28,7 +28,7 @@ func ?!<A>(v: A?, msg: String) -> A {
 // Replace all occurences of one string in a file by a new string.
 //
 func replaceStringWithString(inFile: String, string oldString: String, withString newString: String) {
-  String.stringWithContentsOfFile(inFile)?.stringByReplacingOccurrencesOfString(oldString, withString: newString)
+  String(contentsOfFile: inFile)?.stringByReplacingOccurrencesOfString(oldString, withString: newString)
     .writeToFile(inFile, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
                          // ^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
 }
@@ -43,7 +43,7 @@ let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
 let package_db  = location.stringByAppendingPathComponent(relativeLib).stringByAppendingPathComponent("package.conf.d")
 
 let ghcPath     = location.stringByAppendingPathComponent(relativeBin).stringByAppendingPathComponent("ghc")
-let ghcScript   = String.stringWithContentsOfFile(ghcPath)
+let ghcScript   = String(contentsOfFile: ghcPath)
                   ?! ("RelocateGHC: fatal error: could not load GHC launch script")
 
 let startOfLoc  = ghcScript.rangeOfString("topdir=\"")?.endIndex

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6206.8" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6246" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6206.8"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6246"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMWindowController">
@@ -97,6 +98,9 @@
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
+                                            <connections>
+                                                <outlet property="menu" destination="Eat-Zy-XcC" id="UVG-Lb-N9F"/>
+                                            </connections>
                                         </outlineView>
                                     </subviews>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -165,6 +169,23 @@
             </connections>
             <point key="canvasLocation" x="252.5" y="54.5"/>
         </window>
+        <menu id="Eat-Zy-XcC" userLabel="Outline View Context Menu">
+            <items>
+                <menuItem title="New Haskell file..." id="riO-uK-qYK" userLabel="Add Haskell file...">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="newFile:" target="-2" id="AhZ-Hf-EEj"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="Irr-x1-XlJ"/>
+                <menuItem title="Delete" id="qj1-TR-MYG">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="delete:" target="-2" id="TaM-Tm-VOG"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
     </objects>
     <resources>
         <image name="NSMultipleDocuments" width="32" height="32"/>

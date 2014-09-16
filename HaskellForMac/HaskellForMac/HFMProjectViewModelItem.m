@@ -46,9 +46,9 @@
 
 /// Outline view group ids
 //
-NSString *const kPackageGroupID     = @"Package";
+NSString *const kPackageGroupID     = @"Project";
 NSString *const kDataGroupID        = @"Data";
-NSString *const kExecutableGroupID  = @"Executables";
+NSString *const kExecutableGroupID  = @"Programs";
 NSString *const kExtraSourceGroupID = @"Extra sources";
 
 

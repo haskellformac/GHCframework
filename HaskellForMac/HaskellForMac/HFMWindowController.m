@@ -177,6 +177,42 @@ NSString *const kCabalCellID = @"cabalCellID";
 }
 
 
+#pragma mark NSOutlineView context menu target-action methods
+
+- (IBAction)newFile:(NSMenuItem *)menuItem
+{
+  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+}
+
+- (IBAction)delete:(NSMenuItem *)sender
+{
+  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+}
+
+
+#pragma mark NSUserInterfaceValidations protocol methods
+
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)interfaceItem
+{
+  SEL action = [interfaceItem action];
+
+  if (action == @selector(newFile:)) {
+
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable ||
+           (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
+
+  } else if (action == @selector(delete:)) {
+
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
+
+  }
+
+  return NO;
+}
+
+
 #pragma mark -
 #pragma mark NSSplitViewDelegate protocol methods
 

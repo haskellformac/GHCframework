@@ -11,7 +11,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate>
+@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate, NSUserInterfaceValidations>
 
 
 #pragma mark -
