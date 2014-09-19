@@ -196,12 +196,21 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     // Set up confirmation alert.
   NSAlert *alert = [[NSAlert alloc] init];
-  alert.informativeText = [NSString stringWithFormat:@"Do you really want to move the file '%@' to the Trash?",
-                           item.identifier];
+  alert.messageText = [NSString stringWithFormat:@"Do you really want to move the %@ '%@' to the Trash?",
+                       (item.tag == PVMItemTagFile) ? @"file" : @"folder",
+                       item.identifier];
   [alert addButtonWithTitle:@"Move to Trash"];
   [alert addButtonWithTitle:@"Cancel"];
 
   if ([alert runModal] == NSAlertFirstButtonReturn) {   // Move to Trash
+
+      // If we are deleting the currently selected entry, we need to remove it from the context.
+    if ([self.outlineView selectedRow] == row) {
+
+      [self.contextController deselectCurrentItem];
+      [self configureEditor:nil playground:nil];
+
+    }
 
       // Remove the file and if successful...
     if ([item moveToTrash]) {
@@ -212,6 +221,9 @@ NSString *const kCabalCellID = @"cabalCellID";
                                     inParent:[self.outlineView parentForItem:item]
                                withAnimation:NSTableViewAnimationSlideUp];
       [self.outlineView endUpdates];
+
+        // Mark document as edited.
+      [self.document updateChangeCount:NSChangeDone];
     }
   }
 }

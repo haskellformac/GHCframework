@@ -34,6 +34,7 @@ void replaceFileWrapper(NSFileWrapper *projectFileWrapper,
 
 NSDictionary *stringsToDictTree(NSArray      *strings);
 NSArray      *dictTreeToStrings(NSDictionary *dicts);
+NSDictionary *itemsToDictTree(NSArray *items, BOOL asSourceModules);
 
 
 @implementation HFMProjectViewModel
@@ -394,57 +395,65 @@ static NSString *haskellFileExtension = @"hs";
 {
 #pragma unused(outError)
 
-    // Flush any changes in the Cabal file
   HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
-  HFMProjectViewModelItem *cabalFileItem    = packageGroupItem.children[0];
-  cabalFileItem.string = [self.package string];
-   // FIXME: currently we always overwrite the Cabal file, which is bad
-   //   we should rather only do the above 'updateItemWithData:' IFF any data in the Cabal file changed
+  NSArray                 *otherGroupItems  = [self.groupItems subarrayWithRange:(NSRange){PVMItemGroupIndexPackage + 1,
+                                                                                           PVM_ITEM_GROUP_INDEX_LAST}];
 
-  NSFileWrapper *projectFileWrapper = self.fileWrapper;
-  updateFileWrappers(projectFileWrapper, self.groupItems);
+    // First, we must flush all file wrapper (except the Cabal file one).
+  updateFileWrappers(self.fileWrapper, otherGroupItems);
 
-  return projectFileWrapper;
+    // Then, we recreate the file-dependent project properties from the model view items — this will change data in the
+    // Cabal file if any files were added, deleted, or their names edited
+  [self updateDataGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexData]).children];
+  [self updateExecutableGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexExecutable]).children];
+  [self updateExtraSourceGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexExtraSource]).children];
+
+    // Next, we flush any changes to the Cabal file into its string representation and write that through the file
+    // wrapper.
+  HFMProjectViewModelItem *cabalFileItem  = packageGroupItem.children[0];
+  NSString                *newCabalString = [self.package string];
+  if (![cabalFileItem.string isEqualToString:newCabalString])        // Better than updating in vain, but a dirty...
+    cabalFileItem.string = newCabalString;                          // ...flag on the cabal fields would be even better.
+  updateFileWrapper(self.fileWrapper, packageGroupItem);
+
+  return self.fileWrapper;
 }
 
-void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSArray *items)
+- (void)updateDataGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
 {
-  for (HFMProjectViewModelItem *item in items)
-    updateFileWrapper(projectFileWrapper, item);
-}
+  if (items.count == 1 & ((HFMProjectViewModelItem*)[items firstObject]).tag == PVMItemTagFileGroup) {     // we have got a dataDir
 
-void updateFileWrapper(NSFileWrapper *projectFileWrapper, HFMProjectViewModelItem *item)
-{
-  NSFileWrapper *oldFileWrapper     = item.fileWrapper;
-  NSFileWrapper *updatedFileWrapper = item.getUpdatedFileWrapper;
-
-    // FIXME: FOR THE MOMENT, we assume folders and groups cannot be updated (i.e., updated => is a file item).
-  if (updatedFileWrapper)
-    replaceFileWrapper(projectFileWrapper, item.fileName, oldFileWrapper, updatedFileWrapper);
-  else
-    updateFileWrappers(projectFileWrapper, item.children);
-}
-
-void replaceFileWrapper(NSFileWrapper *currentFileWrapper,
-                        NSString      *fname,
-                        NSFileWrapper *oldFileWrapper,
-                        NSFileWrapper *updatedFileWrapper)
-{
-    // Find the directory file wrapper corresponding to 'fname'.
-  for (NSString *component in [[fname stringByDeletingLastPathComponent] pathComponents]) {
-
-    if (!currentFileWrapper || ![currentFileWrapper isDirectory]) break;
-    currentFileWrapper = [currentFileWrapper fileWrappers][component];
+    HFMProjectViewModelItem *dataDirItem = (HFMProjectViewModelItem*)[items firstObject];
+    self.dataDir = dataDirItem.identifier;
+    items        = dataDirItem.children;
 
   }
-  if (currentFileWrapper && [currentFileWrapper isDirectory]) {
 
-      // Relace the old by the update wrapper.
-    [currentFileWrapper removeFileWrapper:oldFileWrapper];
-    [currentFileWrapper addFileWrapper:updatedFileWrapper];
+  self.dataFiles = itemsToDictTree(items, NO);
+}
 
-  } else
-    NSLog(@"%s: couldn't find file wrapper for directory named %@", __func__, fname);
+- (void)updateExecutableGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
+{
+    // For the moment, we have got a single executable.
+  if (items.count != 1 || ((HFMProjectViewModelItem*)[items firstObject]).tag != PVMItemTagExecutable)
+    return;
+  else
+    items = ((HFMProjectViewModelItem*)[items firstObject]).children;
+
+  if (items.count == 1 & ((HFMProjectViewModelItem*)[items firstObject]).tag == PVMItemTagFileGroup) {     // we have got a sourceDir
+
+    HFMProjectViewModelItem *sourceDirItem = (HFMProjectViewModelItem*)[items firstObject];
+    self.sourceDir = sourceDirItem.identifier;
+    items          = sourceDirItem.children;
+
+  }
+
+  self.modules = itemsToDictTree(items, YES);
+}
+
+- (void)updateExtraSourceGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
+{
+  self.extraSrcFiles = itemsToDictTree(items, NO);
 }
 
 
@@ -486,6 +495,26 @@ NSArray *dictTreeToStrings(NSDictionary *dicts)
 
   }
   return [NSArray arrayWithArray:strings];    // freeze
+}
+
+NSDictionary *itemsToDictTree(NSArray *items, BOOL asSourceModules)
+{
+  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+  for (HFMProjectViewModelItem *item in items)
+  {
+    NSDictionary *children = itemsToDictTree(item.children, asSourceModules);
+    NSString     *name     = (asSourceModules && item.tag != PVMItemTagMainFile)
+                             ? [item.identifier stringByDeletingPathExtension]      // remove ".hs" for sources
+                             : item.identifier;
+
+      // Empty folders must be pruned as they cannot be represented in the Cabal file. We can't do that after the
+      // conversion to dictionary trees as we have lost the information about which empty dictionaries represent files
+      // and which ones empty folders.
+    if (!item.isEmptyFolder)
+      [dict setValue:children forKey:name];
+  }
+  return [NSDictionary dictionaryWithDictionary:dict];    // freeze
 }
 
 @end

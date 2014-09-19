@@ -9,6 +9,12 @@
 //  object encapsulted by the HFMCBL target. The view model is mutable to conform to KVC, whereas the Haskell-side
 //  model is immutable. This class provides the adaptation.
 //
+//  The various data elements stored in a cabal file are available through project properties defined below. All
+//  file-related properties are also represented in the forest rooted in the property `groupItems`. More specifically,
+//  the forest rooted in `groupItems` is lazily initialised from those file-related project properties after a project
+//  has been loaded. When saving, all dirty items of the forest of `HFMProjectViewModelItem`s update the corresponding
+//  project properties before generating a new Cabal file that is being made persistent.
+//
 //  NB: This view model owns all the objects representing items for the outline view. The outline view by itself will
 //      *not* keep them alive.
 
@@ -20,11 +26,13 @@
 //  IMPORTANT: The order here must match that of the initialisation of 'groupItems'.
 //
 typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
-  PVMItemGroupIndexPackage = 0,         // Package group
+  PVMItemGroupIndexPackage = 0,         // Package group (this must be the *first* index)
   PVMItemGroupIndexData,                // Data group
   PVMItemGroupIndexExecutable,          // Executable group
   PVMItemGroupIndexExtraSource          // Extra source group
 };
+#define PVM_ITEM_GROUP_INDEX_LAST   PVMItemGroupIndexExtraSource
+
 
 @interface HFMProjectViewModel : NSObject
 

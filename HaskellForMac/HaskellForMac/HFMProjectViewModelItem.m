@@ -14,20 +14,20 @@
 /// The project view model that this item belongs to.
 ///
 /// Weak reference as this item is owned by the model.
-//
+///
 @property (weak, readonly) HFMProjectViewModel *model;
 
 /// Points to the parent item; 'nil' for group items.
 ///
 /// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of folder items in the
 /// outline view.
-//
+///
 @property (weak, readonly) HFMProjectViewModelItem *parent;
 
 /// Mutable set of children of an item.
 ///
 /// This property is initialised to 'nil' and computed on demand.
-//
+///
 @property (nonatomic) NSMutableArray/*<HFMProjectViewModelItem>*/ *theChildren;
 
 /// If the associated data has been edited and not yet saved, this file wrapper contains the edited data and ought to be
@@ -37,9 +37,13 @@
 /// goes into 'fileWrapper' and 'dirtyFileWrapper' is reset to 'nil'.
 ///
 /// Access must be wrapped in '@synchronized(self){..}'.
-//
+///
+/// NB: This property is only relevant for non-directory file wrappers (as they are immutable). In contrast, directory
+///     file wrappers are always modified in place. (In other words, dirty here refers to the item being dirty wrt. to
+///     keeping the file wrapper tree in sync — it makes no statement about whether any data needs to be saved to the
+///     file system. We leave that to the file wrappers to figure out.
+///
 @property NSFileWrapper *dirtyFileWrapper;   // maybe nil
-
 
 @end
 
@@ -157,6 +161,15 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 - (BOOL)isDirty;
 {
   return self.dirtyFileWrapper != nil;
+}
+
+- (BOOL)isEmptyFolder
+{
+  if (self.tag != PVMItemTagFolder && self.tag != PVMItemTagFileGroup) return NO;
+  for (HFMProjectViewModelItem *child in self.children)
+    if (!child.isEmptyFolder) return NO;
+  
+  return YES;
 }
 
 - (NSUInteger)index
@@ -351,7 +364,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 {
   NSData        *data              = [string dataUsingEncoding:NSUTF8StringEncoding];
   NSFileWrapper *newFileWrapper    = [[NSFileWrapper alloc] initRegularFileWithContents:data];
-  NSString      *preferredFilename = self.fileWrapper.preferredFilename;
+  NSString      *preferredFilename = (self.fileWrapper) ? self.fileWrapper.preferredFilename : self.identifier;
 
   if (!preferredFilename) {
     NSLog(@"%s: cannot determine filename", __func__);
@@ -362,10 +375,6 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   @synchronized(self) {
     self.dirtyFileWrapper = newFileWrapper;
   }
-
-    // FIXME: TEMPORARY HACK
-  if (self.loadString)
-    self.loadString(string);  
 }
 
 - (NSAttributedString *)attributedString
@@ -381,6 +390,14 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 #pragma mark -
 #pragma mark Edits
+
+- (void)touchFileWrapper
+{
+  if (!self.fileWrapper) {
+    self.dirtyFileWrapper = [[NSFileWrapper alloc] initRegularFileWithContents:[NSData data]];
+    self.dirtyFileWrapper.preferredFilename = self.identifier;
+  }
+}
 
   // NB: We could avoid passing in the child item if we could easily compute it from the file wrapper. This is not
   //     convenient currently as the children computation computes all children. MAYBE TODO: refactor to be able to
@@ -403,8 +420,16 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 - (BOOL)moveToTrash
 {
+  if (self.tag == PVMItemTagMainFile) return NO;      // We cannot delete the Main file
 
-    // FIXME: Move the file/folder on the file system.
+  HFMProjectViewModelItem *mainItem = [self containedMainFile];
+  if (mainItem) {
+      // FIXME: We need to move the main file to be our sibling. Then, delete as usual. (Issue #164)
+    NSLog(@"Cannot delete folders containing the main file yet (Issue #164)");
+    return NO;
+  }
+
+    // FIXME: Move the file/folder into Trash on the file system.
 
     // Remove this item from the hierarchy.
   return [self.parent removeChild:self];
@@ -414,15 +439,16 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 {
     // FIXME: save everything before deleting!! (so that the files moving to Trash are up to date)
 
-  if (childItem.dirty) {
+  if (childItem.dirtyFileWrapper != nil) {
     NSLog(@"%s: the child item '%@' was still dirty after save", __func__, childItem.identifier);
     return NO;
   }
-  if (self.dirty) {
-    NSLog(@"%s: the item '%@' was still dirty after save", __func__, self);
-    return NO;
-  }
 
+    // Remove the model view item.
+  if (![self.children containsObject:childItem]) return NO;
+  [_theChildren removeObject:childItem];
+
+    // Remove the matching file wrapper.
   @synchronized(self) {
 
     [self.fileWrapper removeFileWrapper:childItem.fileWrapper];
@@ -430,10 +456,86 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
       // NB: We still need to assign to 'self.dirtyFileWrapper'; otherwise, the new dirty status is not represented properly.
 
   }
-  if (![self.children containsObject:childItem]) return NO;
-  [_theChildren removeObject:childItem];
 
   return YES;
+}
+
+
+#pragma mark -
+#pragma mark File wrapper update
+
+void updateFileWrappers(NSFileWrapper *parentFileWrapper, NSArray *items)
+{
+  for (HFMProjectViewModelItem *item in items)
+    updateFileWrapper(parentFileWrapper, item);
+}
+
+void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem *item)
+{
+  switch (item.tag) {
+    case PVMItemTagGroup:
+    case PVMItemTagPackage:
+    case PVMItemTagExecutable:
+      updateFileWrappers(parentFileWrapper, item.children);
+      break;
+
+    case PVMItemTagFileGroup: {
+      NSFileWrapper *itemFileWrapper = parentFileWrapper;
+      for (NSString *component in [item.fileName pathComponents]) {
+
+        itemFileWrapper = itemFileWrapper.fileWrappers[component];
+        if (!itemFileWrapper) {
+          NSLog(@"%s: missing file wrapper in group '%@'", __func__, item.fileName);
+        }
+        if (![itemFileWrapper isDirectory]) {
+          NSLog(@"%s: file group item '%@', but no directory wrapper '%@'", __func__, item.fileName, component);
+          break;
+        }
+
+      }
+
+      updateFileWrappers(itemFileWrapper, item.children);
+      break;
+    }
+      
+    case PVMItemTagFolder: {
+      NSFileWrapper *itemFileWrapper = parentFileWrapper.fileWrappers[[item.fileName lastPathComponent]];
+      if (!itemFileWrapper) {
+        NSLog(@"%s: missing file wrapper for '%@'", __func__, item.fileName);
+      }
+      if (![itemFileWrapper isDirectory]) {
+        NSLog(@"%s: folder item '%@', but no directory wrapper '%@'", __func__, item.fileName, parentFileWrapper.filename);
+        break;
+      }
+
+      updateFileWrappers(itemFileWrapper, item.children);
+      break;
+    }
+
+    case PVMItemTagFile:
+    case PVMItemTagMainFile: {
+      NSFileWrapper *oldFileWrapper     = item.fileWrapper;     // will change on accessing 'getUpdatedFileWrapper'
+      NSFileWrapper *updatedFileWrapper = item.getUpdatedFileWrapper;
+      if (updatedFileWrapper && parentFileWrapper && [parentFileWrapper isDirectory]) {
+
+        if (![updatedFileWrapper isRegularFile]) {
+          NSLog(@"%s: file item '%@', but directory wrapper '%@'", __func__, item.fileName, parentFileWrapper.filename);
+          break;
+        }
+
+          // Relace the old by the updated wrapper. (The old one may not actually exist and we don't save empty files
+          // created by touching.)
+        if (!oldFileWrapper && [updatedFileWrapper regularFileContents].length == 0) break;
+        if (oldFileWrapper) [parentFileWrapper removeFileWrapper:oldFileWrapper];
+        [parentFileWrapper addFileWrapper:updatedFileWrapper];
+      }
+      break;
+    }
+
+    default:
+      NSLog(@"%s: unknown item", __func__);
+      break;
+  }
 }
 
 
@@ -442,7 +544,8 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 // Given the identifiers of the current item's children, compute its child items.
 //
-- (NSMutableArray *)childrenFromDictionary:(NSDictionary *)dict asSourceModules:(BOOL)processingSourceModules
+- (NSMutableArray/*<HFMProjectViewModelItem>*/ *)childrenFromDictionary:(NSDictionary *)dict
+                                                        asSourceModules:(BOOL)processingSourceModules
 {
   NSMutableArray *children             = [NSMutableArray array];
   NSString       *haskellFileExtension = [HFMProjectViewModel haskellFileExtension];
@@ -501,6 +604,21 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
   } else
     return dict;
+}
+
+// Return the item of the main module if it is directly or indirectly contained in the children.
+//
+- (HFMProjectViewModelItem *)containedMainFile
+{
+  for (HFMProjectViewModelItem *child in self.children) {
+
+    if (child.tag == PVMItemTagMainFile) return child;
+
+    HFMProjectViewModelItem *main = [child containedMainFile];
+    if (main) return main;
+
+  }
+  return nil;     // not found
 }
 
 @end

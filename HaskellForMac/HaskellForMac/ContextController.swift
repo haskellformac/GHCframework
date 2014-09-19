@@ -79,24 +79,22 @@ class ContextController : NSObject {
                   editor:         AutoreleasingUnsafeMutablePointer<NSViewController>,
                   playground:     AutoreleasingUnsafeMutablePointer<PlaygroundController>)
   {
-      // Purge the previous item association.
-    if let oldItem = self.item {
-      oldItem.loadString = { _ in }     // Remove any old module loading association
-    }
     self.item   = item
     self.config = .NoEditor
 
       // Get the filename associated with the new item.
     let fileName = item.fileName()
     if fileName == nil { return }
-    if !item.fileWrapper.regularFile { return }
+    if item.fileWrapper == nil {
+      item.touchFileWrapper()
+    } else if !item.fileWrapper.regularFile { return }
 
     let fileURL       = project.fileURL.URLByAppendingPathComponent(fileName)
     let fileExtension = fileName.pathExtension
 
-      // Check that the file is still there and force reading its contents. (We'll need it in a sec.)
+      // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
     var error: NSError?
-    if !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
+    if !item.dirty && !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
       NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
         error == nil ? "unknown reason" : error!)
       return
@@ -135,9 +133,6 @@ class ContextController : NSObject {
           config            = .HaskellEditor(editorController, playgroundController)
           playground.memory = playgroundController
 
-            // Register with the model view item that represents the Haskell file providing the new context.
-          item.loadString = loadContextModule
-
             // Initialise the issues bag.
           issues = IssuesForFile(file: fileURL.path!, issues: [:])
 
@@ -154,11 +149,20 @@ class ContextController : NSObject {
     }
   }
 
+  /// Remove the current context.
+  ///
+  func deselectCurrentItem() {
+    self.item   = nil
+    self.config = .NoEditor
+  }
+
 
   // MARK: -
   // MARK: Module management
 
-  private func loadContextModule(moduleText: String!) {
+  /// Load the module determined by the current playground, along with its playground.
+  ///
+  func loadContextModule() {
 
     switch config {
     case .HaskellEditor(let editor, let playground):
@@ -171,7 +175,7 @@ class ContextController : NSObject {
       if let item = self.item {
         // FIXME: We need to add getting the filename as a method
         let fullFilename = project.fileURL.path?.stringByAppendingPathComponent(item.fileName())
-        if playground.loadContextModuleIntoPlayground(moduleText, file: fullFilename!) {
+        if playground.loadContextModuleIntoPlayground(editor.textView.string, file: fullFilename!) {
           playground.execute()
         }
       }
@@ -210,16 +214,24 @@ class ContextController : NSObject {
 
 extension ContextController {
 
+  // Make sure the all context is being committed, and load the context in case we are editing a Haskell module.
+  //
   override func commitEditing() -> Bool {
     switch config {
+
     case .NoEditor:
       break
+
     case .PackageHeaderEditor(let headerEditor):
       return headerEditor.commitEditing()
+
     case .TextEditor(let textEditor):
       return textEditor.commitEditing()
+
     case .HaskellEditor(let textEditor, let playground):
-      return textEditor.commitEditing() && playground.commitEditing()
+      let committed = textEditor.commitEditing() && playground.commitEditing()
+      loadContextModule()
+      return committed
     }
     return true
   }

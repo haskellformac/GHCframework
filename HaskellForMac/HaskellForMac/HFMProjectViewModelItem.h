@@ -36,11 +36,11 @@ extern NSString *const kExtraSourceGroupID;
 @interface HFMProjectViewModelItem : NSObject
 
 /// Determines which flavour of project view model item this is.
-//
+///
 @property (readonly) PVMItemTag tag;
 
 /// Identifier that is used to display the item.
-//
+///
 @property (nonatomic) NSString *identifier;
 
 /// *Optional* file wrapper of the file object backing the item.
@@ -49,25 +49,21 @@ extern NSString *const kExtraSourceGroupID;
 ///
 /// The reference is weak as the file wrapper object is owned by either its parent directory wrapper or, if it is the
 /// document file wrapper, by the view model object.
-//
+///
 @property (nonatomic, readonly, weak) NSFileWrapper *fileWrapper;     // maybe nil
 
 /// Does this item have unsaved changes?
-//
-@property (readonly) BOOL dirty;
+///
+@property (readonly, getter=isDirty) BOOL dirty;
 
 /// The text contained in 'fileWrapper', if not 'dirty'; otherwise, the updated text. When this property is set, the
 /// item becomes dirty (and an updated file wrapper is transparently created, which may be accessed via
 /// 'getUpdatedFileWrapper').
 ///
 /// These properties are KVO compliant. Both properties refer to the same data, but present it in different formats.
-//
+///
 @property NSString           *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
 @property NSAttributedString *attributedString;       // 'nil' unless 'fileWrapper' is wrapping a regular file
-
-
-// FIXME: TEMPORARY HACK
-@property (strong) void(^loadString)(NSString *);
 
 
 #pragma mark -
@@ -90,6 +86,10 @@ extern NSString *const kExtraSourceGroupID;
 
 #pragma mark -
 #pragma mark Queries
+
+/// Is the item representing an empty folder or a folder containing nothing but empty folders?
+///
+- (BOOL)isEmptyFolder;
 
 /// The index of the current item in the children array of its parent.
 ///
@@ -118,6 +118,13 @@ extern NSString *const kExtraSourceGroupID;
 #pragma mark -
 #pragma mark Edits
 
+/// Create a new empty file wrapper for regular file items whose file wrapper is `nil`. (These are files that are
+/// listed in the Cabal file, but do not exist in the file system.)
+///
+/// NB: If no text is entered, we do not create an empty file in the file system on save.
+///
+- (void)touchFileWrapper;
+
 /// Add a child item associated with the given file wrapper.
 ///
 /// The current item must be represented by a directory.
@@ -130,10 +137,22 @@ extern NSString *const kExtraSourceGroupID;
 ///
 - (BOOL)moveToTrash;
 
-/// Remove the current given item from the children of the current item.
+/// Remove the current given item from the list of children of the current item.
 ///
 /// @Returns: Was the operation sucessful?
 ///
 - (BOOL)removeChild:(HFMProjectViewModelItem *)childItem;
+
+
+#pragma mark -
+#pragma mark File wrapper update
+
+/// For any dirty view model item, replace the corresponding file wrapper by its updated file wrapper.
+///
+/// The provided file wrapper is that of the folder directly containing the given items. The functions recursively
+/// traverse the item trees.
+///
+void updateFileWrappers(NSFileWrapper *parentFileWrapper, NSArray *items);
+void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem *item);
 
 @end
