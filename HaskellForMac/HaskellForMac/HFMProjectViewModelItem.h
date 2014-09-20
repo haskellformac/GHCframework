@@ -17,7 +17,7 @@
 //
 typedef NS_ENUM(NSUInteger, PVMItemTag) {
   PVMItemTagGroup,            // Toplevel group in the outline view
-  PVMItemTagPackage,          // Identifies the Cabal packages itself
+  PVMItemTagPackage,          // Identifies the Cabal package itself
   PVMItemTagExecutable,       // Executable secion of the Cabal package
   PVMItemTagFileGroup,        // Logical collection of files (wildcard name or source directory or data directory)
   PVMItemTagFolder,           // File system directory
@@ -124,6 +124,10 @@ extern NSString *const kExtraSourceGroupID;
 /// NB: If no text is entered, we do not create an empty file in the file system on save.
 ///
 - (void)touchFileWrapper;
+
+/// Create a new item for a Haskell source file as a child of the current item at the given child index.
+///
+- (BOOL)newHaskellSourceAtIndex:(NSUInteger)index;
 
 /// Add a child item associated with the given file wrapper.
 ///

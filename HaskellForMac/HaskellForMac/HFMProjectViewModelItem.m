@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "Haskell-Swift.h"
 #import "HFMProjectViewModelItem.h"
 
 
@@ -19,7 +20,7 @@
 
 /// Points to the parent item; 'nil' for group items.
 ///
-/// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of folder items in the
+/// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of items in the
 /// outline view.
 ///
 @property (weak, readonly) HFMProjectViewModelItem *parent;
@@ -174,9 +175,10 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 - (NSUInteger)index
 {
-  if (!self.parent) return NSNotFound;
-
-  return [self.parent.children indexOfObject:self];
+  if (!self.parent)
+    return [self.model.groupItems indexOfObject:self];
+  else
+    return [self.parent.children indexOfObject:self];
 }
 
 - (NSArray/*<HFMProjectModelItem>*/ *)children
@@ -399,6 +401,28 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   }
 }
 
+- (BOOL)newHaskellSourceAtIndex:(NSUInteger)index
+{
+  if ((self.tag != PVMItemTagGroup || ![self.identifier isEqualToString:kExtraSourceGroupID])
+      && self.tag != PVMItemTagExecutable
+      && self.tag != PVMItemTagFileGroup
+      && self.tag != PVMItemTagFolder) return NO;
+  if (self.children.count < index) return NO;
+
+  NSMutableArray *usedNames = [NSMutableArray array];
+  for (HFMProjectViewModelItem *child in self.theChildren) {
+    [usedNames addObject:[child.identifier stringByDeletingPathExtension]];
+  }
+  NSString *identifier = [[Swift nextNameOf:@"NewSource" usedNames:usedNames]
+                          stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
+  HFMProjectViewModelItem *newChild = [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
+                                                                                  identifier:identifier
+                                                                                      parent:self
+                                                                                       model:self.model];
+  [self.theChildren insertObject:newChild atIndex:index];
+  return YES;
+}
+
   // NB: We could avoid passing in the child item if we could easily compute it from the file wrapper. This is not
   //     convenient currently as the children computation computes all children. MAYBE TODO: refactor to be able to
   //     do this for individual child items.
@@ -465,7 +489,6 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 {
   switch (item.tag) {
     case PVMItemTagGroup:
-    case PVMItemTagPackage:
     case PVMItemTagExecutable:
       updateFileWrappers(parentFileWrapper, item.children);
       break;
@@ -503,6 +526,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
       break;
     }
 
+    case PVMItemTagPackage:       // package items represent the cabal file
     case PVMItemTagFile:
     case PVMItemTagMainFile: {
       NSFileWrapper *oldFileWrapper     = item.fileWrapper;     // will change on accessing 'getUpdatedFileWrapper'

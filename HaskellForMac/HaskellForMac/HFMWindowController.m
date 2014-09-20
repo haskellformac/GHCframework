@@ -179,9 +179,29 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 #pragma mark NSOutlineView context menu target-action methods
 
-- (IBAction)newFile:(NSMenuItem *)menuItem
+- (IBAction)newFile:(NSMenuItem *)sender
 {
-  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+#pragma unused(sender)
+  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+  HFMProjectViewModelItem *parentItem  = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
+                                         ? [self.outlineView parentForItem:clickedItem]
+                                         : clickedItem;
+  NSUInteger               itemIndex   = (parentItem == clickedItem) ? 0 : [parentItem index] + 1;
+
+    // Add a new source file to the view model and if successful...
+  if ([parentItem newHaskellSourceAtIndex:itemIndex]) {
+
+      // Update the UI.
+    [self.outlineView beginUpdates];
+    [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:itemIndex]
+                                  inParent:parentItem
+                             withAnimation:NSTableViewAnimationSlideDown];
+    [self.outlineView endUpdates];
+
+      // Mark document as edited.
+    [self.document updateChangeCount:NSChangeDone];
+
+  }
 }
 
 - (IBAction)delete:(NSMenuItem *)sender
@@ -196,10 +216,12 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     // Set up confirmation alert.
   NSAlert *alert = [[NSAlert alloc] init];
-  alert.messageText = [NSString stringWithFormat:@"Do you really want to move the %@ '%@' to the Trash?",
+//  alert.messageText = [NSString stringWithFormat:@"Do you really want to move the %@ '%@' to the Trash?",
+  alert.messageText = [NSString stringWithFormat:@"Do you really want to remove the %@ '%@'?",
                        (item.tag == PVMItemTagFile) ? @"file" : @"folder",
                        item.identifier];
-  [alert addButtonWithTitle:@"Move to Trash"];
+//  [alert addButtonWithTitle:@"Move to Trash"];
+  [alert addButtonWithTitle:@"Remove"];
   [alert addButtonWithTitle:@"Cancel"];
 
   if ([alert runModal] == NSAlertFirstButtonReturn) {   // Move to Trash
@@ -240,8 +262,9 @@ NSString *const kCabalCellID = @"cabalCellID";
   if (action == @selector(newFile:)) {
 
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
-    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable ||
-           (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
+    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable
+           || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile
+           || (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
 
   } else if (action == @selector(delete:)) {
 
