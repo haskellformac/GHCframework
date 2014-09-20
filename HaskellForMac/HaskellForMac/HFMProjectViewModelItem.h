@@ -131,11 +131,11 @@ extern NSString *const kExtraSourceGroupID;
 ///
 - (void)addChild:(HFMProjectViewModelItem *)child fileWrapper:(NSFileWrapper *)childFileWrapper;
 
-/// Move the current item to the trash and remove from the parent.
+/// Move the current item from the view model and the file wrapper structure (deleteing it in the next save).
 ///
 /// @Returns: Was the operation sucessful?
 ///
-- (BOOL)moveToTrash;
+- (BOOL)remove;
 
 /// Remove the current given item from the list of children of the current item.
 ///

@@ -212,8 +212,10 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     }
 
-      // Remove the file and if successful...
-    if ([item moveToTrash]) {
+      // Remove the file from the view model and if successful...
+    if ([item remove]) {
+
+        // FIXME: move to trash (Issue #166)
 
         // Update the UI.
       [self.outlineView beginUpdates];

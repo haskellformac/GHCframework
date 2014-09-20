@@ -167,7 +167,7 @@ static NSString *haskellFileExtension = @"hs";
     // Create main Haskell file
   [self.fileWrapper addRegularFileWithContents:[NSData data] preferredFilename:mainName];
 
-    // Write new project out and recreate the group items.
+    // Write new project out and create the group items.
   NSError *error;
   if (![self.fileWrapper writeToURL:url
                             options:NSFileWrapperWritingWithNameUpdating

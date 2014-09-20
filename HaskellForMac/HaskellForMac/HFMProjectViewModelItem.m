@@ -418,7 +418,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   [_theChildren addObject:child];
 }
 
-- (BOOL)moveToTrash
+- (BOOL)remove
 {
   if (self.tag == PVMItemTagMainFile) return NO;      // We cannot delete the Main file
 
@@ -429,21 +429,12 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
     return NO;
   }
 
-    // FIXME: Move the file/folder into Trash on the file system.
-
     // Remove this item from the hierarchy.
   return [self.parent removeChild:self];
 }
 
 - (BOOL)removeChild:(HFMProjectViewModelItem *)childItem
 {
-    // FIXME: save everything before deleting!! (so that the files moving to Trash are up to date)
-
-  if (childItem.dirtyFileWrapper != nil) {
-    NSLog(@"%s: the child item '%@' was still dirty after save", __func__, childItem.identifier);
-    return NO;
-  }
-
     // Remove the model view item.
   if (![self.children containsObject:childItem]) return NO;
   [_theChildren removeObject:childItem];
