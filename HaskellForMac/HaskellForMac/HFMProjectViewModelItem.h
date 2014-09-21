@@ -101,10 +101,10 @@ extern NSString *const kExtraSourceGroupID;
 ///
 - (NSArray/*<HFMProjectModelItem>*/ *)children;
 
-/// Returns the item's file name relative to the document root, or the empty string if the item is not associated with
+/// Returns the item's file path relative to the document root, or the empty string if the item is not associated with
 /// a file.
 ///
-- (NSString *)fileName;
+- (NSString *)filePath;
 
 /// Returns an updated file wrapper in case this item is 'dirty'; otherwise, returns 'nil'. If the item is dirty, the
 /// 'fileWrapper' property will also be updated to refer to the updated wrapper.
@@ -141,11 +141,16 @@ extern NSString *const kExtraSourceGroupID;
 ///
 - (BOOL)remove;
 
-/// Remove the current given item from the list of children of the current item.
+/// Remove the current item from the list of children of the current item.
 ///
 /// @Returns: Was the operation sucessful?
 ///
 - (BOOL)removeChild:(HFMProjectViewModelItem *)childItem;
+
+/// Attempt to rename the current item with the given identifier. If the result is non-nil, the given identifier was
+/// rejected and the returned one used instead.
+///
+- (NSString*)renameTo:(NSString *)newIdentifier;
 
 
 #pragma mark -

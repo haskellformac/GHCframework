@@ -51,10 +51,10 @@
 
 /// Outline view group ids
 //
-NSString *const kPackageGroupID     = @"Project";
-NSString *const kDataGroupID        = @"Data";
+NSString *const kPackageGroupID     = @"Project information";
+NSString *const kDataGroupID        = @"Additional files";
 NSString *const kExecutableGroupID  = @"Programs";
-NSString *const kExtraSourceGroupID = @"Extra sources";
+NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 
 
 @implementation HFMProjectViewModelItem
@@ -97,11 +97,6 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
 
 #pragma mark -
 #pragma mark Setters and getters
-
-- (void)setIdentifier:(NSString *)identifier
-{
-  NSLog(@"%s: identifier = %@ : setting of project view model items NOT IMPLEMENTED YET", __func__, identifier);
-}
 
 - (NSFileWrapper *)fileWrapper
 {
@@ -300,7 +295,7 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return [NSArray arrayWithArray:_theChildren];     // freeze
 }
 
-- (NSString *)fileName
+- (NSString *)filePath
 {
   NSMutableArray          *path    = [NSMutableArray array];
   HFMProjectViewModelItem *current = self;
@@ -475,6 +470,17 @@ NSString *const kExtraSourceGroupID = @"Extra sources";
   return YES;
 }
 
+- (NSString*)renameTo:(NSString *)newIdentifier
+{
+  NSFileWrapper *parentFileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
+
+  self.fileWrapper.preferredFilename = newIdentifier;
+  NSString *actualIdentifier         = [parentFileWrapper keyForFileWrapper:self.fileWrapper];
+  self.identifier                    = actualIdentifier;
+
+  return ([newIdentifier isEqualToString:actualIdentifier] ? nil : actualIdentifier);
+}
+
 
 #pragma mark -
 #pragma mark File wrapper update
@@ -495,14 +501,14 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
     case PVMItemTagFileGroup: {
       NSFileWrapper *itemFileWrapper = parentFileWrapper;
-      for (NSString *component in [item.fileName pathComponents]) {
+      for (NSString *component in [item.filePath pathComponents]) {
 
         itemFileWrapper = itemFileWrapper.fileWrappers[component];
         if (!itemFileWrapper) {
-          NSLog(@"%s: missing file wrapper in group '%@'", __func__, item.fileName);
+          NSLog(@"%s: missing file wrapper in group '%@'", __func__, item.filePath);
         }
         if (![itemFileWrapper isDirectory]) {
-          NSLog(@"%s: file group item '%@', but no directory wrapper '%@'", __func__, item.fileName, component);
+          NSLog(@"%s: file group item '%@', but no directory wrapper '%@'", __func__, item.filePath, component);
           break;
         }
 
@@ -513,12 +519,12 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
     }
       
     case PVMItemTagFolder: {
-      NSFileWrapper *itemFileWrapper = parentFileWrapper.fileWrappers[[item.fileName lastPathComponent]];
+      NSFileWrapper *itemFileWrapper = parentFileWrapper.fileWrappers[[item.filePath lastPathComponent]];
       if (!itemFileWrapper) {
-        NSLog(@"%s: missing file wrapper for '%@'", __func__, item.fileName);
+        NSLog(@"%s: missing file wrapper for '%@'", __func__, item.filePath);
       }
       if (![itemFileWrapper isDirectory]) {
-        NSLog(@"%s: folder item '%@', but no directory wrapper '%@'", __func__, item.fileName, parentFileWrapper.filename);
+        NSLog(@"%s: folder item '%@', but no directory wrapper '%@'", __func__, item.filePath, parentFileWrapper.filename);
         break;
       }
 
@@ -534,7 +540,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
       if (updatedFileWrapper && parentFileWrapper && [parentFileWrapper isDirectory]) {
 
         if (![updatedFileWrapper isRegularFile]) {
-          NSLog(@"%s: file item '%@', but directory wrapper '%@'", __func__, item.fileName, parentFileWrapper.filename);
+          NSLog(@"%s: file item '%@', but directory wrapper '%@'", __func__, item.filePath, parentFileWrapper.filename);
           break;
         }
 

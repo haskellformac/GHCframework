@@ -11,8 +11,10 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate, NSSplitViewDelegate, NSUserInterfaceValidations>
-
+@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate,
+                                                     NSSplitViewDelegate,
+                                                     NSUserInterfaceValidations,
+                                                     NSTextFieldDelegate>
 
 #pragma mark -
 #pragma mark Notifications

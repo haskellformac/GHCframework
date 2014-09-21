@@ -83,11 +83,14 @@
                                                                 </imageView>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Cf-Jk-ZBw">
                                                                     <rect key="frame" x="18" y="-3" width="120" height="17"/>
-                                                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Cabal Cell" id="LNu-4Q-ikw">
+                                                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Cabal Cell" usesSingleLineMode="YES" id="LNu-4Q-ikw">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
+                                                                    <connections>
+                                                                        <outlet property="delegate" destination="-2" id="0wT-ha-btd"/>
+                                                                    </connections>
                                                                 </textField>
                                                             </subviews>
                                                             <connections>
@@ -99,6 +102,7 @@
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
+                                                <outlet property="delegate" destination="-2" id="oxn-z4-jI4"/>
                                                 <outlet property="menu" destination="Eat-Zy-XcC" id="UVG-Lb-N9F"/>
                                             </connections>
                                         </outlineView>

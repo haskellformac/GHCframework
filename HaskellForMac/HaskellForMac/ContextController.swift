@@ -83,14 +83,14 @@ class ContextController : NSObject {
     self.config = .NoEditor
 
       // Get the filename associated with the new item.
-    let fileName = item.fileName()
-    if fileName == nil { return }
+    let filePath = item.filePath()
+    if filePath == nil { return }
     if item.fileWrapper == nil {
       item.touchFileWrapper()
     } else if !item.fileWrapper.regularFile { return }
 
-    let fileURL       = project.fileURL.URLByAppendingPathComponent(fileName)
-    let fileExtension = fileName.pathExtension
+    let fileURL       = project.fileURL.URLByAppendingPathComponent(filePath)
+    let fileExtension = filePath.pathExtension
 
       // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
     var error: NSError?
@@ -173,8 +173,8 @@ class ContextController : NSObject {
 
         // Load the module.
       if let item = self.item {
-        // FIXME: We need to add getting the filename as a method
-        let fullFilename = project.fileURL.path?.stringByAppendingPathComponent(item.fileName())
+        // FIXME: We need to add getting the file path as a method
+        let fullFilename = project.fileURL.path?.stringByAppendingPathComponent(item.filePath())
         if playground.loadContextModuleIntoPlayground(editor.textView.string, file: fullFilename!) {
           playground.execute()
         }

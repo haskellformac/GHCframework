@@ -176,6 +176,14 @@ NSString *const kCabalCellID = @"cabalCellID";
   }
 }
 
+- (BOOL)outlineView:(NSOutlineView *)outlineView
+shouldEditTableColumn:(NSTableColumn *)tableColumn
+               item:(HFMProjectViewModelItem*)item
+{
+#pragma unused(outlineView, tableColumn)
+  return (item.tag == PVMItemTagFile);
+}
+
 
 #pragma mark NSOutlineView context menu target-action methods
 
@@ -283,6 +291,19 @@ NSString *const kCabalCellID = @"cabalCellID";
 /* DON'T constraint the size of component views with the delegate methods, as it doesn't work properly with
  * AutoLayout.
  */
+
+#pragma mark -
+#pragma mark NSTextFieldDelegate protocol methods
+
+- (void)controlTextDidEndEditing:(NSNotification *)notification
+{
+  NSTextView              *textField = [notification userInfo][@"NSFieldEditor"];
+  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView editedRow]];
+
+  NSString *finalName = [item renameTo:textField.textStorage.string];
+//  NSString *finalName = [item renameTo:textField.stringValue];
+//  if (finalName) textField.stringValue = finalName;
+}
 
 
 #pragma mark -
