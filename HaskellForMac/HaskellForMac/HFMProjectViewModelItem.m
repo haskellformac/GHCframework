@@ -474,11 +474,24 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 {
   NSFileWrapper *parentFileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
 
-  self.fileWrapper.preferredFilename = newIdentifier;
-  NSString *actualIdentifier         = [parentFileWrapper keyForFileWrapper:self.fileWrapper];
-  self.identifier                    = actualIdentifier;
+    // Make sure the new identifier is unique.
+  NSMutableArray *usedNames = [NSMutableArray array];
+  for (HFMProjectViewModelItem *child in self.parent.theChildren)
+    [usedNames addObject:[child.identifier stringByDeletingPathExtension]];
 
-  return ([newIdentifier isEqualToString:actualIdentifier] ? nil : actualIdentifier);
+  NSString *uniqueIdentifier = [[Swift swift_nextName:[newIdentifier stringByDeletingPathExtension] usedNames:usedNames]
+                                stringByAppendingPathExtension:[newIdentifier pathExtension]];
+
+    // NB: If we try to set the `preferredFileName` without removing the file wrapper from its parent first, we trigger
+    //     a fast enumeration exception — although the docs suggest that the file wrapper class would handle that
+    //     automatically. Moreover, we disambiguate the name ourselves, because duplicate during adding also lead to
+    //     an exception.
+  [parentFileWrapper removeFileWrapper:self.fileWrapper];
+  self.fileWrapper.preferredFilename = uniqueIdentifier;
+  [parentFileWrapper addFileWrapper:self.fileWrapper];
+
+  self.identifier = uniqueIdentifier;
+  return ([newIdentifier isEqualToString:uniqueIdentifier] ? nil : uniqueIdentifier);
 }
 
 

@@ -306,12 +306,16 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
 - (void)controlTextDidEndEditing:(NSNotification *)notification
 {
-  NSTextView              *textField = [notification userInfo][@"NSFieldEditor"];
-  HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView editedRow]];
+  NSText                  *text      = notification.userInfo[@"NSFieldEditor"];
+  HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:[self.outlineView selectedRow]];
+  NSString                *oldName   = item.identifier;
 
-  NSString *finalName = [item renameTo:textField.textStorage.string];
-//  NSString *finalName = [item renameTo:textField.stringValue];
-//  if (finalName) textField.stringValue = finalName;
+  NSString *finalName = [item renameTo:text.string];
+  if (finalName) text.string = finalName;
+
+    // Mark document as edited.
+  if (![finalName isEqualToString:oldName])
+    [self.document updateChangeCount:NSChangeDone];
 }
 
 

@@ -207,15 +207,4 @@
     return (NSInteger)item.children.count;
 }
 
-/* Need to implement this if the user should be able to edit the items of the outline view:
-
-- (void)outlineView:(NSOutlineView *)outlineView
-     setObjectValue:(id)object
-     forTableColumn:(NSTableColumn *)tableColumn
-             byItem:(id)item
-{
-}
- 
- */
-
 @end
