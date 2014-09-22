@@ -39,6 +39,7 @@
 		E743141C19A472CA003A3934 /* CloudcelerateSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743141B19A472CA003A3934 /* CloudcelerateSession.swift */; };
 		E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD13719A07E0300CDC18F /* StringExtensions.swift */; };
 		E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89119CD6C5700369A80 /* NameUtilities.swift */; };
+		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
@@ -233,6 +234,7 @@
 		E743141B19A472CA003A3934 /* CloudcelerateSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudcelerateSession.swift; sourceTree = "<group>"; };
 		E75DD13719A07E0300CDC18F /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		E76CD89119CD6C5700369A80 /* NameUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameUtilities.swift; sourceTree = "<group>"; };
+		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -427,6 +429,7 @@
 		E76CD89319CD6DC600369A80 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */,
 				E76CD89119CD6C5700369A80 /* NameUtilities.swift */,
 				E75DD13719A07E0300CDC18F /* StringExtensions.swift */,
 			);
@@ -978,6 +981,7 @@
 				E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */,
+				E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,

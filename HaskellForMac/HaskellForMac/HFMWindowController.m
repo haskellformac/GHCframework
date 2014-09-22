@@ -295,6 +295,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 #pragma mark -
 #pragma mark NSTextFieldDelegate protocol methods
 
+- (BOOL)control:(NSControl *)control isValidObject:(NSString*)string
+{
+#pragma unused(control)
+
+  NSString *extension = [string pathExtension];
+  NSString *name      = [string stringByDeletingPathExtension];
+  return [Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]];
+}
+
 - (void)controlTextDidEndEditing:(NSNotification *)notification
 {
   NSTextView              *textField = [notification userInfo][@"NSFieldEditor"];

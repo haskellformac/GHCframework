@@ -12,7 +12,7 @@ import Foundation
 // MARK: -
 // MARK: Extension to 'NSString' (i.e., the underlying text storage)
 
-// FIXME: this version can go once we have rewritten TextGutter to use Switf strings
+// FIXME: this version can go once we have rewritten TextGutter to use Swift strings
 extension NSString {
   func lineNumberAtLocation(loc: Int) -> UInt {
     switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {

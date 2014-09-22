@@ -408,7 +408,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   for (HFMProjectViewModelItem *child in self.theChildren) {
     [usedNames addObject:[child.identifier stringByDeletingPathExtension]];
   }
-  NSString *identifier = [[Swift nextNameOf:@"NewSource" usedNames:usedNames]
+  NSString *identifier = [[Swift swift_nextName:@"NewSource" usedNames:usedNames]
                           stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
   HFMProjectViewModelItem *newChild = [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
                                                                                   identifier:identifier
