@@ -175,14 +175,22 @@
         </window>
         <menu id="Eat-Zy-XcC" userLabel="Outline View Context Menu">
             <items>
-                <menuItem title="New Haskell file" id="riO-uK-qYK" userLabel="Add Haskell file">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="New Haskell file..." keyEquivalent="n" id="riO-uK-qYK" userLabel="Add Haskell file...">
                     <connections>
                         <action selector="newFile:" target="-2" id="AhZ-Hf-EEj"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Irr-x1-XlJ"/>
+                <menuItem title="Rename..." id="ix9-yX-tfJ" userLabel="Rename...">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="rename:" target="-2" id="J62-HH-5Yl"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Delete" id="qj1-TR-MYG">
+                    <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="delete:" target="-2" id="TaM-Tm-VOG"/>

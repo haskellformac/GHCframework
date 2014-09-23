@@ -212,15 +212,24 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
       // Select and enter editing mode for the newly added item.
     HFMProjectViewModelItem *newItem = [project outlineView:self.outlineView child:(NSInteger)itemIndex ofItem:parentItem];
-    [self performSelector:@selector(newFileSelect:) withObject:newItem afterDelay:0.3];
+    [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.3];
       // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
       //     delay editing. It does seem like a hack, though. Is there any better way to achieve this?
   }
 }
 
-- (void)newFileSelect:(HFMProjectViewModelItem*)newItem
+- (void)fileEdit:(HFMProjectViewModelItem*)newItem
 {
   [self.outlineView editColumn:0 row:[self.outlineView rowForItem:newItem] withEvent:nil select:YES];
+}
+
+- (IBAction)rename:(NSMenuItem *)sender {
+#pragma unused(sender)
+
+  NSInteger                row         = [self.outlineView clickedRow];
+  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
+  [self.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
+  [self fileEdit:clickedItem];
 }
 
 - (IBAction)delete:(NSMenuItem *)sender
@@ -284,6 +293,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable
            || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile
            || (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
+
+  } else if (action == @selector(rename:)) {
+
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
 
   } else if (action == @selector(delete:)) {
 
