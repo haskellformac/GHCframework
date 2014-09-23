@@ -45,12 +45,14 @@ extern NSString *const kExtraSourceGroupID;
 
 /// *Optional* file wrapper of the file object backing the item.
 ///
-/// This property is computed lazily. This property is 'nil' for non file-related items.
+/// This property is computed lazily. This property is 'nil' for non file-related items and for file items that are
+/// listed in the Cabal file, but not backed by a file in the file system. Moreover, we initialise this property
+/// lazily.
 ///
-/// The reference is weak as the file wrapper object is owned by either its parent directory wrapper or, if it is the
-/// document file wrapper, by the view model object.
+/// The reference is strong as we may temporarily be the only owner of file wrapper while, e.g., moving it around in the
+/// hierarchy — and there is no risk of a back reference.
 ///
-@property (nonatomic, readonly, weak) NSFileWrapper *fileWrapper;     // maybe nil
+@property (nonatomic, readonly) NSFileWrapper *fileWrapper;     // maybe nil
 
 /// Does this item have unsaved changes?
 ///
@@ -129,11 +131,13 @@ extern NSString *const kExtraSourceGroupID;
 ///
 - (BOOL)newHaskellSourceAtIndex:(NSUInteger)index;
 
+/*
 /// Add a child item associated with the given file wrapper.
 ///
 /// The current item must be represented by a directory.
 ///
 - (void)addChild:(HFMProjectViewModelItem *)child fileWrapper:(NSFileWrapper *)childFileWrapper;
+ */
 
 /// Move the current item from the view model and the file wrapper structure (deleteing it in the next save).
 ///

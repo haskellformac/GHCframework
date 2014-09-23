@@ -354,6 +354,8 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
            ? [self.dirtyFileWrapper regularFileContents]
            : [self.fileWrapper regularFileContents];
   }
+  if (!data)                // if `self.fileWrapper == nil`
+    data = [NSData data];
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -391,7 +393,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 - (void)touchFileWrapper
 {
   if (!self.fileWrapper) {
-    self.dirtyFileWrapper = [[NSFileWrapper alloc] initRegularFileWithContents:[NSData data]];
+    self.dirtyFileWrapper                   = [[NSFileWrapper alloc] initRegularFileWithContents:[NSData data]];
     self.dirtyFileWrapper.preferredFilename = self.identifier;
   }
 }
@@ -418,6 +420,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   return YES;
 }
 
+/*
   // NB: We could avoid passing in the child item if we could easily compute it from the file wrapper. This is not
   //     convenient currently as the children computation computes all children. MAYBE TODO: refactor to be able to
   //     do this for individual child items.
@@ -436,6 +439,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   [self children];    // Make sure '_theChildren' is initialised
   [_theChildren addObject:child];
 }
+ */
 
 - (BOOL)remove
 {
@@ -459,13 +463,14 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   [_theChildren removeObject:childItem];
 
     // Remove the matching file wrapper.
-  @synchronized(self) {
+  if (self.fileWrapper)
+    @synchronized(self) {
 
-    [self.fileWrapper removeFileWrapper:childItem.fileWrapper];
-    self.dirtyFileWrapper = self.fileWrapper;
-      // NB: We still need to assign to 'self.dirtyFileWrapper'; otherwise, the new dirty status is not represented properly.
+      [self.fileWrapper removeFileWrapper:childItem.fileWrapper];
+      self.dirtyFileWrapper = self.fileWrapper;
+        // NB: We still need to assign to 'self.dirtyFileWrapper'; otherwise, the new dirty status is not represented properly.
 
-  }
+    }
 
   return YES;
 }
@@ -474,9 +479,11 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 {
   NSFileWrapper *parentFileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
 
-    // Make sure the new identifier is unique.
+    // Make sure the new identifier is unique (can't let the file wrappers do this as `self.fileWrapper` may be `nil`.
   NSMutableArray *usedNames = [NSMutableArray array];
-  for (HFMProjectViewModelItem *child in self.parent.theChildren)
+  NSMutableArray *children  = [self.parent.theChildren mutableCopy];
+  [children removeObject:self];
+  for (HFMProjectViewModelItem *child in children)
     [usedNames addObject:[child.identifier stringByDeletingPathExtension]];
 
   NSString *uniqueIdentifier = [[Swift swift_nextName:[newIdentifier stringByDeletingPathExtension] usedNames:usedNames]
@@ -486,9 +493,11 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
     //     a fast enumeration exception — although the docs suggest that the file wrapper class would handle that
     //     automatically. Moreover, we disambiguate the name ourselves, because duplicate during adding also lead to
     //     an exception.
-  [parentFileWrapper removeFileWrapper:self.fileWrapper];
-  self.fileWrapper.preferredFilename = uniqueIdentifier;
-  [parentFileWrapper addFileWrapper:self.fileWrapper];
+  if (self.fileWrapper) {
+    [parentFileWrapper removeFileWrapper:self.fileWrapper];
+    self.fileWrapper.preferredFilename = uniqueIdentifier;
+    [parentFileWrapper addFileWrapper:self.fileWrapper];
+  }
 
   self.identifier = uniqueIdentifier;
   return ([newIdentifier isEqualToString:uniqueIdentifier] ? nil : uniqueIdentifier);

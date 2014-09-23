@@ -14,10 +14,12 @@ import Foundation
 /// Given a base name and an array of already used names, return a name built from the base name and a numeric suffix,
 /// which hasn't been used yet.
 ///
-func nextName(baseName: String, names: [String]) -> String {
+public func nextName(baseName: String, names: [String]) -> String {
   func suffixToInt(suffix: String) -> Int? {
     return suffix.isEmpty ? 1 : suffix.toInt()
   }
+
+  if !contains(names, baseName) { return baseName }
 
   let n         = baseName.endIndex
   let suffixes  = names.filter{ $0.hasPrefix(baseName) }.map{ (s: String) in suffixToInt(s[n ..< s.endIndex]) }
