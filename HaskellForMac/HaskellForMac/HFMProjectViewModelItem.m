@@ -486,8 +486,10 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   for (HFMProjectViewModelItem *child in children)
     [usedNames addObject:[child.identifier stringByDeletingPathExtension]];
 
-  NSString *uniqueIdentifier = [[Swift swift_nextName:[newIdentifier stringByDeletingPathExtension] usedNames:usedNames]
-                                stringByAppendingPathExtension:[newIdentifier pathExtension]];
+  NSString *uniqueIdentifier = ([newIdentifier pathExtension].length == 0)
+                               ? [Swift swift_nextName:newIdentifier usedNames:usedNames]
+                               : [[Swift swift_nextName:[newIdentifier stringByDeletingPathExtension] usedNames:usedNames]
+                                  stringByAppendingPathExtension:[newIdentifier pathExtension]];
 
     // NB: If we try to set the `preferredFileName` without removing the file wrapper from its parent first, we trigger
     //     a fast enumeration exception — although the docs suggest that the file wrapper class would handle that

@@ -324,9 +324,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
 #pragma unused(control)
 
+    // Accept Haskell module names with a '.hs' suffix (for modules) and plain Haskell module names for folders.
   NSString *extension = [string pathExtension];
   NSString *name      = [string stringByDeletingPathExtension];
-  return [Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]];
+  return ([Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]])
+         || [Swift swift_isValidModuleName:string];
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)notification
@@ -335,8 +337,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   NSTextField             *textField = notification.object;
   HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:[self.outlineView selectedRow]];
   NSString                *oldName   = item.identifier;
+  NSString                *newName   = text.string;
 
-  NSString *finalName = [item renameTo:text.string];
+    // Add a Haskell file extension to file names if not present yet.
+  if ((item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)
+      && ![[newName pathExtension] isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
+    newName = [newName stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
+    textField.stringValue = newName;
+  }
+  NSString *finalName = [item renameTo:newName];
   if (finalName) textField.stringValue = finalName;
 
     // Mark document as edited.
