@@ -194,7 +194,8 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   HFMProjectViewModelItem *parentItem  = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
                                          ? [self.outlineView parentForItem:clickedItem]
                                          : clickedItem;
-  NSUInteger               itemIndex   = (parentItem == clickedItem) ? 0 : [parentItem index] + 1;
+  NSUInteger               itemIndex   = (parentItem == clickedItem) ? 0 : [clickedItem index] + 1;
+  HFMProject              *project     = (HFMProject*)self.document;
 
     // Add a new source file to the view model and if successful...
   if ([parentItem newHaskellSourceAtIndex:itemIndex]) {
@@ -209,7 +210,17 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       // Mark document as edited.
     [self.document updateChangeCount:NSChangeDone];
 
+      // Select and enter editing mode for the newly added item.
+    HFMProjectViewModelItem *newItem = [project outlineView:self.outlineView child:(NSInteger)itemIndex ofItem:parentItem];
+    [self performSelector:@selector(newFileSelect:) withObject:newItem afterDelay:0.3];
+      // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
+      //     delay editing. It does seem like a hack, though. Is there any better way to achieve this?
   }
+}
+
+- (void)newFileSelect:(HFMProjectViewModelItem*)newItem
+{
+  [self.outlineView editColumn:0 row:[self.outlineView rowForItem:newItem] withEvent:nil select:YES];
 }
 
 - (IBAction)delete:(NSMenuItem *)sender
@@ -317,6 +328,9 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     // Mark document as edited.
   if (![textField.stringValue isEqualToString:oldName])
     [self.document updateChangeCount:NSChangeDone];
+
+    // Make sure any change of the string in this method is reflected in the UI.
+  [self.outlineView reloadItem:item];
 }
 
 
