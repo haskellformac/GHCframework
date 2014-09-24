@@ -331,6 +331,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
          || [Swift swift_isValidModuleName:string];
 }
 
+  // This is used when the editing of a text field of the source view ends.
 - (void)controlTextDidEndEditing:(NSNotification *)notification
 {
   NSText                  *text      = notification.userInfo[@"NSFieldEditor"];

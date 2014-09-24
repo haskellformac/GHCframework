@@ -76,6 +76,32 @@ struct HighlightingToken {
   }
 }
 
+/// Map from line numbers to pairs of character index (where the line starts) and tokens on the line.
+///
+/// Tokens are in column order. If a token spans multiple lines, it occurs as the last token on its first line and as
+/// the first (and possibly only) token on all of its subsqeuent lines.
+///
+typealias LineTokenMap = StringLineMap<HighlightingToken>
+
+/// Initialise a line token map from a string.
+///
+func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineTokenMap {
+  var lineMap: LineTokenMap = StringLineMap(string: string)
+  let tokens                = tokeniser(string)
+
+    // Compute the tokens for every line.
+  var lineInfo: [(Line, HighlightingToken)] = []
+  for token in tokens {
+    for offset in 0..<token.span.lines {
+      let lineToken: (Line, HighlightingToken) = (token.span.start.line + offset, token)
+      lineInfo.append(lineToken)
+    }
+  }
+
+  lineMap.addLineInfo(lineInfo)
+  return lineMap
+}
+
 /// Tokeniser functions take source language stings and turn them into tokens for highlighting.
 ///
 // FIXME: need to have a starting location to tokenise partial programs
@@ -83,16 +109,49 @@ typealias HighlightingTokeniser = String -> [HighlightingToken]
 
 extension NSTextView {
 
-  func highlight(tokeniser: HighlightingTokeniser) {
+  func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     backgroundColor = highlighBackgroundColour
-    layoutManager.highlight(tokeniser)
+    layoutManager.highlight(lineTokenMap, lineRange: lineRange)
+  }
+
+  func highlight(lineTokenMap: LineTokenMap) {
+    return highlight(lineTokenMap, lineRange: 1..<lineTokenMap.lastLine)
   }
 
 }
 
 extension NSLayoutManager {
 
-  func highlight(tokeniser: HighlightingTokeniser) {
+  func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
+
+    func tokensWithSpanOfLine(line: Line) -> [(HighlightingToken, Range<String.Index>)] {
+      if let index = lineTokenMap.startOfLine(line) {
+        let tokens = lineTokenMap.infoOfLine(line)
+        return map(tokens){ token in
+          let endLine = token.span.start.line + token.span.lines - 1
+          let start   = line == token.span.start.line
+                        ? advance(index, Int(token.span.start.column))   // token starts on this line
+                        : index                                          // token started on a previous line
+          let end     = line == endLine
+                        ? advance(start, Int(token.span.endColumn))      // token ends on this line
+                        : lineTokenMap.endOfLine(line)                   // token ends on a subsequent line
+          return (token, start..<end)
+        }
+      } else {
+        return []
+      }
+    }
+
+    let string = textStorage.string
+    for (token, span) in [].join(lineRange.map(tokensWithSpanOfLine)) {
+      if let attributes = theme[token.kind] {
+        let location = string[string.startIndex..<span.startIndex].utf16Count     // FIXME: is this efficient????
+        let length   = string[span].utf16Count
+        addTemporaryAttributes(attributes, forCharacterRange: NSRange(location: location, length: length))
+      }
+    }
+
+/*
     let tokens = tokeniser(textStorage.string)
 
      // FIXME: we really want an efficient mapping from line numbers to character indicies to be able to just map a highlighting function over the token array
@@ -127,5 +186,6 @@ extension NSLayoutManager {
       charIndex = NSMaxRange((textStorage.string as NSString).lineRangeForRange(NSRange(location: charIndex, length: 0)))
       line++
     }
+    */
   }
 }

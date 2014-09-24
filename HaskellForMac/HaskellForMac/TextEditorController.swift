@@ -26,6 +26,12 @@ class TextEditorController: NSViewController {
   ///
   var highlightingTokeniser: HighlightingTokeniser?
 
+  /// Map from line numbers to pairs of character index (where the line starts) and tokens on that line.
+  ///
+  /// This value is mutable as it changes while the underlying text storage is being edited.
+  ///
+  var lineMap: LineTokenMap = LineTokenMap(string: "")
+
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
   // FIXME: Unify with 'Playground.swift'
@@ -89,11 +95,14 @@ class TextEditorController: NSViewController {
       // Register ourselves as the delegate for the text storage.
     textView.layoutManager.textStorage.delegate = self
 
-      // Trigger highlighting
+      // Initialise the line map
     if let tokeniser = highlightingTokeniser {
-      textView.highlight(tokeniser)
+      lineMap = lineTokenMap(textView.string, tokeniser)
+    } else {
+      lineMap = lineTokenMap(textView.string, { _string in [] })
     }
-   }
+    textView.highlight(lineMap)
+  }
 }
 
 
