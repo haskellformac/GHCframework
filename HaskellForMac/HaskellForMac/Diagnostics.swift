@@ -37,7 +37,7 @@ public func ==(lhs: SrcLoc, rhs: SrcLoc) -> Bool {
 ///
 public struct SrcSpan {
   public let start:     SrcLoc
-  public let lines:     UInt
+  public let lines:     UInt      // '1' means a token whose lexeme is only on one line
   public let endColumn: Column
 }
 

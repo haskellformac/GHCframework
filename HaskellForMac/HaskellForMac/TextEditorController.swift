@@ -120,6 +120,17 @@ extension TextEditorController {
 
 
 // MARK: -
+// MARK: Syntax highlighting
+
+extension TextEditorController {
+
+  func highlight() {
+    textView.highlight(lineMap)
+  }
+}
+
+
+// MARK: -
 // MARK: NSTextStorageDelegate protocol
 
 extension TextEditorController: NSTextStorageDelegate {

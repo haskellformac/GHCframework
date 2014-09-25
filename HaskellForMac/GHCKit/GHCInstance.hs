@@ -98,7 +98,7 @@ reportDiagnostics handlerObject severity srcSpan msg
           GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
           line                    = GHC.srcLocLine startLoc
           column                  = GHC.srcLocCol startLoc
-          lines                   = GHC.srcLocLine endLoc - line
+          lines                   = GHC.srcLocLine endLoc - line + 1
           endColumn               = GHC.srcLocCol endLoc
 
 -- FIXME: generalise with NSArray support in 'CBLPackage.hs'
@@ -171,7 +171,7 @@ tokenListToNSArray tokens
           GHC.RealSrcLoc endLoc   = GHC.srcSpanEnd srcSpan
           line                    = GHC.srcLocLine startLoc
           column                  = GHC.srcLocCol startLoc
-          lines                   = GHC.srcLocLine endLoc - line
+          lines                   = GHC.srcLocLine endLoc - line + 1
           endColumn               = GHC.srcLocCol endLoc
 
 mockNSArrayToTokenList :: NSArray (GHC.Located GHC.Token) -> IO [GHC.Located GHC.Token]
