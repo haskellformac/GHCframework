@@ -89,6 +89,11 @@ public func ==(lhs: HighlightingToken, rhs: HighlightingToken) -> Bool {
 ///
 public typealias LineTokenMap = StringLineMap<HighlightingToken>
 
+/// Tokeniser functions take source language stings and turn them into tokens for highlighting.
+///
+// FIXME: need to have a starting location to tokenise partial programs
+public typealias HighlightingTokeniser = String -> [HighlightingToken]
+
 /// Initialise a line token map from a string.
 ///
 public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineTokenMap {
@@ -108,10 +113,25 @@ public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> Li
   return lineMap
 }
 
-/// Tokeniser functions take source language stings and turn them into tokens for highlighting.
+/// Computes an array of tokens (and their source span in string indicies) for a range of lines from a `LineTokenMap`.
 ///
-// FIXME: need to have a starting location to tokenise partial programs
-public typealias HighlightingTokeniser = String -> [HighlightingToken]
+public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(HighlightingToken, Range<String.Index>)] {
+  if let index = lineTokenMap.startOfLine(line) {
+    let tokens = lineTokenMap.infoOfLine(line)
+    return map(tokens){ token in
+      let endLine = token.span.start.line + token.span.lines - 1
+      let start   = line == token.span.start.line
+                    ? advance(index, Int(token.span.start.column) - 1)   // token starts on this line
+                    : index                                              // token started on a previous line
+      let end     = line == endLine
+                    ? advance(index, Int(token.span.endColumn) - 1)      // token ends on this line
+                    : lineTokenMap.endOfLine(line)                       // token ends on a subsequent line
+      return (token, start..<end)
+    }
+  } else {
+    return []
+  }
+}
 
 extension NSTextView {
 
@@ -129,27 +149,8 @@ extension NSTextView {
 extension NSLayoutManager {
 
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
-
-    func tokensWithSpanOfLine(line: Line) -> [(HighlightingToken, Range<String.Index>)] {
-      if let index = lineTokenMap.startOfLine(line) {
-        let tokens = lineTokenMap.infoOfLine(line)
-        return map(tokens){ token in
-          let endLine = token.span.start.line + token.span.lines - 1
-          let start   = line == token.span.start.line
-                        ? advance(index, Int(token.span.start.column))   // token starts on this line
-                        : index                                          // token started on a previous line
-          let end     = line == endLine
-                        ? advance(start, Int(token.span.endColumn))      // token ends on this line
-                        : lineTokenMap.endOfLine(line)                   // token ends on a subsequent line
-          return (token, start..<end)
-        }
-      } else {
-        return []
-      }
-    }
-
     let string = textStorage.string
-    for (token, span) in [].join(lineRange.map(tokensWithSpanOfLine)) {
+    for (token, span) in [].join(lineRange.map(tokensWithSpan(lineTokenMap))) {
       if let attributes = theme[token.kind] {
         let location = string[string.startIndex..<span.startIndex].utf16Count     // FIXME: is this efficient????
         let length   = string[span].utf16Count

@@ -38,12 +38,25 @@ class HighlightingTests: XCTestCase {
       [answerToken, equalToken, n42Token]
     }
 
+    // Initialisation tests
     XCTAssertEqual(tokenMap.lastLine, 1)
     let line1Info = tokenMap.infoOfLine(1)
     XCTAssertEqual(line1Info.count, 3)
     XCTAssertEqual(line1Info[0], answerToken)
     XCTAssertEqual(line1Info[1], equalToken)
     XCTAssertEqual(line1Info[2], n42Token)
+
+    // Tokenisation tests
+    let generateTokens = tokensWithSpan(tokenMap)
+    let allTokens      = [].join((1...1).map(generateTokens))
+    XCTAssertTrue(map(allTokens){ t in let (a, _b) = t; return a } == [answerToken, equalToken, n42Token])
+    func snd<S, T>(pair: (S, snd: T)) -> T { return pair.snd }
+    let t0 = program[snd(allTokens[0])]     // need to let bind to avoid crashing the Swift compiler
+    XCTAssertEqual(t0, "answer")
+    let t1 = program[snd(allTokens[1])]
+    XCTAssertEqual(t1, "=")
+    let t2 = program[snd(allTokens[2])]
+    XCTAssertEqual(t2, "42")
   }
 
   func test_LineTokenMap_2line() {
@@ -69,9 +82,23 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(line2Info.count, 2)
     XCTAssertEqual(line2Info[0], n42Token)
     XCTAssertEqual(line2Info[1], commentToken)
+
+    // Tokenisation tests
+    let generateTokens = tokensWithSpan(tokenMap)
+    let allTokens      = [].join((1...2).map(generateTokens))
+    XCTAssertTrue(map(allTokens){ t in let (a, _b) = t; return a } == [answerToken, equalToken, n42Token, commentToken])
+    func snd<S, T>(pair: (S, snd: T)) -> T { return pair.snd }
+    let t0 = program[snd(allTokens[0])]     // need to let bind to avoid crashing the Swift compiler
+    XCTAssertEqual(t0, "answer")
+    let t1 = program[snd(allTokens[1])]
+    XCTAssertEqual(t1, "=")
+    let t2 = program[snd(allTokens[2])]
+    XCTAssertEqual(t2, "42")
+    let t3 = program[snd(allTokens[3])]
+    XCTAssertEqual(t3, "-- Yo!")
   }
 
-  func test_LineTokenMap_4line() {
+  func test_LineTokenMap_3line() {
     let program                = "answer =\n  42  {- Yo!\ncool -}"
     let answerToken            = HighlightingToken(ghcToken: Token(kind: .Varid, filename: "test",
                                                    line: 1, column: 1, lines: 1, endColumn: 7))
@@ -97,7 +124,26 @@ class HighlightingTests: XCTestCase {
     let line3Info = tokenMap.infoOfLine(3)
     XCTAssertEqual(line3Info.count, 1)
     XCTAssertEqual(line3Info[0], commentToken)
-  }
+
+    // Tokenisation tests
+    let generateTokens = tokensWithSpan(tokenMap)
+    XCTAssertEqual([].join((1...1).map(generateTokens)).count, 2)
+    XCTAssertEqual([].join((2...2).map(generateTokens)).count, 2)
+    XCTAssertEqual([].join((3...3).map(generateTokens)).count, 1)
+    let allTokens      = [].join((1...3).map(generateTokens))
+    XCTAssertTrue(map(allTokens){ t in let (a, _b) = t; return a } == [answerToken, equalToken, n42Token, commentToken,                                               commentToken])
+    func snd<S, T>(pair: (S, snd: T)) -> T { return pair.snd }
+    let t0 = program[snd(allTokens[0])]     // need to let bind to avoid crashing the Swift compiler
+    XCTAssertEqual(t0, "answer")
+    let t1 = program[snd(allTokens[1])]
+    XCTAssertEqual(t1, "=")
+    let t2 = program[snd(allTokens[2])]
+    XCTAssertEqual(t2, "42")
+    let t3 = program[snd(allTokens[3])]
+    XCTAssertEqual(t3, "{- Yo!\n")
+    let t4 = program[snd(allTokens[4])]
+    XCTAssertEqual(t4, "cool -}")
+}
 
 //    func testPerformanceExample() {
 //        // This is an example of a performance test case.
