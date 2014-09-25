@@ -19,20 +19,32 @@ public typealias Column = UInt
 
 /// Source code locations
 ///
-struct SrcLoc {
-  let file:   String
-  let line:   Line
-  let column: Column
+public struct SrcLoc {
+  public let file:   String
+  public let line:   Line
+  public let column: Column
+}
+
+extension SrcLoc: Equatable {}
+
+public func ==(lhs: SrcLoc, rhs: SrcLoc) -> Bool {
+  return lhs.file == rhs.file && lhs.line == rhs.line && lhs.column == rhs.column
 }
 
 /// Source code spans
 ///
 /// The 'endColumn' is the column *after* the last character included in the span.
 ///
-struct SrcSpan {
-  let start:     SrcLoc
-  let lines:     UInt
-  let endColumn: Column
+public struct SrcSpan {
+  public let start:     SrcLoc
+  public let lines:     UInt
+  public let endColumn: Column
+}
+
+extension SrcSpan: Equatable {}
+
+public func ==(lhs: SrcSpan, rhs: SrcSpan) -> Bool {
+  return lhs.start == rhs.start && lhs.lines == rhs.lines && lhs.endColumn == rhs.endColumn
 }
 
 

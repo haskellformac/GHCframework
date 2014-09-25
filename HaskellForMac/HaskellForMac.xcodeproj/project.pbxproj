@@ -41,6 +41,7 @@
 		E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89119CD6C5700369A80 /* NameUtilities.swift */; };
 		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
 		E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89619D1207700369A80 /* UtilitiesTests.swift */; };
+		E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89819D4207E00369A80 /* HighlightingTests.swift */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
@@ -237,6 +238,7 @@
 		E76CD89119CD6C5700369A80 /* NameUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameUtilities.swift; sourceTree = "<group>"; };
 		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		E76CD89619D1207700369A80 /* UtilitiesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilitiesTests.swift; sourceTree = "<group>"; };
+		E76CD89819D4207E00369A80 /* HighlightingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightingTests.swift; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -533,6 +535,7 @@
 				E70D409519409AB600CA3455 /* HaskellForMacTests-Bridging-Header.h */,
 				E7258C491983CA85004789CF /* Experiments.playground */,
 				E76CD89619D1207700369A80 /* UtilitiesTests.swift */,
+				E76CD89819D4207E00369A80 /* HighlightingTests.swift */,
 			);
 			path = HaskellForMacTests;
 			sourceTree = "<group>";
@@ -1005,6 +1008,7 @@
 				E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */,
 				E70D409719409AB700CA3455 /* CabalTest.swift in Sources */,
 				E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */,
+				E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,11 +13,11 @@ import GHCKit
 
 /// Localised token type
 ///
-struct Token {
-  let kind: GHCToken
-  let span: SrcSpan
+public struct Token {
+  public let kind: GHCToken
+  public let span: SrcSpan
 
-  init(kind:      GHCToken,
+  public init(kind:      GHCToken,
        filename:  String,
        line:      UInt,
        column:    UInt,
@@ -30,6 +30,13 @@ struct Token {
                         endColumn: endColumn)
   }
 }
+
+extension Token: Equatable {}
+
+public func ==(lhs: Token, rhs: Token) -> Bool {
+  return lhs.kind == rhs.kind && lhs.span == rhs.span
+}
+
 
 @objc class HaskellSession {
 

@@ -13,7 +13,7 @@ import GHCKit
 
 /// Token types distinguished during syntax highlighting.
 ///
-enum HighlightingTokenKind {
+public enum HighlightingTokenKind {
   case Constructor, String, Number, Keyword, LineComment, BlockComment, Other
 }
 
@@ -38,11 +38,11 @@ let theme: [HighlightingTokenKind: [NSString: NSColor]] = [ .Constructor:  const
 
 /// Tokens for syntax highlighting.
 ///
-struct HighlightingToken {
-  let kind: HighlightingTokenKind
-  let span:  SrcSpan
+public struct HighlightingToken {
+  public let kind: HighlightingTokenKind
+  public let span: SrcSpan
 
-  init (ghcToken: Token) {
+  public init (ghcToken: Token) {
     switch ghcToken.kind {
     case .As:           kind = .Keyword
     case .Case:         kind = .Keyword
@@ -76,16 +76,22 @@ struct HighlightingToken {
   }
 }
 
+extension HighlightingToken: Equatable {}
+
+public func ==(lhs: HighlightingToken, rhs: HighlightingToken) -> Bool {
+  return lhs.kind == rhs.kind && lhs.span == rhs.span
+}
+
 /// Map from line numbers to pairs of character index (where the line starts) and tokens on the line.
 ///
 /// Tokens are in column order. If a token spans multiple lines, it occurs as the last token on its first line and as
 /// the first (and possibly only) token on all of its subsqeuent lines.
 ///
-typealias LineTokenMap = StringLineMap<HighlightingToken>
+public typealias LineTokenMap = StringLineMap<HighlightingToken>
 
 /// Initialise a line token map from a string.
 ///
-func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineTokenMap {
+public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineTokenMap {
   var lineMap: LineTokenMap = StringLineMap(string: string)
   let tokens                = tokeniser(string)
 
@@ -105,7 +111,7 @@ func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineToken
 /// Tokeniser functions take source language stings and turn them into tokens for highlighting.
 ///
 // FIXME: need to have a starting location to tokenise partial programs
-typealias HighlightingTokeniser = String -> [HighlightingToken]
+public typealias HighlightingTokeniser = String -> [HighlightingToken]
 
 extension NSTextView {
 
