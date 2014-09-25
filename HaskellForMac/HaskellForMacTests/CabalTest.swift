@@ -22,18 +22,18 @@ class CabalTest: XCTestCase {
     super.tearDown()
   }
 
-  func testSetVersion() {
-    let version = "1.0.0"
-    projectViewModel.version = version
-    XCTAssert(projectViewModel.version == version, "Pass")
-  }
-
-  func testMeasureSetVersion() {
-    self.measureBlock() {
-      let projectViewModel = HFMProjectViewModel()
-      let version = "1.0.0"
-      projectViewModel.version = version
-    }
-  }
+//  func testSetVersion() {
+//    let version = "1.0.0"
+//    projectViewModel.version = version
+//    XCTAssert(projectViewModel.version == version, "Pass")
+//  }
+//
+//  func testMeasureSetVersion() {
+//    self.measureBlock() {
+//      let projectViewModel = HFMProjectViewModel()
+//      let version = "1.0.0"
+//      projectViewModel.version = version
+//    }
+//  }
 
 }

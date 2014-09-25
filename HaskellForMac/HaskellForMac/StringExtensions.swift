@@ -19,35 +19,35 @@ import Foundation
 ///
 /// The `indexOfLine(0)` is the `string.endIndex` of the associated string.
 ///
-struct StringLineMap<LineInfo> {
+public struct StringLineMap<LineInfo> {
   private var map: [(index: String.Index, info: [LineInfo])]
 
-  var lastLine: Line {
+  public var lastLine: Line {
     get {
-      return map.count <= 0 ? 0 : UInt(map.count - 1)
+      return map.count <= 1 ? 0 : UInt(map.count - 1)
     }
   }
 
-  init(string: String) {
+  public init(string: String) {
     map = [(string.endIndex, [])]
 
     var idx: String.Index = string.startIndex
-    while idx < string.endIndex {
+    do {
       let newIndex: (index: String.Index, info: [LineInfo]) = (index: idx, info: [])
       map.append(newIndex)
-      idx = string.lineRangeForRange(idx...idx).endIndex
-    }
+      idx = string.lineRangeForRange(idx..<idx).endIndex
+    } while idx < string.endIndex
   }
 
-  func startOfLine(line: Line) -> String.Index? {
-    return line < lastLine ? map[Int(line)].index : nil
+  public func startOfLine(line: Line) -> String.Index? {
+    return line <= lastLine ? map[Int(line)].index : nil
   }
 
-  func infoOfLine(line: Line) -> [LineInfo] {
-    return line < lastLine ? map[Int(line)].info : []
+  public func infoOfLine(line: Line) -> [LineInfo] {
+    return line <= lastLine ? map[Int(line)].info : []
   }
 
-  func endOfLine(line: Line) -> String.Index {
+  public func endOfLine(line: Line) -> String.Index {
     return line >= lastLine ? map[0].index : map[Int(line + 1)].index
   }
 
@@ -55,7 +55,7 @@ struct StringLineMap<LineInfo> {
   ///
   /// Line info for lines not already in the map is dropped.
   ///
-  mutating func addLineInfo(lineInfo: [(Line, LineInfo)]) {
+  public mutating func addLineInfo(lineInfo: [(Line, LineInfo)]) {
     for (line, newInfo) in lineInfo {
       if let index = startOfLine(line) {
         var info = infoOfLine(line)
@@ -69,7 +69,7 @@ struct StringLineMap<LineInfo> {
   ///
   /// Line info for lines not already in the map is dropped.
   ///
-  mutating func replaceLineInfo(lineInfo: [(Line, [LineInfo])]) {
+  public mutating func replaceLineInfo(lineInfo: [(Line, [LineInfo])]) {
     for (line, newInfo) in lineInfo {
       if let index = startOfLine(line) {
         map[Int(line)] = (index, newInfo)

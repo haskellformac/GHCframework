@@ -14,8 +14,8 @@ import GHCKit
 // MARK: -
 // MARK: Location information
 
-typealias Line   = UInt
-typealias Column = UInt
+public typealias Line   = UInt
+public typealias Column = UInt
 
 /// Source code locations
 ///
