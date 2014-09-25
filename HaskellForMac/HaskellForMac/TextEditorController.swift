@@ -115,6 +115,7 @@ extension TextEditorController {
   ///
   func updateIssues(notification: IssueNotification) {
     (scrollView.verticalRulerView as TextGutterView).updateIssues(notification)
+    highlight()
   }
 }
 
