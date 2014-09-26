@@ -32,12 +32,20 @@ public struct StringLineMap<LineInfo> {
   public init(string: String) {
     map = [(string.endIndex, string.utf16Count, [])]
 
+      // Iterate through the lines.
     var idx: String.Index = string.startIndex
     do {
       let newIndex: MapElement = (index: idx, string[string.startIndex..<idx].utf16Count, info: [])
       map.append(newIndex)
       idx = string.lineRangeForRange(idx..<idx).endIndex
     } while idx < string.endIndex
+
+      // Make sure to add an extra line if the last character is a newline (hence, additional empty last line).
+    let newlines = NSCharacterSet.newlineCharacterSet()
+    if !string.isEmpty && newlines.characterIsMember(string.utf16[string.utf16.endIndex - 1]) {
+      let newIndex: MapElement = (index: string.endIndex, string.utf16Count, info: [])
+      map.append(newIndex)
+    }
   }
 
   public func startOfLine(line: Line) -> String.Index? {
@@ -65,7 +73,7 @@ public struct StringLineMap<LineInfo> {
       return 0..<0
     }
 
-    return line(charRange.startIndex) ... line(charRange.endIndex - 1)
+    return line(charRange.startIndex) ... line(charRange.endIndex)
   }
 
   // Determine the line on which a character is by binary serach.

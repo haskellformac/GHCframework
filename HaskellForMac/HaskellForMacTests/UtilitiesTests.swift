@@ -71,6 +71,18 @@ class UtilitiesTests: XCTestCase {
     XCTAssertEqual(mapForEmptyString.infoOfLine(2), [])
   }
 
+  func test_StringLineMap_2lines() {
+    let string                            = "Hello World!\n"
+    var mapForString: StringLineMap<Bool> = StringLineMap(string: string)
+
+    XCTAssertEqual(mapForString.lastLine, 2)
+    XCTAssertEqual(mapForString.startOfLine(0)!, string.endIndex)
+    XCTAssertEqual(mapForString.startOfLine(1)!, string.startIndex)
+    XCTAssertEqual(mapForString.endOfLine(1), advance(string.startIndex, 13))
+    XCTAssertEqual(mapForString.startOfLine(2)!, advance(string.startIndex, 13))
+    XCTAssertEqual(mapForString.endOfLine(2), advance(string.startIndex, 13))
+  }
+
   func test_StringLineMap_3lines() {
     let string                            = "\nHello World!\nI'm here"
     var mapForString: StringLineMap<Bool> = StringLineMap(string: string)

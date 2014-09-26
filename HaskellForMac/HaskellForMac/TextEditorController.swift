@@ -148,15 +148,18 @@ extension TextEditorController: NSTextStorageDelegate {
     NSLog("edited range = (pos: %i, len: %i); change in length = %i",
           editedRange.location, editedRange.length, changeInLength)
 
-      // Determine if the line count changed.
+      // If the line count changed, we need to recompute the line map and update the gutter.
     let lines          = lineMap.lineRange(oldRange)
     let newlineChars   = NSCharacterSet.newlineCharacterSet()
     let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
                          || lines.endIndex - lines.startIndex > 1
-    if let tokeniser = highlightingTokeniser {
-      lineMap = lineTokenMap(textView.string, tokeniser)
-    } else {
-      lineMap = lineTokenMap(textView.string, { _string in [] })
+    if didEditNewline {
+      if let tokeniser = highlightingTokeniser {
+        lineMap = lineTokenMap(textView.string, tokeniser)
+      } else {
+        lineMap = lineTokenMap(textView.string, { _string in [] })
+      }
+      scrollView.verticalRulerView.needsDisplay = true
     }
   }
 }
