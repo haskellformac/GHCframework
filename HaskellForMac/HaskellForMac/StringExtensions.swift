@@ -20,7 +20,8 @@ import Foundation
 /// The `indexOfLine(0)` is the `string.endIndex` of the associated string.
 ///
 public struct StringLineMap<LineInfo> {
-  private var map: [(index: String.Index, info: [LineInfo])]
+  private typealias MapElement = (index: String.Index, utf16Index: Int, info: [LineInfo])
+  private var map: [MapElement]
 
   public var lastLine: Line {
     get {
@@ -29,11 +30,11 @@ public struct StringLineMap<LineInfo> {
   }
 
   public init(string: String) {
-    map = [(string.endIndex, [])]
+    map = [(string.endIndex, string.utf16Count, [])]
 
     var idx: String.Index = string.startIndex
     do {
-      let newIndex: (index: String.Index, info: [LineInfo]) = (index: idx, info: [])
+      let newIndex: MapElement = (index: idx, string[string.startIndex..<idx].utf16Count, info: [])
       map.append(newIndex)
       idx = string.lineRangeForRange(idx..<idx).endIndex
     } while idx < string.endIndex
@@ -43,12 +44,44 @@ public struct StringLineMap<LineInfo> {
     return line <= lastLine ? map[Int(line)].index : nil
   }
 
+  private func utf16StartOfLine(line: Line) -> Int {
+    return line <= lastLine ? map[Int(line)].utf16Index : 0
+  }
+
   public func infoOfLine(line: Line) -> [LineInfo] {
     return line <= lastLine ? map[Int(line)].info : []
   }
 
   public func endOfLine(line: Line) -> String.Index {
     return line >= lastLine ? map[0].index : map[Int(line + 1)].index
+  }
+
+  /// Determine the line range covered by the given character range according to the line map.
+  ///
+  /// This returns an empty range iff the character range is empty or out of bounds.
+  ///
+  public func lineRange(charRange: Range<Int>) -> Range<Line> {
+    if charRange.isEmpty || charRange.startIndex >= utf16StartOfLine(0) || charRange.endIndex > utf16StartOfLine(0) {
+      return 0..<0
+    }
+
+    return line(charRange.startIndex) ... line(charRange.endIndex - 1)
+  }
+
+  // Determine the line on which a character is by binary serach.
+  //
+  private func line(charIndex: Int) -> Line {
+    var lineRange = 0...lastLine
+    while lineRange.endIndex - lineRange.startIndex > 1 {
+      let middle = Line(lineRange.startIndex + (lineRange.endIndex - lineRange.startIndex) / 2)
+      let middleCharIndex = utf16StartOfLine(middle)
+      if charIndex < middleCharIndex {
+        lineRange = lineRange.startIndex..<middle
+      } else {
+        lineRange = middle..<lineRange.endIndex
+      }
+    }
+    return (lineRange.startIndex == lineRange.endIndex) ? 0  : lineRange.startIndex
   }
 
   /// Extend the line information for all the given lines.
@@ -60,7 +93,7 @@ public struct StringLineMap<LineInfo> {
       if let index = startOfLine(line) {
         var info = infoOfLine(line)
         info.append(newInfo)
-        map[Int(line)] = (index, info)
+        map[Int(line)] = (index, utf16StartOfLine(line), info)
       }
     }
   }
@@ -72,7 +105,7 @@ public struct StringLineMap<LineInfo> {
   public mutating func replaceLineInfo(lineInfo: [(Line, [LineInfo])]) {
     for (line, newInfo) in lineInfo {
       if let index = startOfLine(line) {
-        map[Int(line)] = (index, newInfo)
+        map[Int(line)] = (index, utf16StartOfLine(line), newInfo)
       }
     }
   }
@@ -82,7 +115,8 @@ public struct StringLineMap<LineInfo> {
 // MARK: -
 // MARK: Extensions to 'NSString' (i.e., the underlying text storage)
 
-// FIXME: this version can go once we have rewritten TextGutter to use Swift strings
+// FIXME: this version can go once we have rewritten TextGutter to use Swift strings; arggghhh...and we need it in
+//        TextEditorController in `textStorageDidProcessEditing()`
 extension NSString {
   func lineNumberAtLocation(loc: Int) -> UInt {
     switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {

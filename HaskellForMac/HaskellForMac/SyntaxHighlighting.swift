@@ -157,42 +157,5 @@ extension NSLayoutManager {
         addTemporaryAttributes(attributes, forCharacterRange: NSRange(location: location, length: length))
       }
     }
-
-/*
-    let tokens = tokeniser(textStorage.string)
-
-     // FIXME: we really want an efficient mapping from line numbers to character indicies to be able to just map a highlighting function over the token array
-
-    var line: UInt = 1
-    var charIndex  = 0 // textStorage.string.startIndex    // beginning of the current line
-    var tokenIndex = 0
-//    while charIndex < textStorage.string.endIndex && tokenIndex < tokens.endIndex {
-    while charIndex < (textStorage.string as NSString).length && tokenIndex < tokens.endIndex {
-
-      var token = tokens[tokenIndex]
-      while token.span.start.line == line && tokenIndex < tokens.endIndex {
-
-        if token.span.lines == 0 {
-
-//          let span = advance(charIndex, Int(token.span.start.column))...advance(charIndex, Int(token.span.endColumn))
-//          let span = NSRange(location: charIndex + Int(token.span.start.column), length: token.span.endColumn)
-          let column = Int(token.span.start.column)
-          let span   = NSRange(location: charIndex + column - 1, length: Int(token.span.endColumn) - column)
-          if let attributes = theme[token.kind] {
-            addTemporaryAttributes(attributes, forCharacterRange: span)
-          }
-
-        } else {
-
-        }
-        tokenIndex++
-        if tokenIndex < tokens.endIndex {
-          token = tokens[tokenIndex]
-        }
-      }
-      charIndex = NSMaxRange((textStorage.string as NSString).lineRangeForRange(NSRange(location: charIndex, length: 0)))
-      line++
-    }
-    */
   }
 }

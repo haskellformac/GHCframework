@@ -30,7 +30,7 @@ class TextEditorController: NSViewController {
   ///
   /// This value is mutable as it changes while the underlying text storage is being edited.
   ///
-  var lineMap: LineTokenMap = LineTokenMap(string: "")
+  private var lineMap: LineTokenMap = LineTokenMap(string: "")
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //
@@ -137,11 +137,26 @@ extension TextEditorController {
 extension TextEditorController: NSTextStorageDelegate {
 
   func textStorageDidProcessEditing(notification: NSNotification) {
-//    if let tokeniser = highlightingTokeniser {
-//      textView.highlight(tokeniser)
-//    }
-// ^^^causes an exception (as it claims to do glyph generation before processEditing: is finished)          12
+
+    // FIXME: This should go into StringExtensions via a call through an extension of NSTextStorage to pick up the
+    //        editedRange and changeInLength.
+    let editedRange    = textView.textStorage.editedRange
+    let changeInLength = textView.textStorage.changeInLength
+    let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
+    let string         = textView.textStorage.string
+    let editedString   = (string as NSString).substringWithRange(editedRange)
+    NSLog("edited range = (pos: %i, len: %i); change in length = %i",
+          editedRange.location, editedRange.length, changeInLength)
+
+      // Determine if the line count changed.
+    let lines          = lineMap.lineRange(oldRange)
+    let newlineChars   = NSCharacterSet.newlineCharacterSet()
+    let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
+                         || lines.endIndex - lines.startIndex > 1
+    if let tokeniser = highlightingTokeniser {
+      lineMap = lineTokenMap(textView.string, tokeniser)
+    } else {
+      lineMap = lineTokenMap(textView.string, { _string in [] })
+    }
   }
-
 }
-
