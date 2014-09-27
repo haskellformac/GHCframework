@@ -257,9 +257,9 @@ objc_marshaller 'tokenListToNSArray 'mockNSArrayToTokenList
 -- If tokenisation fails, the array is empty and the diagnostics handler is called with a suitable message.
 --
 -- tokeniseString :: Session -> String -> String -> IO (NSArray (GHC.Located GHC.Token))
-tokeniseString :: Session -> String -> String -> IO [GHC.Located GHC.Token]
-tokeniseString session text fname
-  = tokenise session (GHC.stringToStringBuffer text) (GHC.mkRealSrcLoc (GHC.mkFastString fname) 1 1)
+tokeniseString :: Session -> String -> String -> Int -> Int -> IO [GHC.Located GHC.Token]
+tokeniseString session text fname line column
+  = tokenise session (GHC.stringToStringBuffer text) (GHC.mkRealSrcLoc (GHC.mkFastString fname) line column)
 
 -- Load a module of which the actual program code is given. The backing path of the module is provided as well.
 --
@@ -312,7 +312,10 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 ///
 /// If tokenisation fails, the array is empty and the diagnostics handler is called with a suitable message.
 ///
-- (typename NSArray *)tokeniseHaskell:(typename NSString*)text file:(typename NSString *)file;
+- (typename NSArray *)tokeniseHaskell:(typename NSString*)text 
+                                 file:(typename NSString *)file 
+                                 line:(typename NSUInteger)line 
+                               column:(typename NSUInteger)column;
 
 /// Load a module given as a string.
 ///
@@ -400,9 +403,12 @@ void GHCInstance_initialise(void);
 // Public model methods
 // --
 
-- (typename NSArray *)tokeniseHaskell:(typename NSString*)text file:(typename NSString *)file
+- (typename NSArray *)tokeniseHaskell:(typename NSString*)text 
+                                 file:(typename NSString *)file 
+                                 line:(typename NSUInteger)line 
+                               column:(typename NSUInteger)column
 {
-  return tokeniseString(self.interpreterSession, text, file);
+  return tokeniseString(self.interpreterSession, text, file, (typename NSInteger)line, (typename NSInteger)column);
 }
 
 - (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file

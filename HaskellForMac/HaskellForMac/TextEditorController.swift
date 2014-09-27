@@ -138,28 +138,44 @@ extension TextEditorController: NSTextStorageDelegate {
 
   func textStorageDidProcessEditing(notification: NSNotification) {
 
-    // FIXME: This should go into StringExtensions via a call through an extension of NSTextStorage to pick up the
-    //        editedRange and changeInLength.
+    // FIXME: This should go into StringExtensions or SyntaxHighlighting via a call through an extension of NSTextStorage
+    //        to pick up the editedRange and changeInLength.
     let editedRange    = textView.textStorage.editedRange
     let changeInLength = textView.textStorage.changeInLength
     let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
     let string         = textView.textStorage.string
     let editedString   = (string as NSString).substringWithRange(editedRange)
-    NSLog("edited range = (pos: %i, len: %i); change in length = %i",
-          editedRange.location, editedRange.length, changeInLength)
+//    NSLog("edited range = (pos: %i, len: %i); change in length = %i",
+//          editedRange.location, editedRange.length, changeInLength)
 
       // If the line count changed, we need to recompute the line map and update the gutter.
     let lines          = lineMap.lineRange(oldRange)
+    let (preRescanOffset, sucRescanOffset)
+                       = lineRangeRescanOffsets(lineMap, lines)
     let newlineChars   = NSCharacterSet.newlineCharacterSet()
     let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
                          || lines.endIndex - lines.startIndex > 1
     if didEditNewline {
+
+        // line count changed => compute a completely new line map
       if let tokeniser = highlightingTokeniser {
         lineMap = lineTokenMap(textView.string, tokeniser)
       } else {
         lineMap = lineTokenMap(textView.string, { _string in [] })
       }
-      scrollView.verticalRulerView.needsDisplay = true
+      scrollView.verticalRulerView.needsDisplay = true    // update the line numbering in the gutter
+
+    } else if let tokeniser = highlightingTokeniser {
+
+        // line count stayed the same => only rescan the lines that where affected by editing
+      let rescanLines = (lines.startIndex - preRescanOffset)..<(lines.endIndex + sucRescanOffset)
+      lineMap = rescanTokenLines(lineMap, rescanLines, textView.string, tokeniser)
+
     }
+
+      // For highlighting, we interested in the new set of lines.
+    let editedLines      = lineMap.lineRange(fromNSRange(editedRange))
+    let rehighlightLines = (editedLines.startIndex + preRescanOffset)..<(editedLines.endIndex + sucRescanOffset)
+    textView.highlight(lineMap, lineRange:rehighlightLines)
   }
 }

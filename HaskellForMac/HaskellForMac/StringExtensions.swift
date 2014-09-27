@@ -69,14 +69,14 @@ public struct StringLineMap<LineInfo> {
   /// This returns an empty range iff the character range is empty or out of bounds.
   ///
   public func lineRange(charRange: Range<Int>) -> Range<Line> {
-    if charRange.isEmpty || charRange.startIndex >= utf16StartOfLine(0) || charRange.endIndex > utf16StartOfLine(0) {
+    if charRange.isEmpty || charRange.startIndex < 0 || charRange.endIndex > utf16StartOfLine(0) {
       return 0..<0
     }
 
-    return line(charRange.startIndex) ... line(charRange.endIndex)
+    return line(charRange.startIndex) ... line(charRange.endIndex - 1)
   }
 
-  // Determine the line on which a character is by binary serach.
+  // Determine the line on which a character is by binary search.
   //
   private func line(charIndex: Int) -> Line {
     var lineRange = 0...lastLine

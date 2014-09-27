@@ -58,8 +58,8 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   ///
   /// In case of failure, the resulting array is empty, but a diagnostic message is delivered asynchronously as usual.
   ///
-  func tokeniseHaskell(text: String, file: String) -> [Token] {
-    return ghcInstance.tokeniseHaskell(text, file: file).map{ locatedToken in
+  func tokeniseHaskell(text: String, file: String, line: Line, column: Column) -> [Token] {
+    return ghcInstance.tokeniseHaskell(text, file: file, line: line, column: column).map{ locatedToken in
       let tok = locatedToken as GHCLocatedToken
       return Token(kind: locatedToken.token,
                    filename: file,

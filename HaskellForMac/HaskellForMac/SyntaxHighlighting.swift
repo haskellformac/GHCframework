@@ -164,15 +164,21 @@ public typealias LineTokenMap = StringLineMap<HighlightingToken>
 /// Tokeniser functions take source language stings and turn them into tokens for highlighting.
 ///
 // FIXME: need to have a starting location to tokenise partial programs
-public typealias HighlightingTokeniser = String -> [HighlightingToken]
+public typealias HighlightingTokeniser = (Line, Column, String) -> [HighlightingToken]
 
 /// Initialise a line token map from a string.
 ///
 public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> LineTokenMap {
   var lineMap: LineTokenMap = StringLineMap(string: string)
-  let tokens                = tokeniser(string)
+  lineMap.addLineInfo(tokensForLines(tokeniser(1, 1, string)))
+  return lineMap
+}
 
-    // Compute the tokens for every line.
+/// Compute the line assignment got an array of tokens.
+///
+private func tokensForLines(tokens: [HighlightingToken]) -> [(Line, HighlightingToken)] {
+
+  // Compute the tokens for every line.
   var lineInfo: [(Line, HighlightingToken)] = []
   for token in tokens {
     for offset in 0..<token.span.lines {
@@ -180,9 +186,51 @@ public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> Li
       lineInfo.append(lineToken)
     }
   }
+  return lineInfo
+}
 
-  lineMap.addLineInfo(lineInfo)
-  return lineMap
+/// For the given line range, determine how many preceeding or succeeding lines are part of multi-line tokens, and
+/// hence, need to be rescanned for re-tokenisation.
+///
+/// The current implementation is a conservative approximation as it extends the range by the number of extra lines that
+/// the token has *independent* of which lines within the multiline token is at the border of the original line range.
+///
+public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line>) -> (UInt, UInt) {
+  if lines.isEmpty { return (0, 0) }
+
+  let preOffset: UInt = {
+    if let firstToken = lineTokenMap.infoOfLine(lines.startIndex).first {
+      if firstToken.span.lines > 1 {
+        return firstToken.span.lines - 1
+      }
+    }
+    return 0
+  }()
+  let sucOffset: UInt = {
+    if let lastToken = lineTokenMap.infoOfLine(lines.endIndex - 1).last {
+      if lastToken.span.lines > 1 {
+        return lastToken.span.lines - 1
+      }
+    }
+    return 0
+    }()
+  return (preOffset, sucOffset)
+}
+
+/// Update the given token map by re-running the tokeniser on the given range of lines.
+///
+public func rescanTokenLines(lineMap: LineTokenMap,
+                         rescanLines: Range<Line>,
+                              string: String,
+                           tokeniser: HighlightingTokeniser) -> LineTokenMap
+{
+  if rescanLines.isEmpty { return lineMap }
+
+  var newLineMap = lineMap
+  let startIndex = lineMap.startOfLine(rescanLines.startIndex) ?? string.startIndex
+  let endIndex   = lineMap.endOfLine(rescanLines.endIndex)     ?? string.endIndex
+  newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 0, string[startIndex..<endIndex])))
+  return newLineMap
 }
 
 /// Computes an array of tokens (and their source span in string indicies) for a range of lines from a `LineTokenMap`.

@@ -250,8 +250,9 @@ extension PlaygroundController: NSTextViewDelegate {
 extension PlaygroundController {
 
   func tokeniseHaskell(file: String) -> HighlightingTokeniser {
-    return { text in
-      map(self.haskellSession.tokeniseHaskell(text, file: file)){ token in HighlightingToken(ghcToken: token)}
+    return { (line, column, text) in
+      map(self.haskellSession.tokeniseHaskell(text, file: file, line: line, column: column)){ token in
+        HighlightingToken(ghcToken: token) }
     }
   }
 
