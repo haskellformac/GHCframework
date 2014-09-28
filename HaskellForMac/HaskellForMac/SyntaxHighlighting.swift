@@ -217,7 +217,10 @@ public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line
   return (preOffset, sucOffset)
 }
 
-/// Update the given token map by re-running the tokeniser on the given range of lines.
+/// Update the given token map by re-running the tokeniser on the given range of lines and fixing up the start indicies
+/// (and the last line end index) for all rescan lines and all following lines.
+///
+/// PRECONDITION: This function expects that the number of lines in the old and new line token map are the *same*.
 ///
 public func rescanTokenLines(lineMap: LineTokenMap,
                          rescanLines: Range<Line>,
@@ -227,15 +230,35 @@ public func rescanTokenLines(lineMap: LineTokenMap,
   if rescanLines.isEmpty { return lineMap }
 
   var newLineMap = lineMap
-  let startIndex = lineMap.startOfLine(rescanLines.startIndex) ?? string.startIndex
-  let endIndex   = lineMap.endOfLine(rescanLines.endIndex)     ?? string.endIndex
-  newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 0, string[startIndex..<endIndex])))
-  return newLineMap
+  if let startIndex = lineMap.startOfLine(rescanLines.startIndex) {
+
+      // First, fix the start indicies in the line map (for edited lines and all following lines).
+    var idx = startIndex
+    for line in rescanLines {                                       // fix rescan lines
+      newLineMap.setStartOfLine(line, startIndex: idx)
+      idx = NSMaxRange((string as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
+    }
+    let oldEndIndex         = lineMap.endOfLine(rescanLines.endIndex)
+    let newEndIndex         = idx
+    let changeInLength      = newEndIndex - oldEndIndex
+                                                                    // special case of the end of the string
+    newLineMap.setStartOfLine(0, startIndex: string.utf16.endIndex)
+
+    for line in rescanLines.endIndex..<lineMap.lastLine {           // fix all lines after the rescan lines
+      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
+    }
+
+      // Second, we update the token information for all affected lines.
+    let rescanString = (string as NSString).substringWithRange(toNSRange(startIndex..<newEndIndex))
+    newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 0, rescanString)))
+    return newLineMap
+
+  } else { return lineMap }
 }
 
-/// Computes an array of tokens (and their source span in string indicies) for a range of lines from a `LineTokenMap`.
+/// Computes an array of tokens (and their source span) for a range of lines from a `LineTokenMap`.
 ///
-public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(HighlightingToken, Range<String.Index>)] {
+public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(HighlightingToken, Range<Int>)] {
   if let index = lineTokenMap.startOfLine(line) {
     let tokens = lineTokenMap.infoOfLine(line)
     return map(tokens){ token in
@@ -269,24 +292,22 @@ extension NSTextView {
 extension NSLayoutManager {
 
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
+    if lineRange.isEmpty { return }
+
     let string = textStorage.string
 
       // Remove any existing temporary attributes in the entire range.
     if let start = lineTokenMap.startOfLine(lineRange.startIndex) {
 
       let end      = lineTokenMap.endOfLine(lineRange.endIndex)
-      let location = string[string.startIndex..<start].utf16Count
-      let length   = string[start..<end].utf16Count
-      setTemporaryAttributes([:], forCharacterRange: NSRangelocation: location, length: length))
+      setTemporaryAttributes([:], forCharacterRange: toNSRange(start..<end))
 
     }
 
       // Apply highlighting to all tokens in the affected range.
     for (token, span) in [].join(lineRange.map(tokensWithSpan(lineTokenMap))) {
       if let attributes = theme[token.kind] {
-        let location = string[string.startIndex..<span.startIndex].utf16Count     // FIXME: is this efficient????
-        let length   = string[span].utf16Count
-        addTemporaryAttributes(attributes, forCharacterRange: NSRange(location: location, length: length))
+        addTemporaryAttributes(attributes, forCharacterRange: toNSRange(span))
       }
     }
   }

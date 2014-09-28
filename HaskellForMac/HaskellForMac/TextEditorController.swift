@@ -150,7 +150,7 @@ extension TextEditorController: NSTextStorageDelegate {
   func highlightingAfterEditing(editedRange: NSRange, changeInLength: Int) {
 
     // FIXME: this should go into SyntaxHighlighting via a call through an extension of NSTextStorage
-    //        to pick up the editedRange and changeInLength.
+    //        to pick up the editedRange and changeInLength. (Disentangle from NSTextView to support testing.)
     let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
     let string         = textView.textStorage.string
     let editedString   = (string as NSString).substringWithRange(editedRange)
@@ -159,11 +159,13 @@ extension TextEditorController: NSTextStorageDelegate {
 
       // If the line count changed, we need to recompute the line map and update the gutter.
     let lines          = lineMap.lineRange(oldRange)
-    let (preRescanOffset, sucRescanOffset)
-                       = lineRangeRescanOffsets(lineMap, lines)
+    let rescanOffsets  = lineRangeRescanOffsets(lineMap, lines)  // NB: need to use old range, because of old lines map
     let newlineChars   = NSCharacterSet.newlineCharacterSet()
     let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
                          || lines.endIndex - lines.startIndex > 1
+      // FIXME: The above predicate is too coarse. Even if `lines.endIndex - lines.startIndex > 1`, that is ok in that
+      //        the number of lines didn't *change*, iff the number of newline characters in the edited string is equal
+      //        to `lines.endIndex - lines.startIndex`.
     if didEditNewline {
 
         // line count changed => compute a completely new line map
@@ -176,15 +178,18 @@ extension TextEditorController: NSTextStorageDelegate {
 
     } else if let tokeniser = highlightingTokeniser {
 
-        // line count stayed the same => only rescan the lines that where affected by editing
-      let rescanLines = (lines.startIndex - preRescanOffset)..<(lines.endIndex + sucRescanOffset)
+        // line count stayed the same => may determine lines for rescan with the old (outdated) map
+        // FIXME: this is dodgy and really only works, because we only get here in the case where only one line was 
+        //        modified; we would probably need split `rescanTokenLines` into the fixing up of the start indicies
+        //        and the recomputation of the token array, and then. compute the lineRange in the middle...
+      let rescanLines = clampRange(extendRange(lines, rescanOffsets), 1..<lineMap.lastLine)
       lineMap = rescanTokenLines(lineMap, rescanLines, textView.string, tokeniser)
 
     }
 
       // For highlighting, we interested in the new set of lines.
     let editedLines      = lineMap.lineRange(fromNSRange(editedRange))
-    let rehighlightLines = (editedLines.startIndex + preRescanOffset)..<(editedLines.endIndex + sucRescanOffset)
+    let rehighlightLines = clampRange(extendRange(editedLines, rescanOffsets), 1..<lineMap.lastLine)
     textView.highlight(lineMap, lineRange:rehighlightLines)
   }
 }

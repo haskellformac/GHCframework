@@ -11,6 +11,17 @@ import XCTest
 import Haskell
 import GHCKit
 
+
+// Makes the testing code more convenient.
+extension String
+{
+  subscript(range: Range<Int>) -> String
+    {
+      return (self as NSString).substringWithRange(NSRange(location: range.startIndex,
+                                                             length: range.endIndex - range.startIndex))
+  }
+}
+
 class HighlightingTests: XCTestCase {
 
   override func setUp() {

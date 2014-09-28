@@ -17,10 +17,10 @@ import Foundation
 /// If the array is `lineMap`, then `lineMap[0]` is initialised, but unused; `lineMap[1]` is the info for the 1st line,
 /// `lineMap[2]` for the second, and so on.
 ///
-/// The `indexOfLine(0)` is the `string.endIndex` of the associated string.
+/// The `indexOfLine(0)` is the `endIndex` of the associated string.
 ///
 public struct StringLineMap<LineInfo> {
-  private typealias MapElement = (index: String.Index, utf16Index: Int, info: [LineInfo])
+  private typealias MapElement = (index: String.UTF16View.Index, info: [LineInfo])
   private var map: [MapElement]
 
   public var lastLine: Line {
@@ -30,50 +30,59 @@ public struct StringLineMap<LineInfo> {
   }
 
   public init(string: String) {
-    map = [(string.endIndex, string.utf16Count, [])]
+    map = [(string.utf16Count, [])]
 
       // Iterate through the lines.
-    var idx: String.Index = string.startIndex
+    var idx = string.utf16.startIndex
     do {
-      let newIndex: MapElement = (index: idx, string[string.startIndex..<idx].utf16Count, info: [])
+      let newIndex: MapElement = (index: idx, info: [])
       map.append(newIndex)
-      idx = string.lineRangeForRange(idx..<idx).endIndex
-    } while idx < string.endIndex
+      idx = NSMaxRange((string as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
+    } while idx < string.utf16.endIndex
 
       // Make sure to add an extra line if the last character is a newline (hence, additional empty last line).
     let newlines = NSCharacterSet.newlineCharacterSet()
     if !string.isEmpty && newlines.characterIsMember(string.utf16[string.utf16.endIndex - 1]) {
-      let newIndex: MapElement = (index: string.endIndex, string.utf16Count, info: [])
+      let newIndex: MapElement = (index: string.utf16.endIndex, info: [])
       map.append(newIndex)
     }
   }
 
-  public func startOfLine(line: Line) -> String.Index? {
+  public func startOfLine(line: Line) -> Int? {
     return line <= lastLine ? map[Int(line)].index : nil
   }
 
-  private func utf16StartOfLine(line: Line) -> Int {
-    return line <= lastLine ? map[Int(line)].utf16Index : 0
+  public mutating func setStartOfLine(line: Line, startIndex: Int) {
+    if line <= lastLine {
+      let newIndex: MapElement = (index: startIndex, info: infoOfLine(line))
+      map[Int(line)] = newIndex
+    }
   }
 
   public func infoOfLine(line: Line) -> [LineInfo] {
     return line <= lastLine ? map[Int(line)].info : []
   }
 
-  public func endOfLine(line: Line) -> String.Index {
+  public func endOfLine(line: Line) -> Int {
     return line >= lastLine ? map[0].index : map[Int(line + 1)].index
   }
 
   /// Determine the line range covered by the given character range according to the line map.
   ///
-  /// This returns an empty range iff the character range is empty or out of bounds.
+  /// This returns an empty range iff the character range is out of bounds, but returns a one line range if the
+  /// character range is within bounds, but empty (namely the line the empty range is located on).
   ///
   public func lineRange(charRange: Range<Int>) -> Range<Line> {
-    if charRange.isEmpty || charRange.startIndex < 0 || charRange.endIndex > utf16StartOfLine(0) {
-      return 0..<0
+    if charRange.startIndex < 0 || charRange.endIndex > startOfLine(0) {
+      return 1..<1
     }
 
-    return line(charRange.startIndex) ... line(charRange.endIndex - 1)
+    if charRange.isEmpty {
+      let oneLine = line(charRange.startIndex)
+      return oneLine...oneLine
+    } else {
+      return line(charRange.startIndex) ... line(charRange.endIndex - 1)
+    }
   }
 
   // Determine the line on which a character is by binary search.
@@ -82,14 +91,14 @@ public struct StringLineMap<LineInfo> {
     var lineRange = 0...lastLine
     while lineRange.endIndex - lineRange.startIndex > 1 {
       let middle = Line(lineRange.startIndex + (lineRange.endIndex - lineRange.startIndex) / 2)
-      let middleCharIndex = utf16StartOfLine(middle)
+      let middleCharIndex = startOfLine(middle)
       if charIndex < middleCharIndex {
         lineRange = lineRange.startIndex..<middle
       } else {
         lineRange = middle..<lineRange.endIndex
       }
     }
-    return (lineRange.startIndex == lineRange.endIndex) ? 0  : lineRange.startIndex
+    return (lineRange.startIndex == lineRange.endIndex) ? 1 : lineRange.startIndex
   }
 
   /// Extend the line information for all the given lines.
@@ -101,7 +110,7 @@ public struct StringLineMap<LineInfo> {
       if let index = startOfLine(line) {
         var info = infoOfLine(line)
         info.append(newInfo)
-        map[Int(line)] = (index, utf16StartOfLine(line), info)
+        map[Int(line)] = (index, info)
       }
     }
   }
@@ -113,7 +122,7 @@ public struct StringLineMap<LineInfo> {
   public mutating func replaceLineInfo(lineInfo: [(Line, [LineInfo])]) {
     for (line, newInfo) in lineInfo {
       if let index = startOfLine(line) {
-        map[Int(line)] = (index, utf16StartOfLine(line), newInfo)
+        map[Int(line)] = (index, newInfo)
       }
     }
   }
