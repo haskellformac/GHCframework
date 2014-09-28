@@ -137,11 +137,20 @@ extension TextEditorController {
 extension TextEditorController: NSTextStorageDelegate {
 
   func textStorageDidProcessEditing(notification: NSNotification) {
-
-    // FIXME: This should go into StringExtensions or SyntaxHighlighting via a call through an extension of NSTextStorage
-    //        to pick up the editedRange and changeInLength.
     let editedRange    = textView.textStorage.editedRange
     let changeInLength = textView.textStorage.changeInLength
+
+      // We need to delay fixing the temporary attributes until after the text storage is done processing the current
+      // change.
+    dispatch_async(dispatch_get_main_queue(), {
+      self.highlightingAfterEditing(editedRange, changeInLength: changeInLength)
+    })
+  }
+
+  func highlightingAfterEditing(editedRange: NSRange, changeInLength: Int) {
+
+    // FIXME: this should go into SyntaxHighlighting via a call through an extension of NSTextStorage
+    //        to pick up the editedRange and changeInLength.
     let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
     let string         = textView.textStorage.string
     let editedString   = (string as NSString).substringWithRange(editedRange)

@@ -270,6 +270,18 @@ extension NSLayoutManager {
 
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     let string = textStorage.string
+
+      // Remove any existing temporary attributes in the entire range.
+    if let start = lineTokenMap.startOfLine(lineRange.startIndex) {
+
+      let end      = lineTokenMap.endOfLine(lineRange.endIndex)
+      let location = string[string.startIndex..<start].utf16Count
+      let length   = string[start..<end].utf16Count
+      setTemporaryAttributes([:], forCharacterRange: NSRangelocation: location, length: length))
+
+    }
+
+      // Apply highlighting to all tokens in the affected range.
     for (token, span) in [].join(lineRange.map(tokensWithSpan(lineTokenMap))) {
       if let attributes = theme[token.kind] {
         let location = string[string.startIndex..<span.startIndex].utf16Count     // FIXME: is this efficient????
