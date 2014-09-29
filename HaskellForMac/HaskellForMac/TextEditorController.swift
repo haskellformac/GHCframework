@@ -30,7 +30,7 @@ class TextEditorController: NSViewController {
   ///
   /// This value is mutable as it changes while the underlying text storage is being edited.
   ///
-  private var lineMap: LineTokenMap = LineTokenMap(string: "")
+  private final var lineMap: LineTokenMap = LineTokenMap(string: "")
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   //

@@ -174,7 +174,7 @@ public func lineTokenMap(string: String, tokeniser: HighlightingTokeniser) -> Li
   return lineMap
 }
 
-/// Compute the line assignment got an array of tokens.
+/// Compute the line assignment for an array of tokens.
 ///
 private func tokensForLines(tokens: [HighlightingToken]) -> [(Line, HighlightingToken)] {
 
@@ -238,19 +238,20 @@ public func rescanTokenLines(lineMap: LineTokenMap,
       newLineMap.setStartOfLine(line, startIndex: idx)
       idx = NSMaxRange((string as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
     }
-    let oldEndIndex         = lineMap.endOfLine(rescanLines.endIndex)
-    let newEndIndex         = idx
-    let changeInLength      = newEndIndex - oldEndIndex
-                                                                    // special case of the end of the string
-    newLineMap.setStartOfLine(0, startIndex: string.utf16.endIndex)
+    let oldEndIndex    = lineMap.endOfLine(rescanLines.endIndex - 1)
+    let newEndIndex    = idx
+    let changeInLength = newEndIndex - oldEndIndex
 
-    for line in rescanLines.endIndex..<lineMap.lastLine {           // fix all lines after the rescan lines
+    newLineMap.setStartOfLine(0, startIndex: string.utf16.endIndex) // special case of the end of the string
+
+    for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
       newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
     }
 
       // Second, we update the token information for all affected lines.
     let rescanString = (string as NSString).substringWithRange(toNSRange(startIndex..<newEndIndex))
-    newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 0, rescanString)))
+    newLineMap.replaceLineInfo(rescanLines.map{ ($0, []) })       // FIXME: this and next line might be nicer combined
+    newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 1, rescanString)))
     return newLineMap
 
   } else { return lineMap }
@@ -299,7 +300,7 @@ extension NSLayoutManager {
       // Remove any existing temporary attributes in the entire range.
     if let start = lineTokenMap.startOfLine(lineRange.startIndex) {
 
-      let end      = lineTokenMap.endOfLine(lineRange.endIndex)
+      let end      = lineTokenMap.endOfLine(lineRange.endIndex - 1)
       setTemporaryAttributes([:], forCharacterRange: toNSRange(start..<end))
 
     }
