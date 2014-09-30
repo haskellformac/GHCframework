@@ -45,7 +45,7 @@ class TextGutterView: NSRulerView {
   //
   // FIXME: Unify with 'TextEditorController.swift'
   private let diagnosticsTextAttributes: NSDictionary = { () in
-    let menlo12 = NSFont(name: "Menlo-Regular", size:12)
+    let menlo12 = NSFont(name: "Menlo-Regular", size:12)!
     return [NSFontAttributeName: menlo12]
   }()
 
@@ -66,10 +66,10 @@ class TextGutterView: NSRulerView {
 
     super.init(scrollView: scrollView, orientation: orientation)
 
-    self.clientView = scrollView.documentView as NSView
+    self.clientView = scrollView.documentView as? NSView
   }
 
-  required init(coder: NSCoder) {
+  required init?(coder: NSCoder) {
     super.init(coder: coder)
   }
 
@@ -99,14 +99,14 @@ class TextGutterView: NSRulerView {
 
   override func drawHashMarksAndLabelsInRect(rect: NSRect) {
     let textView      = self.clientView as NSTextView
-    let layoutManager = textView.layoutManager
+    let layoutManager = textView.layoutManager!
     let textContainer = textView.textContainer
-    let string        = textView.textStorage.string
-    let visibleRect   = self.scrollView.documentVisibleRect
+    let string        = textView.textStorage!.string
+    let visibleRect   = self.scrollView!.documentVisibleRect
 
       // All visible glyphs and all visible characters
     let glyphRange    = layoutManager.glyphRangeForBoundingRectWithoutAdditionalLayout(visibleRect,
-                                                                                       inTextContainer: textContainer)
+                                                                                       inTextContainer: textContainer!)
     let charRange     = layoutManager.characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
 
       // Line number of first visible line
@@ -155,10 +155,10 @@ class TextGutterView: NSRulerView {
   //
   private func gutterRectForCharRange(charRange: NSRange) -> (NSRect, CGFloat) {
     let textView      = self.clientView as NSTextView
-    let layoutManager = textView.layoutManager
+    let layoutManager = textView.layoutManager!
     let textContainer = textView.textContainer
-    let string        = textView.textStorage.string
-    let visibleRect   = self.scrollView.documentVisibleRect
+    let string        = textView.textStorage!.string
+    let visibleRect   = self.scrollView!.documentVisibleRect
 
       // Draw the number for the current line
     let firstIndex = layoutManager.glyphIndexForCharacterAtIndex(charRange.location)
@@ -223,41 +223,43 @@ class TextGutterView: NSRulerView {
 // MARK: 'NSView' delegate methods
 
 extension TextGutterView {
-  override func mouseDown(event: NSEvent!) {
+  override func mouseDown(event: NSEvent) {
     let textView      = self.clientView as NSTextView
     let layoutManager = textView.layoutManager
-    let textContainer = textView.textContainer
-    let string        = textView.textStorage.string
-    let visibleRect   = self.scrollView.documentVisibleRect
+    let textContainer = textView.textContainer!
+    let string        = textView.textStorage!.string
+
+    if let visibleRect = self.scrollView?.documentVisibleRect {
 
       // Determine the line corresponding to the mouse down event.
-    let rulerLoc   = self.convertPoint(event.locationInWindow, fromView: nil)
-    let textLoc    = NSPoint(x: 0, y: visibleRect.origin.y + rulerLoc.y)
-    let glyphIndex = layoutManager.glyphIndexForPoint(textLoc, inTextContainer: textContainer)
-    let charIndex  = layoutManager.characterIndexForGlyphAtIndex(glyphIndex)
-    let lineNumber = string.lineNumberAtLocation(charIndex)
+      let rulerLoc   = self.convertPoint(event.locationInWindow, fromView: nil)
+      let textLoc    = NSPoint(x: 0, y: visibleRect.origin.y + rulerLoc.y)
+      let glyphIndex = layoutManager!.glyphIndexForPoint(textLoc, inTextContainer: textContainer)
+      let charIndex  = layoutManager!.characterIndexForGlyphAtIndex(glyphIndex)
+      let lineNumber = string.lineNumberAtLocation(charIndex)
 
       // If there is an issue at this line, display the error message in a popup view.
-    if let issues = issues[lineNumber] {
+      if let issues = issues[lineNumber] {
 
-      var objs: NSArray?
-      let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIndex, length: 0))
-      let bundle     = NSBundle.mainBundle()
-      if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
-        NSLog("%@: could not load popover NIB", __FUNCTION__)
-      } else {
+        var objs: NSArray?
+        let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIndex, length: 0))
+        let bundle     = NSBundle.mainBundle()
+        if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
+          NSLog("%@: could not load popover NIB", __FUNCTION__)
+        } else {
 
-        let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
-                                     attributes: diagnosticsTextAttributes)
-        popoverTextView.textStorage.insertAttributedString(msg, atIndex: 0)
-        let textSize    = msg.size
-        let insetSize   = NSSize(width: 0, height: 10)
-        let height      = textSize.height + insetSize.height
-        let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
-        popoverTextView.textContainerInset = insetSize
-        popover?.contentSize               = contentSize
-        popover?.behavior                  = .Semitransient
-        popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
+          let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
+            attributes: diagnosticsTextAttributes)
+          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
+          let textSize    = msg.size
+          let insetSize   = NSSize(width: 0, height: 10)
+          let height      = textSize.height + insetSize.height
+          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
+          popoverTextView.textContainerInset = insetSize
+          popover?.contentSize               = contentSize
+          popover?.behavior                  = .Semitransient
+          popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
+        }
       }
     }
   }

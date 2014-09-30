@@ -36,7 +36,7 @@ class TextEditorController: NSViewController {
   //
   // FIXME: Unify with 'Playground.swift'
   private let textAttributes: NSDictionary = { () in
-    let menlo13 = NSFont(name: "Menlo-Regular", size:13)
+    let menlo13 = NSFont(name: "Menlo-Regular", size:13)!
     return [NSFontAttributeName: menlo13]
   }()
 
@@ -51,7 +51,7 @@ class TextEditorController: NSViewController {
 
   // Initialise the view controller by loading its NIB file and also set the associated file URL.
   //
-  init(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!, fileURL: NSURL!) {
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!, fileURL: NSURL!) {
     viewModelItem     = projectViewModelItem
     fileURLDuringInit = fileURL
 
@@ -61,7 +61,7 @@ class TextEditorController: NSViewController {
     NSScrollView.setRulerViewClass(TextGutterView)
   }
 
-  required init(coder: NSCoder!) {
+  required init?(coder: NSCoder) {
     NSLog("%s: WARNING: allocating empty project view model item", __FUNCTION__)
     viewModelItem = HFMProjectViewModelItem()
     super.init(coder: coder)
@@ -74,7 +74,7 @@ class TextEditorController: NSViewController {
     fileURLDuringInit = nil
 
       // Fixed for now.
-    textView.font = textAttributes[NSFontAttributeName] as NSFont;
+    textView.font = textAttributes[NSFontAttributeName] as? NSFont;
 
       // Set up for code editing (not prose).
     textView.automaticDashSubstitutionEnabled   = false
@@ -93,13 +93,13 @@ class TextEditorController: NSViewController {
 
 
       // Register ourselves as the delegate for the text storage.
-    textView.layoutManager.textStorage.delegate = self
+    textView.layoutManager?.textStorage?.delegate = self
 
       // Initialise the line map
     if let tokeniser = highlightingTokeniser {
-      lineMap = lineTokenMap(textView.string, tokeniser)
+      lineMap = lineTokenMap(textView.string!, tokeniser)
     } else {
-      lineMap = lineTokenMap(textView.string, { _string in [] })
+      lineMap = lineTokenMap(textView.string!, { _string in [] })
     }
     textView.highlight(lineMap)
   }
@@ -137,8 +137,8 @@ extension TextEditorController {
 extension TextEditorController: NSTextStorageDelegate {
 
   func textStorageDidProcessEditing(notification: NSNotification) {
-    let editedRange    = textView.textStorage.editedRange
-    let changeInLength = textView.textStorage.changeInLength
+    let editedRange    = textView.textStorage!.editedRange
+    let changeInLength = textView.textStorage!.changeInLength
 
       // We need to delay fixing the temporary attributes until after the text storage is done processing the current
       // change.
@@ -152,7 +152,7 @@ extension TextEditorController: NSTextStorageDelegate {
     // FIXME: this should go into SyntaxHighlighting via a call through an extension of NSTextStorage
     //        to pick up the editedRange and changeInLength. (Disentangle from NSTextView to support testing.)
     let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
-    let string         = textView.textStorage.string
+    let string         = textView.textStorage!.string
     let editedString   = (string as NSString).substringWithRange(editedRange)
 //    NSLog("edited range = (pos: %i, len: %i); change in length = %i",
 //          editedRange.location, editedRange.length, changeInLength)
@@ -170,11 +170,11 @@ extension TextEditorController: NSTextStorageDelegate {
 
         // line count changed => compute a completely new line map
       if let tokeniser = highlightingTokeniser {
-        lineMap = lineTokenMap(textView.string, tokeniser)
+        lineMap = lineTokenMap(textView.string!, tokeniser)
       } else {
-        lineMap = lineTokenMap(textView.string, { _string in [] })
+        lineMap = lineTokenMap(textView.string!, { _string in [] })
       }
-      scrollView.verticalRulerView.needsDisplay = true    // update the line numbering in the gutter
+      scrollView.verticalRulerView!.needsDisplay = true    // update the line numbering in the gutter
 
     } else if let tokeniser = highlightingTokeniser {
 
@@ -183,7 +183,7 @@ extension TextEditorController: NSTextStorageDelegate {
         //        modified; we would probably need split `rescanTokenLines` into the fixing up of the start indicies
         //        and the recomputation of the token array, and then. compute the lineRange in the middle...
       let rescanLines = clampRange(extendRange(lines, rescanOffsets), 1..<lineMap.lastLine)
-      lineMap = rescanTokenLines(lineMap, rescanLines, textView.string, tokeniser)
+      lineMap = rescanTokenLines(lineMap, rescanLines, textView.string!, tokeniser)
 
     }
 

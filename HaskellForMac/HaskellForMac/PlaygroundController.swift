@@ -33,21 +33,21 @@ class PlaygroundController: NSViewController {
   /// The text attributes to be applied to all text in the code text views. (Currently, they are fixed.)
   ///
   private let codeTextAttributes: NSDictionary = {
-    let menlo13 = NSFont(name: "Menlo-Regular", size:13)
+    let menlo13 = NSFont(name: "Menlo-Regular", size:13)!
     return [NSFontAttributeName: menlo13]
   }()
 
   /// The text attributes to be applied to all text in the result text views. (Currently, they are fixed.)
   ///
   private let resultTextAttributes: NSDictionary = {
-    let menlo13        = NSFont(name: "Menlo-Regular", size:13)
+    let menlo13        = NSFont(name: "Menlo-Regular", size:13)!
     let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
     paragraphStyle.lineBreakMode = .ByTruncatingTail
     return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
   }()
 
   private let fontHeight: CGFloat = {
-    let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)])
+    let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)!])
     return x.size.height
   }()
 
@@ -59,7 +59,7 @@ class PlaygroundController: NSViewController {
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(
+  init?(
     nibName:              String!,
     bundle:               NSBundle!,
     projectViewModelItem: HFMProjectViewModelItem!,
@@ -72,7 +72,7 @@ class PlaygroundController: NSViewController {
     haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler))
   }
 
-  required init(coder: NSCoder!) {
+  required init?(coder: NSCoder) {
     haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in })
     super.init(coder: coder)
   }
@@ -96,8 +96,8 @@ class PlaygroundController: NSViewController {
     resultTextView.horizontallyResizable = true
 
       // For now, we have got a fixed font.
-    codeTextView.font   = codeTextAttributes[NSFontAttributeName] as NSFont
-    resultTextView.font = resultTextAttributes[NSFontAttributeName] as NSFont
+    codeTextView.font   = codeTextAttributes[NSFontAttributeName] as? NSFont
+    resultTextView.font = resultTextAttributes[NSFontAttributeName] as? NSFont
 
       // Set up for code editing (not prose).
     codeTextView.automaticDashSubstitutionEnabled   = false
@@ -109,7 +109,7 @@ class PlaygroundController: NSViewController {
 
       // Apply the default style.
     codeTextView.typingAttributes        = codeTextAttributes
-    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as NSParagraphStyle
+    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as? NSParagraphStyle
     resultTextView.typingAttributes      = resultTextAttributes
   }
 
@@ -160,7 +160,7 @@ class PlaygroundController: NSViewController {
   func execute() {
     let layoutManager = codeTextView.layoutManager
     let textContainer = codeTextView.textContainer
-    let string        = codeTextView.textStorage.string
+    let string        = codeTextView.textStorage!.string
     let gutter        = codeScrollView.verticalRulerView as TextGutterView
 
       // Invalidate old issues.
@@ -168,7 +168,7 @@ class PlaygroundController: NSViewController {
     issues = IssuesForFile(file: issues.file, issues: [:])
 
       // Reset the results view.
-    resultTextView.textStorage.setAttributedString(NSAttributedString())
+    resultTextView.textStorage!.setAttributedString(NSAttributedString())
 
     // Extracts one command, while advancing the current character index.
     //
@@ -188,9 +188,9 @@ class PlaygroundController: NSViewController {
       let span         = string.startIndex..<initialCharIndex
       let firstIndex   = string[span].utf16Count
       let indexLength  = string[initialCharIndex..<charIndex].utf16Count
-      let glyphRange = layoutManager.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
-                                                                 actualCharacterRange: nil)
-      let rect       = layoutManager.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer)
+      let glyphRange = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
+                                                                  actualCharacterRange: nil)
+      let rect       = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
 //      return (charIndex, command, Int(floor(rect.size.height / fontHeight)))
       return (charIndex, command, Int(floor(rect.size.height / 15)))
     }
@@ -206,7 +206,7 @@ class PlaygroundController: NSViewController {
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
       let rets       = "\n".replicate(lines)
       let attrResult = NSAttributedString(string: evalResult + rets, attributes:resultTextAttributes)
-      resultTextView.textStorage.appendAttributedString(attrResult)
+      resultTextView.textStorage!.appendAttributedString(attrResult)
 
     }
 

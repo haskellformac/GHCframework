@@ -89,62 +89,71 @@ class ContextController : NSObject {
       item.touchFileWrapper()
     } else if !item.fileWrapper.regularFile { return }
 
-    let fileURL       = project.fileURL.URLByAppendingPathComponent(filePath)
-    let fileExtension = filePath.pathExtension
+    if let fileURL       = project.fileURL?.URLByAppendingPathComponent(filePath) {
+
+      let fileExtension = filePath.pathExtension
 
       // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
-    var error: NSError?
-    if !item.dirty && !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
-      NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
-        error == nil ? "unknown reason" : error!)
-      return
-    }
+      var error: NSError?
+      if !item.dirty && !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
+        NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
+          error == nil ? "unknown reason" : error!)
+        return
+      }
 
       // Select a suitable editor, and try to load the editor and maybe also playground.
-    let nibName = editors[fileExtension]
-    if let nibName = nibName {
+      let nibName = editors[fileExtension]
+      if let nibName = nibName {
 
-      switch nibName {
+        switch nibName {
 
-      case kPackageHeaderEditor:
-        let editorController = HFMHeaderEditorController(nibName: nibName,
-                                                         bundle: nil,
-                                                         projectViewModel: project.projectModel,
-                                                         projectURL: fileURL) as HFMHeaderEditorController?
-        if let editorController = editorController {
-          config        = .PackageHeaderEditor(editorController)
-          editor.memory = editorController
-        } else {
+        case kPackageHeaderEditor:
+          if let editorController = HFMHeaderEditorController(nibName: nibName,
+                                                               bundle: nil,
+                                                     projectViewModel: project.projectModel,
+                                                           projectURL: fileURL) //as HFMHeaderEditorController?
+          {
+            config        = .PackageHeaderEditor(editorController)
+            editor.memory = editorController
+          } else {
+            config = .NoEditor
+          }
+
+        case kTextEditor:
+          if let editorController = TextEditorController(nibName: nibName,
+                                                          bundle: nil,
+                                            projectViewModelItem: item,
+                                                         fileURL: fileURL)
+          {
+            editor.memory = editorController
+            if fileExtension == HFMProjectViewModel.haskellFileExtension() {
+
+              if let playgroundController = PlaygroundController(nibName: kPlayground,
+                                                                  bundle: nil,
+                                                    projectViewModelItem: item,
+                                                      diagnosticsHandler: processIssue)
+              {
+                config            = .HaskellEditor(editorController, playgroundController)
+                playground.memory = playgroundController
+
+                  // Initialise the issues bag.
+                issues = IssuesForFile(file: fileURL.path!, issues: [:])
+
+                  // Register the tokeniser for syntax highlighting.
+                editorController.highlightingTokeniser = playgroundController.tokeniseHaskell(fileURL.path!)
+              } else {
+                config = .TextEditor(editorController)
+              }
+            } else {
+              config = .TextEditor(editorController)
+            }
+          } else {
+            config = .NoEditor
+          }
+
+        default:
           config = .NoEditor
         }
-
-      case kTextEditor:
-        let editorController = TextEditorController(nibName: nibName,
-                                                    bundle: nil,
-                                                    projectViewModelItem: item,
-                                                    fileURL: fileURL)
-        editor.memory = editorController
-        if fileExtension == HFMProjectViewModel.haskellFileExtension() {
-
-          let playgroundController = PlaygroundController(nibName: kPlayground,
-                                                          bundle: nil,
-                                                          projectViewModelItem: item,
-                                                          diagnosticsHandler: processIssue)
-          config            = .HaskellEditor(editorController, playgroundController)
-          playground.memory = playgroundController
-
-            // Initialise the issues bag.
-          issues = IssuesForFile(file: fileURL.path!, issues: [:])
-
-            // Register the tokeniser for syntax highlighting.
-          editorController.highlightingTokeniser = playgroundController.tokeniseHaskell(fileURL.path!)
-
-        } else {
-          config = .TextEditor(editorController)
-        }
-
-      default:
-        config = .NoEditor
       }
     }
   }
@@ -174,7 +183,7 @@ class ContextController : NSObject {
         // Load the module.
       if let item = self.item {
         // FIXME: We need to add getting the file path as a method
-        let fullFilename = project.fileURL.path?.stringByAppendingPathComponent(item.filePath())
+        let fullFilename = project.fileURL?.path?.stringByAppendingPathComponent(item.filePath())
         if playground.loadContextModuleIntoPlayground(editor.textView.string, file: fullFilename!) {
           playground.execute()
         }

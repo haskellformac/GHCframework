@@ -19,12 +19,12 @@ public enum HighlightingTokenKind {
 
 /// Constants for the hardcoded theme
 // FIXME: must be variable
-let highlighBackgroundColour = NSColor(calibratedRed: 255/255, green: 252/255, blue: 235/255, alpha: 1)!
-let constructorAttributes    = [NSForegroundColorAttributeName: NSColor(calibratedRed: 180/255, green:  69/255, blue:   0/255, alpha: 1)!]
-let stringAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed: 223/255, green:   7/255, blue:   0/255, alpha: 1)!]
-let numberAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)!]
-let keywordAttributes        = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)!]
-let commentAttributes        = [NSForegroundColorAttributeName: NSColor(calibratedRed: 195/255, green: 116/255, blue:  28/255, alpha: 1)!]
+let highlighBackgroundColour = NSColor(calibratedRed: 255/255, green: 252/255, blue: 235/255, alpha: 1)
+let constructorAttributes    = [NSForegroundColorAttributeName: NSColor(calibratedRed: 180/255, green:  69/255, blue:   0/255, alpha: 1)]
+let stringAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed: 223/255, green:   7/255, blue:   0/255, alpha: 1)]
+let numberAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
+let keywordAttributes        = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
+let commentAttributes        = [NSForegroundColorAttributeName: NSColor(calibratedRed: 195/255, green: 116/255, blue:  28/255, alpha: 1)]
 
 /// Theme = dictionary to look up attributes for a given token type.
 ///
@@ -281,7 +281,7 @@ extension NSTextView {
 
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     backgroundColor = highlighBackgroundColour
-    layoutManager.highlight(lineTokenMap, lineRange: lineRange)
+    layoutManager?.highlight(lineTokenMap, lineRange: lineRange)
   }
 
   func highlight(lineTokenMap: LineTokenMap) {
@@ -295,12 +295,10 @@ extension NSLayoutManager {
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     if lineRange.isEmpty { return }
 
-    let string = textStorage.string
-
       // Remove any existing temporary attributes in the entire range.
     if let start = lineTokenMap.startOfLine(lineRange.startIndex) {
 
-      let end      = lineTokenMap.endOfLine(lineRange.endIndex - 1)
+      let end = lineTokenMap.endOfLine(lineRange.endIndex - 1)
       setTemporaryAttributes([:], forCharacterRange: toNSRange(start..<end))
 
     }
