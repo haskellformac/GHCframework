@@ -21,10 +21,10 @@
 //
 @property (strong) IBOutlet NSObjectController *objectController;
 
-// Our view model and its URL.
+// Our view model and its path.
 //
 @property (weak, readonly, nonatomic) HFMProjectViewModel *projectViewModel;
-@property (copy)                      NSURL               *projectURLDuringInit;    // only used during set up
+@property (copy)                      NSString            *cabalPathDuringInit;    // only used during set up
 
 @end
 
@@ -36,19 +36,19 @@
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
                projectViewModel:(HFMProjectViewModel *)projectModel
-                     projectURL:(NSURL *)url
+                      cabalPath:(NSString *)path;
 {
   self = [self initWithNibName:nibName bundle:nibBundle];
-  _projectViewModel     = projectModel;
-  _projectURLDuringInit = url;      // can't assign to 'self.pathControl.URL' yet as 'IBOutlets' are not yet initialised
+  _projectViewModel    = projectModel;
+  _cabalPathDuringInit = path;      // can't assign to 'self.pathControl.URL' yet as 'IBOutlets' are not yet initialised
   return self;
 }
 
 - (void)awakeFromNib
 {
     // Initialize the path control
-  self.pathControl.URL      = self.projectURLDuringInit;
-  self.projectURLDuringInit = nil;
+  self.pathControl.URL      = [NSURL URLWithString:self.cabalPathDuringInit];
+  self.cabalPathDuringInit  = nil;
 }
 
 

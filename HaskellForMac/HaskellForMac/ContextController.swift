@@ -89,7 +89,7 @@ class ContextController : NSObject {
       item.touchFileWrapper()
     } else if !item.fileWrapper.regularFile { return }
 
-    if let fileURL       = project.fileURL?.URLByAppendingPathComponent(filePath) {
+    if let fileURL = project.fileURL?.URLByAppendingPathComponent(filePath) {
 
       let fileExtension = filePath.pathExtension
 
@@ -111,7 +111,7 @@ class ContextController : NSObject {
           if let editorController = HFMHeaderEditorController(nibName: nibName,
                                                                bundle: nil,
                                                      projectViewModel: project.projectModel,
-                                                           projectURL: fileURL) //as HFMHeaderEditorController?
+                                                            cabalPath: filePath)
           {
             config        = .PackageHeaderEditor(editorController)
             editor.memory = editorController
@@ -123,7 +123,7 @@ class ContextController : NSObject {
           if let editorController = TextEditorController(nibName: nibName,
                                                           bundle: nil,
                                             projectViewModelItem: item,
-                                                         fileURL: fileURL)
+                                                        filePath: filePath)
           {
             editor.memory = editorController
             if fileExtension == HFMProjectViewModel.haskellFileExtension() {

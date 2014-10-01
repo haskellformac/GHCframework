@@ -22,6 +22,6 @@
 - (instancetype)initWithNibName:(NSString *)nibName
                          bundle:(NSBundle *)nibBundle
                projectViewModel:(HFMProjectViewModel *)projectModel
-                     projectURL:(NSURL *)url;
+                      cabalPath:(NSString *)path;
 
 @end

@@ -43,7 +43,7 @@ class TextEditorController: NSViewController {
   // Text file URL.
   //
   //FIXME: this is awful!!
-  private var fileURLDuringInit: NSURL?    // only used during set up
+  private var filePathDuringInit: String?    // only used during set up
 
 
   //MARK: -
@@ -51,9 +51,9 @@ class TextEditorController: NSViewController {
 
   // Initialise the view controller by loading its NIB file and also set the associated file URL.
   //
-  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!, fileURL: NSURL!) {
-    viewModelItem     = projectViewModelItem
-    fileURLDuringInit = fileURL
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!, filePath: String) {
+    viewModelItem      = projectViewModelItem
+    filePathDuringInit = filePath
 
     super.init(nibName: nibName, bundle: bundle)
 
@@ -70,8 +70,8 @@ class TextEditorController: NSViewController {
   override func awakeFromNib() {
 
       // Initialise the path control.
-    pathControl.URL = fileURLDuringInit!
-    fileURLDuringInit = nil
+    pathControl.URL = NSURL(string: filePathDuringInit!)
+    filePathDuringInit = nil
 
       // Fixed for now.
     textView.font = textAttributes[NSFontAttributeName] as? NSFont;
