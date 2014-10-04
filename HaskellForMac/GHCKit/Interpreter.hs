@@ -30,7 +30,6 @@ import qualified DynFlags     as GHC
 import qualified ErrUtils     as GHC
 import qualified HscTypes     as GHC
 import qualified GHC          as GHC
-import qualified GHC.Paths    as Paths
 import qualified GhcMonad     as GHC
 import qualified Lexer        as GHC
 import qualified MonadUtils   as GHC
