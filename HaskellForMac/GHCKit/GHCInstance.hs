@@ -53,9 +53,11 @@ objc_marshaller 'ghcInstance 'ghcInstance
 startWithHandlerObject :: GHCInstance -> IO Session
 startWithHandlerObject handlerObject 
   = do
-    { ghcBundlePath <-
+    { 
+    ; ghcBundlePath <-
         $(objc [] $ ''String <: 
            [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
+    ; $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
     ; start ghcBundlePath (reportDiagnostics handlerObject)
     }
   where

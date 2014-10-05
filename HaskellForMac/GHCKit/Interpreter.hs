@@ -44,10 +44,18 @@ import PrintInterceptor
 import System.IO.Unsafe (unsafePerformIO)
 import Data.IORef
 
--- Relative (to the 'GHC.bundle' location) path to the library directory.
+-- Relative (to the 'GHC.bundle' location) paths to the binary and library directory.
 --
-libdir :: String
-libdir = "GHC.bundle/Contents/usr/lib/ghc-7.8.3"
+prefix, bindir, libdir :: String
+prefix = "GHC.bundle/Contents/usr/"
+bindir = prefix </> "bin"
+libdir = prefix </> "lib/ghc-7.8.3"
+
+-- Compiler wrapper
+-- 
+-- FIXME: Would be nicer to have 'ToolWrapper' in the GHC.bundle/, but Xcode messes that up and generates a code signing error
+ccWrapper :: String
+ccWrapper = "../MacOS" </> "ToolWrapper"
 
 -- |Abstract handle of an interpreter session.
 --
@@ -76,17 +84,19 @@ start ghcBundlePath diagnosticHandler
         {   -- Initialise the session by reading the package database
         ; dflagsRaw  <- GHC.getSessionDynFlags
         -- FIXME: the following doesn't help with OpenGL in the Playground
-        ; let dflags  = GHC.gopt_unset dflagsRaw GHC.Opt_GhciSandbox
+        ; let dflags   = GHC.gopt_unset dflagsRaw GHC.Opt_GhciSandbox
+              settings = GHC.settings dflags
         ; packageIds <- GHC.setSessionDynFlags $ dflags 
-                                                 { GHC.hscTarget        = GHC.HscInterpreted
-                                                 , GHC.ghcLink          = GHC.LinkInMemory
+                                                 { GHC.ghcLink          = GHC.LinkInMemory
+                                                 , GHC.hscTarget        = GHC.HscInterpreted
+                                                 , GHC.settings         = settings {GHC.sPgm_c = (ghcBundlePath </> ccWrapper, 
+                                                                                                  snd . GHC.sPgm_c $ settings)}
                                                  , GHC.log_action       = logAction
                                                  , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
                                                  }
         ; GHC.liftIO $ 
             putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging
-
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
         -- ; unless (???successfully loaded???) $

@@ -30,7 +30,7 @@ func ?!<A>(v: A?, msg: String) -> A {
 func replaceStringWithString(inFile: String, string oldString: String, withString newString: String) {
   String(contentsOfFile: inFile)?.stringByReplacingOccurrencesOfString(oldString, withString: newString)
     .writeToFile(inFile, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
-                         // ^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
+                         // ^^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
 }
 
 

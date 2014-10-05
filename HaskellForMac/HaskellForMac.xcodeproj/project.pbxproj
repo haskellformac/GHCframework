@@ -57,6 +57,7 @@
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
 		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
 		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
+		E7B574D519E1524000B030AB /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7B574D419E1524000B030AB /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5766019948C3000E6AAE0 /* Diagnostics.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -195,6 +196,7 @@
 			dstSubfolderSpec = 6;
 			files = (
 				E72F538D19C28A8D002692E6 /* RelocateGHC in CopyFiles */,
+				E7B574D519E1524000B030AB /* ToolWrapper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +269,7 @@
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
 		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
 		E7B0AB001990B4890057FAD5 /* TextGutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextGutterView.swift; sourceTree = "<group>"; };
+		E7B574D419E1524000B030AB /* ToolWrapper */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ToolWrapper; sourceTree = "<group>"; };
 		E7C5766019948C3000E6AAE0 /* Diagnostics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
@@ -446,6 +449,7 @@
 		E7A13AF81888006C00D79087 = {
 			isa = PBXGroup;
 			children = (
+				E7B574D419E1524000B030AB /* ToolWrapper */,
 				E72F538C19C28A8D002692E6 /* RelocateGHC */,
 				E72F536F19C178D9002692E6 /* GHC.bundle */,
 				E7A13B0A1888006C00D79087 /* HaskellForMac */,
