@@ -6,3 +6,4 @@
 #import "HFMProjectViewModel.h"
 #import "HFMProjectViewModelItem.h"
 #import "HFMHeaderEditorController.h"
+#import "HFMWindowController.h"

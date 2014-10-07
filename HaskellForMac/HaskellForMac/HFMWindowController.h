@@ -11,6 +11,13 @@
 #import <Cocoa/Cocoa.h>
 
 
+  // FIXME: This ought to be defined in 'CloudController' (once this class is rewritten in Swift)
+typedef NS_ENUM(NSInteger, AuthenticationFlavour) {
+  AuthenticationFlavourNewAccount,
+  AuthenticationFlavourAuthenticateAccount
+};
+
+
 @interface HFMWindowController : NSWindowController <NSOutlineViewDelegate,
                                                      NSSplitViewDelegate,
                                                      NSUserInterfaceValidations,
@@ -22,5 +29,13 @@
 /// The data source of the outline view changed. Bring the view up to date.
 ///
 - (void)refreshOutlineView;
+
+
+#pragma mark -
+#pragma mark Menu actions
+
+/// Initiate the asynchronous execution of the project in the cloud.
+///
+- (void)runProjectInCloud:(id)sender;
 
 @end

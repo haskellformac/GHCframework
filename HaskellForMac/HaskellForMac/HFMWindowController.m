@@ -21,8 +21,9 @@
 @property (weak) IBOutlet NSTextField   *noEditorLabel;
 @property (weak) IBOutlet NSView        *playgroundView;
 
-// Our context controller (which we own).
+// Our cloud and local context controller (which we own).
 //
+@property CloudController   *cloudController;
 @property ContextController *contextController;
 
 // View controllers of the currently displayed editor and playground if any (which depends on the item selected in the
@@ -76,7 +77,16 @@ NSString *const kCabalCellID = @"cabalCellID";
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
 
-    // We have got one context contoller for the lifetime of our window.
+    // We have got one cloud controller and one local context contoller for the lifetime of our window.
+  self.cloudController   = [[CloudController alloc] initWithProject:self.document
+                                              authenticationRequest:^(AuthenticationFlavour auth) {
+#pragma unused(auth)
+                                                NSAlert *alert = [[NSAlert alloc] init];
+                                                alert.messageText = @"To use the Cloudcelerate service, you need to create an account.";
+                                                [alert addButtonWithTitle:@"Create account"];
+                                                [alert addButtonWithTitle:@"Do not create account"];
+                                                return (BOOL)([alert runModal] == NSAlertFirstButtonReturn);
+                                              }];
   self.contextController = [[ContextController alloc] initWithProject:self.document];
 }
 
@@ -93,6 +103,17 @@ NSString *const kCabalCellID = @"cabalCellID";
   [[NSAnimationContext currentContext] setDuration:0];
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
+}
+
+
+#pragma mark -
+#pragma mark Menu actions
+
+  // NB: Needs to be enabled in `-valideUserInterfaceItems:`.
+- (void)runProjectInCloud:(id)sender
+{
+#pragma unused(sender)
+  [self.cloudController run];
 }
 
 
@@ -303,6 +324,10 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
+
+  } else if (action == @selector(runProjectInCloud:)) {
+
+    return YES; // FIXME: Should only be YES if there are no errors etc and the cloud is not offline etc.
 
   }
 

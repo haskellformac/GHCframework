@@ -40,7 +40,7 @@ private enum Configuration {
 }
 
 // FIXME: We could get rid of the 'NSObject' superclass if we rewrite 'HFMWindowController' in Swift. Or we could make this a proper subclass of 'NSController'.
-class ContextController : NSObject {
+final class ContextController : NSObject {
 
   /// The project in which this context is located.
   ///
@@ -223,7 +223,7 @@ class ContextController : NSObject {
 
 extension ContextController {
 
-  // Make sure the all context is being committed, and load the context in case we are editing a Haskell module.
+  // Make sure that all context is being committed, and load the context in case we are editing a Haskell module.
   //
   override func commitEditing() -> Bool {
     switch config {

@@ -38,6 +38,7 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
 }
 
 
+// FIXME: Why '@objc'?
 @objc class HaskellSession {
 
   let ghcInstance: GHCInstance
