@@ -26,8 +26,8 @@ func result<ResultType>(result: ResultType) -> ErrorOr<ResultType> {
   return .Result(Box(result))
 }
 
-func error<ResultType>() -> ErrorOr<ResultType> {
-  return .Error(NSError())
+func error<ResultType>(reason: String) -> ErrorOr<ResultType> {
+  return .Error(NSError(domain: "HfM Error", code: 0, userInfo: [NSLocalizedDescriptionKey: reason]))
 }
 
 extension Optional {

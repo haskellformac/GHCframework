@@ -82,7 +82,8 @@ NSString *const kCabalCellID = @"cabalCellID";
                                               authenticationRequest:^(AuthenticationFlavour auth) {
 #pragma unused(auth)
                                                 NSAlert *alert = [[NSAlert alloc] init];
-                                                alert.messageText = @"To use the Cloudcelerate service, you need to create an account.";
+                                                alert.messageText = @"To use Cloudcelerate, you need to create an account.";
+                                                alert.informativeText = @"The new account is tied to this copy of Haskell for Mac. By creating an account you agree to the Terms and Conditions.";
                                                 [alert addButtonWithTitle:@"Create account"];
                                                 [alert addButtonWithTitle:@"Do not create account"];
                                                 return (BOOL)([alert runModal] == NSAlertFirstButtonReturn);

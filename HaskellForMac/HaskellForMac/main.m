@@ -10,6 +10,8 @@
 #import "HsFFI.h"
 
 
+void CloudcelerateKit_initialise(void);
+
 int main(int argc, char *argv[])
 {
 
@@ -29,9 +31,12 @@ int main(int argc, char *argv[])
   if (![receiptURL checkResourceIsReachableAndReturnError:&error]) {
 
     NSLog(@"Can't reach it: %@", error);
-      //    exit(173);    // bye bye
+//    exit(173);    // bye bye
 
   }
+
+    // The object in the 'Cloudcelerate' module has class methods calling into Haskell; hence, we need to initialise here.
+  CloudcelerateKit_initialise();
 
     // Launch the Cocoa application.
   return NSApplicationMain(argc, (const char **) argv);

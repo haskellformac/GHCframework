@@ -8,7 +8,7 @@
 //  The cloud controller is in charge of the Cloudcelerate context for one particular project document. It is owned by
 //  the project's window controller, much like the `ContextController` that is in charge of the editor and playground.
 
-import Foundation
+import Cocoa
 
 
 /* FIXME: We define this in 'HFMWindowController' for now until the later is rewritten in Swift.
@@ -42,27 +42,48 @@ final class CloudController : NSObject {
   ///
   private let authenticationRequest: AuthenticationRequest
 
-  /// This may only be accessed by the following getter *urgh*
+  /// The One Cloudcelerate session for this instance of HfM. It's lazily created.
+  ///
+  /// NB: This may only be accessed by the following getter *urgh*
   private var theSession: CloudSession?
 
   /// Try to obtain a cloud session.
   ///
   private var session: CloudSession? {
     get {
-      // Ensure we are authenticated; if that is not possible, bail out.
+      // If we are not yet authenticated; try to sign in or sign up.
       if theSession == nil {
-        if let session = Optional(errorOrResult: CloudSession.theSession()) {
+
+        // FIXME: we should not hit the keychain before the first use of Cloudcelerate (right before the initial set up;
+        //   otherwise, might get a keychain dialog before they get asked for permission for the account setup
+        // FIXME: when adding support for general accounts, we need to store the last used username in the app state
+        let macAddress = copy_mac_address().takeRetainedValue() as NSData
+        let username   = macAddress.base64EncodedStringWithOptions(nil)
+        if let session = Optional(errorOrResult: CloudSession.theSession(username)) {
           theSession = session
         } else {
           if authenticationRequest(.NewAccount) {
-            if let session = Optional(errorOrResult: CloudSession.theSession()) {
-              theSession = session
-            } else {
-              // FIXME: ALERT: account set up failed (will be more complicated once we support full accounts)
-            }
-          }  // else user canceled the action
+
+              // Let's sign up for a MAS account.
+            if let receiptURL = NSBundle.mainBundle().appStoreReceiptURL {
+
+              let errorOrSession = CloudSession.newMASAccount(username, storeReceiptPath: receiptURL.path!)
+              switch errorOrSession {
+
+              case .Result(let session): theSession = session.unbox     // Success!
+
+              case .Error(let error):                                   // Account creation failed; inform user
+                NSLog("limited account setup failed: %@", error.description)
+                let alert = NSAlert(error: error)
+                alert.runModal()
+              }
+
+            } else { NSLog("limited account: missing uid") }
+
+          }  // else user canceled signup or signup failed
         }
       }
+
       return theSession
     }
   }
@@ -70,7 +91,7 @@ final class CloudController : NSObject {
   init(project: HFMProject, authenticationRequest: AuthenticationRequest) {
     self.project = project
     self.authenticationRequest = authenticationRequest
-    // FIXME: at this point we should try to authenticate with an existing API key asynchronously (if that fails,
+    // FIXME: at this point we should make a ping *with* authentication with an existing API key asynchronously (if that fails,
     //        ignore the failure until the user actually wants to use the cloud)
   }
 

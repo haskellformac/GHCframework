@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6246" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6249" systemVersion="14A386a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6246"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMWindowController">
@@ -12,7 +12,6 @@
                 <outlet property="outlineView" destination="xMX-Dm-h40" id="4eD-9D-bXB"/>
                 <outlet property="playgroundView" destination="8bF-Zs-hji" id="qhd-Gv-DK9"/>
                 <outlet property="splitView" destination="9kS-X2-FR9" id="IH2-21-f2k"/>
-                <outlet property="verticalSplitView" destination="9kS-X2-FR9" id="AR5-Ju-ORB"/>
                 <outlet property="window" destination="qHE-kS-dao" id="uvl-i4-ztn"/>
             </connections>
         </customObject>
@@ -30,14 +29,14 @@
                     <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View">
                         <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                         <subviews>
-                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="20" horizontalPageScroll="10" verticalLineScroll="20" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
+                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
                                 <rect key="frame" x="0.0" y="0.0" width="103.5" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <clipView key="contentView" id="oc1-de-xrA">
+                                <clipView key="contentView" drawsBackground="NO" id="oc1-de-xrA">
                                     <rect key="frame" x="1" y="1" width="148" height="505"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="20" rowSizeStyle="small" viewBased="YES" indentationPerLevel="14" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
+                                        <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" viewBased="YES" indentationPerLevel="14" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="0.0"/>
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -107,7 +106,7 @@
                                             </connections>
                                         </outlineView>
                                     </subviews>
-                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <nil key="backgroundColor"/>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
                                     <rect key="frame" x="1" y="490" width="18.5" height="16"/>
@@ -123,7 +122,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-C3-ErB">
-                                        <rect key="frame" x="102" y="239" width="122" height="30"/>
+                                        <rect key="frame" x="106" y="239" width="113" height="30"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="No Editor" id="ZV6-Ek-WYQ">
                                             <font key="font" metaFont="system" size="25"/>
                                             <color key="textColor" name="gridColor" catalog="System" colorSpace="catalog"/>

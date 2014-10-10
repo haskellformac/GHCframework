@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable, StandaloneDeriving #-}
+
 -- |
 -- Module    : Cloudcelerate
 -- Copyright : [2014] Manuel M T Chakravarty
@@ -7,13 +9,102 @@
 --
 -- Cloudcelerate API
 
-module Cloudcelerate (
-) where
+module Cloudcelerate () where
 
   -- standard libraries
+import Data.List
+import Data.Word
+import Foreign.Ptr
+import System.FilePath
 
+  -- language-c-inline
+import Language.C.Quote.ObjC
+import Language.C.Inline.ObjC
+  
   -- other libraries
-import Data.Aeson
+-- import Data.Aeson
 import Network.Curl
 
+objc_import ["<Foundation/Foundation.h>"]
 
+
+sandboxURL = "http://api.sandbox.cloudcelerate.io/v1.0"
+
+postUsersMac :: String -> String -> IO (Maybe String)
+postUsersMac username storeReceiptPath
+  = withCurlDo $ do 
+    { (code, response) <- curlGetString (sandboxURL </> "users" ++ "?type=mac&username=" ++ username)
+                                        [ CurlFailOnError False
+                                        , CurlHttpPost [HttpPost 
+                                                        { postName     = "file"
+                                                        , contentType  = Nothing
+                                                        , content      = ContentFile storeReceiptPath
+                                                        , extraHeaders = []
+                                                        , showName     = Nothing
+                                                        }]
+                                        , CurlVerbose True
+                                        ]
+    ; if code == CurlOK && not ("error" `isInfixOf` response)
+      then do
+      { return $ Just (takeWhile (/= '"') . drop 15 . concat . lines $ response) -- FIXME: parse properly
+      }
+      else do
+      { putStrLn $ "postUsersMac failed with '" ++ response ++ "'"
+      ; return Nothing
+      }
+      -- Need to parse the error string and return it for reporting
+      
+    -- { curlMultiPost (sandboxURL </> "users" ++ "?type=mac&username=" ++ username)
+    --                 [ CurlHttpPost [HttpPost 
+    --                                 { postName     = "file"
+    --                                 , contentType  = Nothing
+    --                                 , content      = ContentFile storeReceiptPath
+    --                                 , extraHeaders = []
+    --                                 , showName     = Nothing
+    --                                 }]
+    --                 , CurlVerbose True
+    --                 ] 
+    --                 []
+    -- ; return nullPtr
+    }
+
+
+objc_interface [cunit|
+
+// Indirection as the dynlib containing the Haskell code is not directly visible to HfM.
+void CloudcelerateKit_initialise(void);
+
+@interface Cloudcelerate : NSObject
+
+/// Request the API key for the given username-storeReceipt combo unless the username was already used with a different receipt.
+///
++ (typename NSString *)newMASAccount:(typename NSString *)userName storeReceiptPath:(typename NSString *)storeReceiptPath;
+
+@end
+|]
+
+
+objc_implementation [Typed 'postUsersMac] [cunit|
+
+
+void Cloudcelerate_initialise(void);
+void CloudcelerateKit_initialise()
+{
+  Cloudcelerate_initialise();
+}
+
+@implementation Cloudcelerate
+
++ (typename NSString *)newMASAccount:(typename NSString *)username storeReceiptPath:(typename NSString *)storeReceiptPath
+{
+  return postUsersMac(username, storeReceiptPath);
+}
+
+
+@end
+|]
+
+
+objc_emit
+
+foreign export ccall "Cloudcelerate_initialise" objc_initialise :: IO ()
