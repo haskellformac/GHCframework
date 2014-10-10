@@ -23,9 +23,38 @@ class CloudSession {
   /// This fails if we haven't got an API key of an authenticated account.
   ///
   class func theSession(newUsername: String) -> ErrorOr<CloudSession> {
-    let apiKey = "" // FIXME; grab it off the keychain
-//    return result(CloudSession(apiKey: apiKey))
-    return error("bla")
+
+      // Try to retrieve the API key for the given userName from the keychain.
+    let res: ErrorOr<CloudSession> =
+      serverName.withCString{ serverNameUnsafePtr in
+      newUsername.withCString{ newUsernameUnsafePtr in
+
+        var apiKeyLen: UInt32 = 0
+        var apiKeyPtr: UnsafeMutablePointer<()> = nil
+        let resultCode = SecKeychainFindInternetPassword(nil,
+          UInt32(serverName.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), serverNameUnsafePtr,
+          0, nil,
+          UInt32(newUsername.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), newUsernameUnsafePtr,
+          0, nil,
+          0,
+          UInt32(kSecProtocolTypeHTTPS),
+          UInt32(kSecAuthenticationTypeHTTPBasic),
+          &apiKeyLen, &apiKeyPtr, nil)
+        if resultCode == errSecSuccess {
+
+          if let apiKey = NSString(bytes: apiKeyPtr, length: Int(apiKeyLen), encoding: NSUTF8StringEncoding) {
+            SecKeychainItemFreeContent(nil, apiKeyPtr)
+            return result(CloudSession(username: newUsername, apiKey: apiKey))
+          } else {
+            return error("Couldn't decode keychain result")
+          }
+
+        } else {
+          return error("No API key avilable")
+        }
+      }
+    }
+    return res
   }
 
   /// Create a new MAS account with the given MAS receipt.
