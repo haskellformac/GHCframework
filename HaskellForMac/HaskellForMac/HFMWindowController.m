@@ -111,6 +111,13 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark Menu actions
 
   // NB: Needs to be enabled in `-valideUserInterfaceItems:`.
+- (void)newCloudAccount:(id)sender
+{
+#pragma unused(sender)
+  [self.cloudController ping];
+}
+
+  // NB: Needs to be enabled in `-valideUserInterfaceItems:`.
 - (void)runProjectInCloud:(id)sender
 {
 #pragma unused(sender)
@@ -325,6 +332,10 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
+
+  } else if (action == @selector(newCloudAccount:)) {
+
+    return ![self.cloudController accountStatus];
 
   } else if (action == @selector(runProjectInCloud:)) {
 

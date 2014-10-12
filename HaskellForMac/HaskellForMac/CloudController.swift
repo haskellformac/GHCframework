@@ -21,6 +21,9 @@ enum AuthenticationFlavour {
 }
 */
 
+// FIXME: this needs to go into a file specifically for all the default management.
+private let defaultsKeyUsername = "username"
+
 /// Callback to request the UI to authenticate the Cloudcelerate user.
 ///
 /// The result indicates whether the use approved authenticaion (== `true`) or requested to cancel (== `false`).
@@ -51,39 +54,36 @@ final class CloudController : NSObject {
   ///
   private var session: CloudSession? {
     get {
-      // If we are not yet authenticated; try to sign in or sign up.
+        // If we are not yet authenticated; try to sign in or sign up.
       if theSession == nil {
 
-        // FIXME: we should not hit the keychain before the first use of Cloudcelerate (right before the initial set up;
-        //   otherwise, might get a keychain dialog before they get asked for permission for the account setup
-        // FIXME: when adding support for general accounts, we need to store the last used username in the app state
-        let macAddress = copy_mac_address().takeRetainedValue() as NSData
-        let username   = macAddress.base64EncodedStringWithOptions(nil)
-        if let session = Optional(errorOrResult: CloudSession.theSession(username)) {
-          theSession = session
-        } else {
-          if authenticationRequest(.NewAccount) {
+          // If there is no account name in preferences, we need to sign up for an account first.
+          //
+          // NB: It's important to check the defaults before hitting the keychain as we don't want to risk a keychain
+          //     permission alert before the sign up permission dialog.
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        if let username = userDefaults.stringForKey(defaultsKeyUsername) {   // sign in
+          switch CloudSession.theSession(username) {
 
-              // Let's sign up for a MAS account.
-            if let receiptURL = NSBundle.mainBundle().appStoreReceiptURL {
+          case .Result(let session): theSession = session.unbox
 
-              let errorOrSession = CloudSession.newMASAccount(username, storeReceiptPath: receiptURL.path!)
-              switch errorOrSession {
+          case .Error(let error):
+            NSLog("can't authenticate: %@", error.description)
+            let alert = NSAlert(error: error)
+            alert.runModal()
+          }
+        } else {                                                             // sign up
 
-              case .Result(let session): theSession = session.unbox     // Success!
+            // The username for a Mac account is the GUID.
+          let macAddress  = copy_mac_address().takeRetainedValue() as NSData
+          let newUsername = macAddress.base64EncodedStringWithOptions(nil)
+          if let (finalUsername, session) = signup(newUsername) {
 
-              case .Error(let error):                                   // Account creation failed; inform user
-                NSLog("limited account setup failed: %@", error.description)
-                let alert = NSAlert(error: error)
-                alert.runModal()
-              }
-
-            } else { NSLog("limited account: missing uid") }
-
-          }  // else user canceled signup or signup failed
+            userDefaults.setObject(finalUsername, forKey: defaultsKeyUsername)
+            theSession = session
+          }
         }
       }
-
       return theSession
     }
   }
@@ -97,14 +97,49 @@ final class CloudController : NSObject {
 
 
   // MARK: -
-  // MARK: Cloud authentication
+  // MARK: Cloud sign up
 
-  func authenticated() -> Bool {
-    return false // FIXME: implement
+  private func signup(username: String) -> (finalUsername: String, session: CloudSession)? {
+
+    if authenticationRequest(.NewAccount) {
+
+        // Let's sign up for a MAS account.
+      if let receiptURL = NSBundle.mainBundle().appStoreReceiptURL {
+
+        let errorOrSession = CloudSession.newMASAccount(username, storeReceiptPath: receiptURL.path!)
+        switch errorOrSession {
+
+        case .Result(let session): return (username, session.unbox)     // Success!
+                                          // we return the same username — for a full acount setup, we will return a different name
+
+        case .Error(let error):                                         // Account creation failed; inform user
+          NSLog("limited account setup failed: %@", error.description)
+          let alert = NSAlert(error: error)
+          alert.runModal()
+          return nil
+        }
+
+      } else { NSLog("limited account: missing uid"); return nil }
+    } else { return nil }   // user rejected sign up
   }
 
+  /// Have we signed up for a Mac account already?
+  ///
+  /// FIXME: the result needs to be tertairy: (1) no account, (2) Mac account, or (3) full account.
+  func accountStatus() -> Bool {
+    let userDefaults = NSUserDefaults.standardUserDefaults()
+    return userDefaults.stringForKey(defaultsKeyUsername) != nil
+  }
+
+  
   // MARK: -
   // MARK: Cloud operations
+
+  /// Ping cloudcelerate after ensuring we have a valid session (i.e., account is set up).
+  ///
+  func ping() {
+    if let mySession = session { mySession.ping() }
+  }
 
   /// Run this project in the current configuration in the cloud.
   ///

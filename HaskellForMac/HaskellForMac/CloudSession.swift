@@ -22,19 +22,19 @@ class CloudSession {
   ///
   /// This fails if we haven't got an API key of an authenticated account.
   ///
-  class func theSession(newUsername: String) -> ErrorOr<CloudSession> {
+  class func theSession(username: String) -> ErrorOr<CloudSession> {
 
       // Try to retrieve the API key for the given userName from the keychain.
     let res: ErrorOr<CloudSession> =
       serverName.withCString{ serverNameUnsafePtr in
-      newUsername.withCString{ newUsernameUnsafePtr in
+      username.withCString{ usernameUnsafePtr in
 
         var apiKeyLen: UInt32 = 0
         var apiKeyPtr: UnsafeMutablePointer<()> = nil
         let resultCode = SecKeychainFindInternetPassword(nil,
           UInt32(serverName.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), serverNameUnsafePtr,
           0, nil,
-          UInt32(newUsername.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), newUsernameUnsafePtr,
+          UInt32(username.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), usernameUnsafePtr,
           0, nil,
           0,
           UInt32(kSecProtocolTypeHTTPS),
@@ -44,7 +44,14 @@ class CloudSession {
 
           if let apiKey = NSString(bytes: apiKeyPtr, length: Int(apiKeyLen), encoding: NSUTF8StringEncoding) {
             SecKeychainItemFreeContent(nil, apiKeyPtr)
-            return result(CloudSession(username: newUsername, apiKey: apiKey))
+
+//            ??? perform an authenticated ping before intialising the CloudSession in the return
+            let valid = true
+            if valid {
+              return result(CloudSession(username: username, apiKey: apiKey))
+            } else {
+              return error("Couldn't decode keychain result")
+            }
           } else {
             return error("Couldn't decode keychain result")
           }
@@ -114,6 +121,10 @@ class CloudSession {
     self.username = username
     self.apiKey   = apiKey
   }
+
+
+  // MARK: -
+  // MARK: Cloudcelerate API calls
 
   func ping() -> Bool {
     return true
