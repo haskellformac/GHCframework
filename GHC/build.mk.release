@@ -69,7 +69,11 @@ GhcStage2HcOpts = -O2 -fasm
 GhcHcOpts       = -Rghc-timing
 GhcLibHcOpts    = -O2
 # GhcLibWays     += p
-# no profiling support for now
+# no profiling support for now and no docs
+HADDOCK_DOCS       = NO
+BUILD_DOCBOOK_HTML = NO
+BUILD_DOCBOOK_PS   = NO
+BUILD_DOCBOOK_PDF  = NO
 
 ifeq "$(PlatformSupportsSharedLibs)" "YES"
 GhcLibWays += dyn
