@@ -39,6 +39,9 @@
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
 		E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E74B393919EB6E4200D60BE2 /* ghckit-support.cabal in Resources */ = {isa = PBXBuildFile; fileRef = E74B393819EB6E4200D60BE2 /* ghckit-support.cabal */; };
+		E74B393B19EB6E5100D60BE2 /* PrintInterceptor.hs in Resources */ = {isa = PBXBuildFile; fileRef = E74B393A19EB6E5100D60BE2 /* PrintInterceptor.hs */; };
+		E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */ = {isa = PBXBuildFile; fileRef = E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */; };
 		E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD13719A07E0300CDC18F /* StringExtensions.swift */; };
 		E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89119CD6C5700369A80 /* NameUtilities.swift */; };
 		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
@@ -253,6 +256,9 @@
 		E743140719A46F70003A3934 /* CloudcelerateKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudcelerateKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E743140C19A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudcelerateKitTests.swift; sourceTree = "<group>"; };
+		E74B393819EB6E4200D60BE2 /* ghckit-support.cabal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "ghckit-support.cabal"; path = "GHCKit/ghckit-support/ghckit-support.cabal"; sourceTree = SOURCE_ROOT; };
+		E74B393A19EB6E5100D60BE2 /* PrintInterceptor.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintInterceptor.hs; path = "GHCKit/ghckit-support/PrintInterceptor.hs"; sourceTree = SOURCE_ROOT; };
+		E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stableChanPtr.c; path = "GHCKit/ghckit-support/stableChanPtr.c"; sourceTree = SOURCE_ROOT; };
 		E75DD13719A07E0300CDC18F /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		E76CD89119CD6C5700369A80 /* NameUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameUtilities.swift; sourceTree = "<group>"; };
 		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
@@ -267,7 +273,6 @@
 		E7A13B0C1888006C00D79087 /* HaskellForMac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HaskellForMac-Info.plist"; sourceTree = "<group>"; };
 		E7A13B0E1888006C00D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7A13B101888006C00D79087 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		E7A13B121888006C00D79087 /* HaskellForMac-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Prefix.pch"; sourceTree = "<group>"; };
 		E7A13B141888006C00D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		E7A13B161888006C00D79087 /* HFMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HFMAppDelegate.h; sourceTree = "<group>"; };
 		E7A13B171888006C00D79087 /* HFMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HFMAppDelegate.m; sourceTree = "<group>"; };
@@ -366,6 +371,7 @@
 				E70A66D8197CE0BE006D3514 /* Interpreter.hs */,
 				E70A66D1197CE038006D3514 /* GHCKit.h */,
 				E70A66B1197CC341006D3514 /* Supporting Files */,
+				E74B393719EB6E2800D60BE2 /* ghckit-support */,
 			);
 			name = GHCKit;
 			path = GHCFramework;
@@ -458,6 +464,16 @@
 				E743140C19A46F70003A3934 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E74B393719EB6E2800D60BE2 /* ghckit-support */ = {
+			isa = PBXGroup;
+			children = (
+				E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */,
+				E74B393A19EB6E5100D60BE2 /* PrintInterceptor.hs */,
+				E74B393819EB6E4200D60BE2 /* ghckit-support.cabal */,
+			);
+			name = "ghckit-support";
 			sourceTree = "<group>";
 		};
 		E76CD89319CD6DC600369A80 /* Utilities */ = {
@@ -557,7 +573,6 @@
 				E7A13B0C1888006C00D79087 /* HaskellForMac-Info.plist */,
 				E7A13B0D1888006C00D79087 /* InfoPlist.strings */,
 				E7A13B101888006C00D79087 /* main.m */,
-				E7A13B121888006C00D79087 /* HaskellForMac-Prefix.pch */,
 				E7A13B131888006C00D79087 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
@@ -881,9 +896,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E74B393B19EB6E5100D60BE2 /* PrintInterceptor.hs in Resources */,
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
+				E74B393919EB6E4200D60BE2 /* ghckit-support.cabal in Resources */,
 				E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */,
 				E7258C58198A2263004789CF /* Playground.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
@@ -921,7 +938,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\n\n# FIXME: when refactoring, try using '-no-user-package-db' instead of the explicit '--package-db' flag\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -O -package-db ${GHC_PKG_DB} -no-user-package-db -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi\n";
+			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\n\n# FIXME: when refactoring, try using '-no-user-package-db' instead of the explicit '--package-db' flag\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -O -package-db ${GHC_PKG_DB} -no-user-package-db -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi\n";
 		};
 		E70A6715197E2924006D3514 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -938,7 +955,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# Kludge to wait for GHC build (Xcode doesn't let us make a dependency to a generic bundle.)\nwhile [ ! -x $GHC ]; do\n  sleep 1\ndone\n\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 		E7128D0019C0228700754557 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -946,12 +963,13 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/GHCKit/ghckit-support/PrintInterceptor.hs",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# Change the dylib install names of all packages to relocatable ones\nDYLIBS=\"Cabal-1.18.1.3 array-0.5.0.0 base-4.7.0.1 bin-package-db-0.0.0.0 binary-0.7.1.0 bytestring-0.10.4.0 containers-0.5.5.1 deepseq-1.3.0.2 directory-1.2.1.0 filepath-1.3.0.2 ghc-7.8.3 ghc-prim-0.3.1.0 haskeline-0.7.1.2 haskell2010-1.1.2.0 haskell98-2.0.0.3 hoopl-3.10.0.1 hpc-0.6.0.1 integer-gmp-0.5.1.0 language-c-inline-0.7.6.1 old-locale-1.0.0.6 old-time-1.1.0.2 pretty-1.1.1.1 process-1.2.0.0 template-haskell-2.9.0.0 terminfo-0.4.0.0 time-1.4.2 transformers-0.3.0.0 unix-2.7.0.1 xhtml-3000.2.1\"\nfor DYLIB in $DYLIBS; do\n  NAME=$DYLIB/libHS${DYLIB}-ghc7.8.3.dylib\n#  CURRENT_NAME=\n  if [ `otool -D $GHCLIB/$NAME | tail -1` != \"@rpath/$NAME\" ]; then\n    echo \"Fix install name and rpath: $NAME\"\n    install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n    install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n  fi\ndone\n\n# The RTS is linked into the main app executable; hence, needs to be relative to that.\n# FIXME: fix up the other RTS dylibs, too\nDYLIB_ID_APP_PREFIX='@loader_path/../Frameworks/GHC.bundle/Contents/usr/lib/ghc-7.8.3'\ninstall_name_tool -id $DYLIB_ID_APP_PREFIX/rts-1.0/libHSrts_thr-ghc7.8.3.dylib $GHCLIB/rts-1.0/libHSrts_thr-ghc7.8.3.dylib\n\n# Install further packages\nPKGS=\"stm-2.4.2 exception-transformers-0.3.0.3 mtl-2.1.3.1 exception-mtl-0.3.0.4 syb-0.4.1 text-1.1.0.0 polyparse-1.9 cpphs-1.18.5 srcloc-0.4.0 haskell-src-exts-1.15.0.1 th-lift-0.6.1 th-orphans-0.8.1 haskell-src-meta-0.6.0.7 mainland-pretty-0.2.7 symbol-0.2.1 language-c-quote-0.8.0 language-c-inline-0.7.6.1 curl-1.3.8\"\nfor PKG in $PKGS; do\n  $GHCBIN/ghc-pkg --package-db=$GHCLIB/package.conf.d describe $PKG >/dev/null\n  if [ $? -ne 0 ]; then\n    cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries/$PKG --haddockdir=$GHCDOC/html/libraries/$PKG --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling $PKG\n    NAME=$PKG/libHS${PKG}-ghc7.8.3.dylib\n    echo \"Fix install name and rpath: $NAME\"\n    install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n    install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n  fi\ndone\n\ncabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\nNAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\necho \"Fix install name and rpath: $NAME\"\ninstall_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\ninstall_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n";
+			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# Kludge to wait for GHC build (Xcode doesn't let us make a dependency to a generic bundle.)\nwhile [ ! -x $GHCBIN ]; do\n  sleep 1\ndone\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\n  NAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\n";
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -968,7 +986,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CloudcelerateKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CloudcelerateKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/package.conf.d\n\n# Kludge to wait for GHC build (Xcode doesn't let us make a dependency to a generic bundle.)\nwhile [ ! -x $GHC ]; do\n  sleep 1\ndone\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CloudcelerateKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.bundle/Contents/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CloudcelerateKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
 		};
 		E730346019E665EB006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1068,6 +1086,7 @@
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
+				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
 				E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */,
 				E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */,
@@ -1606,8 +1625,8 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -1657,8 +1676,8 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;

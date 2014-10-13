@@ -52,7 +52,7 @@ postUsersMac username storeReceiptPath
       { putStrLn $ "postUsersMac failed with '" ++ response ++ "'"
       ; return Nothing
       }
-      -- Need to parse the error string and return it for reporting
+      -- Need to parse the error string and return it for reporting 
       
     -- { curlMultiPost (sandboxURL </> "users" ++ "?type=mac&username=" ++ username)
     --                 [ CurlHttpPost [HttpPost 

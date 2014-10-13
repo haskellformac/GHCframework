@@ -69,6 +69,7 @@
 				E7E54FF3195D6CEE0019278B /* Frameworks */,
 				E7E54FF4195D6CEE0019278B /* Resources */,
 				E7E55000195EA0560019278B /* ShellScript */,
+				E74B393619EB607C00D60BE2 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -121,6 +122,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		E74B393619EB607C00D60BE2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# Change the dylib install names of all packages to relocatable ones\nDYLIBS=\"Cabal-1.18.1.3 array-0.5.0.0 base-4.7.0.1 bin-package-db-0.0.0.0 binary-0.7.1.0 bytestring-0.10.4.0 containers-0.5.5.1 deepseq-1.3.0.2 directory-1.2.1.0 filepath-1.3.0.2 ghc-7.8.3 ghc-prim-0.3.1.0 haskeline-0.7.1.2 haskell2010-1.1.2.0 haskell98-2.0.0.3 hoopl-3.10.0.1 hpc-0.6.0.1 integer-gmp-0.5.1.0 language-c-inline-0.7.6.1 old-locale-1.0.0.6 old-time-1.1.0.2 pretty-1.1.1.1 process-1.2.0.0 template-haskell-2.9.0.0 terminfo-0.4.0.0 time-1.4.2 transformers-0.3.0.0 unix-2.7.0.1 xhtml-3000.2.1\"\nfor DYLIB in $DYLIBS; do\nNAME=$DYLIB/libHS${DYLIB}-ghc7.8.3.dylib\n#  CURRENT_NAME=\nif [ `otool -D $GHCLIB/$NAME | tail -1` != \"@rpath/$NAME\" ]; then\necho \"Fix install name and rpath: $NAME\"\ninstall_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\ninstall_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\ndone\n\n# The RTS is linked into the main app executable; hence, needs to be relative to that.\n# FIXME: fix up the other RTS dylibs, too\nDYLIB_ID_APP_PREFIX='@loader_path/../Frameworks/GHC.bundle/Contents/usr/lib/ghc-7.8.3'\ninstall_name_tool -id $DYLIB_ID_APP_PREFIX/rts-1.0/libHSrts_thr-ghc7.8.3.dylib $GHCLIB/rts-1.0/libHSrts_thr-ghc7.8.3.dylib\n\n# Install further packages\nPKGS=\"stm-2.4.2 exception-transformers-0.3.0.3 mtl-2.1.3.1 exception-mtl-0.3.0.4 syb-0.4.1 text-1.1.0.0 polyparse-1.9 cpphs-1.18.5 srcloc-0.4.0 haskell-src-exts-1.15.0.1 th-lift-0.6.1 th-orphans-0.8.1 haskell-src-meta-0.6.0.7 mainland-pretty-0.2.7 symbol-0.2.1 language-c-quote-0.8.0 language-c-inline-0.7.6.1 curl-1.3.8 hashable-1.2.2.0 scientific-0.2.0.2 attoparsec-0.10.4.0 dlist-0.7.1 unordered-containers-0.2.4.0 primitive-0.5.2.1 vector-0.10.9.1 aeson-0.7.0.4\"\nfor PKG in $PKGS; do\n$GHCBIN/ghc-pkg --package-db=$GHCLIB/package.conf.d describe $PKG >/dev/null\nif [ $? -ne 0 ]; then\ncabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries/$PKG --haddockdir=$GHCDOC/html/libraries/$PKG --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling $PKG\nNAME=$PKG/libHS${PKG}-ghc7.8.3.dylib\necho \"Fix install name and rpath: $NAME\"\ninstall_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\ninstall_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\ndone\n";
+		};
 		E7E55000195EA0560019278B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
