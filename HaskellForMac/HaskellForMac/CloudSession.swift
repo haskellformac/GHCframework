@@ -131,7 +131,11 @@ class CloudSession {
     return Cloudcelerate.validateUsername(nil, apiKey: "")
   }
 
-  func run(fileURL: NSURL) {
-
+  /// Upload the given project and issue a job running the program on an empty dataset.
+  ///
+  func run(fileURL: NSURL) -> ErrorOr<()> {
+    let outcome = Cloudcelerate.uploadProgramFor(username, apiKey: apiKey, fileURL: fileURL)
+                  ?? Cloudcelerate.runJobFor(username, apiKey: apiKey, programName: fileURL.lastPathComponent, dataName: "")
+    return ErrorOr(optionalError: outcome, result: ())
   }
 }

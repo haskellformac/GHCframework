@@ -114,8 +114,7 @@ final class CloudController : NSObject {
 
         case .Error(let error):                                         // Account creation failed; inform user
           NSLog("limited account setup failed: %@", error.description)
-          let alert = NSAlert(error: error)
-          alert.runModal()
+          NSAlert(error: error).runModal()
           return nil
         }
 
@@ -148,9 +147,14 @@ final class CloudController : NSObject {
     if let mySession = session {
       if let fileURL = project.fileURL {
         // FIXME: add configurations (comprising the data set, execution parameters, notification endpoints(?), etc)
-        mySession.run(fileURL)
+
+        switch mySession.run(fileURL) {
+
+        case .Error(let error):
+          NSAlert(error: error).runModal()
+        default: let _ = "Why does every case have to have at least one statement?"
+        }
       }
     }
-    // FIXME: we need to display the failure somewhere (a dialog
   }
 }

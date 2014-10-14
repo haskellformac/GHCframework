@@ -30,6 +30,16 @@ func error<ResultType>(reason: String) -> ErrorOr<ResultType> {
   return .Error(NSError(domain: "HfM Error", code: 0, userInfo: [NSLocalizedDescriptionKey: reason]))
 }
 
+extension ErrorOr {
+  init(optionalError: String?, result value: ResultType) {
+    if let errorMsg = optionalError {
+      self = error(errorMsg)
+    } else {
+      self = result(value)
+    }
+  }
+}
+
 extension Optional {
   init(errorOrResult: ErrorOr<T>) {
     switch errorOrResult {

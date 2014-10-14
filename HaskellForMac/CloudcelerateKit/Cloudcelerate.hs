@@ -62,14 +62,31 @@ getPing username apiKey
                                  credentials ++
                                  [ CurlFailOnError False
                                  , CurlVerbose True
-                                 ]
-      
+                                 ]      
     ; return $ code == CurlOK
     }
   where
     credentials = case username of
                     Nothing       -> []
                     Just username -> [CurlHttpAuth [HttpAuthBasic], CurlUserName username, CurlUserPassword apiKey]
+
+postPrograms :: String -> String -> String -> IO (Maybe String)
+postPrograms username apiKey projectPath
+  = return $ Just "not implemented"
+
+postJobs :: String -> String -> String -> String -> IO (Maybe String)
+postJobs username apiKey programName dataName
+  = withCurlDo $ do 
+    { (code, _) <- curlGetString (sandboxURL </> "jobs" ++ "?program=" ++ programName ++ "&dataset=" ++ dataName)
+                                 [ CurlHttpAuth [HttpAuthBasic]
+                                 , CurlUserName username
+                                 , CurlUserPassword apiKey
+                                 , CurlFailOnError False
+                                 , CurlVerbose True
+                                 ] 
+    ; return $ if code == CurlOK then Nothing else (Just "Unable to start job")
+                                                   -- FIXME: more detailed diagnostics
+    }
 
 
 objc_interface [cunit|
@@ -87,11 +104,32 @@ void CloudcelerateKit_initialise(void);
 ///
 + (typename BOOL)validateUsername:(typename NSString *)username apiKey:(typename NSString *)apiKey;
 
+/// Upload the Cabal sdist of the given project at the given location to Cloudcelerate.
+///
+/// The Cloudcelerate name of the project is the directory name.
+///
+/// If the upload fails, return an error string; otherwise, return 'nil'.
+///
++ (typename NSString *)uploadProgramFor:(typename NSString *)username 
+                                 apiKey:(typename NSString *)apiKey
+                                fileURL:(typename NSURL    *)fileURL;
+
+/// Issue a job running the given program in the given dataset.
+///
+/// If the *issuing* fails, return an error string; otherwise, return 'nil'. 
+///
+/// NB: Jobs are executed asynchoniously. Even if this call succeeds, the job may still fail.
+///
++ (typename NSString *)runJobFor:(typename NSString *)username
+                          apiKey:(typename NSString *)apiKey
+                     programName:(typename NSString *)programName
+                        dataName:(typename NSString *)dataName;
+
 @end
 |]
 
 
-objc_implementation [Typed 'postUsersMac, Typed 'getPing] [cunit|
+objc_implementation [Typed 'postUsersMac, Typed 'getPing, Typed 'postPrograms, Typed 'postJobs] [cunit|
 
 
 void Cloudcelerate_initialise(void);
@@ -112,6 +150,20 @@ void CloudcelerateKit_initialise()
   return getPing(username, apiKey);
 }
 
++ (typename NSString *)uploadProgramFor:(typename NSString *)username 
+                                 apiKey:(typename NSString *)apiKey
+                                fileURL:(typename NSURL    *)fileURL
+{
+  return postPrograms(username, apiKey, [fileURL path]); 
+}
+
++ (typename NSString *)runJobFor:(typename NSString *)username
+                          apiKey:(typename NSString *)apiKey
+                     programName:(typename NSString *)programName
+                        dataName:(typename NSString *)dataName;
+{
+  return postJobs(username, apiKey, programName, dataName);
+}
 
 @end
 |]
