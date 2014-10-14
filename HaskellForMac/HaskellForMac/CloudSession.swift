@@ -45,12 +45,11 @@ class CloudSession {
           if let apiKey = NSString(bytes: apiKeyPtr, length: Int(apiKeyLen), encoding: NSUTF8StringEncoding) {
             SecKeychainItemFreeContent(nil, apiKeyPtr)
 
-//            ??? perform an authenticated ping before intialising the CloudSession in the return
-            let valid = true
+            let valid = Cloudcelerate.validateUsername(username, apiKey: apiKey)
             if valid {
               return result(CloudSession(username: username, apiKey: apiKey))
             } else {
-              return error("Couldn't decode keychain result")
+              return error("Can't validate username")
             }
           } else {
             return error("Couldn't decode keychain result")
@@ -126,8 +125,10 @@ class CloudSession {
   // MARK: -
   // MARK: Cloudcelerate API calls
 
+  /// Check whether the Cloudcelerate server is alive (without authentication).
+  ///
   func ping() -> Bool {
-    return true
+    return Cloudcelerate.validateUsername(nil, apiKey: "")
   }
 
   func run(fileURL: NSURL) {

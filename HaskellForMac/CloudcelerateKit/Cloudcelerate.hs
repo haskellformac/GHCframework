@@ -53,20 +53,23 @@ postUsersMac username storeReceiptPath
       ; return Nothing
       }
       -- Need to parse the error string and return it for reporting 
-      
-    -- { curlMultiPost (sandboxURL </> "users" ++ "?type=mac&username=" ++ username)
-    --                 [ CurlHttpPost [HttpPost 
-    --                                 { postName     = "file"
-    --                                 , contentType  = Nothing
-    --                                 , content      = ContentFile storeReceiptPath
-    --                                 , extraHeaders = []
-    --                                 , showName     = Nothing
-    --                                 }]
-    --                 , CurlVerbose True
-    --                 ] 
-    --                 []
-    -- ; return nullPtr
     }
+    
+getPing :: Maybe String -> String -> IO Bool
+getPing username apiKey
+  = withCurlDo $ do
+    { (code, _) <- curlGetString (sandboxURL </> "ping") $
+                                 credentials ++
+                                 [ CurlFailOnError False
+                                 , CurlVerbose True
+                                 ]
+      
+    ; return $ code == CurlOK
+    }
+  where
+    credentials = case username of
+                    Nothing       -> []
+                    Just username -> [CurlHttpAuth [HttpAuthBasic], CurlUserName username, CurlUserPassword apiKey]
 
 
 objc_interface [cunit|
@@ -80,11 +83,15 @@ void CloudcelerateKit_initialise(void);
 ///
 + (typename NSString *)newMASAccount:(typename NSString *)userName storeReceiptPath:(typename NSString *)storeReceiptPath;
 
+/// Validate a given username-apikey combo.
+///
++ (typename BOOL)validateUsername:(typename NSString *)username apiKey:(typename NSString *)apiKey;
+
 @end
 |]
 
 
-objc_implementation [Typed 'postUsersMac] [cunit|
+objc_implementation [Typed 'postUsersMac, Typed 'getPing] [cunit|
 
 
 void Cloudcelerate_initialise(void);
@@ -98,6 +105,11 @@ void CloudcelerateKit_initialise()
 + (typename NSString *)newMASAccount:(typename NSString *)username storeReceiptPath:(typename NSString *)storeReceiptPath
 {
   return postUsersMac(username, storeReceiptPath);
+}
+
++ (typename BOOL)validateUsername:(typename NSString *)username apiKey:(typename NSString *)apiKey
+{
+  return getPing(username, apiKey);
 }
 
 
