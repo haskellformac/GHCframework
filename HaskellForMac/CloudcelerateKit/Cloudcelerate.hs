@@ -12,10 +12,21 @@
 module Cloudcelerate () where
 
   -- standard libraries
+import Control.Concurrent
+import Control.Exception (SomeException, mask, try, throwIO)
+import Control.DeepSeq (rnf)
+import qualified Control.Exception as C
+import Control.Monad
 import Data.List
 import Data.Word
+import Foreign.C.Error
 import Foreign.Ptr
+import GHC.IO.Exception ( ioException, IOErrorType(..), IOException(..) )
+import System.Exit
 import System.FilePath
+import System.IO
+import System.Process
+import System.Posix.Signals
 
   -- language-c-inline
 import Language.C.Quote.ObjC
@@ -62,7 +73,8 @@ getPing username apiKey
                                  credentials ++
                                  [ CurlFailOnError False
                                  , CurlVerbose True
-                                 ]      
+                                 ]
+    ; putStrLn $ "Username: " ++ show username
     ; return $ code == CurlOK
     }
   where
@@ -72,7 +84,114 @@ getPing username apiKey
 
 postPrograms :: String -> String -> String -> IO (Maybe String)
 postPrograms username apiKey projectPath
-  = return $ Just "not implemented"
+  = withCurlDo $ do
+    { (exitCode, stdout, stderr) <- readProcessWithExitCode_atProjectPath "cabal" ["sdist"] ""
+    ; if exitCode /= ExitSuccess
+      then return $ Just (last . lines $ stderr)
+      else do
+    {   -- This is hacky, but it will do for now.
+    ; case words . last . lines $ stdout of
+        ["Source", "tarball", "created:", sdistName] -> doUpload (projectPath </> sdistName)
+        result                                       -> return $ Just ("Could not create project archive ("
+                                                                       ++ unwords result ++ ").")
+    } }
+  where
+    doUpload sdistPath
+      = do
+        { (code, _) <- curlGetString (sandboxURL </> "programs")
+                                     [ CurlHttpAuth [HttpAuthBasic]
+                                     , CurlUserName username
+                                     , CurlUserPassword apiKey
+                                     , CurlFailOnError False
+                                     , CurlHttpPost [HttpPost 
+                                                     { postName     = "file"
+                                                     , contentType  = Nothing
+                                                     , content      = ContentFile sdistPath
+                                                     , extraHeaders = []
+                                                     , showName     = Nothing
+                                                     }]
+                                     , CurlVerbose True
+                                     ] 
+        ; return $ if code == CurlOK then Nothing else (Just "Unable to upload project.")
+                                                       -- FIXME: more detailed diagnostics
+        }
+    --
+    -- NB: The following was copied from System.Process to be able to set the CWD.
+    readProcessWithExitCode_atProjectPath cmd args input = do
+        let cp_opts = (proc cmd args) {
+                        std_in  = CreatePipe,
+                        std_out = CreatePipe,
+                        std_err = CreatePipe,
+                        cwd     = Just projectPath
+                      }
+        withCreateProcess_ "readProcessWithExitCode" cp_opts $
+          \(Just inh) (Just outh) (Just errh) ph -> do
+    
+            out <- hGetContents outh
+            err <- hGetContents errh
+    
+            -- fork off threads to start consuming stdout & stderr
+            withForkWait  (C.evaluate $ rnf out) $ \waitOut ->
+             withForkWait (C.evaluate $ rnf err) $ \waitErr -> do
+    
+              -- now write any input
+              unless (null input) $
+                ignoreSigPipe $ hPutStr inh input
+              -- hClose performs implicit hFlush, and thus may trigger a SIGPIPE
+              ignoreSigPipe $ hClose inh
+    
+              -- wait on the output
+              waitOut
+              waitErr
+    
+              hClose outh
+              hClose errh
+    
+            -- wait on the process
+            ex <- waitForProcess ph
+    
+            return (ex, out, err)
+    --
+    withCreateProcess_
+      :: String
+      -> CreateProcess
+      -> (Maybe Handle -> Maybe Handle -> Maybe Handle -> ProcessHandle -> IO a)
+      -> IO a
+    withCreateProcess_ fun c action =
+        C.bracketOnError (createProcess c) cleanupProcess
+                         (\(m_in, m_out, m_err, ph) -> action m_in m_out m_err ph)
+    --
+    cleanupProcess :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+                   -> IO ()
+    cleanupProcess (mb_stdin, mb_stdout, mb_stderr, ph) = do
+        terminateProcess ph
+        -- Note, it's important that other threads that might be reading/writing
+        -- these handles also get killed off, since otherwise they might be holding
+        -- the handle lock and prevent us from closing, leading to deadlock.
+        maybe (return ()) (ignoreSigPipe . hClose) mb_stdin
+        maybe (return ()) hClose mb_stdout
+        maybe (return ()) hClose mb_stderr
+        -- terminateProcess does not guarantee that it terminates the process.
+        -- Indeed on Unix it's SIGTERM, which asks nicely but does not guarantee
+        -- that it stops. If it doesn't stop, we don't want to hang, so we wait
+        -- asynchronously using forkIO.
+        _ <- forkIO (waitForProcess ph >> return ())
+        return ()
+    --
+    withForkWait :: IO () -> (IO () ->  IO a) -> IO a
+    withForkWait async body = do
+      waitVar <- newEmptyMVar :: IO (MVar (Either SomeException ()))
+      mask $ \restore -> do
+        tid <- forkIO $ try (restore async) >>= putMVar waitVar
+        let wait = takeMVar waitVar >>= either throwIO return
+        restore (body wait) `C.onException` killThread tid
+    --
+    ignoreSigPipe :: IO () -> IO ()
+    ignoreSigPipe = C.handle $ \e -> case e of
+                                       IOError { ioe_type  = ResourceVanished
+                                               , ioe_errno = Just ioe }
+                                         | Errno ioe == ePIPE -> return ()
+                                       _ -> throwIO e
 
 postJobs :: String -> String -> String -> String -> IO (Maybe String)
 postJobs username apiKey programName dataName
@@ -84,7 +203,7 @@ postJobs username apiKey programName dataName
                                  , CurlFailOnError False
                                  , CurlVerbose True
                                  ] 
-    ; return $ if code == CurlOK then Nothing else (Just "Unable to start job")
+    ; return $ if code == CurlOK then Nothing else (Just "Unable to start job.")
                                                    -- FIXME: more detailed diagnostics
     }
 

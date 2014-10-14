@@ -152,7 +152,7 @@ final class CloudController : NSObject {
 
         case .Error(let error):
           NSAlert(error: error).runModal()
-        default: let _ = "Why does every case have to have at least one statement?"
+        default: ()
         }
       }
     }
