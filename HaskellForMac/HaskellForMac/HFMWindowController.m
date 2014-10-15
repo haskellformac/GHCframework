@@ -219,7 +219,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 - (IBAction)newFile:(NSMenuItem *)sender
 {
 #pragma unused(sender)
-  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  if (row < 0) return;    // no item clicked or selected
+
+  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
   HFMProjectViewModelItem *parentItem  = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
                                          ? [self.outlineView parentForItem:clickedItem]
                                          : clickedItem;
@@ -255,7 +259,10 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 - (IBAction)rename:(NSMenuItem *)sender {
 #pragma unused(sender)
 
-  NSInteger                row         = [self.outlineView clickedRow];
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  if (row < 0) return;    // no item clicked or selected
+
   HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
   [self.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
   [self fileEdit:clickedItem];
@@ -265,8 +272,9 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
 #pragma unused(sender)
 
-  NSInteger row = [self.outlineView clickedRow];
-  if (row < 0) return;    // didn't click on an item
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  if (row < 0) return;    // no item clicked or selected
 
   HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:row];
   NSUInteger               itemIndex = [item index];
@@ -312,25 +320,30 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
 #pragma mark NSUserInterfaceValidations protocol methods
 
+  // NB: At the moment, we only support individual selections (and not groups of selections). This will have to change
+  //     at some point. Once, we supported selected groups, and the user right-clicks for the context menu, we need to
+  //     check whether the clicked is part of the selected group. If so, the action ought to apply to the entire group.
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)interfaceItem
 {
-  SEL action = [interfaceItem action];
+  SEL       action = [interfaceItem action];
+  NSInteger row    = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                         : [self.outlineView clickedRow];
 
   if (action == @selector(newFile:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable
            || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile
            || (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
 
   } else if (action == @selector(rename:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
 
   } else if (action == @selector(delete:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
 
   } else if (action == @selector(newCloudAccount:)) {
