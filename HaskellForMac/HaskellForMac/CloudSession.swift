@@ -135,7 +135,7 @@ class CloudSession {
   ///
   func run(fileURL: NSURL) -> ErrorOr<()> {
     let outcome = Cloudcelerate.uploadProgramFor(username, apiKey: apiKey, fileURL: fileURL)
-                  ?? Cloudcelerate.runJobFor(username, apiKey: apiKey, programName: fileURL.lastPathComponent, dataName: "data")
+                  ?? Cloudcelerate.runJobFor(username, apiKey: apiKey, programName: fileURL.lastPathComponent, dataName: nil)
     return ErrorOr(optionalError: outcome, result: ())
   }
 }

@@ -172,13 +172,15 @@ postPrograms username apiKey projectPath
                                            | Errno ioe == ePIPE -> return ()
                                          _ -> throwIO e
 
-postJobs :: String -> String -> String -> String -> IO (Maybe String)
+postJobs :: String -> String -> String -> Maybe String -> IO (Maybe String)
 postJobs username apiKey programName dataName
   = do
-    { let opts = defaults & auth            .~ basicAuth (fromString username) (fromString apiKey)
-                          & param "program" .~ [fromString programName]
-                          & param "dataset" .~ [fromString dataName]
-    ; resp <- postWith opts (sandboxURL </> "jobs") ([] :: [Part])
+    { let optsBase  = defaults & auth            .~ basicAuth (fromString username) (fromString apiKey)
+                               & param "program" .~ [fromString programName]
+          optsFinal = case dataName of
+                        Nothing       -> optsBase
+                        Just dataName -> optsBase & param "dataset" .~ [fromString dataName]
+    ; resp <- postWith optsFinal (sandboxURL </> "jobs") ([] :: [Part])
     ; return $ if resp^.responseStatus == created201
                then Nothing 
                else (Just "Failed to initiate compute job.")
