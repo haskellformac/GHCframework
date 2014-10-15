@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes, DeriveDataTypeable, StandaloneDeriving #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 
 -- |
 -- Module    : Cloudcelerate
@@ -14,10 +15,11 @@ module Cloudcelerate () where
   -- standard libraries
 import Control.Concurrent
 import Control.Exception (SomeException, mask, try, throwIO)
+import qualified Control.Exception as Exc
 import Control.DeepSeq (rnf)
-import qualified Control.Exception as C
 import Control.Monad
 import Data.List
+import Data.String
 import Data.Word
 import Foreign.C.Error
 import Foreign.Ptr
@@ -33,8 +35,13 @@ import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
   
   -- other libraries
--- import Data.Aeson
-import Network.Curl
+import Control.Lens
+import Data.Aeson
+import Data.Aeson.Lens
+import qualified Data.Map  as Map
+import Network.HTTP.Types  hiding (statusCode)
+import Network.HTTP.Client (HttpException)
+import Network.Wreq
 
 objc_import ["<Foundation/Foundation.h>"]
 
@@ -43,48 +50,30 @@ sandboxURL = "http://api.sandbox.cloudcelerate.io/v1.0"
 
 postUsersMac :: String -> String -> IO (Maybe String)
 postUsersMac username storeReceiptPath
-  = withCurlDo $ do 
-    { (code, response) <- curlGetString (sandboxURL </> "users" ++ "?type=mac&username=" ++ username)
-                                        [ CurlFailOnError False
-                                        , CurlHttpPost [HttpPost 
-                                                        { postName     = "file"
-                                                        , contentType  = Nothing
-                                                        , content      = ContentFile storeReceiptPath
-                                                        , extraHeaders = []
-                                                        , showName     = Nothing
-                                                        }]
-                                        , CurlVerbose True
-                                        ]
-    ; if code == CurlOK && not ("error" `isInfixOf` response)
-      then do
-      { return $ Just (takeWhile (/= '"') . drop 15 . concat . lines $ response) -- FIXME: parse properly
-      }
-      else do
-      { putStrLn $ "postUsersMac failed with '" ++ response ++ "'"
-      ; return Nothing
-      }
-      -- Need to parse the error string and return it for reporting 
+  = do
+    { let opts = defaults & param "type   "  .~ ["mac"]
+                          & param "username" .~ [fromString username]
+    ; resp <- postWith opts (sandboxURL </> "users") (partFile "file" storeReceiptPath)
+    ; return $ if resp^.responseStatus == created201
+               then Just $ show $ resp^.responseBody.(key "api_key")._String
+               else Nothing
     }
-    
+    `Exc.catch` (\(_e :: HttpException) -> return Nothing)      -- FIXME: we need to log the exception!
+  
 getPing :: Maybe String -> String -> IO Bool
 getPing username apiKey
-  = withCurlDo $ do
-    { (code, _) <- curlGetString (sandboxURL </> "ping") $
-                                 credentials ++
-                                 [ CurlFailOnError False
-                                 , CurlVerbose True
-                                 ]
-    ; putStrLn $ "Username: " ++ show username
-    ; return $ code == CurlOK
+  = do
+    { let opts = case username of 
+                   Nothing       -> defaults
+                   Just username -> defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
+    ; resp <- getWith opts (sandboxURL </> "ping")
+    ; return $ resp^.responseStatus == ok200
     }
-  where
-    credentials = case username of
-                    Nothing       -> []
-                    Just username -> [CurlHttpAuth [HttpAuthBasic], CurlUserName username, CurlUserPassword apiKey]
+    `Exc.catch` (\(_e :: HttpException) -> return False)
 
 postPrograms :: String -> String -> String -> IO (Maybe String)
 postPrograms username apiKey projectPath
-  = withCurlDo $ do
+  = do
     { (exitCode, stdout, stderr) <- readProcessWithExitCode_atProjectPath "cabal" ["sdist"] ""
     ; if exitCode /= ExitSuccess
       then return $ Just (last . lines $ stderr)
@@ -98,23 +87,13 @@ postPrograms username apiKey projectPath
   where
     doUpload sdistPath
       = do
-        { (code, _) <- curlGetString (sandboxURL </> "programs")
-                                     [ CurlHttpAuth [HttpAuthBasic]
-                                     , CurlUserName username
-                                     , CurlUserPassword apiKey
-                                     , CurlFailOnError False
-                                     , CurlHttpPost [HttpPost 
-                                                     { postName     = "file"
-                                                     , contentType  = Nothing
-                                                     , content      = ContentFile sdistPath
-                                                     , extraHeaders = []
-                                                     , showName     = Nothing
-                                                     }]
-                                     , CurlVerbose True
-                                     ] 
-        ; return $ if code == CurlOK then Nothing else (Just "Unable to upload project.")
-                                                       -- FIXME: more detailed diagnostics
+        { let opts = defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
+        ; resp <- postWith opts (sandboxURL </> "programs") (partFile "file" sdistPath)
+        ; return $ if resp^.responseStatus == created201
+                   then Nothing 
+                   else (Just "Unable to upload project.")
         }
+        `Exc.catch` (\(e :: HttpException) -> return $ Just ("Internal error: " ++ show e))
     --
     -- NB: The following was copied from System.Process to be able to set the CWD.
     readProcessWithExitCode_atProjectPath cmd args input = do
@@ -131,8 +110,8 @@ postPrograms username apiKey projectPath
             err <- hGetContents errh
     
             -- fork off threads to start consuming stdout & stderr
-            withForkWait  (C.evaluate $ rnf out) $ \waitOut ->
-             withForkWait (C.evaluate $ rnf err) $ \waitErr -> do
+            withForkWait  (Exc.evaluate $ rnf out) $ \waitOut ->
+             withForkWait (Exc.evaluate $ rnf err) $ \waitErr -> do
     
               -- now write any input
               unless (null input) $
@@ -158,8 +137,8 @@ postPrograms username apiKey projectPath
       -> (Maybe Handle -> Maybe Handle -> Maybe Handle -> ProcessHandle -> IO a)
       -> IO a
     withCreateProcess_ fun c action =
-        C.bracketOnError (createProcess c) cleanupProcess
-                         (\(m_in, m_out, m_err, ph) -> action m_in m_out m_err ph)
+        Exc.bracketOnError (createProcess c) cleanupProcess
+                           (\(m_in, m_out, m_err, ph) -> action m_in m_out m_err ph)
     --
     cleanupProcess :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
                    -> IO ()
@@ -184,28 +163,27 @@ postPrograms username apiKey projectPath
       mask $ \restore -> do
         tid <- forkIO $ try (restore async) >>= putMVar waitVar
         let wait = takeMVar waitVar >>= either throwIO return
-        restore (body wait) `C.onException` killThread tid
+        restore (body wait) `Exc.onException` killThread tid
     --
     ignoreSigPipe :: IO () -> IO ()
-    ignoreSigPipe = C.handle $ \e -> case e of
-                                       IOError { ioe_type  = ResourceVanished
-                                               , ioe_errno = Just ioe }
-                                         | Errno ioe == ePIPE -> return ()
-                                       _ -> throwIO e
+    ignoreSigPipe = Exc.handle $ \e -> case e of
+                                         IOError { ioe_type  = ResourceVanished
+                                                 , ioe_errno = Just ioe }
+                                           | Errno ioe == ePIPE -> return ()
+                                         _ -> throwIO e
 
 postJobs :: String -> String -> String -> String -> IO (Maybe String)
 postJobs username apiKey programName dataName
-  = withCurlDo $ do 
-    { (code, _) <- curlGetString (sandboxURL </> "jobs" ++ "?program=" ++ programName ++ "&dataset=" ++ dataName)
-                                 [ CurlHttpAuth [HttpAuthBasic]
-                                 , CurlUserName username
-                                 , CurlUserPassword apiKey
-                                 , CurlFailOnError False
-                                 , CurlVerbose True
-                                 ] 
-    ; return $ if code == CurlOK then Nothing else (Just "Unable to start job.")
-                                                   -- FIXME: more detailed diagnostics
+  = do
+    { let opts = defaults & auth            .~ basicAuth (fromString username) (fromString apiKey)
+                          & param "program" .~ [fromString programName]
+                          & param "dataset" .~ [fromString dataName]
+    ; resp <- postWith opts (sandboxURL </> "jobs") ([] :: [Part])
+    ; return $ if resp^.responseStatus == created201
+               then Nothing 
+               else (Just "Failed to initiate compute job.")
     }
+   `Exc.catch` (\(e :: HttpException) -> return $ Just ("Internal error: " ++ show e))
 
 
 objc_interface [cunit|
