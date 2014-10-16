@@ -84,6 +84,13 @@ class TextEditorController: NSViewController {
     textView.automaticSpellingCorrectionEnabled = false
     textView.automaticTextReplacementEnabled    = false
 
+      // FIXME: How can we do that in a locale-independent way.
+    var contextMenu = NSTextView.defaultMenu()
+    if let item = contextMenu?.itemWithTitle("Spelling and Grammar") { contextMenu?.removeItem(item) }
+    if let item = contextMenu?.itemWithTitle("Substitutions")        { contextMenu?.removeItem(item) }
+    if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
+    textView.menu = contextMenu
+
       // Apply the default style.
     textView.typingAttributes = textAttributes
 
