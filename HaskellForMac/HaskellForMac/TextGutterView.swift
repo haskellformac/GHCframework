@@ -14,9 +14,11 @@ import Cocoa
 
 class TextGutterView: NSRulerView {
 
-  // All issues currently flagged for the file annotated by this gutter.
+  // All issues currently flagged for the file annotated by this gutter and, if non-empty, the line number of the
+  // currently selected issue. (Invalid line number (e.g., 0) means no issue is selected.)
   //
-  private var issues: Issues = [:]
+  private var issues:       Issues = [:]
+  private var currentIssue: Line   = 0
 
   // Whether the issues set is current or invalidated (i.e., new ones are being computed).
   //
@@ -83,7 +85,7 @@ class TextGutterView: NSRulerView {
     switch notification {
     case .NoIssues:                  markIssuesAsInvalid = false; issues = [:]
     case .IssuesPending:             markIssuesAsInvalid = true
-    case .Issues(let issuesForFile): markIssuesAsInvalid = false; issues = issuesForFile.issues
+    case .Issues(let issuesForFile): markIssuesAsInvalid = false; issues = issuesForFile.issues; currentIssue = 0
     }
     needsDisplay = true
   }
@@ -231,25 +233,32 @@ extension TextGutterView {
 
     if let visibleRect = self.scrollView?.documentVisibleRect {
 
-      // Determine the line corresponding to the mouse down event.
+        // Determine the line corresponding to the mouse down event.
       let rulerLoc   = self.convertPoint(event.locationInWindow, fromView: nil)
       let textLoc    = NSPoint(x: 0, y: visibleRect.origin.y + rulerLoc.y)
       let glyphIndex = layoutManager!.glyphIndexForPoint(textLoc, inTextContainer: textContainer)
       let charIndex  = layoutManager!.characterIndexForGlyphAtIndex(glyphIndex)
       let lineNumber = string.lineNumberAtLocation(charIndex)
 
-      // If there is an issue at this line, display the error message in a popup view.
+        // If there is an issue at this line, display the error message in a popup view.
       if let issues = issues[lineNumber] {
+
+          // Remove any currently shown the popover and, if the shown popover was for the same line, leave it at that.
+        if popover != nil && popover!.shown {
+          popover!.close()
+          if lineNumber == currentIssue { return }
+        }
+        currentIssue = lineNumber
 
         var objs: NSArray?
         let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIndex, length: 0))
-        let bundle     = NSBundle.mainBundle()
+        let bundle          = NSBundle.mainBundle()
         if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
           NSLog("%@: could not load popover NIB", __FUNCTION__)
         } else {
 
           let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
-            attributes: diagnosticsTextAttributes)
+                                   attributes: diagnosticsTextAttributes)
           popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
           let textSize    = msg.size
           let insetSize   = NSSize(width: 0, height: 10)

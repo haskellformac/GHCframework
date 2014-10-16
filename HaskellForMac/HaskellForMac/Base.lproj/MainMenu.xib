@@ -265,6 +265,23 @@ CA
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Navigate" id="1Ar-HH-hch" userLabel="Navigate">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Navigate" id="maf-8i-Vsp" userLabel="Navigate">
+                        <items>
+                            <menuItem title="Jump to Next Issue" keyEquivalent="'" id="HXu-6c-tjt" userLabel="Jump to Next Issue">
+                                <connections>
+                                    <action selector="jumpToNextIssue:" target="-1" id="elt-hL-KQx"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Jump to Previous Issue" keyEquivalent="&quot;" id="MNd-jm-sNE" userLabel="Jump to Previous Issue">
+                                <connections>
+                                    <action selector="jumpToPreviousIssue:" target="-1" id="Br1-0e-FbR"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Cloud" id="jwO-1d-hy5" userLabel="Cloud">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Cloud" id="Rn4-x1-yF4" userLabel="Cloud">

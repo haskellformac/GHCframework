@@ -287,7 +287,6 @@ extension NSTextView {
   func highlight(lineTokenMap: LineTokenMap) {
     return highlight(lineTokenMap, lineRange: 1..<lineTokenMap.lastLine)
   }
-
 }
 
 extension NSLayoutManager {

@@ -22,6 +22,7 @@
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
+		E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */; };
 		E71D508519A7065400BD4141 /* Cloudcelerate.hs in Sources */ = {isa = PBXBuildFile; fileRef = E71D508419A7065400BD4141 /* Cloudcelerate.hs */; };
 		E721D8F419ACB3C500DCBF68 /* GHCToken.h in Headers */ = {isa = PBXBuildFile; fileRef = E721D8F319ACA9D100DCBF68 /* GHCToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E721D8F619AF539600DCBF68 /* GHCToken.m in Sources */ = {isa = PBXBuildFile; fileRef = E721D8F519AF539600DCBF68 /* GHCToken.m */; };
@@ -238,6 +239,7 @@
 		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
+		E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextNavigation.swift; sourceTree = "<group>"; };
 		E71D508419A7065400BD4141 /* Cloudcelerate.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cloudcelerate.hs; sourceTree = "<group>"; };
 		E721D8F319ACA9D100DCBF68 /* GHCToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GHCToken.h; path = GHCKit/GHCToken.h; sourceTree = SOURCE_ROOT; };
 		E721D8F519AF539600DCBF68 /* GHCToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GHCToken.m; path = GHCKit/GHCToken.m; sourceTree = SOURCE_ROOT; };
@@ -418,6 +420,7 @@
 			children = (
 				E721D8F719B354F600DCBF68 /* SyntaxHighlighting.swift */,
 				E7B0AB001990B4890057FAD5 /* TextGutterView.swift */,
+				E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */,
 				E7AD6223198F28FD00AFF324 /* TextEditorController.swift */,
 			);
 			name = TextEditor;
@@ -639,8 +642,8 @@
 		E7F7988B198A609B0063294F /* Playground */ = {
 			isa = PBXGroup;
 			children = (
-				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
 				E7F79895198B06850063294F /* SynchroScrollView.swift */,
+				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
 			);
 			name = Playground;
 			sourceTree = "<group>";
@@ -1083,6 +1086,7 @@
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */,
 				E72AF5FC19E395F800753077 /* Error.swift in Sources */,
+				E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
