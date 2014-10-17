@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6246" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6246"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMHeaderEditorController">
@@ -37,7 +37,7 @@
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="XR0-4u-OJf">
                                 <rect key="frame" x="0.0" y="0.0" width="500" height="571"/>
                                 <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ocn-r2-kwf">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ocn-r2-kwf">
                                         <rect key="frame" x="38" y="534" width="56" height="17"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Identity" id="2B9-Ky-24h">
                                             <font key="font" metaFont="systemBold"/>
@@ -88,7 +88,7 @@
                                             <outlet property="nextKeyView" destination="AoF-wh-zDw" id="eFH-W2-aOA"/>
                                         </connections>
                                     </textField>
-                                    <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Api-h7-Juf">
+                                    <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Api-h7-Juf">
                                         <rect key="frame" x="32" y="470" width="436" height="5"/>
                                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -154,7 +154,7 @@
                                             <outlet property="nextKeyView" destination="Lh7-c0-t9m" id="aqz-nT-8Jk"/>
                                         </connections>
                                     </textField>
-                                    <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="shd-QD-IBh">
+                                    <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="shd-QD-IBh">
                                         <rect key="frame" x="32" y="289" width="436" height="5"/>
                                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -200,7 +200,7 @@
                                             <outlet property="nextKeyView" destination="2sD-sp-I3F" id="22z-Ai-x3Y"/>
                                         </connections>
                                     </textField>
-                                    <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Clv-Z8-XAD">
+                                    <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Clv-Z8-XAD">
                                         <rect key="frame" x="20" y="227" width="460" height="4"/>
                                         <constraints>
                                             <constraint firstAttribute="height" id="cAp-D7-Td2"/>
@@ -209,7 +209,7 @@
                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <font key="titleFont" metaFont="system"/>
                                     </box>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pd8-k1-fFC">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pd8-k1-fFC">
                                         <rect key="frame" x="38" y="204" width="69" height="17"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Licensing" id="7rJ-kj-gm1">
                                             <font key="font" metaFont="systemBold"/>
@@ -279,7 +279,7 @@
                                             <outlet property="nextKeyView" destination="ZDC-zs-8xm" id="fAd-qW-Pt2"/>
                                         </connections>
                                     </comboBox>
-                                    <box autoresizesSubviews="NO" horizontalHuggingPriority="248" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="EOz-qW-1Nj">
+                                    <box horizontalHuggingPriority="248" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="EOz-qW-1Nj">
                                         <rect key="frame" x="20" y="119" width="460" height="4"/>
                                         <constraints>
                                             <constraint firstAttribute="height" id="U0s-Yy-rse"/>
@@ -288,7 +288,7 @@
                                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <font key="titleFont" metaFont="system"/>
                                     </box>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="h65-Hr-clS">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h65-Hr-clS">
                                         <rect key="frame" x="38" y="96" width="73" height="17"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Resources" id="iMg-SJ-2wF">
                                             <font key="font" metaFont="systemBold"/>

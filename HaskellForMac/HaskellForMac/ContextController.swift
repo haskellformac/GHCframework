@@ -140,7 +140,7 @@ final class ContextController : NSObject {
                 issues = IssuesForFile(file: fileURL.path!, issues: [:])
 
                   // Register the tokeniser for syntax highlighting.
-                editorController.highlightingTokeniser = playgroundController.tokeniseHaskell(fileURL.path!)
+                editorController.enableHighlighting(playgroundController.tokeniseHaskell(fileURL.path!))
               } else {
                 config = .TextEditor(editorController)
               }

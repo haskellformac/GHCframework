@@ -23,6 +23,7 @@
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
 		E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */; };
+		E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */; };
 		E71D508519A7065400BD4141 /* Cloudcelerate.hs in Sources */ = {isa = PBXBuildFile; fileRef = E71D508419A7065400BD4141 /* Cloudcelerate.hs */; };
 		E721D8F419ACB3C500DCBF68 /* GHCToken.h in Headers */ = {isa = PBXBuildFile; fileRef = E721D8F319ACA9D100DCBF68 /* GHCToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E721D8F619AF539600DCBF68 /* GHCToken.m in Sources */ = {isa = PBXBuildFile; fileRef = E721D8F519AF539600DCBF68 /* GHCToken.m */; };
@@ -33,15 +34,12 @@
 		E72AF5F719E37B5400753077 /* CloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F619E37B5400753077 /* CloudController.swift */; };
 		E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F919E38D0400753077 /* CloudSession.swift */; };
 		E72AF5FC19E395F800753077 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5FB19E395F800753077 /* Error.swift */; };
-		E72F536D19C176FB002692E6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
 		E72F537119C1C081002692E6 /* GHC.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E72F536F19C178D9002692E6 /* GHC.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E72F538D19C28A8D002692E6 /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E72F538C19C28A8D002692E6 /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
 		E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E74B393919EB6E4200D60BE2 /* ghckit-support.cabal in Resources */ = {isa = PBXBuildFile; fileRef = E74B393819EB6E4200D60BE2 /* ghckit-support.cabal */; };
-		E74B393B19EB6E5100D60BE2 /* PrintInterceptor.hs in Resources */ = {isa = PBXBuildFile; fileRef = E74B393A19EB6E5100D60BE2 /* PrintInterceptor.hs */; };
 		E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */ = {isa = PBXBuildFile; fileRef = E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */; };
 		E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD13719A07E0300CDC18F /* StringExtensions.swift */; };
 		E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89119CD6C5700369A80 /* NameUtilities.swift */; };
@@ -49,6 +47,7 @@
 		E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89619D1207700369A80 /* UtilitiesTests.swift */; };
 		E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89819D4207E00369A80 /* HighlightingTests.swift */; };
 		E78E73F619D52DCE0046BA51 /* Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78E73F519D52DCE0046BA51 /* Range.swift */; };
+		E79444D919F0E00300FE905A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
@@ -240,6 +239,7 @@
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
 		E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextNavigation.swift; sourceTree = "<group>"; };
+		E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeStorageDelegate.swift; sourceTree = "<group>"; };
 		E71D508419A7065400BD4141 /* Cloudcelerate.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cloudcelerate.hs; sourceTree = "<group>"; };
 		E721D8F319ACA9D100DCBF68 /* GHCToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GHCToken.h; path = GHCKit/GHCToken.h; sourceTree = SOURCE_ROOT; };
 		E721D8F519AF539600DCBF68 /* GHCToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GHCToken.m; path = GHCKit/GHCToken.m; sourceTree = SOURCE_ROOT; };
@@ -419,6 +419,7 @@
 			isa = PBXGroup;
 			children = (
 				E721D8F719B354F600DCBF68 /* SyntaxHighlighting.swift */,
+				E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */,
 				E7B0AB001990B4890057FAD5 /* TextGutterView.swift */,
 				E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */,
 				E7AD6223198F28FD00AFF324 /* TextEditorController.swift */,
@@ -899,17 +900,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E74B393B19EB6E5100D60BE2 /* PrintInterceptor.hs in Resources */,
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
-				E74B393919EB6E4200D60BE2 /* ghckit-support.cabal in Resources */,
 				E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */,
 				E7258C58198A2263004789CF /* Playground.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
-				E72F536D19C176FB002692E6 /* MainMenu.xib in Resources */,
+				E79444D919F0E00300FE905A /* MainMenu.xib in Resources */,
 				E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1073,6 +1072,7 @@
 				E721D8F819B354F600DCBF68 /* SyntaxHighlighting.swift in Sources */,
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
+				E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */,
 				E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */,
 				E78E73F619D52DCE0046BA51 /* Range.swift in Sources */,
 				E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */,
