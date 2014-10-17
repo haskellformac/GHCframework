@@ -277,7 +277,7 @@ public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(H
   }
 }
 
-extension NSTextView {
+extension CodeView {
 
   func enableHighlighting(tokeniser: HighlightingTokeniser) {
     backgroundColor = highlightBackgroundColour

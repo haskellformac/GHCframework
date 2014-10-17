@@ -5,26 +5,37 @@
 //  Created by Manuel M T Chakravarty on 16/10/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
-//  HfM-specific navigation functionality for `NSTextView`s.
+//  HfM-specific navigation functionality for `NSTextView`s used for code. They are identified by using a 
+//  `CodeStorageDelegate` as the delegate of their text storage.
 
 import Cocoa
 
 
-extension NSTextView {
+class CodeView: NSTextView {
 
-  /// The line map associated through the delegate of the associated text storage.
+  /// The line map associated through the delegate of the associated text storage if available.
   ///
   var lineMap: LineTokenMap? {
     get {
       return (textStorage?.delegate as? CodeStorageDelegate)?.lineMap
     }
   }
+}
 
-  // MARK: -
-  // Mark: menu actions
 
-  func validateUserInterfaceItem(sender: NSValidatedUserInterfaceItem!) -> Bool {
-    return true
+// MARK: -
+// Mark: menu actions
+
+extension CodeView: NSUserInterfaceValidations {
+
+  override func validateUserInterfaceItem(sender: NSValidatedUserInterfaceItem) -> Bool {
+
+      // Actions defined in this extension only apply code views.
+    switch sender.action() {
+    case "jumpToNextIssue", "jumpToPreviousIssue":
+        return true
+    default: return super.validateUserInterfaceItem(sender)
+    }
   }
 
   func jumpToNextIssue(sender: AnyObject!) {

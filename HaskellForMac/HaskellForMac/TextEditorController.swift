@@ -14,7 +14,7 @@ class TextEditorController: NSViewController {
   ///
   @IBOutlet weak var pathControl: NSPathControl!
   @IBOutlet weak var scrollView:  NSScrollView!
-  @IBOutlet      var textView:    NSTextView!
+  @IBOutlet      var textView:    CodeView!
 
   /// Project view model item representing the edited file.
   ///

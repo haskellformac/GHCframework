@@ -92,6 +92,75 @@ class TextGutterView: NSRulerView {
 
 
   // MARK: -
+  // MARK: Issue navigation
+
+  func jumpToNextIssue(sender: AnyObject!) {
+    if issues.isEmpty { return }
+
+    var nextIdx: Issues.Index
+    switch self.issues.indexForKey(self.currentIssue) {
+
+      // continue from the current issue (if present)
+    case .Some(let currentIdx):
+      if advance(currentIdx, 1) == issues.endIndex {           // last issue, just close any open popover and bail out
+        popover?.close()
+        currentIssue = 0
+        return
+      } else {
+        nextIdx = advance(currentIdx, 1)
+      }
+
+      // otherwise start with the first one
+    case .None:
+      nextIdx = self.issues.startIndex
+    }
+    currentIssue = issues[nextIdx].0
+    jumpToIssueAtLine(currentIssue)                           // display new current issue
+  }
+
+  func jumpToPreviousIssue(sender: AnyObject!) {
+  }
+
+  func jumpToIssueAtLine(lineNumber: Line) {
+    let lineMap = (self.clientView as CodeView).lineMap!
+
+    if let charIdx = lineMap.startOfLine(lineNumber) {
+
+        // If there is an issue at this line, display the error message in a popup view.
+      if let issues = issues[lineNumber] {
+
+          // Remove any currently shown the popover and, if the shown popover was for the same line, leave it at that.
+        if popover != nil && popover!.shown {
+          popover!.close()
+          if lineNumber == currentIssue { return }
+        }
+        currentIssue = lineNumber
+
+        var objs: NSArray?
+        let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIdx, length: 0))
+        let bundle          = NSBundle.mainBundle()
+        if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
+          NSLog("%@: could not load popover NIB", __FUNCTION__)
+        } else {
+
+          let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
+            attributes: diagnosticsTextAttributes)
+          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
+          let textSize    = msg.size
+          let insetSize   = NSSize(width: 0, height: 10)
+          let height      = textSize.height + insetSize.height
+          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
+          popoverTextView.textContainerInset = insetSize
+          popover?.contentSize               = contentSize
+          popover?.behavior                  = .Semitransient
+          popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
+      }
+      }
+    }
+  }
+
+
+  // MARK: -
   // MARK: Custom drawing
 
   override func viewWillDraw() {
@@ -240,36 +309,7 @@ extension TextGutterView {
       let charIndex  = layoutManager!.characterIndexForGlyphAtIndex(glyphIndex)
       let lineNumber = string.lineNumberAtLocation(charIndex)
 
-        // If there is an issue at this line, display the error message in a popup view.
-      if let issues = issues[lineNumber] {
-
-          // Remove any currently shown the popover and, if the shown popover was for the same line, leave it at that.
-        if popover != nil && popover!.shown {
-          popover!.close()
-          if lineNumber == currentIssue { return }
-        }
-        currentIssue = lineNumber
-
-        var objs: NSArray?
-        let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIndex, length: 0))
-        let bundle          = NSBundle.mainBundle()
-        if !bundle.loadNibNamed("DiagnosticsPopover", owner: self, topLevelObjects: nil) {
-          NSLog("%@: could not load popover NIB", __FUNCTION__)
-        } else {
-
-          let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
-                                   attributes: diagnosticsTextAttributes)
-          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
-          let textSize    = msg.size
-          let insetSize   = NSSize(width: 0, height: 10)
-          let height      = textSize.height + insetSize.height
-          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
-          popoverTextView.textContainerInset = insetSize
-          popover?.contentSize               = contentSize
-          popover?.behavior                  = .Semitransient
-          popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
-        }
-      }
+      jumpToIssueAtLine(lineNumber)
     }
   }
 }
