@@ -132,6 +132,9 @@ class PlaygroundController: NSViewController {
 
       // Enable highlighting.
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
+    if let backgroundColour = codeTextView.backgroundColor.shadowWithLevel(0.05) {
+      resultTextView.backgroundColor = backgroundColour
+    }
   }
 
 
