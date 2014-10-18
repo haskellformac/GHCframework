@@ -21,8 +21,12 @@ class PlaygroundController: NSViewController {
   @IBOutlet private weak var splitView:        NSSplitView!
   @IBOutlet private weak var codeScrollView:   SynchroScrollView!
   @IBOutlet private weak var resultScrollView: SynchroScrollView!
-  @IBOutlet private      var codeTextView:     NSTextView!
+  @IBOutlet private      var codeTextView:     CodeView!
   @IBOutlet private      var resultTextView:   NSTextView!
+
+  /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
+  ///
+  var codeStorageDelegate: CodeStorageDelegate!
 
   /// The GHC session associated with this playground.
   ///
@@ -107,10 +111,27 @@ class PlaygroundController: NSViewController {
     codeTextView.automaticSpellingCorrectionEnabled = false
     codeTextView.automaticTextReplacementEnabled    = false
 
+      // FIXME: How can we do that in a locale-independent way.
+    var contextMenu = NSTextView.defaultMenu()
+    if let item = contextMenu?.itemWithTitle("Spelling and Grammar") { contextMenu?.removeItem(item) }
+    if let item = contextMenu?.itemWithTitle("Substitutions")        { contextMenu?.removeItem(item) }
+    if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
+    codeTextView.menu   = contextMenu
+    resultTextView.menu = contextMenu
+
       // Apply the default style.
     codeTextView.typingAttributes        = codeTextAttributes
     resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as? NSParagraphStyle
     resultTextView.typingAttributes      = resultTextAttributes
+
+      // Set up the delegate for the text storage.
+    if let textStorage = codeTextView.layoutManager?.textStorage {
+      codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
+      textStorage.delegate = codeStorageDelegate
+    }
+
+      // Enable highlighting.
+    codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
   }
 
 
