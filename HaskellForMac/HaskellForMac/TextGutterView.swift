@@ -14,11 +14,12 @@ import Cocoa
 
 class TextGutterView: NSRulerView {
 
-  // All issues currently flagged for the file annotated by this gutter and, if non-empty, the line number of the
-  // currently selected issue. (Invalid line number (e.g., 0) means no issue is selected.)
+  // All issues currently flagged for the file annotated by this gutter, their sorted sequence of line numbers, and
+  // the sequence index of the currently or last displayed issue. (If there is no current issue, the index is invalid.)
   //
-  private var issues:       Issues = [:]
-  private var currentIssue: Line   = 0
+  private var issues:                 Issues = [:]
+  private var issueSequence:          [Line] = []        // cache of `sorted(issues.keys)`
+  private var currentIndexInSequence: Int    = -1
 
   // Whether the issues set is current or invalidated (i.e., new ones are being computed).
   //
@@ -83,9 +84,21 @@ class TextGutterView: NSRulerView {
   ///
   func updateIssues(notification: IssueNotification) {
     switch notification {
-    case .NoIssues:                  markIssuesAsInvalid = false; issues = [:]
-    case .IssuesPending:             markIssuesAsInvalid = true
-    case .Issues(let issuesForFile): markIssuesAsInvalid = false; issues = issuesForFile.issues; currentIssue = 0
+
+    case .NoIssues:
+      markIssuesAsInvalid    = false
+      issues                 = [:]
+      issueSequence          = []
+      currentIndexInSequence = -1
+
+    case .IssuesPending:
+      markIssuesAsInvalid = true
+
+    case .Issues(let issuesForFile):
+      markIssuesAsInvalid    = false
+      issues                 = issuesForFile.issues
+      currentIndexInSequence = -1
+      issueSequence          = sorted(issues.keys)
     }
     needsDisplay = true
   }
@@ -94,47 +107,90 @@ class TextGutterView: NSRulerView {
   // MARK: -
   // MARK: Issue navigation
 
-  func jumpToNextIssue(sender: AnyObject!) {
-    if issues.isEmpty { return }
+  /// Determine whether we have any issues to navigate.
+  ///
+  func issuesAvailable() -> Bool {
+    return !issues.isEmpty
+  }
 
-    var nextIdx: Issues.Index
-    switch self.issues.indexForKey(self.currentIssue) {
+  /// Determine the following index into `issueSequence` (if any).
+  ///
+  private func sequenceIndexOfNextIssue() -> Int? {
 
-      // continue from the current issue (if present)
-    case .Some(let currentIdx):
-      if advance(currentIdx, 1) == issues.endIndex {           // last issue, just close any open popover and bail out
-        popover?.close()
-        currentIssue = 0
-        return
-      } else {
-        nextIdx = advance(currentIdx, 1)
-      }
+      // no issues => no next one
+    if issues.isEmpty { return nil }
 
-      // otherwise start with the first one
-    case .None:
-      nextIdx = self.issues.startIndex
+      // invalid current index or current index is the last one => first issue is the next one
+    if currentIndexInSequence < 0
+      || currentIndexInSequence >= issueSequence.endIndex
+      || advance(currentIndexInSequence, 1) == issueSequence.endIndex { return 0 }
+
+      // otherwise, just advance the current index
+    return advance(currentIndexInSequence, 1)
+  }
+
+  /// Display the next issue in the issue sequence (if any).
+  ///
+  func jumpToNextIssue() {
+    if let index = sequenceIndexOfNextIssue() {
+      jumpToIssueAtIndex(index)
     }
-    currentIssue = issues[nextIdx].0
-    jumpToIssueAtLine(currentIssue)                           // display new current issue
   }
 
-  func jumpToPreviousIssue(sender: AnyObject!) {
+  /// Determine the previous index into `issueSequence` (if any).
+  ///
+  private func sequenceIndexOfPreviousIssue() -> Int? {
+
+      // no issues => no next one
+    if issues.isEmpty { return nil }
+
+      // invalid current index or current index is the first one => last issue is the next one
+    if currentIndexInSequence < 0
+      || currentIndexInSequence >= issueSequence.endIndex
+      || currentIndexInSequence == issueSequence.startIndex { return advance(issueSequence.endIndex, -1) }
+
+    // otherwise, just decrease the current index
+    return advance(currentIndexInSequence, -1)
   }
 
+  /// Display the previous issue in the issue sequence (if any).
+  ///
+  func jumpToPreviousIssue() {
+    if let index = sequenceIndexOfPreviousIssue() {
+      jumpToIssueAtIndex(index)
+    }
+  }
+
+  /// Display the issue at the given line; if it is already being displayed, hide it.
+  ///
   func jumpToIssueAtLine(lineNumber: Line) {
-    let lineMap = (self.clientView as CodeView).lineMap!
+    // FIXME: This is O(n), we could use binary search instead if it turns out to be a bottleneck.
+    var current: Int = 0
+    while (current < issueSequence.endIndex && issueSequence[current] <= lineNumber) {
+      if issueSequence[current] == lineNumber { jumpToIssueAtIndex(current) }
+    }
+  }
+
+  /// Display the issue whose line is determined by the given sequence index; if it is already being displayed, hide it.
+  ///
+  private func jumpToIssueAtIndex(index: Int) {
+    if index < 0 || index >= issueSequence.endIndex { return }    // ensure the index is valid
+
+      // Remove any currently shown the popover and, if the shown popover was for the same line, leave it at that.
+    if popover != nil && popover!.shown {
+      popover!.close()
+      if index == currentIndexInSequence { return }
+    }
+    currentIndexInSequence = index
+
+    let lineNumber = issueSequence[index]
+    let lineMap    = (self.clientView as CodeView).lineMap!
 
     if let charIdx = lineMap.startOfLine(lineNumber) {
 
         // If there is an issue at this line, display the error message in a popup view.
       if let issues = issues[lineNumber] {
 
-          // Remove any currently shown the popover and, if the shown popover was for the same line, leave it at that.
-        if popover != nil && popover!.shown {
-          popover!.close()
-          if lineNumber == currentIssue { return }
-        }
-        currentIssue = lineNumber
 
         var objs: NSArray?
         let (gutterRect, _) = gutterRectForCharRange(NSRange(location: charIdx, length: 0))

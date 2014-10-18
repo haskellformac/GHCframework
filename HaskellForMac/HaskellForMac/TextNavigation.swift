@@ -20,6 +20,14 @@ class CodeView: NSTextView {
       return (textStorage?.delegate as? CodeStorageDelegate)?.lineMap
     }
   }
+
+  /// The gutter view associated through the enclosing scroll view if available.
+  ///
+  var textGutterView: TextGutterView? {
+    get {
+      return enclosingScrollView?.verticalRulerView as? TextGutterView
+    }
+  }
 }
 
 
@@ -32,18 +40,18 @@ extension CodeView: NSUserInterfaceValidations {
 
       // Actions defined in this extension only apply code views.
     switch sender.action() {
-    case "jumpToNextIssue", "jumpToPreviousIssue":
-        return true
+    case "jumpToNextIssue:", "jumpToPreviousIssue:":
+        return textGutterView?.issuesAvailable() ?? false
     default: return super.validateUserInterfaceItem(sender)
     }
   }
 
   func jumpToNextIssue(sender: AnyObject!) {
-    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToNextIssue(sender)
+    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToNextIssue()
   }
 
   func jumpToPreviousIssue(sender: AnyObject!) {
-    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToPreviousIssue(sender)
+    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToPreviousIssue()
   }
 
 }
