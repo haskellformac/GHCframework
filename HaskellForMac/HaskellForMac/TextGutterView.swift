@@ -168,6 +168,7 @@ class TextGutterView: NSRulerView {
     var current: Int = 0
     while (current < issueSequence.endIndex && issueSequence[current] <= lineNumber) {
       if issueSequence[current] == lineNumber { jumpToIssueAtIndex(current) }
+      current++
     }
   }
 
@@ -184,9 +185,9 @@ class TextGutterView: NSRulerView {
     currentIndexInSequence = index
 
     let lineNumber = issueSequence[index]
-    let lineMap    = (self.clientView as CodeView).lineMap!
+    let lineMap    = (self.clientView as? CodeView)?.lineMap
 
-    if let charIdx = lineMap.startOfLine(lineNumber) {
+    if let charIdx = lineMap?.startOfLine(lineNumber) {
 
         // If there is an issue at this line, display the error message in a popup view.
       if let issues = issues[lineNumber] {
