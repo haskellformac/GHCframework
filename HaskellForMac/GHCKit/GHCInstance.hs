@@ -143,16 +143,7 @@ reportDiagnostics handlerObject severity srcSpan msg
           lines                   = GHC.srcLocLine endLoc - line + 1
           endColumn               = GHC.srcLocCol endLoc
 
--- FIXME: generalise with NSArray support in 'CBLPackage.hs'
--- newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
---   deriving Typeable   -- needed for now until migrating to new TH
--- newtype NSArray e = NSArray (ForeignPtr (NSArray e))
---   deriving Typeable   -- needed for now until migrating to new TH
-
 deriving instance (Typeable GHC.Token)
-
--- unsafeFreezeNSMutableArray :: NSMutableArray (GHC.Located GHC.Token) -> NSArray (GHC.Located GHC.Token)
--- unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
 
 objc_typecheck
 
