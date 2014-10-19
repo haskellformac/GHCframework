@@ -77,8 +77,8 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
 
   /// Load a single module and make it the current evaluation context.
   ///
-  func loadModuleFromString(moduleText: String, file: String) -> Bool {
-    return ghcInstance.loadModuleFromString(moduleText, file: file)
+  func loadModuleFromString(moduleText: String, file: String, importPaths: [String]) -> Bool {
+    return ghcInstance.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
   }
 
 

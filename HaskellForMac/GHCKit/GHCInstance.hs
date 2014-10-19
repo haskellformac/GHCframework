@@ -36,6 +36,46 @@ import Interpreter
 objc_import ["<Cocoa/Cocoa.h>", "GHCSeverity.h", "GHCToken.h"]
 
 
+-- Marshalling support
+-- -------------------
+-- FIXME: this should go into a general library — we have the same code in 'CBLPackage.hs' :(
+
+newtype NSString = NSString (ForeignPtr NSString)
+  deriving Typeable   -- needed for now until migrating to new TH
+
+newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
+  deriving Typeable   -- needed for now until migrating to new TH
+newtype NSArray        e = NSArray        (ForeignPtr (NSArray        e))
+  deriving Typeable   -- needed for now until migrating to new TH
+
+unsafeFreezeNSMutableArray :: NSMutableArray e -> NSArray e
+unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
+
+objc_typecheck
+
+listOfStringToNSArray :: [String] -> IO (NSArray NSString)
+listOfStringToNSArray strs
+  = do
+    { marr <- $(objc [] $ Class [t|NSMutableArray NSString|] <: [cexp| [NSMutableArray arrayWithCapacity:50] |])
+    ; mapM_ (addElement marr) strs
+    ; return $ unsafeFreezeNSMutableArray marr
+    }
+  where
+    addElement marr str
+      = $(objc ['marr :> Class [t|NSMutableArray NSString|], 'str :> ''String] $ void [cexp| [marr addObject:str] |])
+
+nsArrayTolistOfString :: NSArray NSString -> IO [String]
+nsArrayTolistOfString arr
+  = do
+    { n <- $(objc ['arr :> Class [t|NSArray NSString|]] $ ''Int <: [cexp| (int)arr.count |])
+    ; sequence [ $(objc ['arr :> Class [t|NSArray NSString|], 'i :> ''Int] $ 
+                     ''String <: [cexp| arr[(typename NSUInteger)i] |]) 
+               | i <- [0..n-1]]
+    }
+
+objc_marshaller 'listOfStringToNSArray 'nsArrayTolistOfString
+
+
 -- Haskell side support code
 -- -------------------------
 
@@ -104,15 +144,15 @@ reportDiagnostics handlerObject severity srcSpan msg
           endColumn               = GHC.srcLocCol endLoc
 
 -- FIXME: generalise with NSArray support in 'CBLPackage.hs'
-newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
-  deriving Typeable   -- needed for now until migrating to new TH
-newtype NSArray e = NSArray (ForeignPtr (NSArray e))
-  deriving Typeable   -- needed for now until migrating to new TH
+-- newtype NSMutableArray e = NSMutableArray (ForeignPtr (NSMutableArray e))
+--   deriving Typeable   -- needed for now until migrating to new TH
+-- newtype NSArray e = NSArray (ForeignPtr (NSArray e))
+--   deriving Typeable   -- needed for now until migrating to new TH
 
 deriving instance (Typeable GHC.Token)
 
-unsafeFreezeNSMutableArray :: NSMutableArray (GHC.Located GHC.Token) -> NSArray (GHC.Located GHC.Token)
-unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
+-- unsafeFreezeNSMutableArray :: NSMutableArray (GHC.Located GHC.Token) -> NSArray (GHC.Located GHC.Token)
+-- unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
 
 objc_typecheck
 
@@ -263,14 +303,15 @@ tokeniseString :: Session -> String -> String -> Int -> Int -> IO [GHC.Located G
 tokeniseString session text fname line column
   = tokenise session (GHC.stringToStringBuffer text) (GHC.mkRealSrcLoc (GHC.mkFastString fname) line column)
 
--- Load a module of which the actual program code is given. The backing path of the module is provided as well.
+-- Load a module of which the actual program code is given. The backing path of the module is provided as well together with the 
+-- list of search paths that should be used for module loading.
 --
 -- FIXME: Should be 'FilePath' instead of the first 'String', but language-c-inline doesn't see through type synonyms...
-loadModuleText :: Session -> String -> String -> IO Bool
-loadModuleText session fname moduleText
+loadModuleText :: Session -> String -> [String] -> String -> IO Bool
+loadModuleText session fname importPaths moduleText
   = do
     { utcTime <- getCurrentTime
-    ; showResult <$> load session (target utcTime)
+    ; showResult <$> load session importPaths (target utcTime)
     }
   where
     showResult (Result _) = True
@@ -319,12 +360,14 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
                                  line:(typename NSUInteger)line 
                                column:(typename NSUInteger)column;
 
-/// Load a module given as a string.
+/// Load a module given as a string with the file containing the module and the import search paths as context.
 ///
 /// Any error messages and warnings are delivered via the diagnostics handler of the current object. The result
 /// indicates whether loading was successful.
 ///
-- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file;
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText 
+                                 file:(typename NSString *)file
+                          importPaths:(typename NSArray/*<NSString>*/ *)importPaths;
 
 /// Evaluate the Haskell expression given as a string.
 ///
@@ -413,9 +456,11 @@ void GHCInstance_initialise(void);
   return tokeniseString(self.interpreterSession, text, file, (typename NSInteger)line, (typename NSInteger)column);
 }
 
-- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText file:(typename NSString *)file
+- (typename BOOL)loadModuleFromString:(typename NSString *)moduleText 
+                                 file:(typename NSString *)file
+                          importPaths:(typename NSArray/*<NSString>*/ *)importPaths
 {
-  return loadModuleText(self.interpreterSession, file, moduleText);
+  return loadModuleText(self.interpreterSession, file, importPaths, moduleText);
 }
 
 - (typename NSString *)evalExprFromString:(typename NSString *)exprText 

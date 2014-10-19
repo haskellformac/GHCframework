@@ -143,10 +143,10 @@ class PlaygroundController: NSViewController {
 
   /// Load a new version of the context module.
   ///
-  func loadContextModuleIntoPlayground(moduleText: String!, file: String) -> Bool {
+  func loadContextModuleIntoPlayground(moduleText: String!, file: String, importPaths: [String]) -> Bool {
 
       // Load the module text into GHC.
-    return haskellSession.loadModuleFromString(moduleText, file: file)
+    return haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
   }
 
 

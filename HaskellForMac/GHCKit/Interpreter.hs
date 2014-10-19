@@ -94,6 +94,7 @@ start ghcBundlePath diagnosticHandler
                                                  , GHC.log_action       = logAction
                                                  , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
+                                                 , GHC.verbosity        = 3
                                                  }
         ; GHC.liftIO $ 
             putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging
@@ -189,8 +190,8 @@ typeOf = error "typeOf is not implemented"
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
-load :: Session -> GHC.Target -> IO Result
-load (Session inlet) target
+load :: Session -> [String] -> GHC.Target -> IO Result
+load (Session inlet) importPaths target
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
@@ -198,6 +199,9 @@ load (Session inlet) target
         {
             -- Revert CAFs from previous evaluations
         ; GHC.liftIO $ rts_revertCAFs
+        
+            -- Set the search paths
+        ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
 
             -- Load the new target
         ; GHC.setTargets [target]
@@ -247,6 +251,12 @@ handleError e
 chanRef :: IORef (TChan String)
 {-# NOINLINE chanRef #-}
 chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initialised")
+
+-- Utitlity functions
+-- ------------------
+
+modifyDynFlags :: (GHC.DynFlags -> GHC.DynFlags) -> GHC.Ghc ()
+modifyDynFlags f = GHC.getSessionDynFlags >>= void . GHC.setSessionDynFlags . f
 
 
 -- Runtime system support
