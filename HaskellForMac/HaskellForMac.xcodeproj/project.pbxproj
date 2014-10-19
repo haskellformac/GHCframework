@@ -68,6 +68,7 @@
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
 		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
+		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
 		E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E5DE9B19E4FD30008A101B /* MACAddress.m */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
@@ -299,6 +300,7 @@
 		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
 		E7CC64021999B4DD00D8E1CD /* ContextController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextController.swift; sourceTree = "<group>"; };
 		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
+		E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundResultStorage.swift; sourceTree = "<group>"; };
 		E7E5DE9B19E4FD30008A101B /* MACAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MACAddress.m; sourceTree = "<group>"; };
 		E7E5DE9D19E4FD63008A101B /* MACAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MACAddress.h; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
@@ -645,6 +647,7 @@
 			children = (
 				E7F79895198B06850063294F /* SynchroScrollView.swift */,
 				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
+				E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */,
 			);
 			name = Playground;
 			sourceTree = "<group>";
@@ -1093,6 +1096,7 @@
 				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
 				E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */,
+				E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */,
 				E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */,
 				E7F79898198B3A010063294F /* HaskellSession.swift in Sources */,
 			);

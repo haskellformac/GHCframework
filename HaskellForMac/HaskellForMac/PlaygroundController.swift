@@ -22,11 +22,15 @@ class PlaygroundController: NSViewController {
   @IBOutlet private weak var codeScrollView:   SynchroScrollView!
   @IBOutlet private weak var resultScrollView: SynchroScrollView!
   @IBOutlet private      var codeTextView:     CodeView!
-  @IBOutlet private      var resultTextView:   NSTextView!
+  @IBOutlet private weak var resultTableView:  NSTableView!
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
   var codeStorageDelegate: CodeStorageDelegate!
+
+  /// We need to keep the result storage alive as the data source reference from `NSTableView` is weak.
+  ///
+  var resultStorage: PlaygroundResultStorage!
 
   /// The GHC session associated with this playground.
   ///
@@ -41,14 +45,14 @@ class PlaygroundController: NSViewController {
     return [NSFontAttributeName: menlo13]
   }()
 
-  /// The text attributes to be applied to all text in the result text views. (Currently, they are fixed.)
-  ///
-  private let resultTextAttributes: NSDictionary = {
-    let menlo13        = NSFont(name: "Menlo-Regular", size:13)!
-    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
-    paragraphStyle.lineBreakMode = .ByTruncatingTail
-    return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
-  }()
+//  /// The text attributes to be applied to all text in the result text views. (Currently, they are fixed.)
+//  ///
+//  private let resultTextAttributes: NSDictionary = {
+//    let menlo13        = NSFont(name: "Menlo-Regular", size:13)!
+//    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
+//    paragraphStyle.lineBreakMode = .ByTruncatingTail
+//    return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
+//  }()
 
   private let fontHeight: CGFloat = {
     let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)!])
@@ -97,11 +101,10 @@ class PlaygroundController: NSViewController {
 
       // The size of the playground text views is fixed. We want them to be rigid.
     codeTextView.horizontallyResizable   = true
-    resultTextView.horizontallyResizable = true
 
       // For now, we have got a fixed font.
     codeTextView.font   = codeTextAttributes[NSFontAttributeName] as? NSFont
-    resultTextView.font = resultTextAttributes[NSFontAttributeName] as? NSFont
+//    resultTextView.font = resultTextAttributes[NSFontAttributeName] as? NSFont
 
       // Set up for code editing (not prose).
     codeTextView.automaticDashSubstitutionEnabled   = false
@@ -116,13 +119,12 @@ class PlaygroundController: NSViewController {
     if let item = contextMenu?.itemWithTitle("Spelling and Grammar") { contextMenu?.removeItem(item) }
     if let item = contextMenu?.itemWithTitle("Substitutions")        { contextMenu?.removeItem(item) }
     if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
-    codeTextView.menu   = contextMenu
-    resultTextView.menu = contextMenu
+    codeTextView.menu = contextMenu
 
       // Apply the default style.
-    codeTextView.typingAttributes        = codeTextAttributes
-    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as? NSParagraphStyle
-    resultTextView.typingAttributes      = resultTextAttributes
+    codeTextView.typingAttributes = codeTextAttributes
+//    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as? NSParagraphStyle
+//    resultTextView.typingAttributes      = resultTextAttributes
 
       // Set up the delegate for the text storage.
     if let textStorage = codeTextView.layoutManager?.textStorage {
@@ -130,10 +132,15 @@ class PlaygroundController: NSViewController {
       textStorage.delegate = codeStorageDelegate
     }
 
+      // Set up the delegate and data source for the result view.
+    resultTableView.setDelegate(self)
+    resultStorage = PlaygroundResultStorage()
+    resultTableView.setDataSource(resultStorage)
+
       // Enable highlighting.
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
     if let backgroundColour = codeTextView.backgroundColor.shadowWithLevel(0.05) {
-      resultTextView.backgroundColor = backgroundColour
+      resultTableView.backgroundColor = backgroundColour
     }
   }
 
@@ -191,8 +198,8 @@ class PlaygroundController: NSViewController {
     gutter.updateIssues(.IssuesPending)
     issues = IssuesForFile(file: issues.file, issues: [:])
 
-      // Reset the results view.
-    resultTextView.textStorage!.setAttributedString(NSAttributedString())
+      // Mark all current results as being stale.
+    resultStorage.invalidate()
 
     // Extracts one command, while advancing the current character index.
     //
@@ -221,17 +228,16 @@ class PlaygroundController: NSViewController {
 
       // Traverse all commands.
     var firstIndexOfNextCommand: String.Index = string.startIndex
+    var commandIndex                          = 0
     while string.endIndex > firstIndexOfNextCommand {
 
-      let lineNumber                  = string.lineNumberAtLocation(firstIndexOfNextCommand)
-      let (nextIndex, command, lines) = extractCommandAtCharIndex(firstIndexOfNextCommand)
-      firstIndexOfNextCommand         = nextIndex
+      let lineNumber                   = string.lineNumberAtLocation(firstIndexOfNextCommand)
+      let (nextIndex, command, _lines) = extractCommandAtCharIndex(firstIndexOfNextCommand)
+      firstIndexOfNextCommand          = nextIndex
 
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      let rets       = "\n".replicate(lines)
-      let attrResult = NSAttributedString(string: evalResult + rets, attributes:resultTextAttributes)
-      resultTextView.textStorage!.appendAttributedString(attrResult)
-
+      resultStorage.reportResult(evalResult, type: "", atCommandIndex: commandIndex)
+      commandIndex++
     }
 
       // Display any diagnostics in the gutter.
@@ -245,7 +251,22 @@ class PlaygroundController: NSViewController {
 
 
 // MARK: -
-// MARK: NSTextViewDelegate protocol methods
+// MARK: Syntax highlighting support
+
+extension PlaygroundController {
+
+  func tokeniseHaskell(file: String) -> HighlightingTokeniser {
+    return { (line, column, text) in
+      map(self.haskellSession.tokeniseHaskell(text, file: file, line: line, column: column)){ token in
+        HighlightingToken(ghcToken: token) }
+    }
+  }
+
+}
+
+
+// MARK: -
+// MARK: NSTextViewDelegate protocol methods (for the code view)
 
 extension PlaygroundController: NSTextViewDelegate {
   //FIXME: This is provisionally the delegate for the REPL view while it is so simple.
@@ -267,17 +288,20 @@ extension PlaygroundController: NSTextViewDelegate {
 
 }
 
-
 // MARK: -
-// MARK: Syntax highlighting support
+// MARK: NSTableViewDelegate protocol methods (for the result view)
 
-extension PlaygroundController {
+extension PlaygroundController: NSTableViewDelegate {
 
-  func tokeniseHaskell(file: String) -> HighlightingTokeniser {
-    return { (line, column, text) in
-      map(self.haskellSession.tokeniseHaskell(text, file: file, line: line, column: column)){ token in
-        HighlightingToken(ghcToken: token) }
-    }
+  func tableViewSelectionDidChange(_notification: NSNotification) {
   }
 
+  func tableViewColumnDidMove(_notification: NSNotification) {
+  }
+
+  func tableViewColumnDidResize(_notification: NSNotification) {
+  }
+
+  func tableViewSelectionIsChanging(_notification: NSNotification) {
+  }
 }
