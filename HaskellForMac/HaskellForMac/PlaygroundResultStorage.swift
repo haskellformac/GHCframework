@@ -14,7 +14,7 @@ import Cocoa
 /// Represents the result for a single command.
 ///
 struct Result {
-  // FIXME: for now, it's all strings, but we want tobe more flexible in the future.
+  // FIXME: for now, it's all strings, but we want to be more flexible in the future.
 
   let value: String
   let type:  String
@@ -29,10 +29,23 @@ class PlaygroundResultStorage: NSObject {
   //
   private var results: [Result?] = []
 
-  /// Reports a result at a specific index.
+  /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
   func reportResult(result: String, type: String, atCommandIndex idx: Int) {
+
+      // Extend the array to include the reported index if necessary.
+    if idx >= results.endIndex {
+      for i in results.endIndex...idx { results.append(nil) }
+    }
     results[idx] = Result(value: result, type: type, stale: false)
+  }
+
+  /// Discard all entries from the given index on.
+  ///
+  func pruneAt(idx: Int) {
+    if idx < advance(results.endIndex, -1) {
+      results.removeRange(idx..<results.endIndex)
+    }
   }
 
   /// Marks all current results as stale.

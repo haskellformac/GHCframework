@@ -104,7 +104,6 @@ class PlaygroundController: NSViewController {
 
       // For now, we have got a fixed font.
     codeTextView.font   = codeTextAttributes[NSFontAttributeName] as? NSFont
-//    resultTextView.font = resultTextAttributes[NSFontAttributeName] as? NSFont
 
       // Set up for code editing (not prose).
     codeTextView.automaticDashSubstitutionEnabled   = false
@@ -123,8 +122,6 @@ class PlaygroundController: NSViewController {
 
       // Apply the default style.
     codeTextView.typingAttributes = codeTextAttributes
-//    resultTextView.defaultParagraphStyle = resultTextAttributes[NSParagraphStyleAttributeName] as? NSParagraphStyle
-//    resultTextView.typingAttributes      = resultTextAttributes
 
       // Set up the delegate for the text storage.
     if let textStorage = codeTextView.layoutManager?.textStorage {
@@ -180,8 +177,8 @@ class PlaygroundController: NSViewController {
   }
 
 
-  //MARK: -
-  //MARK: Playground execution
+  // MARK: -
+  // MARK: Playground execution
 
   /// Execute all commands in the playground from top to bottom.
   ///
@@ -239,6 +236,7 @@ class PlaygroundController: NSViewController {
       resultStorage.reportResult(evalResult, type: "", atCommandIndex: commandIndex)
       commandIndex++
     }
+    resultStorage.pruneAt(commandIndex)
 
       // Display any diagnostics in the gutter.
     if issues.issues.isEmpty {
