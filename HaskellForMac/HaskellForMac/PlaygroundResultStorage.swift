@@ -33,6 +33,22 @@ class PlaygroundResultStorage: NSObject {
   //
   private var results: [Result?] = []
 
+  /// Type of callback to advise results view that all rows need to be redisplayed.
+  ///
+  typealias Redisplay = () -> ()
+
+  /// Type of callback to advise results view that the row for the given command index needs to be redisplayed.
+  ///
+  typealias RedisplayRow = Int -> ()
+
+  private let redisplay:    Redisplay
+  private let redisplayRow: RedisplayRow
+
+  init(redisplay: Redisplay, redisplayRow: RedisplayRow) {
+    self.redisplay    = redisplay
+    self.redisplayRow = redisplayRow
+  }
+
   /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
   func reportResult(result: String, type: String, atCommandIndex idx: Int) {
@@ -42,6 +58,7 @@ class PlaygroundResultStorage: NSObject {
       for i in results.endIndex...idx { results.append(nil) }
     }
     results[idx] = Result(value: result, type: type, stale: false)
+    redisplayRow(idx)
   }
 
   /// Discard all entries from the given index on.
@@ -50,6 +67,7 @@ class PlaygroundResultStorage: NSObject {
     if idx < results.endIndex {
       results.removeRange(idx..<results.endIndex)
     }
+    redisplay()
   }
 
   /// Marks all current results as stale.
@@ -60,6 +78,7 @@ class PlaygroundResultStorage: NSObject {
         return Result(value: result.value, type: result.type, stale: true)
       } else { return nil }
     }
+    redisplay()
   }
 }
 

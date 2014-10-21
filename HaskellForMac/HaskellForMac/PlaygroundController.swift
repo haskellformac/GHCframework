@@ -130,7 +130,12 @@ class PlaygroundController: NSViewController {
     }
 
       // Set up the delegate and data source for the result view.
-    resultStorage = PlaygroundResultStorage()
+    func reloadDataForRow(row: Int) {
+      let rowSet    = NSIndexSet(index: row)
+      let columnSet = NSIndexSet(indexesInRange: NSRange(location: 0, length: 2))
+      resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
+    }
+    resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
     resultTableView.setDelegate(resultStorage)
     resultTableView.setDataSource(resultStorage)
 
@@ -193,7 +198,6 @@ class PlaygroundController: NSViewController {
 
       // Mark all current results as being stale.
     resultStorage.invalidate()
-    resultTableView.reloadData()
 
       // To give AppKit an opportunity to update the gutter and results table (render as stale), we schedule the
       // remainder of this function as a continuation.
@@ -250,7 +254,6 @@ class PlaygroundController: NSViewController {
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)
-    resultTableView.reloadData()
 
       // Display any diagnostics in the gutter.
     if issues.issues.isEmpty {
