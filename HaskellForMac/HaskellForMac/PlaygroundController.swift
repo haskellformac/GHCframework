@@ -130,8 +130,8 @@ class PlaygroundController: NSViewController {
     }
 
       // Set up the delegate and data source for the result view.
-    resultTableView.setDelegate(self)
     resultStorage = PlaygroundResultStorage()
+    resultTableView.setDelegate(resultStorage)
     resultTableView.setDataSource(resultStorage)
 
       // Enable highlighting.
@@ -186,17 +186,30 @@ class PlaygroundController: NSViewController {
   /// first character is a whitespace (emulating Haskell's off-side rule).
   ///
   func execute() {
+    let gutter = codeScrollView.verticalRulerView as TextGutterView
+
+      // Invalidate old issues.
+    gutter.updateIssues(.IssuesPending)
+
+      // Mark all current results as being stale.
+    resultStorage.invalidate()
+    resultTableView.reloadData()
+
+      // To give AppKit an opportunity to update the gutter and results table (render as stale), we schedule the
+      // remainder of this function as a continuation.
+    dispatch_async(dispatch_get_main_queue(), {
+      self.executeWorker()
+    })
+  }
+
+  func executeWorker() {
     let layoutManager = codeTextView.layoutManager
     let textContainer = codeTextView.textContainer
     let string        = codeTextView.textStorage!.string
     let gutter        = codeScrollView.verticalRulerView as TextGutterView
 
-      // Invalidate old issues.
-    gutter.updateIssues(.IssuesPending)
+      // Discard all old issues.
     issues = IssuesForFile(file: issues.file, issues: [:])
-
-      // Mark all current results as being stale.
-    resultStorage.invalidate()
 
     // Extracts one command, while advancing the current character index.
     //
@@ -233,10 +246,11 @@ class PlaygroundController: NSViewController {
       firstIndexOfNextCommand          = nextIndex
 
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      resultStorage.reportResult(evalResult, type: "", atCommandIndex: commandIndex)
+      resultStorage.reportResult(evalResult, type: "<type>", atCommandIndex: commandIndex)
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)
+    resultTableView.reloadData()
 
       // Display any diagnostics in the gutter.
     if issues.issues.isEmpty {
@@ -284,22 +298,4 @@ extension PlaygroundController: NSTextViewDelegate {
     return false
   }
 
-}
-
-// MARK: -
-// MARK: NSTableViewDelegate protocol methods (for the result view)
-
-extension PlaygroundController: NSTableViewDelegate {
-
-  func tableViewSelectionDidChange(_notification: NSNotification) {
-  }
-
-  func tableViewColumnDidMove(_notification: NSNotification) {
-  }
-
-  func tableViewColumnDidResize(_notification: NSNotification) {
-  }
-
-  func tableViewSelectionIsChanging(_notification: NSNotification) {
-  }
 }

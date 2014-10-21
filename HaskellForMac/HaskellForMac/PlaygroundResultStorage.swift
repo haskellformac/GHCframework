@@ -10,10 +10,14 @@
 
 import Cocoa
 
+// Table view cell identifiers
+//
+let kTypeCell  = "TypeCell"
+let kValueCell = "ValueCell"
 
 /// Represents the result for a single command.
 ///
-struct Result {
+private struct Result {
   // FIXME: for now, it's all strings, but we want to be more flexible in the future.
 
   let value: String
@@ -43,7 +47,7 @@ class PlaygroundResultStorage: NSObject {
   /// Discard all entries from the given index on.
   ///
   func pruneAt(idx: Int) {
-    if idx < advance(results.endIndex, -1) {
+    if idx < results.endIndex {
       results.removeRange(idx..<results.endIndex)
     }
   }
@@ -59,13 +63,53 @@ class PlaygroundResultStorage: NSObject {
   }
 }
 
+
+// MARK: -
+// MARK: NSTableViewDelegate & NSTableViewDataSource protocol methods (for the result view)
+
 extension PlaygroundResultStorage: NSTableViewDataSource {
 
   func numberOfRowsInTableView(_tableView: NSTableView) -> Int {
     return results.count
   }
+}
 
-  func tableView(_tableView: NSTableView, column: NSTableColumn, row: Int) -> String {
-    return "x"
+extension PlaygroundResultStorage: NSTableViewDelegate {
+    
+  func tableView(tableView: NSTableView, viewForTableColumn column: NSTableColumn, row: Int) -> NSTableCellView? {
+
+    if let result = results[row] {
+
+      let identifier = column.identifier
+      switch identifier {
+      case "TypeCell":
+        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
+          cell.textField?.stringValue = result.type
+          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          return cell
+        } else { return nil }
+      case "ValueCell":
+        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
+          cell.textField?.stringValue = result.value
+          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          return cell
+        } else { return nil }
+      default:
+        return nil
+      }
+
+    } else { return nil }
   }
+
+//  func tableViewSelectionDidChange(_notification: NSNotification) {
+//  }
+//
+//  func tableViewColumnDidMove(_notification: NSNotification) {
+//  }
+//
+//  func tableViewColumnDidResize(_notification: NSNotification) {
+//  }
+//
+//  func tableViewSelectionIsChanging(_notification: NSNotification) {
+//  }
 }
