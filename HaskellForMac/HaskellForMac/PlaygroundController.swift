@@ -217,7 +217,7 @@ class PlaygroundController: NSViewController {
 
     // Extracts one command, while advancing the current character index.
     //
-    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String, Int) {
+    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String, CGFloat) {
       let initialCharIndex = charIndex
       let lineRange        = string.lineRangeForRange(charIndex...charIndex)
       var command          = string[lineRange]
@@ -236,8 +236,7 @@ class PlaygroundController: NSViewController {
       let glyphRange = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
                                                                   actualCharacterRange: nil)
       let rect       = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
-//      return (charIndex, command, Int(floor(rect.size.height / fontHeight)))
-      return (charIndex, command, Int(floor(rect.size.height / 15)))
+      return (charIndex, command, rect.size.height)
     }
 
       // Traverse all commands.
@@ -246,11 +245,11 @@ class PlaygroundController: NSViewController {
     while string.endIndex > firstIndexOfNextCommand {
 
       let lineNumber                   = string.lineNumberAtLocation(firstIndexOfNextCommand)
-      let (nextIndex, command, _lines) = extractCommandAtCharIndex(firstIndexOfNextCommand)
+      let (nextIndex, command, height) = extractCommandAtCharIndex(firstIndexOfNextCommand)
       firstIndexOfNextCommand          = nextIndex
 
       let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      resultStorage.reportResult(evalResult, type: "<type>", atCommandIndex: commandIndex)
+      resultStorage.reportResult(evalResult, type: "<type>", height: height, atCommandIndex: commandIndex)
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)

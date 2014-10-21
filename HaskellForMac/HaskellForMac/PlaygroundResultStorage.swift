@@ -20,9 +20,10 @@ let kValueCell = "ValueCell"
 private struct Result {
   // FIXME: for now, it's all strings, but we want to be more flexible in the future.
 
-  let value: String
-  let type:  String
-  let stale: Bool         // a result is stale while it is being recomputed
+  let value:  String
+  let type:   String
+  let height: CGFloat       // cell height — FIXME: this should be computed from the text view's layout manager instead of being chached
+  let stale:  Bool          // a result is stale while it is being recomputed
 }
 
 class PlaygroundResultStorage: NSObject {
@@ -51,13 +52,13 @@ class PlaygroundResultStorage: NSObject {
 
   /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
-  func reportResult(result: String, type: String, atCommandIndex idx: Int) {
+  func reportResult(result: String, type: String, height: CGFloat, atCommandIndex idx: Int) {
 
       // Extend the array to include the reported index if necessary.
     if idx >= results.endIndex {
       for i in results.endIndex...idx { results.append(nil) }
     }
-    results[idx] = Result(value: result, type: type, stale: false)
+    results[idx] = Result(value: result, type: type, height: height, stale: false)
     redisplayRow(idx)
   }
 
@@ -75,7 +76,7 @@ class PlaygroundResultStorage: NSObject {
   func invalidate() {
     results = results.map{ result in
       if let result = result {
-        return Result(value: result.value, type: result.type, stale: true)
+        return Result(value: result.value, type: result.type, height: result.height, stale: true)
       } else { return nil }
     }
     redisplay()
@@ -118,6 +119,12 @@ extension PlaygroundResultStorage: NSTableViewDelegate {
       }
 
     } else { return nil }
+  }
+
+  func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+    if let result = results[row] {
+      return result.height
+    } else { return 0 }
   }
 
 //  func tableViewSelectionDidChange(_notification: NSNotification) {
