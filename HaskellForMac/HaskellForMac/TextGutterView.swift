@@ -370,3 +370,25 @@ extension TextGutterView {
     }
   }
 }
+
+extension TextGutterView: NSUserInterfaceValidations {
+
+  func validateUserInterfaceItem(sender: NSValidatedUserInterfaceItem) -> Bool {
+
+      // Actions defined in this extension only apply code views.
+    switch sender.action() {
+    case "jumpToNextIssue:", "jumpToPreviousIssue:":
+      return issuesAvailable() ?? false
+    default: return false
+    }
+  }
+
+  func jumpToNextIssue(sender: AnyObject!) {
+    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToNextIssue()
+  }
+
+  func jumpToPreviousIssue(sender: AnyObject!) {
+    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToPreviousIssue()
+  }
+  
+}

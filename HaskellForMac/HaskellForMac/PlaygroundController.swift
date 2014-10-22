@@ -96,6 +96,8 @@ class PlaygroundController: NSViewController {
   }
 
   override func awakeFromNib() {
+
+      // Do not re-initialise when a nib is loaded with objects that we are the owner/delegate of — e.g., the popover view.
     if resultStorage != nil { return }
 
       // Synchronise the scroll views.
