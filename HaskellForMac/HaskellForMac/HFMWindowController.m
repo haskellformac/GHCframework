@@ -354,9 +354,23 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
     return YES; // FIXME: Should only be YES if there are no errors etc and the cloud is not offline etc.
 
+  } else if (action == @selector(jumpToNextIssue:) || action == @selector(jumpToPreviousIssue:)) {
+
+      // When a diagnostics popup is presented, the responder chain goes from the popup to the main window; we
+      // redirect to the editor
+    return [self.contextController validateUserInterfaceItem:interfaceItem];
+
   }
 
   return NO;
+}
+
+- (void)jumpToNextIssue:(id)sender {
+  [self.contextController jumpToNextIssue:sender];
+}
+
+- (void)jumpToPreviousIssue:(id)sender {
+  [self.contextController jumpToPreviousIssue:sender];
 }
 
 

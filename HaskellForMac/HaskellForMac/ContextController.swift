@@ -37,6 +37,14 @@ private enum Configuration {
   case PackageHeaderEditor(HFMHeaderEditorController)
   case TextEditor(TextEditorController)
   case HaskellEditor(TextEditorController, PlaygroundController)
+
+  func textEditor() -> TextEditorController? {
+    switch self {
+    case .TextEditor(let editor):           return editor
+    case .HaskellEditor(let editor, let _): return editor
+    default: return nil
+    }
+  }
 }
 
 // FIXME: We could get rid of the 'NSObject' superclass if we rewrite 'HFMWindowController' in Swift. Or we could make this a proper subclass of 'NSController'.
@@ -253,4 +261,23 @@ extension ContextController {
     }
     return true
   }
+}
+
+// MARK: -
+// MARK: Forward editor actions that ought to work while a diagnostics popup is shown
+
+extension ContextController {
+
+  func validateUserInterfaceItem(sender: NSValidatedUserInterfaceItem) -> Bool {
+    return config.textEditor()?.validateUserInterfaceItem(sender) ?? false
+  }
+
+  func jumpToNextIssue(sender: AnyObject!) {
+    config.textEditor()?.jumpToNextIssue(sender)
+  }
+
+  func jumpToPreviousIssue(sender: AnyObject!) {
+    config.textEditor()?.jumpToPreviousIssue(sender)
+  }
+
 }

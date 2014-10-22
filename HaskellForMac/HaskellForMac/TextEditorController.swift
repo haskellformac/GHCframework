@@ -117,6 +117,25 @@ extension TextEditorController {
 
 
 // MARK: -
+// MARK: Forwarded menu actions
+
+extension TextEditorController {
+
+  func validateUserInterfaceItem(sender: NSValidatedUserInterfaceItem) -> Bool {
+    return textView.validateUserInterfaceItem(sender)
+  }
+
+  func jumpToNextIssue(sender: AnyObject!) {
+    return textView.jumpToNextIssue(sender)
+  }
+
+  func jumpToPreviousIssue(sender: AnyObject!) {
+    return textView.jumpToPreviousIssue(sender)
+  }
+  
+}
+
+// MARK: -
 // MARK: Syntax highlighting
 
 extension TextEditorController {
