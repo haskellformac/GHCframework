@@ -35,10 +35,10 @@
                                         <rect key="frame" x="0.0" y="0.0" width="249" height="270"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <size key="minSize" width="269.5" height="270"/>
+                                        <size key="minSize" width="270" height="270"/>
                                         <size key="maxSize" width="463" height="10000000"/>
                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <size key="minSize" width="269.5" height="270"/>
+                                        <size key="minSize" width="270" height="270"/>
                                         <size key="maxSize" width="463" height="10000000"/>
                                         <connections>
                                             <outlet property="delegate" destination="-2" id="Ald-1Z-rip"/>
@@ -63,8 +63,7 @@
                                 <rect key="frame" x="1" y="0.0" width="238" height="134"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" viewBased="YES" id="aoG-xy-tdn">
-                                        <rect key="frame" x="0.0" y="0.0" width="238" height="134"/>
+                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" viewBased="YES" id="aoG-xy-tdn">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <size key="intercellSpacing" width="3" height="0.0"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -102,7 +101,7 @@
                                                     </tableCellView>
                                                 </prototypeCellViews>
                                             </tableColumn>
-                                            <tableColumn identifier="TypeCell" editable="NO" width="79.5" minWidth="40" maxWidth="1000" id="fpy-dU-tzQ">
+                                            <tableColumn identifier="TypeCell" editable="NO" width="78.5" minWidth="40" maxWidth="1000" id="fpy-dU-tzQ">
                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                     <font key="font" metaFont="smallSystem"/>
                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -116,7 +115,7 @@
                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                 <prototypeCellViews>
                                                     <tableCellView identifier="TypeCell" id="nE2-Fx-FgQ">
-                                                        <rect key="frame" x="167" y="1" width="79.5" height="17"/>
+                                                        <rect key="frame" x="167" y="0.0" width="78" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSC-wF-V7u">
@@ -135,6 +134,9 @@
                                                 </prototypeCellViews>
                                             </tableColumn>
                                         </tableColumns>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="kJJ-iz-8y0"/>
+                                        </connections>
                                     </tableView>
                                 </subviews>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>

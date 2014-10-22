@@ -55,7 +55,7 @@
             </constraints>
             <point key="canvasLocation" x="199" y="189.5"/>
         </customView>
-        <popover id="YuT-Qh-Ogh">
+        <popover behavior="semitransient" id="YuT-Qh-Ogh">
             <connections>
                 <outlet property="contentViewController" destination="sgN-jn-83z" id="JJy-0k-2Tj"/>
             </connections>

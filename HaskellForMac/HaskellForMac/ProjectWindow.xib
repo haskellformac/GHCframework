@@ -164,7 +164,6 @@
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="pZh-OI-TsH"/>
-                    <toolbarItem reference="lfl-Yy-Ao3"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>

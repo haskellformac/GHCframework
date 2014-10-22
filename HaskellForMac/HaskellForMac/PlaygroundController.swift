@@ -63,6 +63,12 @@ class PlaygroundController: NSViewController {
   ///
   private var issues = IssuesForFile(file: kPlaygroundSource, issues: [:])
 
+  // Objects from the results popover nib.
+  //
+  @IBOutlet private var popover:           NSPopover?           // referenced to retain
+  @IBOutlet private var popoverController: NSViewController!    // referenced to retain
+  @IBOutlet private var popoverTextView:   NSTextView!          // This is where the diagnostics goes.
+
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
@@ -90,6 +96,7 @@ class PlaygroundController: NSViewController {
   }
 
   override func awakeFromNib() {
+    if resultStorage != nil { return }
 
       // Synchronise the scroll views.
     codeScrollView.setSynchronisedScrollView(resultScrollView)
@@ -103,7 +110,7 @@ class PlaygroundController: NSViewController {
     codeTextView.horizontallyResizable   = true
 
       // For now, we have got a fixed font.
-    codeTextView.font   = codeTextAttributes[NSFontAttributeName] as? NSFont
+    codeTextView.font = codeTextAttributes[NSFontAttributeName] as? NSFont
 
       // Set up for code editing (not prose).
     codeTextView.automaticDashSubstitutionEnabled   = false
@@ -130,13 +137,13 @@ class PlaygroundController: NSViewController {
     }
 
       // Set up the delegate and data source for the result view.
-    func reloadDataForRow(row: Int) {
+    let reloadDataForRow: Int -> () = { [unowned self] (row: Int) in
       let rowSet    = NSIndexSet(index: row)
       let columnSet = NSIndexSet(indexesInRange: NSRange(location: 0, length: 2))
-      resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
+      self.resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
     }
+    resultTableView.setDelegate(self)
     resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
-    resultTableView.setDelegate(resultStorage)
     resultTableView.setDataSource(resultStorage)
 
       // Enable highlighting.
@@ -253,6 +260,7 @@ class PlaygroundController: NSViewController {
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)
+    resultTableView.reloadData()
 
       // Display any diagnostics in the gutter.
     if issues.issues.isEmpty {
@@ -300,4 +308,83 @@ extension PlaygroundController: NSTextViewDelegate {
     return false
   }
 
+}
+
+// MARK: -
+// MARK: NSTableViewDelegate protocol methods
+
+extension PlaygroundController: NSTableViewDelegate {
+
+  func tableView(tableView: NSTableView, viewForTableColumn column: NSTableColumn, row: Int) -> NSTableCellView? {
+
+    if let result = resultStorage.queryResult(row) {
+
+      let identifier = column.identifier
+      switch identifier {
+      case "TypeCell":
+        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
+          cell.textField?.stringValue = result.type
+          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          return cell
+        } else { return nil }
+      case "ValueCell":
+        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
+          cell.textField?.stringValue = result.value
+          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          return cell
+        } else { return nil }
+      default:
+        return nil
+      }
+
+    } else { return nil }
+  }
+
+  func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+    if let result = resultStorage.queryResult(row) {
+      return result.height
+    } else { return 0 }
+  }
+
+  func tableViewSelectionDidChange(notification: NSNotification) {
+    let tableView = notification.object as NSTableView
+    let row       = tableView.selectedRow
+
+    if row != -1 {   // If a row is selected...
+      if let result = resultStorage.queryResult(row) {
+
+        let bundle = NSBundle.mainBundle()
+        if !bundle.loadNibNamed("ResultPopover", owner: self, topLevelObjects: nil) {
+          NSLog("%@: could not load popover NIB", __FUNCTION__)
+        } else {
+
+          let resultString = NSAttributedString(string: result.value)
+          let rowView      = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
+
+          if let frame = rowView?.frame {
+            popoverTextView.textStorage!.setAttributedString(resultString)
+            popover?.behavior = .Semitransient
+
+            let textSize         = resultString.size
+            popover?.contentSize = textSize.width > 400 ? NSSize(width: 400, height: 300)
+                                                        : NSSize(width: textSize.width < 40 ? 40 : textSize.width,
+                                                                 height: textSize.height > 300 ? 300 : textSize.height + 15)
+            popover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
+                                        ofView: resultTableView,
+                                        preferredEdge: NSMaxYEdge)
+          }
+        }
+      }
+      resultTableView.deselectRow(row)    // .. so that selecting again will call this function again
+    }
+  }
+
+  //  func tableViewColumnDidMove(_notification: NSNotification) {
+  //  }
+  //
+  //  func tableViewColumnDidResize(_notification: NSNotification) {
+  //  }
+  //
+  //  func tableViewSelectionIsChanging(_notification: NSNotification) {
+  //  }
 }

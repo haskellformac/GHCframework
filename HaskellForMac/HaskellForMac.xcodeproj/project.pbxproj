@@ -69,6 +69,7 @@
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
 		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
 		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
+		E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CFFEA119F729B600356065 /* ResultPopover.xib */; };
 		E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E5DE9B19E4FD30008A101B /* MACAddress.m */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
@@ -301,6 +302,7 @@
 		E7CC64021999B4DD00D8E1CD /* ContextController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextController.swift; sourceTree = "<group>"; };
 		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
 		E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundResultStorage.swift; sourceTree = "<group>"; };
+		E7CFFEA119F729B600356065 /* ResultPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultPopover.xib; sourceTree = "<group>"; };
 		E7E5DE9B19E4FD30008A101B /* MACAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MACAddress.m; sourceTree = "<group>"; };
 		E7E5DE9D19E4FD63008A101B /* MACAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MACAddress.h; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
@@ -616,6 +618,7 @@
 				E7258C57198A2263004789CF /* Playground.xib */,
 				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
 				E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */,
+				E7CFFEA119F729B600356065 /* ResultPopover.xib */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -910,6 +913,7 @@
 				E7258C58198A2263004789CF /* Playground.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
+				E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */,
 				E7A13B151888006C00D79087 /* Credits.rtf in Resources */,
 				E79444D919F0E00300FE905A /* MainMenu.xib in Resources */,
 				E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */,

@@ -210,8 +210,8 @@ class TextGutterView: NSRulerView {
           popoverTextView.textContainerInset = insetSize
           popover?.contentSize               = contentSize
           popover?.behavior                  = .Semitransient
-          popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: 4/*NSMaxYEdge*/)
-      }
+          popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: NSMaxYEdge)
+        }
       }
     }
   }
