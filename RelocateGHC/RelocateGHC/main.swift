@@ -36,9 +36,9 @@ func replaceStringWithString(inFile: String, string oldString: String, withStrin
 
 // MARK: Main
 
-let location    = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("Contents/Frameworks/")
-let relativeBin = "GHC.bundle/Contents/usr/bin"
-let relativeLib = "GHC.bundle/Contents/usr/lib/ghc-7.8.3"
+let location    = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("Contents/Frameworks/GHC.framework/")
+let relativeBin = "Versions/Current/usr/bin"
+let relativeLib = "Versions/Current/usr/lib/ghc-7.8.3"
 let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
 let package_db  = location.stringByAppendingPathComponent(relativeLib).stringByAppendingPathComponent("package.conf.d")
 
@@ -49,7 +49,7 @@ let ghcScript   = String(contentsOfFile: ghcPath)
 let startOfLoc  = ghcScript.rangeOfString("topdir=\"")?.endIndex
                   ?! ("RelocateGHC: fatal error: could not locate 'topdir' definition")
 
-let endOfLoc    = ghcScript.rangeOfString("/GHC.bundle", options: nil, range: startOfLoc..<ghcScript.endIndex)?.startIndex
+let endOfLoc    = ghcScript.rangeOfString("/Versions", options: nil, range: startOfLoc..<ghcScript.endIndex)?.startIndex
                   ?! ("RelocateGHC: fatal error: could not find end of old location")
 let oldLocation = ghcScript[startOfLoc..<endOfLoc]
 
