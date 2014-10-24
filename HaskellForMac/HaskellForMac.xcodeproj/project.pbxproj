@@ -1034,7 +1034,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ ${DERIVED_FILE_DIR}/CBLPackage_objc.h -nt ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h ];\nthen\n  cp ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/\nfi";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1663,9 +1663,7 @@
 				OTHER_LDFLAGS = (
 					"-liconv",
 					"-Wl,-no_compact_unwind",
-					"$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib",
-					"-rpath",
-					"@executable_path/../Frameworks/GHC.bundle/Contents/usr/lib/ghc-7.8.3/rts-1.0",
+					"$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib",
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";
@@ -1718,9 +1716,7 @@
 				OTHER_LDFLAGS = (
 					"-liconv",
 					"-Wl,-no_compact_unwind",
-					"$CONFIGURATION_BUILD_DIR/GHC.bundle/Contents/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib",
-					"-rpath",
-					"@executable_path/../Frameworks/GHC.bundle/Contents/usr/lib/ghc-7.8.3/rts-1.0",
+					"$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib",
 				);
 				PRODUCT_NAME = Haskell;
 				PROVISIONING_PROFILE = "AB38A0E2-9FAF-485A-9D03-7531C53D7C62";

@@ -44,16 +44,16 @@ import PrintInterceptor
 import System.IO.Unsafe (unsafePerformIO)
 import Data.IORef
 
--- Relative (to the 'GHC.bundle' location) paths to the binary and library directory.
+-- Relative (to the 'GHC.framework location) paths to the binary and library directory.
 --
 prefix, bindir, libdir :: String
-prefix = "GHC.bundle/Contents/usr/"
+prefix = "GHC.framework/Versions/Current/usr/"
 bindir = prefix </> "bin"
 libdir = prefix </> "lib/ghc-7.8.3"
 
 -- Compiler wrapper
 -- 
--- FIXME: Would be nicer to have 'ToolWrapper' in the GHC.bundle/, but Xcode messes that up and generates a code signing error
+-- FIXME: Would be nicer to have 'ToolWrapper' in the GHC.framework/, but Xcode messes that up and generates a code signing error
 ccWrapper :: String
 ccWrapper = "../MacOS" </> "ToolWrapper"
 
@@ -69,7 +69,7 @@ data Result = Result String
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
--- The file path specifies the 'GHC.bundle' location (from where we locate the package database).
+-- The file path specifies the 'GHC.framework location (from where we locate the package database).
 --
 start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
 start ghcBundlePath diagnosticHandler

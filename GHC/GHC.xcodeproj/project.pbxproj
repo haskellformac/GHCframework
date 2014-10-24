@@ -161,10 +161,11 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/HsFFI.h",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/Libraries/$(TARGET_NAME).dylib",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Copy the GHC build and relocate it\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC\n\n# This frameworks public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/";
+			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Copy the GHC build and relocate it\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking aginst this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.8.3.dylib\nln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/rts-1.0/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\nln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -271,8 +272,9 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3/rts-1.0";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -289,8 +291,9 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3/rts-1.0";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
