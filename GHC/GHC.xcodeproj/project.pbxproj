@@ -15,7 +15,7 @@
 		E791CF4919F9135F00DECDC4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "";
+			dstPath = Executables;
 			dstSubfolderSpec = 6;
 			files = (
 				E791CF4B19F9137000DECDC4 /* RelocateGHC in CopyFiles */,
@@ -94,12 +94,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E791CF3419F8AEC900DECDC4 /* Build configuration list for PBXNativeTarget "GHC" */;
 			buildPhases = (
+				E791CF4919F9135F00DECDC4 /* CopyFiles */,
 				E791CF4819F8CF0800DECDC4 /* ShellScript */,
 				E791CF1919F8AEC900DECDC4 /* Sources */,
 				E791CF1A19F8AEC900DECDC4 /* Frameworks */,
 				E791CF1B19F8AEC900DECDC4 /* Headers */,
 				E791CF1C19F8AEC900DECDC4 /* Resources */,
-				E791CF4919F9135F00DECDC4 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -164,7 +164,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\nditto $GHCROOT/usr $CONTENTS_PATH/usr\nditto $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h";
+			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Copy the GHC build and relocate it\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC\n\n# This frameworks public API is the Haskell C API\nditto $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -213,7 +213,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -252,7 +252,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -272,6 +272,7 @@
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -289,6 +290,7 @@
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
