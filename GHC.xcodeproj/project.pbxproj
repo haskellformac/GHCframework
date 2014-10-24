@@ -272,7 +272,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3/rts-1.0";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -291,7 +291,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3/rts-1.0";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks -rpath @loader_path/usr/lib/ghc-7.8.3";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr/lib/ghc-7.8.3/rts-1.0/libHSrts_thr-ghc7.8.3.dylib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
