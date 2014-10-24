@@ -7,7 +7,7 @@
 --
 -- Maintainer  : Manuel M T Chakravarty <chak@justtesting.org>
 --
--- This module implements the Objective-C to Haskell bridge for managing GHC instances.
+-- This module implements the Objective-C to Haskell bridge for managing GHC instances. 
 
 module GHCInstance () where
 

@@ -164,7 +164,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Copy the GHC build and relocate it\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC\n\n# This frameworks public API is the Haskell C API\nditto $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h";
+			shellScript = "GHCROOT=$CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Copy the GHC build and relocate it\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC\n\n# This frameworks public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nln -Fhfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/";
 		};
 /* End PBXShellScriptBuildPhase section */
 

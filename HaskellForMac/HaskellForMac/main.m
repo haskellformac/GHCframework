@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "HsFFI.h"
+#import "GHC/GHC.h"
 
 
 void CloudcelerateKit_initialise(void);
