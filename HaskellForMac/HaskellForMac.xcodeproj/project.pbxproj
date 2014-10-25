@@ -185,6 +185,20 @@
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
 		};
+		E791CF7919FA595B00DECDC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E791CF5819FA595A00DECDC4;
+			remoteInfo = HaskellSpriteKit;
+		};
+		E791CF7B19FA595B00DECDC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E791CF6319FA595A00DECDC4;
+			remoteInfo = HaskellSpriteKitTests;
+		};
 		E7A13B261888006C00D79087 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
@@ -269,6 +283,7 @@
 		E78E73F519D52DCE0046BA51 /* Range.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Range.swift; sourceTree = "<group>"; };
 		E791CF3E19F8B35800DECDC4 /* ToolWrapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = ToolWrapper; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/ToolWrapper"; sourceTree = "<absolute>"; };
 		E791CF4219F8B48100DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = GHC.framework; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/GHC.framework"; sourceTree = "<absolute>"; };
+		E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HaskellSpriteKit.xcodeproj; path = HaskellSpriteKit/HaskellSpriteKit.xcodeproj; sourceTree = "<group>"; };
 		E7A13B011888006C00D79087 /* Haskell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haskell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7A13B041888006C00D79087 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E7A13B071888006C00D79087 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -499,6 +514,15 @@
 			name = Utilities;
 			sourceTree = "<group>";
 		};
+		E791CF7519FA595A00DECDC4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */,
+				E791CF7C19FA595B00DECDC4 /* HaskellSpriteKitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E7A13AF81888006C00D79087 = {
 			isa = PBXGroup;
 			children = (
@@ -512,6 +536,7 @@
 				E743140A19A46F70003A3934 /* CloudcelerateKitTests */,
 				E7A13B031888006C00D79087 /* Frameworks */,
 				E7A13B021888006C00D79087 /* Products */,
+				E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -861,6 +886,12 @@
 			mainGroup = E7A13AF81888006C00D79087;
 			productRefGroup = E7A13B021888006C00D79087 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E791CF7519FA595A00DECDC4 /* Products */;
+					ProjectRef = E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E7A13B001888006C00D79087 /* HaskellForMac */,
@@ -872,6 +903,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = HaskellSpriteKit.framework;
+			remoteRef = E791CF7919FA595B00DECDC4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E791CF7C19FA595B00DECDC4 /* HaskellSpriteKitTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = HaskellSpriteKitTests.xctest;
+			remoteRef = E791CF7B19FA595B00DECDC4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E70A66AD197CC340006D3514 /* Resources */ = {
@@ -978,7 +1026,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\n  NAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\n";
+			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nNAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\n";
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
