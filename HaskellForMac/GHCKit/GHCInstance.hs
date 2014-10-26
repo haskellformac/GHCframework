@@ -53,6 +53,10 @@ unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
 
 objc_typecheck
 
+-- stringToNSString :: String -> IO NSString
+-- stringToNSString str
+--   = $(objc ['str :> ''String] $ Class ''NSString <: [cexp| str |])
+
 listOfStringToNSArray :: [String] -> IO (NSArray NSString)
 listOfStringToNSArray strs
   = do
@@ -315,12 +319,21 @@ loadModuleText session fname importPaths moduleText
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
 
-evalText :: Session -> String -> Int -> String -> IO String
+evalText :: Session -> String -> Int -> String -> IO [String]
 evalText session source line exprText 
   = showResult <$> eval session source line exprText
   where
     showResult (Result res) = res
-    showResult Error        = ""
+    showResult Error        = []
+
+-- 'Interpreter.inferType' is not implemented yet.
+--
+-- typeText :: Session -> String -> Int -> String -> IO String
+-- typeText session source line exprText 
+--   = showResult <$> inferType session source line exprText
+--   where
+--     showResult (Result res) = res
+--     showResult Error        = ""
 
 
 -- Objective-C class interface
@@ -362,9 +375,9 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 
 /// Evaluate the Haskell expression given as a string.
 ///
-- (typename NSString *)evalExprFromString:(typename NSString *)exprText 
-                                   source:(typename NSString *)source 
-                                     line:(typename NSUInteger)line;
+- (typename NSArray/*<NSString>*/ *)evalExprFromString:(typename NSString *)exprText 
+                                                source:(typename NSString *)source 
+                                                  line:(typename NSUInteger)line;
 
 // Framework internal methods
 // --
@@ -454,9 +467,9 @@ void GHCInstance_initialise(void);
   return loadModuleText(self.interpreterSession, file, importPaths, moduleText);
 }
 
-- (typename NSString *)evalExprFromString:(typename NSString *)exprText 
-                                   source:(typename NSString *)source 
-                                     line:(typename NSUInteger)line
+- (typename NSArray/*<NSString>*/ *)evalExprFromString:(typename NSString *)exprText 
+                                                source:(typename NSString *)source 
+                                                  line:(typename NSUInteger)line
 {
   return evalText(self.interpreterSession, source, (typename NSInteger)line, exprText);
 }

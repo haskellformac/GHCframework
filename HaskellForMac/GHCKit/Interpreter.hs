@@ -9,7 +9,7 @@
 
 module Interpreter (
   Session, Result(..),
-  start, stop, tokenise, eval, typeOf, load 
+  start, stop, tokenise, eval, inferType, load 
 ) where
 
   -- standard libraries
@@ -34,6 +34,7 @@ import qualified GhcMonad     as GHC
 import qualified Lexer        as GHC
 import qualified MonadUtils   as GHC
 import qualified StringBuffer as GHC
+import qualified PprTyThing   as GHC
 import qualified Outputable   as GHC
 
   -- GHCKit
@@ -64,8 +65,8 @@ newtype Session = Session (MVar (Maybe (GHC.Ghc ())))
 -- |Possible results of executing an interpreter action. 
 --
 --FIXME: we want to make this asynchronous...
-data Result = Result String
-            | Error
+data Result r = Result r
+              | Error
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
@@ -158,7 +159,7 @@ tokenise (Session inlet) strbuf loc
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
-eval :: Session -> String -> Int -> String -> IO Result
+eval :: Session -> String -> Int -> String -> IO (Result [String])
 eval (Session inlet) source line stmt
   = do
     { resultMV <- newEmptyMVar
@@ -166,31 +167,48 @@ eval (Session inlet) source line stmt
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
         { runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
         ; result <- case runResult of
-                     GHC.RunOk _names      -> do
-                                              { chan  <- GHC.liftIO $ readIORef chanRef
+                     GHC.RunOk names       -> do
+                                              { chan        <- GHC.liftIO $ readIORef chanRef
                                               ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
-                                              ; return $ Result (fromMaybe "" maybe_value)
+                                              ; types       <- renderTypes names
+                                              ; return $ Result (fromMaybe "" maybe_value : types)
                                               }
-                     GHC.RunException _exc -> return $ Result "<exception>"
-                     _                     -> return $ Result "<unexpected break point>"
+                     GHC.RunException _exc -> return $ Result ["<exception>"]
+                     _                     -> return $ Result ["<unexpected break point>"]
         ; GHC.liftIO $ putMVar resultMV result
         }
     ; takeMVar resultMV
     }
+  where
+    renderTypes :: [GHC.Name] -> GHC.Ghc [String]
+    renderTypes [name] = (:[]) <$> typeOf name
+    renderTypes names  
+      = do
+        { dflags <- GHC.getDynFlags
+        ; mapM (\name -> ((GHC.showPpr dflags name ++ " :: ") ++) <$> typeOf name) names
+        }
+    --
+    typeOf name
+      = do
+        { dflags <- GHC.getDynFlags
+        ; ty <- GHC.exprType (GHC.showPpr dflags name)
+        ; unqual <- GHC.getPrintUnqual
+        ; return $ GHC.showSDocForUser dflags unqual (GHC.pprTypeForUser ty)
+        }
 
 -- Infer the type of a Haskell expression in the given interpreter session.
 --
 -- If GHC raises an error, we pretty print it.
 --
 -- FIXME: improve error reporting
-typeOf :: Session -> String -> IO Result
-typeOf = error "typeOf is not implemented"
+inferType :: Session -> String -> Int -> String -> IO (Result String)
+inferType = error "inferType is not implemented"
 
 -- Load a module into in the given interpreter session.
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
-load :: Session -> [String] -> GHC.Target -> IO Result
+load :: Session -> [String] -> GHC.Target -> IO (Result ())
 load (Session inlet) importPaths target
   = do
     { resultMV <- newEmptyMVar
@@ -225,7 +243,7 @@ load (Session inlet) importPaths target
 
                              -- Communicate the result back to the main thread
                          ; GHC.liftIO $ 
-                             putMVar resultMV (Result "")
+                             putMVar resultMV (Result ())
                          }
             []        -> GHC.liftIO $ putMVar resultMV Error
         }

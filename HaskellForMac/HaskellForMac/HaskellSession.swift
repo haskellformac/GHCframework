@@ -87,7 +87,11 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
 
   /// Evaluate an expression in the current evaluation context.
   ///
-  func evalExprFromString(exprText: String, source: String, line: Line) -> String {
-    return ghcInstance.evalExprFromString(exprText, source: source, line: line)
+  func evalExprFromString(exprText: String, source: String, line: Line) -> (String, [String]) {
+    let resultStrings = ghcInstance.evalExprFromString(exprText, source: source, line: line) as [String]
+    if resultStrings.count == 0 { return ("", []) }
+    else {
+      return (resultStrings[0], Array(resultStrings[1..<resultStrings.endIndex]))
+    }
   }
 }

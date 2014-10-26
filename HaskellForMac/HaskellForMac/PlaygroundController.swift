@@ -257,8 +257,8 @@ class PlaygroundController: NSViewController {
       let (nextIndex, command, height) = extractCommandAtCharIndex(firstIndexOfNextCommand)
       firstIndexOfNextCommand          = nextIndex
 
-      let evalResult = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
-      resultStorage.reportResult(evalResult, type: "<type>", height: height, atCommandIndex: commandIndex)
+      let (evalResult, evalTypes) = haskellSession.evalExprFromString(command, source: kPlaygroundSource, line: lineNumber)
+      resultStorage.reportResult(evalResult, type: ", ".join(evalTypes), height: height, atCommandIndex: commandIndex)
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)
