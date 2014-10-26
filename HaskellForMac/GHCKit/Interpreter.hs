@@ -155,7 +155,8 @@ tokenise (Session inlet) strbuf loc
     ; takeMVar resultMV
     }
 
--- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result.
+-- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result. Also return the types of all binders
+-- (being 'it' in the case of a vanilla expression).
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
