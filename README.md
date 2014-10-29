@@ -10,3 +10,7 @@ Building happens in two stages: (1) The GHCBuild project is used to build the GH
 This decomposition is necessary as GHC builds are very time consuming, but change very rarely. We want to be able to clean HaskellForMac and build from scratch without rebuilding GHC.
 
 GHCBuild builds GHCBuild.bundle, whereas HaskellForMac depends on the GHC project, which builds GHC.framework by copying the contents of GHCBuild.bundle and determining which flavour of the GHC RTS ought to be (dynamically) linked into the main Haskell.app executable. The RTS library is being linked by linking against GHC.framework.
+
+# Prerequisites
+
+The build depends on a working installation of Xcode 6.1, GHC 7.6.1, cabal-install (>= 0.18), and recent versions of alex and happy. (The Haskell tools are covered by 2014.2.0.0.)

@@ -34,6 +34,7 @@
 		E72AF5F719E37B5400753077 /* CloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F619E37B5400753077 /* CloudController.swift */; };
 		E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F919E38D0400753077 /* CloudSession.swift */; };
 		E72AF5FC19E395F800753077 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5FB19E395F800753077 /* Error.swift */; };
+		E731781119FF853600D8FDC0 /* HaskellSpriteKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
@@ -219,6 +220,7 @@
 				E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */,
 				E70A66C5197CC341006D3514 /* GHCKit.framework in Embed Frameworks */,
 				E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */,
+				E731781119FF853600D8FDC0 /* HaskellSpriteKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1056,7 +1058,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h -nt ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/Cloudcelerate_objc.h ];\nthen\n  cp ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/\nfi";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/Cloudcelerate_objc.h\n";
 		};
 		E731EA4D197F76940083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1069,7 +1071,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ ${DERIVED_FILE_DIR}/GHCInstance_objc.h -nt ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/GHCInstance_objc.h ];\nthen\ncp ${DERIVED_FILE_DIR}/GHCInstance_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/\nfi";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/GHCInstance_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/GHCInstance_objc.h\n";
 		};
 		E731EA4F197F825D0083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

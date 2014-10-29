@@ -43,7 +43,7 @@ import Network.HTTP.Types  hiding (statusCode)
 import Network.HTTP.Client (HttpException)
 import Network.Wreq
 
-objc_import ["<Foundation/Foundation.h>"]
+objc_import ["<Foundation/Foundation.h>", "GHC/HsFFI.h"]
 
 
 sandboxURL = "http://api.sandbox.cloudcelerate.io/v1.0"

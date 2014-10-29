@@ -28,3 +28,19 @@ DerivedData
 
 #CocoaPods
 Pods
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Color_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Color_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Geometry_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Geometry_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Node_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Node_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Texture_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Texture_objc.m

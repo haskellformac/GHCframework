@@ -36,7 +36,7 @@ import System.FilePath
 import Language.C.Quote.ObjC
 import Language.C.Inline.ObjC
 
-objc_import ["<Cocoa/Cocoa.h>"]
+objc_import ["<Cocoa/Cocoa.h>", "GHC/HsFFI.h"]
 
 
 -- Marshalling support

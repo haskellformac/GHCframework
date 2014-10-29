@@ -85,13 +85,23 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   //MARK: -
   //MARK: Code execution
 
-  /// Evaluate an expression in the current evaluation context.
+  /// Evaluate an expression in the current evaluation context. The result will either be a 'String' or an object
+  /// produced as the result of the evaluation. In case of evaluation errors, the string will simply be empty.
   ///
-  func evalExprFromString(exprText: String, source: String, line: Line) -> (String, [String]) {
-    let resultStrings = ghcInstance.evalExprFromString(exprText, source: source, line: line) as [String]
-    if resultStrings.count == 0 { return ("", []) }
+  /// If evaluation is successful, the second component contains the printed representation of the types of all new
+  /// binders.
+  ///
+  func evalExprFromString(exprText: String, source: String, line: Line) -> (AnyObject, [String]) {
+    let resultAndTypes = ghcInstance.evalExprFromString(exprText, source: source, line: line)
+
+    if resultAndTypes.count == 0 { return ("", []) }
     else {
-      return (resultStrings[0], Array(resultStrings[1..<resultStrings.endIndex]))
+      let types = Array(resultAndTypes[1..<resultAndTypes.endIndex])
+      if let typeStrings = types as? [String] {
+        return (resultAndTypes[0], typeStrings)
+      } else {
+        return (resultAndTypes[0], [])
+      }
     }
   }
 }

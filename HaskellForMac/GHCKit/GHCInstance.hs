@@ -33,7 +33,7 @@ import qualified SrcLoc       as GHC
   -- friends
 import Interpreter
 
-objc_import ["<Cocoa/Cocoa.h>", "GHCSeverity.h", "GHCToken.h"]
+objc_import ["<Cocoa/Cocoa.h>", "GHC/HsFFI.h", "GHCSeverity.h", "GHCToken.h"]
 
 
 -- Marshalling support
@@ -53,9 +53,9 @@ unsafeFreezeNSMutableArray (NSMutableArray fptr) = NSArray $ castForeignPtr fptr
 
 objc_typecheck
 
--- stringToNSString :: String -> IO NSString
--- stringToNSString str
---   = $(objc ['str :> ''String] $ Class ''NSString <: [cexp| str |])
+stringToNSString :: String -> IO NSString
+stringToNSString str
+  = $(objc ['str :> ''String] $ Class ''NSString <: [cexp| str |])
 
 listOfStringToNSArray :: [String] -> IO (NSArray NSString)
 listOfStringToNSArray strs
@@ -319,12 +319,43 @@ loadModuleText session fname importPaths moduleText
         , GHC.targetContents     = Just (GHC.stringToStringBuffer moduleText, utcTime)
         }
 
-evalText :: Session -> String -> Int -> String -> IO [String]
-evalText session source line exprText 
-  = showResult <$> eval session source line exprText
+newtype NSObject = NSObject (ForeignPtr NSObject)
+  deriving Typeable   -- needed for now until migrating to new TH
+  
+objc_typecheck
+
+listOfNSObjectToNSArray :: [NSObject] -> IO (NSArray NSObject)
+listOfNSObjectToNSArray objs
+  = do
+    { marr <- $(objc [] $ Class [t|NSMutableArray NSObject|] <: [cexp| [NSMutableArray arrayWithCapacity:50] |])
+    ; mapM_ (addElement marr) objs
+    ; return $ unsafeFreezeNSMutableArray marr
+    }
   where
-    showResult (Result res) = res
-    showResult Error        = []
+    addElement marr obj
+      = $(objc ['marr :> Class [t|NSMutableArray NSObject|], 'obj :> Class ''NSObject] $ void [cexp| [marr addObject:obj] |])
+
+mockListOfNSObjectToNSArray :: NSArray NSObject -> IO [NSObject]
+mockListOfNSObjectToNSArray = error "mockListOfNSObjectToNSArray: shouldn't be executed"
+
+objc_marshaller 'listOfNSObjectToNSArray 'mockListOfNSObjectToNSArray
+
+evalText :: Session -> String -> Int -> String -> IO [NSObject]
+evalText session source line exprText
+  = do
+    { result <- eval session source line exprText
+    ; case result of
+        Error                  -> return []
+        Result (Left fptr)     -> return [NSObject $ castForeignPtr fptr]
+        Result (Right strings) -> mapM stringToNSObject strings
+    }
+  where
+    stringToNSObject str 
+      = do 
+        { nsStr <- stringToNSString str
+        ; let NSString fptr = nsStr
+        ; return $ NSObject (castForeignPtr fptr)
+        }
 
 -- 'Interpreter.inferType' is not implemented yet.
 --
@@ -373,9 +404,11 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
                                  file:(typename NSString *)file
                           importPaths:(typename NSArray/*<NSString>*/ *)importPaths;
 
-/// Evaluate the Haskell expression given as a string.
+/// Evaluate the Haskell expression given as a string. The result (if any) is accompanied by the types of all binders.
 ///
-- (typename NSArray/*<NSString>*/ *)evalExprFromString:(typename NSString *)exprText 
+/// The result is either an `NSString` or an object representing the result. The types are string representations.
+///
+- (typename NSArray/*<NSObject>*/ *)evalExprFromString:(typename NSString *)exprText 
                                                 source:(typename NSString *)source 
                                                   line:(typename NSUInteger)line;
 
@@ -467,7 +500,7 @@ void GHCInstance_initialise(void);
   return loadModuleText(self.interpreterSession, file, importPaths, moduleText);
 }
 
-- (typename NSArray/*<NSString>*/ *)evalExprFromString:(typename NSString *)exprText 
+- (typename NSArray/*<NSObject>*/ *)evalExprFromString:(typename NSString *)exprText 
                                                 source:(typename NSString *)source 
                                                   line:(typename NSUInteger)line
 {

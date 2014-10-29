@@ -8,7 +8,7 @@
 -- Haskell interpreter based on the GHC API.
 
 module Interpreter (
-  Session, Result(..),
+  Session, Result(..), EvalResult,
   start, stop, tokenise, eval, inferType, load 
 ) where
 
@@ -19,22 +19,27 @@ import Control.Concurrent
 import Control.Concurrent.STM
 import Control.Exception            (SomeException, evaluate)
 import Control.Monad
-import Data.Dynamic  hiding (typeOf)
+import Data.Dynamic                 hiding (typeOf)
 import Data.Maybe
+import Foreign                      hiding (void)
 import System.FilePath
 import System.IO
+import Unsafe.Coerce                (unsafeCoerce)
 
   -- GHC
 import qualified Bag          as GHC
 import qualified DynFlags     as GHC
 import qualified ErrUtils     as GHC
+import qualified Exception    as GHC
 import qualified HscTypes     as GHC
+import qualified HsImpExp     as GHC
 import qualified GHC          as GHC
 import qualified GhcMonad     as GHC
 import qualified Lexer        as GHC
 import qualified MonadUtils   as GHC
 import qualified StringBuffer as GHC
 import qualified PprTyThing   as GHC
+import qualified Type         as GHC
 import qualified Outputable   as GHC
 
   -- GHCKit
@@ -155,32 +160,74 @@ tokenise (Session inlet) strbuf loc
     ; takeMVar resultMV
     }
 
+-- The result of evaluation is usually a 'show'ed result together with the types of binders. However, it can also be a
+-- reference to an Objective-C representation of the result (without any type information).
+--
+type EvalResult = Result (Either (ForeignPtr ()) [String])
+
 -- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result. Also return the types of all binders
--- (being 'it' in the case of a vanilla expression).
+-- (being 'it' in the case of a vanilla expression). Alternatively, the result may be a reference to an Objective-C
+-- representation of the result.
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
-eval :: Session -> String -> Int -> String -> IO (Result [String])
+eval :: Session -> String -> Int -> String -> IO EvalResult
 eval (Session inlet) source line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
+        {  -- we need to have spritekit available
+        ; iis <- GHC.getContext
+        ; let spriteKitImport = GHC.ImportDecl
+                                { GHC.ideclName      = GHC.noLoc (GHC.mkModuleName "Graphics.SpriteKit")
+                                , GHC.ideclPkgQual   = Nothing
+                                , GHC.ideclSource    = False
+                                , GHC.ideclSafe      = False
+                                , GHC.ideclQualified = True
+                                , GHC.ideclImplicit  = False
+                                , GHC.ideclAs        = Nothing
+                                , GHC.ideclHiding    = Nothing
+                                }
+        ; GHC.setContext (GHC.IIDecl spriteKitImport : iis)
+        
+           -- try determine the type of the statement if it is an expression
+        ; ty <- GHC.gtry $ GHC.exprType stmt
+        ; case ty :: Either GHC.SourceError GHC.Type of
+            Right ty -> do
+              { dflags <- GHC.getDynFlags
+              ; GHC.liftIO $ putStrLn $ GHC.showSDoc dflags (GHC.pprType ty)
+              ; if GHC.showSDoc dflags (GHC.pprType ty) /= "Graphics.SpriteKit.Node.Node"
+                then
+                  GHC.setContext iis >> runGHCiStatement resultMV
+                else do
+              {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
+              ; let nodeExpr = "Graphics.SpriteKit.Node.Node.nodeToForeignPtr (" ++ stmt ++ ")"
+              ; hval <- GHC.compileExpr nodeExpr
+              ; GHC.liftIO $ putMVar resultMV (Result (Left (unsafeCoerce hval :: ForeignPtr ())))
+              ; GHC.setContext iis
+              } }
+            Left  _e -> GHC.setContext iis >> runGHCiStatement resultMV
+        }
+    ; takeMVar resultMV
+    }
+  where
+    runGHCiStatement resultMV
+      = do
+        {   -- GHCi-style command execution
+        ; runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
         ; result <- case runResult of
                      GHC.RunOk names       -> do
                                               { chan        <- GHC.liftIO $ readIORef chanRef
                                               ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
                                               ; types       <- renderTypes names
-                                              ; return $ Result (fromMaybe "" maybe_value : types)
+                                              ; return $ Result (Right $ fromMaybe "" maybe_value : types)
                                               }
-                     GHC.RunException _exc -> return $ Result ["<exception>"]
-                     _                     -> return $ Result ["<unexpected break point>"]
+                     GHC.RunException exc  -> return $ Result (Right ["Exception: " ++ show exc])
+                     _                     -> return $ Result (Right ["<unexpected break point>"])
         ; GHC.liftIO $ putMVar resultMV result
         }
-    ; takeMVar resultMV
-    }
-  where
+    --
     renderTypes :: [GHC.Name] -> GHC.Ghc [String]
     renderTypes [name] = (:[]) <$> typeOf name
     renderTypes names  
