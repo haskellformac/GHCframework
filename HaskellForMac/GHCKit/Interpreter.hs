@@ -100,7 +100,8 @@ start ghcBundlePath diagnosticHandler
                                                  , GHC.log_action       = logAction
                                                  , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
-                                                 , GHC.verbosity        = 3
+                                                 , GHC.verbosity        = 0
+                                                 -- , GHC.verbosity        = 3
                                                  }
         ; GHC.liftIO $ 
             putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging
@@ -190,21 +191,25 @@ eval (Session inlet) source line stmt
                                 , GHC.ideclHiding    = Nothing
                                 }
         ; GHC.setContext (GHC.IIDecl spriteKitImport : iis)
-        
+        ; GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
+
            -- try determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty -> do
               { dflags <- GHC.getDynFlags
-              ; GHC.liftIO $ putStrLn $ GHC.showSDoc dflags (GHC.pprType ty)
+              ; GHC.liftIO $ putStrLn $ "before comparison: " ++ GHC.showSDoc dflags (GHC.pprType ty)
               ; if GHC.showSDoc dflags (GHC.pprType ty) /= "Graphics.SpriteKit.Node.Node"
                 then
                   GHC.setContext iis >> runGHCiStatement resultMV
                 else do
               {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
-              ; let nodeExpr = "Graphics.SpriteKit.Node.Node.nodeToForeignPtr (" ++ stmt ++ ")"
+              ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
+              ; GHC.liftIO $ putStrLn $ "nodeExpr: " ++ nodeExpr
               ; hval <- GHC.compileExpr nodeExpr
-              ; GHC.liftIO $ putMVar resultMV (Result (Left (unsafeCoerce hval :: ForeignPtr ())))
+              -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
+              ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
+              ; GHC.liftIO $ putMVar resultMV (Result (Left result))
               ; GHC.setContext iis
               } }
             Left  _e -> GHC.setContext iis >> runGHCiStatement resultMV
@@ -227,6 +232,8 @@ eval (Session inlet) source line stmt
                      _                     -> return $ Result (Right ["<unexpected break point>"])
         ; GHC.liftIO $ putMVar resultMV result
         }
+    --
+    parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
     --
     renderTypes :: [GHC.Name] -> GHC.Ghc [String]
     renderTypes [name] = (:[]) <$> typeOf name

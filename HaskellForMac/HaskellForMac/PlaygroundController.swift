@@ -85,7 +85,7 @@ class PlaygroundController: NSViewController {
 
       // Launch a GHC session for this playground.
     haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler))
-    haskellSKInit()
+//    haskellSKInit()
   }
 
   required init?(coder: NSCoder) {
@@ -262,7 +262,33 @@ class PlaygroundController: NSViewController {
       let (evalResult: AnyObject, evalTypes) = haskellSession.evalExprFromString(command,
                                                                                  source: kPlaygroundSource,
                                                                                  line: lineNumber)
-      resultStorage.reportResult(evalResult as String, type: ", ".join(evalTypes), height: height, atCommandIndex: commandIndex)
+      if let resultView = spriteKitView(evalResult) {
+
+          // Graphical result with custom presentation view.
+        resultStorage.reportResult("<click to display>",
+                                   view: resultView,
+                                   type: ", ".join(evalTypes),
+                                   height: height,
+                                   atCommandIndex: commandIndex)
+
+      } else if let resultText = evalResult as? String {
+
+          // The result is just a string.
+        resultStorage.reportResult(resultText,
+                                   view: nil,
+                                   type: ", ".join(evalTypes),
+                                   height: height,
+                                   atCommandIndex: commandIndex)
+
+      } else {
+
+          // No idea what this result is.
+        resultStorage.reportResult("<unknown form of result>",
+                                   view: nil,
+                                   type: ", ".join(evalTypes),
+                                   height: height,
+                                   atCommandIndex: commandIndex)
+      }
       commandIndex++
     }
     resultStorage.pruneAt(commandIndex)
@@ -327,13 +353,13 @@ extension PlaygroundController: NSTableViewDelegate {
 
       let identifier = column.identifier
       switch identifier {
-      case "TypeCell":
+      case kTypeCell:
         if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
           cell.textField?.stringValue = result.type
           cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
           return cell
         } else { return nil }
-      case "ValueCell":
+      case kValueCell:
         if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
           cell.textField?.stringValue = result.value
           cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()

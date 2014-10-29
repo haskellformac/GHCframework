@@ -1058,7 +1058,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/Cloudcelerate_objc.h\n";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/Cloudcelerate_objc.h\nfi\n";
 		};
 		E731EA4D197F76940083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1071,7 +1071,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/GHCInstance_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/GHCInstance_objc.h\n";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/GHCInstance_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/GHCInstance_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/GHCInstance_objc.h\nfi\n";
 		};
 		E731EA4F197F825D0083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1084,7 +1084,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\n";
+			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/CBLPackage_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

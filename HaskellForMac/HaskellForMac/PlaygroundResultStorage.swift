@@ -18,12 +18,11 @@ let kValueCell = "ValueCell"
 /// Represents the result for a single command.
 ///
 struct Result {
-  // FIXME: for now, it's all strings, but we want to be more flexible in the future.
-
   let value:  String
+  let view:   NSView?       // Some results can be presented in a custom view.
   let type:   String
-  let height: CGFloat       // cell height — FIXME: this should be computed from the text view's layout manager instead of being chached
-  let stale:  Bool          // a result is stale while it is being recomputed
+  let height: CGFloat       // Cell height — FIXME: this should be computed from the text view's layout manager instead of being chached
+  let stale:  Bool          // A result is stale while it is being recomputed.
 }
 
 class PlaygroundResultStorage: NSObject {
@@ -52,13 +51,13 @@ class PlaygroundResultStorage: NSObject {
 
   /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
-  func reportResult(result: String, type: String, height: CGFloat, atCommandIndex idx: Int) {
+  func reportResult(result: String, view: NSView?, type: String, height: CGFloat, atCommandIndex idx: Int) {
 
       // Extend the array to include the reported index if necessary.
     if idx >= results.endIndex {
       for i in results.endIndex...idx { results.append(nil) }
     }
-    results[idx] = Result(value: result, type: type, height: height, stale: false)
+    results[idx] = Result(value: result, view: view, type: type, height: height, stale: false)
     redisplayRow(idx)
   }
 
@@ -76,7 +75,7 @@ class PlaygroundResultStorage: NSObject {
   func invalidate() {
     results = results.map{ result in
       if let result = result {
-        return Result(value: result.value, type: result.type, height: result.height, stale: true)
+        return Result(value: result.value, view: result.view, type: result.type, height: result.height, stale: true)
       } else { return nil }
     }
     redisplay()

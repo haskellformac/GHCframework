@@ -333,7 +333,8 @@ listOfNSObjectToNSArray objs
     }
   where
     addElement marr obj
-      = $(objc ['marr :> Class [t|NSMutableArray NSObject|], 'obj :> Class ''NSObject] $ void [cexp| [marr addObject:obj] |])
+      = $(objc ['marr :> Class [t|NSMutableArray NSObject|], 'obj :> Class ''NSObject] $ void 
+          [cexp| (obj == nil) ? [marr addObject:[NSNull null]] : [marr addObject:obj] |])
 
 mockListOfNSObjectToNSArray :: NSArray NSObject -> IO [NSObject]
 mockListOfNSObjectToNSArray = error "mockListOfNSObjectToNSArray: shouldn't be executed"
@@ -346,7 +347,7 @@ evalText session source line exprText
     { result <- eval session source line exprText
     ; case result of
         Error                  -> return []
-        Result (Left fptr)     -> return [NSObject $ castForeignPtr fptr]
+        Result (Left fptr)     -> putStrLn ("evalText fptr conversion: " ++ show fptr) >> return [NSObject $ castForeignPtr fptr]
         Result (Right strings) -> mapM stringToNSObject strings
     }
   where
