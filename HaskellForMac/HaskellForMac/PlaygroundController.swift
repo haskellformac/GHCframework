@@ -66,10 +66,13 @@ class PlaygroundController: NSViewController {
 
   // Objects from the results popover nib.
   //
-  @IBOutlet private var popover:           NSPopover?           // referenced to retain
-  @IBOutlet private var popoverController: NSViewController!    // referenced to retain
-  @IBOutlet private var popoverTextView:   NSTextView!          // This is where the diagnostics goes.
+  @IBOutlet private var popover:           NSPopover?               // referenced to retain
+  @IBOutlet private var popoverController: NSViewController!        // referenced to retain
+  @IBOutlet private var popoverTextView:   NSTextView!              // This is where the textual result goes.
 
+  @IBOutlet private var resultPopover:           NSPopover?         // referenced to retain
+  @IBOutlet private var resultPopoverController: NSViewController!  // referenced to retain
+  @IBOutlet private var resultPopoverView:       NSView!            // This is where the graphical result goes.
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
@@ -262,11 +265,11 @@ class PlaygroundController: NSViewController {
       let (evalResult: AnyObject, evalTypes) = haskellSession.evalExprFromString(command,
                                                                                  source: kPlaygroundSource,
                                                                                  line: lineNumber)
-      if let resultView = spriteKitView(evalResult) {
+      if let resultScene = spriteKitView(evalResult) {
 
           // Graphical result with custom presentation view.
-        resultStorage.reportResult("<click to display>",
-                                   view: resultView,
+        resultStorage.reportResult("<click to display scene>",
+                                   scene: resultScene,
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -275,7 +278,7 @@ class PlaygroundController: NSViewController {
 
           // The result is just a string.
         resultStorage.reportResult(resultText,
-                                   view: nil,
+                                   scene: nil,
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -284,7 +287,7 @@ class PlaygroundController: NSViewController {
 
           // No idea what this result is.
         resultStorage.reportResult("<unknown form of result>",
-                                   view: nil,
+                                   scene: nil,
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -385,25 +388,59 @@ extension PlaygroundController: NSTableViewDelegate {
     if row != -1 {   // If a row is selected...
       if let result = resultStorage.queryResult(row) {
 
-        let bundle = NSBundle.mainBundle()
-        if !bundle.loadNibNamed("ResultPopover", owner: self, topLevelObjects: nil) {
-          NSLog("%@: could not load popover NIB", __FUNCTION__)
-        } else {
+          // Get the frame of the table view cell whose contents is to be displayed in the popover.
+        let rowView  = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
+        if let frame = rowView?.frame {
 
-          let resultString = NSAttributedString(string: result.value)
-          let rowView      = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
+          if let scene = result.scene {       // result with a SpriteKit scene
 
-          if let frame = rowView?.frame {
-            popoverTextView.textStorage!.setAttributedString(resultString)
-            popover?.behavior = .Semitransient
+            let bundle = NSBundle.mainBundle()
+            if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
+              NSLog("%@: could not load result popover NIB", __FUNCTION__)
+            } else {
 
-            let textSize         = resultString.size
-            popover?.contentSize = textSize.width > 400 ? NSSize(width: 400, height: 300)
-                                                        : NSSize(width: textSize.width < 40 ? 40 : textSize.width,
-                                                                 height: textSize.height > 300 ? 300 : textSize.height + 15)
-            popover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
-                                        ofView: resultTableView,
-                                        preferredEdge: NSMaxYEdge)
+              var resultView = SKView(frame: CGRect(origin: CGPointZero, size: scene.frame.size))
+              resultView.presentScene(scene)
+              resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+
+              resultPopoverView.frame = resultView.bounds
+              if resultPopoverView.frame.size.width  < 50 { resultPopoverView.frame.size.width  = 50 }
+              if resultPopoverView.frame.size.height < 50 { resultPopoverView.frame.size.height = 50 }
+              resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+//              resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewWidthSizable
+//                                                 | NSAutoresizingMaskOptions.ViewHeightSizable
+              resultPopoverView.translatesAutoresizingMaskIntoConstraints = true
+
+              resultPopover?.behavior = .Semitransient
+              resultPopover?.contentSize = resultView.bounds.size
+              resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
+                                                ofView: resultTableView,
+                                                preferredEdge: NSMaxYEdge)
+
+              resultPopoverView.addSubview(resultView)
+
+            }
+
+          } else {                            // text only result
+
+            let bundle = NSBundle.mainBundle()
+            if !bundle.loadNibNamed("ResultPopover", owner: self, topLevelObjects: nil) {
+              NSLog("%@: could not load popover NIB", __FUNCTION__)
+            } else {
+
+              let resultString = NSAttributedString(string: result.value)
+
+              popoverTextView.textStorage!.setAttributedString(resultString)
+              popover?.behavior = .Semitransient
+
+              let textSize         = resultString.size
+              popover?.contentSize = textSize.width > 400 ? NSSize(width: 400, height: 300)
+                                                          : NSSize(width: textSize.width < 40 ? 40 : textSize.width,
+                                                                   height: textSize.height > 300 ? 300 : textSize.height + 15)
+              popover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
+                                          ofView: resultTableView,
+                                          preferredEdge: NSMaxYEdge)
+            }
           }
         }
       }

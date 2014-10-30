@@ -9,6 +9,7 @@
 //  view displaying the results.
 
 import Cocoa
+import SpriteKit
 
 // Table view cell identifiers
 //
@@ -19,7 +20,7 @@ let kValueCell = "ValueCell"
 ///
 struct Result {
   let value:  String
-  let view:   NSView?       // Some results can be presented in a custom view.
+  let scene:  SKScene?      // Result renders in a SpriteKit scene.
   let type:   String
   let height: CGFloat       // Cell height — FIXME: this should be computed from the text view's layout manager instead of being chached
   let stale:  Bool          // A result is stale while it is being recomputed.
@@ -51,13 +52,13 @@ class PlaygroundResultStorage: NSObject {
 
   /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
-  func reportResult(result: String, view: NSView?, type: String, height: CGFloat, atCommandIndex idx: Int) {
+  func reportResult(result: String, scene: SKScene?, type: String, height: CGFloat, atCommandIndex idx: Int) {
 
       // Extend the array to include the reported index if necessary.
     if idx >= results.endIndex {
       for i in results.endIndex...idx { results.append(nil) }
     }
-    results[idx] = Result(value: result, view: view, type: type, height: height, stale: false)
+    results[idx] = Result(value: result, scene: scene, type: type, height: height, stale: false)
     redisplayRow(idx)
   }
 
@@ -75,7 +76,7 @@ class PlaygroundResultStorage: NSObject {
   func invalidate() {
     results = results.map{ result in
       if let result = result {
-        return Result(value: result.value, view: result.view, type: result.type, height: result.height, stale: true)
+        return Result(value: result.value, scene: result.scene, type: result.type, height: result.height, stale: true)
       } else { return nil }
     }
     redisplay()
