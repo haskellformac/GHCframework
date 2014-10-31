@@ -268,7 +268,7 @@ class PlaygroundController: NSViewController {
       if let resultScene = spriteKitView(evalResult) {
 
           // Graphical result with custom presentation view.
-        resultStorage.reportResult("<click to display scene>",
+        resultStorage.reportResult("«click to display scene»",
                                    scene: resultScene,
                                    type: ", ".join(evalTypes),
                                    height: height,
@@ -286,7 +286,7 @@ class PlaygroundController: NSViewController {
       } else {
 
           // No idea what this result is.
-        resultStorage.reportResult("<unknown form of result>",
+        resultStorage.reportResult("«unknown type of result»",
                                    scene: nil,
                                    type: ", ".join(evalTypes),
                                    height: height,
@@ -399,26 +399,41 @@ extension PlaygroundController: NSTableViewDelegate {
               NSLog("%@: could not load result popover NIB", __FUNCTION__)
             } else {
 
-              var resultView = SKView(frame: CGRect(origin: CGPointZero, size: scene.frame.size))
-              resultView.presentScene(scene)
+              // FIXME: move into a file in Utilities
+              func clampExtent(extent: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
+                if extent < min { return min }
+                else if extent > max { return max }
+                else { return extent }
+              }
+
+                // We want to show the entire scene and center it.
+              let sceneFrame = scene.calculateAccumulatedFrame()
+              scene.anchorPoint = CGPoint(x: -sceneFrame.origin.x / sceneFrame.size.width,
+                                          y: -sceneFrame.origin.y / sceneFrame.size.height)
+
+                // Constrain the popover size.
+              let resultSize = CGSize(width:  clampExtent(sceneFrame.size.width,  50, 600),
+                                      height: clampExtent(sceneFrame.size.height, 50, 400))
+              var resultView = SKView(frame: CGRect(origin: CGPoint(x: (resultSize.width  - sceneFrame.size.width)  / 2,
+                                                                    y: (resultSize.height - sceneFrame.size.height) / 2),
+                                                    size: sceneFrame.size))
               resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+              resultView.translatesAutoresizingMaskIntoConstraints = true
+              resultView.presentScene(scene)
 
-              resultPopoverView.frame = resultView.bounds
-              if resultPopoverView.frame.size.width  < 50 { resultPopoverView.frame.size.width  = 50 }
-              if resultPopoverView.frame.size.height < 50 { resultPopoverView.frame.size.height = 50 }
+                // Add the SpriteKit view to the popover.
+              for view in resultPopoverView.subviews { view.removeFromSuperview() }
+              resultPopoverView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: resultSize)
               resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
-//              resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewWidthSizable
-//                                                 | NSAutoresizingMaskOptions.ViewHeightSizable
               resultPopoverView.translatesAutoresizingMaskIntoConstraints = true
+              resultPopoverView.addSubview(resultView)
 
-              resultPopover?.behavior = .Semitransient
-              resultPopover?.contentSize = resultView.bounds.size
+                // And present it.
+              resultPopover?.contentSize = resultSize
+              resultPopover?.behavior    = .Semitransient
               resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
                                                 ofView: resultTableView,
                                                 preferredEdge: NSMaxYEdge)
-
-              resultPopoverView.addSubview(resultView)
-
             }
 
           } else {                            // text only result
