@@ -152,7 +152,7 @@
                         </scrollView>
                     </subviews>
                     <holdingPriorities>
-                        <real value="250"/>
+                        <real value="150"/>
                         <real value="250"/>
                     </holdingPriorities>
                 </splitView>
