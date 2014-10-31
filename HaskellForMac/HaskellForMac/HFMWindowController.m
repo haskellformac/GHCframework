@@ -184,6 +184,12 @@ NSString *const kCabalCellID = @"cabalCellID";
   return item.tag != PVMItemTagGroup;
 }
 
+- (void)outlineViewSelectionIsChanging:(NSNotification *)notification
+{
+#pragma unused(notification)
+  [self.contextController commitEditing];
+}
+
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
 {
   NSOutlineView *outlineView = [notification object];
