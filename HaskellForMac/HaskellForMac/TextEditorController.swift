@@ -110,8 +110,10 @@ extension TextEditorController {
   /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
   ///
   func updateIssues(notification: IssueNotification) {
-    (scrollView.verticalRulerView as TextGutterView).updateIssues(notification)
-    textView.highlight()
+    if let gutter = scrollView.verticalRulerView as? TextGutterView {
+      gutter.updateIssues(notification)
+      textView.highlight()
+    }
   }
 }
 

@@ -200,6 +200,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 
       [self.contextController selectItem:item returningEditor:&editorController playground:&playgroundController];
       [self configureEditor:editorController playground:playgroundController];
+
+        // Load the newly selected module right away.
+      [self.contextController loadContextModule];
     }
 
   }
