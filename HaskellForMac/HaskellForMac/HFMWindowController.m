@@ -216,6 +216,36 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
 #pragma mark NSOutlineView context menu target-action methods
 
+- (IBAction)openInEditor:(NSMenuItem *)sender
+{
+#pragma unused(sender)
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  if (row < 0) return;    // no item clicked or selected
+
+  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
+  HFMProject              *project     = (HFMProject*)self.document;
+
+  [[NSWorkspace sharedWorkspace] openURL:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]];
+    // FIXME: if editor set in defaults, invoke the set editor with the following message:
+//  [[NSWorkspace sharedWorkspace] openFile:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath].path
+//                          withApplication:@"???"];
+}
+
+- (IBAction)showInFinder:(NSMenuItem *)sender
+{
+#pragma unused(sender)
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  if (row < 0) return;    // no item clicked or selected
+
+  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
+  HFMProject              *project     = (HFMProject*)self.document;
+
+  [[NSWorkspace sharedWorkspace]
+   activateFileViewerSelectingURLs:@[[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]]];
+}
+
 - (IBAction)newFile:(NSMenuItem *)sender
 {
 #pragma unused(sender)
@@ -329,7 +359,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   NSInteger row    = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                          : [self.outlineView clickedRow];
 
-  if (action == @selector(newFile:)) {
+  if (action == @selector(openInEditor:) || action == @selector(showInFinder:)) {
+
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
+    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile
+           || item.tag == PVMItemTagMainFile;
+
+  } else if (action == @selector(newFile:)) {
 
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable

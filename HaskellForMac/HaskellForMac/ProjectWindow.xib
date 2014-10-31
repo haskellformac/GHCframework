@@ -173,24 +173,36 @@
         </window>
         <menu id="Eat-Zy-XcC" userLabel="Outline View Context Menu">
             <items>
+                <menuItem title="Open in External Editor" keyEquivalent="e" id="2wq-Xv-iJm">
+                    <connections>
+                        <action selector="openInEditor:" target="-1" id="OcM-Ag-1Co"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Show in Finder" id="hLh-PK-uDn">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showInFinder:" target="-1" id="Cn5-YZ-lHR"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="52K-Yi-JKR"/>
                 <menuItem title="New Haskell file..." keyEquivalent="n" id="riO-uK-qYK" userLabel="Add Haskell file...">
                     <connections>
-                        <action selector="newFile:" target="-2" id="AhZ-Hf-EEj"/>
+                        <action selector="newFile:" target="-1" id="9FO-v6-Y3H"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Irr-x1-XlJ"/>
                 <menuItem title="Rename..." id="ix9-yX-tfJ" userLabel="Rename...">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="rename:" target="-2" id="J62-HH-5Yl"/>
+                        <action selector="rename:" target="-1" id="yx8-rr-OUo"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Delete" id="qj1-TR-MYG">
+                <menuItem title="Delete..." id="qj1-TR-MYG">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
                     <connections>
-                        <action selector="delete:" target="-2" id="QCt-BO-EmL"/>
+                        <action selector="delete:" target="-1" id="cms-9i-1e9"/>
                     </connections>
                 </menuItem>
             </items>
