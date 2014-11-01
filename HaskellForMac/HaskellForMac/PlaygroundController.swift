@@ -407,7 +407,12 @@ extension PlaygroundController: NSTableViewDelegate {
               }
 
                 // We want to show the entire scene and center it.
-              let sceneFrame = scene.calculateAccumulatedFrame()
+              var sceneFrame = scene.calculateAccumulatedFrame()
+              if !isfinite(sceneFrame.origin.x) { sceneFrame.origin.x = 0 }
+              if !isfinite(sceneFrame.origin.y) { sceneFrame.origin.y = 0 }
+              if !isfinite(sceneFrame.size.width)  || sceneFrame.size.width  < 10 { sceneFrame.size.width  = 10 }
+              if !isfinite(sceneFrame.size.height) || sceneFrame.size.height < 10 { sceneFrame.size.height = 10 }
+
               scene.anchorPoint = CGPoint(x: -sceneFrame.origin.x / sceneFrame.size.width,
                                           y: -sceneFrame.origin.y / sceneFrame.size.height)
 
