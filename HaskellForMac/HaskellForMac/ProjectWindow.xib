@@ -30,7 +30,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                         <subviews>
                             <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
-                                <rect key="frame" x="0.0" y="0.0" width="163" height="507"/>
+                                <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" drawsBackground="NO" id="oc1-de-xrA">
                                     <rect key="frame" x="1" y="1" width="148" height="505"/>
@@ -42,7 +42,7 @@
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="158" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
+                                                <tableColumn width="160" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -56,7 +56,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="groupCellID" id="I7u-Bd-71O">
-                                                            <rect key="frame" x="1" y="0.0" width="158" height="17"/>
+                                                            <rect key="frame" x="1" y="0.0" width="160" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctX-vG-lXf">
@@ -73,7 +73,7 @@
                                                             </connections>
                                                         </tableCellView>
                                                         <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
-                                                            <rect key="frame" x="1" y="17" width="158" height="17"/>
+                                                            <rect key="frame" x="1" y="17" width="160" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eg-Fr-H0x">
@@ -118,11 +118,11 @@
                                 </scroller>
                             </scrollView>
                             <customView id="hVH-bJ-KGO" userLabel="Editor View">
-                                <rect key="frame" x="164" y="0.0" width="266" height="507"/>
+                                <rect key="frame" x="166" y="0.0" width="228" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-C3-ErB">
-                                        <rect key="frame" x="77" y="239" width="113" height="30"/>
+                                        <rect key="frame" x="58" y="239" width="113" height="30"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="No Editor" id="ZV6-Ek-WYQ">
                                             <font key="font" metaFont="system" size="25"/>
                                             <color key="textColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -136,7 +136,7 @@
                                 </constraints>
                             </customView>
                             <customView fixedFrame="YES" id="8bF-Zs-hji" userLabel="Playground View">
-                                <rect key="frame" x="431" y="0.0" width="196" height="507"/>
+                                <rect key="frame" x="395" y="0.0" width="232" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </customView>
                         </subviews>
@@ -169,7 +169,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="b8O-J3-ndP"/>
             </connections>
-            <point key="canvasLocation" x="252.5" y="54.5"/>
+            <point key="canvasLocation" x="132.5" y="10.5"/>
         </window>
         <menu id="Eat-Zy-XcC" userLabel="Outline View Context Menu">
             <items>

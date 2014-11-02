@@ -1006,6 +1006,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\n\n# FIXME: when refactoring, try using '-no-user-package-db' instead of the explicit '--package-db' flag\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -O -package-db ${GHC_PKG_DB} -no-user-package-db -package ghc -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/GHCKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.framework/Versions/Current/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/GHCKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		E70A6715197E2924006D3514 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1023,6 +1024,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CabalKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.framework/Versions/Current/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CabalKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			showEnvVarsInLog = 0;
 		};
 		E7128D0019C0228700754557 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1037,6 +1039,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "GHCBIN=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin\nGHCLIB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3\nGHCSHARE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nNAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1054,6 +1057,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "GHC=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/bin/ghc\nGHC_PKG_DB=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/usr/lib/ghc-7.8.3/package.conf.d\n\n# We need a Libraries/ directory in the framework for the GHC produced dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Compile all Haskell code in this target and generate .h/.m from all inline Objective-C.\n# Generate a static library from all objects produced by GHC.\nif ${GHC} -threaded -dynamic -shared -dylib-install-name @rpath/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -package-db ${GHC_PKG_DB} -no-user-package-db -O -outputdir ${DERIVED_FILE_DIR} -odir ${OBJECT_FILE_DIR}-${CURRENT_VARIANT}/${CURRENT_ARCH} -o ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib -i${SRCROOT}/CloudcelerateKit -i${DERIVED_FILE_DIR} --make ${SCRIPT_INPUT_FILE_0};\nthen\n  # Rpath to find the Haskell dylibs\n  DYLIB_ID_PREFIX='@loader_path/../../../../GHC.framework/Versions/Current/usr/lib/ghc-7.8.3'\n  if `otool -l ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib | grep -q \"path $DYLIB_ID_PREFIX\"`; then\n    echo \"rpath already set\"\n  else\n    install_name_tool -add_rpath $DYLIB_ID_PREFIX ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/${TARGET_NAME}.dylib\n  fi\n  # Copy ObjC code generated from inline code\n  files=`ls ${SRCROOT}/CloudcelerateKit/*_objc.{h,m} 2>/dev/null`\n  if [ -n \"$files\" ];\n  then\n    mv -v $files ${DERIVED_FILE_DIR}\n  fi\nelse\n  exit 1\nfi";
+			showEnvVarsInLog = 0;
 		};
 		E730346019E665EB006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1067,6 +1071,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/Cloudcelerate_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/Cloudcelerate_objc.h\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		E731EA4D197F76940083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1080,6 +1085,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/GHCInstance_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/GHCInstance_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/GHCInstance_objc.h\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		E731EA4F197F825D0083F6C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1093,6 +1099,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/CBLPackage_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
