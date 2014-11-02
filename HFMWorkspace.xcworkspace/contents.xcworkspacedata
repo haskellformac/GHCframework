@@ -5,9 +5,6 @@
       location = "group:HaskellForMac/HaskellForMac.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:GHC/GHC.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:GHCBuild/GHCBuild.xcodeproj">
    </FileRef>
    <FileRef

@@ -36,6 +36,8 @@
 		E72AF5FC19E395F800753077 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5FB19E395F800753077 /* Error.swift */; };
 		E731781119FF853600D8FDC0 /* HaskellSpriteKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E73178171A01A58F00D8FDC0 /* ResultViewPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */; };
+		E739EF871A05F44C00236051 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; };
+		E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
@@ -48,8 +50,6 @@
 		E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89819D4207E00369A80 /* HighlightingTests.swift */; };
 		E78E73F619D52DCE0046BA51 /* Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78E73F519D52DCE0046BA51 /* Range.swift */; };
 		E791CF3F19F8B35800DECDC4 /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E791CF3E19F8B35800DECDC4 /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		E791CF4319F8B48100DECDC4 /* GHC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF4219F8B48100DECDC4 /* GHC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E791CF4C19F9D3B000DECDC4 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF4219F8B48100DECDC4 /* GHC.framework */; };
 		E791CF4D19F9DB2200DECDC4 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF4219F8B48100DECDC4 /* GHC.framework */; };
 		E79444D919F0E00300FE905A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B191888006C00D79087 /* MainMenu.xib */; };
 		E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
@@ -117,34 +117,6 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
-		E70A66C2197CC341006D3514 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E70A66AE197CC340006D3514;
-			remoteInfo = GHCFramework;
-		};
-		E70A66C6197CC341006D3514 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E70A66AE197CC340006D3514;
-			remoteInfo = GHCFramework;
-		};
-		E70A6703197E272E006D3514 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E70A66EF197E272E006D3514;
-			remoteInfo = CabalKit;
-		};
-		E70A6707197E272E006D3514 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E70A66EF197E272E006D3514;
-			remoteInfo = CabalKit;
-		};
 		E7142E3C19415EFF00DB5295 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
@@ -159,26 +131,40 @@
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
 		};
+		E739EF831A05F40200236051 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E739EF7F1A05F40100236051 /* GHC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E791CF1E19F8AEC900DECDC4;
+			remoteInfo = GHC;
+		};
+		E739EF891A05F4A500236051 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E739EF7F1A05F40100236051 /* GHC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E791CF1D19F8AEC900DECDC4;
+			remoteInfo = GHC;
+		};
+		E739EF8B1A05F4AC00236051 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E739EF7F1A05F40100236051 /* GHC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E791CF1D19F8AEC900DECDC4;
+			remoteInfo = GHC;
+		};
+		E739EF8D1A05F4B900236051 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E739EF7F1A05F40100236051 /* GHC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E791CF1D19F8AEC900DECDC4;
+			remoteInfo = GHC;
+		};
 		E743140819A46F70003A3934 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
-		};
-		E743140F19A46F70003A3934 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E74313FC19A46F70003A3934;
-			remoteInfo = CloudcelerateKit;
-		};
-		E743141319A46F70003A3934 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E74313FC19A46F70003A3934;
-			remoteInfo = CloudcelerateKit;
 		};
 		E75DD13919A212A600CDC18F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -217,7 +203,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E791CF4319F8B48100DECDC4 /* GHC.framework in Embed Frameworks */,
+				E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */,
 				E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */,
 				E70A66C5197CC341006D3514 /* GHCKit.framework in Embed Frameworks */,
 				E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */,
@@ -270,6 +256,7 @@
 		E72AF5F919E38D0400753077 /* CloudSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudSession.swift; sourceTree = "<group>"; };
 		E72AF5FB19E395F800753077 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewPopover.xib; sourceTree = "<group>"; };
+		E739EF7F1A05F40100236051 /* GHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GHC.xcodeproj; path = ../GHC/GHC.xcodeproj; sourceTree = "<group>"; };
 		E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudcelerateKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E743140019A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E743140119A46F70003A3934 /* CloudcelerateKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudcelerateKit.h; sourceTree = "<group>"; };
@@ -370,7 +357,7 @@
 				E70A66C4197CC341006D3514 /* GHCKit.framework in Frameworks */,
 				E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */,
 				E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */,
-				E791CF4C19F9D3B000DECDC4 /* GHC.framework in Frameworks */,
+				E739EF871A05F44C00236051 /* GHC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +446,14 @@
 			name = Cloud;
 			sourceTree = "<group>";
 		};
+		E739EF801A05F40100236051 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E739EF841A05F40200236051 /* GHC.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E74313FE19A46F70003A3934 /* CloudcelerateKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -540,6 +535,7 @@
 				E743140A19A46F70003A3934 /* CloudcelerateKitTests */,
 				E7A13B031888006C00D79087 /* Frameworks */,
 				E7A13B021888006C00D79087 /* Products */,
+				E739EF7F1A05F40100236051 /* GHC.xcodeproj */,
 				E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */,
 			);
 			sourceTree = "<group>";
@@ -733,6 +729,7 @@
 				E70A66E0197DF66C006D3514 /* PBXBuildRule */,
 			);
 			dependencies = (
+				E739EF8A1A05F4A500236051 /* PBXTargetDependency */,
 			);
 			name = GHCKit;
 			productName = GHCFramework;
@@ -754,6 +751,7 @@
 				E70A6711197E2822006D3514 /* PBXBuildRule */,
 			);
 			dependencies = (
+				E739EF8C1A05F4AC00236051 /* PBXTargetDependency */,
 			);
 			name = CabalKit;
 			productName = CabalKit;
@@ -775,6 +773,7 @@
 				E730345E19E66469006590B7 /* PBXBuildRule */,
 			);
 			dependencies = (
+				E739EF8E1A05F4B900236051 /* PBXTargetDependency */,
 			);
 			name = CloudcelerateKit;
 			productName = CloudcelerateKit;
@@ -812,12 +811,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E70A66C3197CC341006D3514 /* PBXTargetDependency */,
-				E70A66C7197CC341006D3514 /* PBXTargetDependency */,
-				E70A6704197E272E006D3514 /* PBXTargetDependency */,
-				E70A6708197E272E006D3514 /* PBXTargetDependency */,
-				E743141019A46F70003A3934 /* PBXTargetDependency */,
-				E743141419A46F70003A3934 /* PBXTargetDependency */,
 			);
 			name = HaskellForMac;
 			productName = HaskellForMac;
@@ -893,6 +886,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = E739EF801A05F40100236051 /* Products */;
+					ProjectRef = E739EF7F1A05F40100236051 /* GHC.xcodeproj */;
+				},
+				{
 					ProductGroup = E791CF7519FA595A00DECDC4 /* Products */;
 					ProjectRef = E791CF7419FA595A00DECDC4 /* HaskellSpriteKit.xcodeproj */;
 				},
@@ -910,6 +907,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		E739EF841A05F40200236051 /* GHC.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GHC.framework;
+			remoteRef = E739EF831A05F40200236051 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1174,26 +1178,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E70A66C3197CC341006D3514 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E70A66AE197CC340006D3514 /* GHCKit */;
-			targetProxy = E70A66C2197CC341006D3514 /* PBXContainerItemProxy */;
-		};
-		E70A66C7197CC341006D3514 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E70A66AE197CC340006D3514 /* GHCKit */;
-			targetProxy = E70A66C6197CC341006D3514 /* PBXContainerItemProxy */;
-		};
-		E70A6704197E272E006D3514 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E70A66EF197E272E006D3514 /* CabalKit */;
-			targetProxy = E70A6703197E272E006D3514 /* PBXContainerItemProxy */;
-		};
-		E70A6708197E272E006D3514 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E70A66EF197E272E006D3514 /* CabalKit */;
-			targetProxy = E70A6707197E272E006D3514 /* PBXContainerItemProxy */;
-		};
 		E7142E3D19415EFF00DB5295 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
@@ -1204,20 +1188,25 @@
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E7142E3E19415F0100DB5295 /* PBXContainerItemProxy */;
 		};
+		E739EF8A1A05F4A500236051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GHC;
+			targetProxy = E739EF891A05F4A500236051 /* PBXContainerItemProxy */;
+		};
+		E739EF8C1A05F4AC00236051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GHC;
+			targetProxy = E739EF8B1A05F4AC00236051 /* PBXContainerItemProxy */;
+		};
+		E739EF8E1A05F4B900236051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GHC;
+			targetProxy = E739EF8D1A05F4B900236051 /* PBXContainerItemProxy */;
+		};
 		E743140919A46F70003A3934 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E743140819A46F70003A3934 /* PBXContainerItemProxy */;
-		};
-		E743141019A46F70003A3934 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E74313FC19A46F70003A3934 /* CloudcelerateKit */;
-			targetProxy = E743140F19A46F70003A3934 /* PBXContainerItemProxy */;
-		};
-		E743141419A46F70003A3934 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E74313FC19A46F70003A3934 /* CloudcelerateKit */;
-			targetProxy = E743141319A46F70003A3934 /* PBXContainerItemProxy */;
 		};
 		E75DD13A19A212A600CDC18F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
