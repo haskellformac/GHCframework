@@ -160,7 +160,9 @@
 #pragma mark -
 #pragma mark NSOutlineViewDataSource protocol methods
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(HFMProjectViewModelItem *)item
+- (HFMProjectViewModelItem *)outlineView:(NSOutlineView *)outlineView
+                                   child:(NSInteger)index
+                                  ofItem:(HFMProjectViewModelItem *)item
 {
 #pragma unused(outlineView, index, item)
 

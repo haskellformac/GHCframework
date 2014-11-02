@@ -144,15 +144,19 @@ NSString *const kCabalCellID = @"cabalCellID";
     // Do we need a group cell or a cabal cell item?
   if (item.tag == PVMItemTagGroup) {
 
-    NSTableCellView *cell = [outlineView makeViewWithIdentifier:kGroupCellID owner:self];
+    NSTableCellView *cell      = [outlineView makeViewWithIdentifier:kGroupCellID owner:self];
     cell.textField.stringValue = [item.identifier uppercaseString];
+    cell.textField.toolTip     = item.tip;
+    cell.imageView.toolTip     = item.tip;
     return cell;
 
 
   } else {
 
-    NSTableCellView *cell = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
+    NSTableCellView *cell      = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
     cell.textField.stringValue = item.identifier;
+    cell.textField.toolTip     = item.tip;
+    cell.imageView.toolTip     = item.tip;
     switch (item.tag) {
       case PVMItemTagPackage:
           // FIXME: use the .hsproj icon once we have one
@@ -173,7 +177,6 @@ NSString *const kCabalCellID = @"cabalCellID";
         break;
     }
     return cell;
-
   }
 }
 

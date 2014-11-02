@@ -43,6 +43,10 @@ extern NSString *const kExtraSourceGroupID;
 ///
 @property (nonatomic) NSString *identifier;
 
+/// Help text.
+///
+@property (nonatomic) NSString *tip;
+
 /// *Optional* file wrapper of the file object backing the item.
 ///
 /// This property is computed lazily. This property is 'nil' for non file-related items and for file items that are

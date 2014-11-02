@@ -90,6 +90,39 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
     _model       = model;
     _theChildren = nil;
 
+    switch (tag) {
+      case PVMItemTagGroup:
+        if([identifier isEqualToString:kPackageGroupID])
+          _tip = @"Haskell project package";
+        else if ([identifier isEqualToString:kDataGroupID])
+          _tip = @"Data files included in this project";
+        else if ([identifier isEqualToString:kExecutableGroupID])
+          _tip = @"Executable products produced by this project";
+        else if ([identifier isEqualToString:kExtraSourceGroupID])
+          _tip = @"Source code in languages other than Haskell (including mark up languages)";
+        break;
+      case PVMItemTagPackage:
+        _tip = @"Haskell project package";
+        break;
+      case PVMItemTagExecutable:
+        _tip = @"The executable program generated from these Haskell modules";
+        break;
+      case PVMItemTagFile:
+        _tip = @"Main Haskell module of this program";
+        break;
+      case PVMItemTagMainFile: {
+        _tip = [[identifier pathExtension] isEqualToString:HFMProjectViewModel.haskellFileExtension]
+               ? @"Haskell module"
+               : @"Supporting file";
+        break;
+      }
+      case PVMItemTagFolder:
+      case PVMItemTagFileGroup:
+        _tip = @"Collection of Haskell modules";
+        break;
+      default:
+        break;
+    }
   }
   return self;
 }
