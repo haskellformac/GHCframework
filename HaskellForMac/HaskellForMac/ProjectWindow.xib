@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="editorView" destination="hVH-bJ-KGO" id="n3r-3l-JC3"/>
                 <outlet property="noEditorLabel" destination="sSz-C3-ErB" id="WTR-XS-YXo"/>
+                <outlet property="outlineScrollView" destination="fiD-Li-Mgi" id="kgM-Qq-RTo"/>
                 <outlet property="outlineView" destination="xMX-Dm-h40" id="4eD-9D-bXB"/>
                 <outlet property="playgroundView" destination="8bF-Zs-hji" id="qhd-Gv-DK9"/>
                 <outlet property="splitView" destination="9kS-X2-FR9" id="IH2-21-f2k"/>
@@ -29,7 +30,7 @@
                     <splitView autosaveName="WindowSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                         <subviews>
-                            <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
+                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
                                 <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" drawsBackground="NO" id="oc1-de-xrA">
@@ -108,6 +109,9 @@
                                     </subviews>
                                     <nil key="backgroundColor"/>
                                 </clipView>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="CUP-aP-EjY"/>
+                                </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
                                     <rect key="frame" x="1" y="490" width="18.5" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -132,12 +136,16 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sSz-C3-ErB" secondAttribute="centerX" id="NBG-Kf-BMh"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="Qen-AZ-lRi"/>
                                     <constraint firstAttribute="centerY" secondItem="sSz-C3-ErB" secondAttribute="centerY" id="hAI-WE-BGh"/>
                                 </constraints>
                             </customView>
-                            <customView fixedFrame="YES" id="8bF-Zs-hji" userLabel="Playground View">
+                            <customView id="8bF-Zs-hji" userLabel="Playground View">
                                 <rect key="frame" x="395" y="0.0" width="232" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="vcX-at-eGc"/>
+                                </constraints>
                             </customView>
                         </subviews>
                         <holdingPriorities>

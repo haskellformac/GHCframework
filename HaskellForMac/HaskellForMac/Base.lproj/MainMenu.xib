@@ -268,6 +268,24 @@ CA
                 <menuItem title="View" id="295">
                     <menu key="submenu" title="View" id="296">
                         <items>
+                            <menuItem title="Show Project Navigator" keyEquivalent="0" id="Tjg-JJ-0bn">
+                                <connections>
+                                    <action selector="toggleNavigatorView:" target="-1" id="akb-HZ-J5U"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Editor" keyEquivalent="e" id="8qT-uc-E68">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleEditorView:" target="-1" id="MeD-jz-KNU"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Playground" keyEquivalent="p" id="5rC-TN-9lo">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="togglePlaygroundView:" target="-1" id="jQJ-pK-Qzo"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="CU6-6w-hle"/>
                             <menuItem title="Show Toolbar" keyEquivalent="t" id="297">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>

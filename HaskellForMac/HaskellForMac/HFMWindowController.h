@@ -11,7 +11,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-  // FIXME: This ought to be defined in 'CloudController' (once this class is rewritten in Swift)
+  // FIXME: This ought to be defined in 'CloudController' (once the present class is rewritten in Swift)
 typedef NS_ENUM(NSInteger, AuthenticationFlavour) {
   AuthenticationFlavourNewAccount,
   AuthenticationFlavourAuthenticateAccount
