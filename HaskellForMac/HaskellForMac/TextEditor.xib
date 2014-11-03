@@ -27,7 +27,7 @@
                         <color key="backgroundColor" red="0.89803921568627454" green="0.92549019607843142" blue="0.97254901960784312" alpha="1" colorSpace="deviceRGB"/>
                     </pathCell>
                 </pathControl>
-                <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z8k-aE-UVe">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z8k-aE-UVe">
                     <rect key="frame" x="0.0" y="0.0" width="480" height="252"/>
                     <clipView key="contentView" id="vp7-dV-dSx">
                         <rect key="frame" x="1" y="1" width="223" height="133"/>
@@ -37,10 +37,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="223" height="250"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <size key="minSize" width="478" height="250"/>
+                                <size key="minSize" width="480" height="252"/>
                                 <size key="maxSize" width="480" height="10000000"/>
                                 <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                <size key="minSize" width="478" height="250"/>
+                                <size key="minSize" width="480" height="252"/>
                                 <size key="maxSize" width="480" height="10000000"/>
                                 <connections>
                                     <binding destination="Csf-UD-gao" name="attributedString" keyPath="selection.attributedString" id="mUb-OL-BPd"/>

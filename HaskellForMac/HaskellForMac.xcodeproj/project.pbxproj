@@ -38,6 +38,7 @@
 		E73178171A01A58F00D8FDC0 /* ResultViewPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */; };
 		E739EF871A05F44C00236051 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; };
 		E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E739EF921A07200C00236051 /* StyledSplitView.swift */; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
@@ -257,6 +258,7 @@
 		E72AF5FB19E395F800753077 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewPopover.xib; sourceTree = "<group>"; };
 		E739EF7F1A05F40100236051 /* GHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GHC.xcodeproj; path = ../GHC/GHC.xcodeproj; sourceTree = "<group>"; };
+		E739EF921A07200C00236051 /* StyledSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledSplitView.swift; sourceTree = "<group>"; };
 		E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudcelerateKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E743140019A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E743140119A46F70003A3934 /* CloudcelerateKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CloudcelerateKit.h; sourceTree = "<group>"; };
@@ -454,6 +456,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E739EF911A071DAC00236051 /* CustomisedViews */ = {
+			isa = PBXGroup;
+			children = (
+				E739EF921A07200C00236051 /* StyledSplitView.swift */,
+			);
+			name = CustomisedViews;
+			sourceTree = "<group>";
+		};
 		E74313FE19A46F70003A3934 /* CloudcelerateKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -591,6 +601,7 @@
 				E7F7988B198A609B0063294F /* Playground */,
 				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E72AF5F819E38C6E00753077 /* Cloud */,
+				E739EF911A071DAC00236051 /* CustomisedViews */,
 				E76CD89319CD6DC600369A80 /* Utilities */,
 				E7A13B4A188E7F1C00D79087 /* Interfaces */,
 				E7A13B0B1888006C00D79087 /* Supporting Files */,
@@ -1141,6 +1152,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */,
 				E721D8F819B354F600DCBF68 /* SyntaxHighlighting.swift in Sources */,
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,

@@ -26,10 +26,10 @@
                 <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View">
+                    <splitView autosaveName="WindowSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
                         <subviews>
-                            <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
+                            <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
                                 <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" drawsBackground="NO" id="oc1-de-xrA">
@@ -42,7 +42,7 @@
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="160" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
+                                                <tableColumn width="162" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -56,7 +56,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="groupCellID" id="I7u-Bd-71O">
-                                                            <rect key="frame" x="1" y="0.0" width="160" height="17"/>
+                                                            <rect key="frame" x="1" y="0.0" width="162" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctX-vG-lXf">
@@ -73,7 +73,7 @@
                                                             </connections>
                                                         </tableCellView>
                                                         <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
-                                                            <rect key="frame" x="1" y="17" width="160" height="17"/>
+                                                            <rect key="frame" x="1" y="17" width="162" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eg-Fr-H0x">
@@ -145,6 +145,11 @@
                             <real value="150"/>
                             <real value="250"/>
                         </holdingPriorities>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="customDividerColor">
+                                <color key="value" red="0.60000002384185791" green="0.60000002384185791" blue="0.60000002384185791" alpha="1" colorSpace="calibratedRGB"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </splitView>
                 </subviews>
                 <constraints>
@@ -154,7 +159,7 @@
                     <constraint firstItem="9kS-X2-FR9" firstAttribute="top" secondItem="PAm-tW-8ak" secondAttribute="top" id="zpx-VM-Bxs"/>
                 </constraints>
             </view>
-            <toolbar key="toolbar" implicitIdentifier="F72F6462-93CE-4BB6-8FE0-4826C9BA64CE" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="mQV-9n-5rW">
+            <toolbar key="toolbar" implicitIdentifier="F72F6462-93CE-4BB6-8FE0-4826C9BA64CE" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="mQV-9n-5rW">
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="sx2-XV-ykH"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="Em1-ml-mpa"/>

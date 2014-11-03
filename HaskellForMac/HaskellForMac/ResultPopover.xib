@@ -18,7 +18,7 @@
             <rect key="frame" x="0.0" y="0.0" width="307" height="169"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0xC-7M-4ZP">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0xC-7M-4ZP">
                     <rect key="frame" x="0.0" y="0.0" width="307" height="169"/>
                     <clipView key="contentView" id="9ac-z5-LPK">
                         <rect key="frame" x="1" y="1" width="223" height="133"/>
@@ -29,10 +29,10 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <size key="minSize" width="305" height="167"/>
+                                <size key="minSize" width="307" height="169"/>
                                 <size key="maxSize" width="478" height="10000000"/>
                                 <color key="insertionPointColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                <size key="minSize" width="305" height="167"/>
+                                <size key="minSize" width="307" height="169"/>
                                 <size key="maxSize" width="478" height="10000000"/>
                             </textView>
                         </subviews>
