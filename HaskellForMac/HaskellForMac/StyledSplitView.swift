@@ -44,17 +44,19 @@ class StyledSplitView: NSSplitView {
   ///
   /// In any case, cancel any currently executing animation, even if we are already in the target state.
   ///
-  func animateSetSubview(subview: NSView, toCollapsed collapsed: Bool) {
+  func animateSetSubview(subview: NSView, toCollapsed collapsed: Bool, completionHandler completion: (() -> ())?) {
 
       // If we are already animating, cancel the animation and out the new one into the completion handler.
     if let constraint = animationConstraint {
-      animationConstraint = nil
       NSAnimationContext.runAnimationGroup(
         { context in
           context.duration               = 0.0
           constraint.animator().constant = constraint.constant
         },
-        { self.animateSetSubview(subview, toCollapsed: collapsed) })    // Retry after cancellation complete
+        {    // Retry after cancellation
+          self.animationConstraint = nil    // Don't do this earlier as it serves as a lock to starting an animation.
+          self.animateSetSubview(subview, toCollapsed: collapsed, completionHandler: completion)
+      })
       return
     }
 
@@ -88,11 +90,14 @@ class StyledSplitView: NSSplitView {
       {
         self.animationConstraint = nil
 
-        // Whatever happened, we need to set the final hidden state and restore the view's width and constraints.
+          // Whatever happened, we need to set the final hidden state and restore the view's width and constraints.
         subview.hidden           = collapsed
         subview.frame.size.width = width            // Even if collapsed, the hidden frame needs the original width
         subview.removeConstraint(constraint)
         subview.addConstraints(widthConstraints)    // Restore temporarily removed width constraints.
+
+          // Run the completion handler.
+        completion?()
     })
   }
 }

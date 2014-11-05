@@ -398,144 +398,65 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
 #pragma unused(sender)
 
-  switch (self.windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    case WindowConfigurationNoPlayground:
-      self.windowConfiguration = WindowConfigurationOnlyEditor;
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      self.windowConfiguration = WindowConfigurationNoPlayground;
-      break;
-
-    case WindowConfigurationNoSourceView:
-      self.windowConfiguration = WindowConfigurationAllVisible;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      self.windowConfiguration = WindowConfigurationAllVisible;
-      break;
-
-    default:
-      break;
-  }
+  [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!self.outlineScrollView.hidden completionHandler:^{
+      // We cannot show the source view without the editor view.
+    if (!self.outlineScrollView.hidden && self.editorView.hidden) [self toggleEditorView:sender];
+  }];
 }
 
 - (IBAction)toggleEditorView:(id)sender
 {
 #pragma unused(sender)
 
-  switch (self.windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      break;
-
-    case WindowConfigurationNoPlayground:
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      break;
-
-    case WindowConfigurationNoSourceView:
-      self.windowConfiguration = WindowConfigurationOnlyPlayground;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    default:
-      break;
-  }
+    // We cannot hide the editor unless the playground is visible.
+  if (self.playgroundView.hidden && !self.editorView.hidden)
+    [self.splitView animateSetSubview:self.playgroundView toCollapsed:NO completionHandler:^{
+      if (!self.editorView.hidden)
+        [self toggleEditorView:sender];
+    }];
+  else
+    [self.splitView animateSetSubview:self.editorView toCollapsed:!self.editorView.hidden completionHandler:^{
+        // We cannot hide the editor view without hiding the source view.
+      if (self.editorView.hidden && !self.outlineScrollView.hidden) [self toggleNavigatorView:sender];
+    }];
 }
 
 - (IBAction)togglePlaygroundView:(id)sender
 {
 #pragma unused(sender)
 
-  switch (self.windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      self.windowConfiguration = WindowConfigurationNoPlayground;
-      break;
-
-    case WindowConfigurationNoPlayground:
-      self.windowConfiguration = WindowConfigurationAllVisible;
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    case WindowConfigurationNoSourceView:
-      self.windowConfiguration = WindowConfigurationOnlyEditor;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      break;
-
-    default:
-      break;
-  }
+    // We cannot hide the playground unless the editor is visible.
+  if (self.editorView.hidden && !self.playgroundView.hidden)
+    [self.splitView animateSetSubview:self.editorView toCollapsed:NO completionHandler:^{
+      if (!self.playgroundView.hidden)
+        [self togglePlaygroundView:sender];
+    }];
+  else
+    [self.splitView animateSetSubview:self.playgroundView toCollapsed:!self.playgroundView.hidden completionHandler:nil];
 }
 
 - (IBAction)moveViewLeft:(id)sender
 {
 #pragma unused(sender)
 
-  switch (self.windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      self.windowConfiguration = WindowConfigurationNoPlayground;
-      break;
-
-    case WindowConfigurationNoPlayground:
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      self.windowConfiguration = WindowConfigurationNoPlayground;
-      break;
-
-    case WindowConfigurationNoSourceView:
-      self.windowConfiguration = WindowConfigurationAllVisible;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    default:
-      break;
-  }
+  if (!self.playgroundView.hidden && self.editorView.hidden)
+    [self.splitView animateSetSubview:self.editorView toCollapsed:NO completionHandler:nil];         // reveal editor
+  else if (!self.playgroundView.hidden && !self.editorView.hidden && self.outlineScrollView.hidden)
+    [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:NO completionHandler:nil];  // reveal navigator
+  else if (!self.playgroundView.hidden && !self.editorView.hidden && !self.outlineScrollView.hidden)
+    [self.splitView animateSetSubview:self.playgroundView toCollapsed:YES completionHandler:nil];    // hide playground
 }
 
 - (IBAction)moveViewRight:(id)sender
 {
 #pragma unused(sender)
 
-  switch (self.windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    case WindowConfigurationNoPlayground:
-      self.windowConfiguration = WindowConfigurationAllVisible;
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      self.windowConfiguration = WindowConfigurationNoSourceView;
-      break;
-
-    case WindowConfigurationNoSourceView:
-      self.windowConfiguration = WindowConfigurationOnlyPlayground;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      break;
-
-    default:
-      break;
-  }
+  if (self.playgroundView.hidden)
+    [self.splitView animateSetSubview:self.playgroundView toCollapsed:NO completionHandler:nil];     // reveal playground
+  else if (!self.playgroundView.hidden && !self.outlineScrollView.hidden)
+    [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:YES completionHandler:nil]; // hide navigator
+  else if (!self.playgroundView.hidden && !self.editorView.hidden)
+    [self.splitView animateSetSubview:self.editorView toCollapsed:YES completionHandler:nil];        // hide editor
 }
 
 #pragma mark Navigate menu target-action methods (forwarded)
@@ -598,11 +519,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
   } else if (action == @selector(moveViewLeft:)) {
 
-    return YES;
+    return self.outlineScrollView.hidden || self.editorView.hidden || !self.playgroundView.hidden;
     
   } else if (action == @selector(moveViewRight:)) {
 
-    return YES;
+    return !self.outlineScrollView.hidden || !self.editorView.hidden || self.playgroundView.hidden;
 
   } else if (action == @selector(newCloudAccount:)) {
 
@@ -759,7 +680,7 @@ void windowElementVisibility(WindowConfiguration  windowConfiguration,
 
 //    [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
 
-      [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!isSourceViewVisibleAfter];
+  [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!isSourceViewVisibleAfter completionHandler:nil];
 #if 0
 //  if (self.outlineScrollView.hidden && isSourceViewVisibleAfter) {
   if (self.outlineScrollView.hidden) {
