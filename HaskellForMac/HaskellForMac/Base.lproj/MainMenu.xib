@@ -285,6 +285,19 @@ CA
                                     <action selector="togglePlaygroundView:" target="-1" id="jQJ-pK-Qzo"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="3KF-o2-71N"/>
+                            <menuItem title="Move View Left" keyEquivalent="" id="op1-aS-hz4">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="moveViewLeft:" target="-1" id="3Mb-Hq-rlQ"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Move View Right" keyEquivalent="" id="2y4-MS-8ey">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="moveViewRight:" target="-1" id="zvk-ds-VET"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="CU6-6w-hle"/>
                             <menuItem title="Show Toolbar" keyEquivalent="t" id="297">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>

@@ -26,12 +26,12 @@ typedef NS_ENUM(NSInteger, WindowConfiguration) {
 
 // Views in 'ProjectWindow.xib'
 //
-@property (weak) IBOutlet NSScrollView  *outlineScrollView;
-@property (weak) IBOutlet NSOutlineView *outlineView;
-@property (weak) IBOutlet NSSplitView   *splitView;
-@property (weak) IBOutlet NSView        *editorView;
-@property (weak) IBOutlet NSTextField   *noEditorLabel;
-@property (weak) IBOutlet NSView        *playgroundView;
+@property (weak) IBOutlet NSScrollView    *outlineScrollView;
+@property (weak) IBOutlet NSOutlineView   *outlineView;
+@property (weak) IBOutlet StyledSplitView *splitView;
+@property (weak) IBOutlet NSView          *editorView;
+@property (weak) IBOutlet NSTextField     *noEditorLabel;
+@property (weak) IBOutlet NSView          *playgroundView;
 
 // Our cloud and local context controller (which we own).
 //
@@ -99,7 +99,7 @@ void windowElementVisibility(WindowConfiguration  windowConfiguration,
 
     // Window configuration.
     // FIXME: This needs to be made persistent.
-  self.windowConfiguration = WindowConfigurationAllVisible;
+  _windowConfiguration = WindowConfigurationAllVisible;
 
     // We have got one cloud controller and one local context contoller for the lifetime of our window.
   self.cloudController   = [[CloudController alloc] initWithProject:self.document
@@ -480,6 +480,64 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   }
 }
 
+- (IBAction)moveViewLeft:(id)sender
+{
+#pragma unused(sender)
+
+  switch (self.windowConfiguration) {
+    case WindowConfigurationAllVisible:
+      self.windowConfiguration = WindowConfigurationNoPlayground;
+      break;
+
+    case WindowConfigurationNoPlayground:
+      break;
+
+    case WindowConfigurationOnlyEditor:
+      self.windowConfiguration = WindowConfigurationNoPlayground;
+      break;
+
+    case WindowConfigurationNoSourceView:
+      self.windowConfiguration = WindowConfigurationAllVisible;
+      break;
+
+    case WindowConfigurationOnlyPlayground:
+      self.windowConfiguration = WindowConfigurationNoSourceView;
+      break;
+
+    default:
+      break;
+  }
+}
+
+- (IBAction)moveViewRight:(id)sender
+{
+#pragma unused(sender)
+
+  switch (self.windowConfiguration) {
+    case WindowConfigurationAllVisible:
+      self.windowConfiguration = WindowConfigurationNoSourceView;
+      break;
+
+    case WindowConfigurationNoPlayground:
+      self.windowConfiguration = WindowConfigurationAllVisible;
+      break;
+
+    case WindowConfigurationOnlyEditor:
+      self.windowConfiguration = WindowConfigurationNoSourceView;
+      break;
+
+    case WindowConfigurationNoSourceView:
+      self.windowConfiguration = WindowConfigurationOnlyPlayground;
+      break;
+
+    case WindowConfigurationOnlyPlayground:
+      break;
+
+    default:
+      break;
+  }
+}
+
 #pragma mark Navigate menu target-action methods (forwarded)
 
 - (void)jumpToNextIssue:(id)sender
@@ -538,6 +596,14 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
     return YES;
 
+  } else if (action == @selector(moveViewLeft:)) {
+
+    return YES;
+    
+  } else if (action == @selector(moveViewRight:)) {
+
+    return YES;
+
   } else if (action == @selector(newCloudAccount:)) {
 
     return ![self.cloudController accountStatus];
@@ -571,7 +637,12 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
 #pragma unused(splitView)
 
-  return (subview == self.outlineScrollView) ? YES : NO;
+  return (subview == self.editorView) ? NO : YES;
+}
+
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification
+{
+
 }
 
 
@@ -685,10 +756,54 @@ void windowElementVisibility(WindowConfiguration  windowConfiguration,
   windowElementVisibility(newWindowConfiguration,
                           &isSourceViewVisibleAfter, &isEditorViewVisibleAfter, &isPlaygroundVisibleAfter);
 
-  [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
+
+//    [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
+
+      [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!isSourceViewVisibleAfter];
+#if 0
+//  if (self.outlineScrollView.hidden && isSourceViewVisibleAfter) {
+  if (self.outlineScrollView.hidden) {
+    CGRect frame = self.outlineScrollView.frame;
+    [NSAnimationContext currentContext].duration = 0.25;
+//    [self.outlineScrollView setFrameSize:(CGSize){ .width = 1, .height = frame.size.height }];
+//    [[self.splitView animator] setPosition:1 ofDividerAtIndex:0];
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self.outlineScrollView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:50];
+
+    [self.outlineScrollView setHidden:NO];
+
+    NSArray *oldConstraints = self.outlineScrollView.constraints;
+    [self.outlineScrollView removeConstraints:oldConstraints];
+    [self.outlineScrollView addConstraint:constraint];
+    /*
+    dispatch_async(dispatch_get_main_queue(), ^{
+     */
+      [NSAnimationContext beginGrouping];
+    [NSAnimationContext currentContext].completionHandler = ^{ [self.outlineScrollView removeConstraint:constraint]; [self.outlineScrollView addConstraints:oldConstraints];
+      [self.splitView adjustSubviews];
+    };
+    [[constraint animator] setConstant:frame.size.width];
+//      [[self.outlineScrollView animator] setFrameSize:frame.size];
+//      [[self.splitView animator] setPosition:frame.size.width ofDividerAtIndex:0];
+      [NSAnimationContext endGrouping];
+    /*
+    });
+     */
+
+  } else
+    [self.outlineScrollView setHidden:YES];
+//  [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
+#endif
+
+
   [self.editorView setHidden:!isEditorViewVisibleAfter];
   [self.playgroundView setHidden:!isPlaygroundVisibleAfter];
-  [self.splitView adjustSubviews];
+//  NSLayoutPriority editorHoldingPriority     = [self.splitView holdingPriorityForSubviewAtIndex:1];
+//  NSLayoutPriority playgroundHoldingPriority = [self.splitView holdingPriorityForSubviewAtIndex:2];
+//  [self.splitView setHoldingPriority:NSLayoutPriorityDefaultLow forSubviewAtIndex:1];
+//  [self.splitView setHoldingPriority:NSLayoutPriorityDefaultLow forSubviewAtIndex:2];
+//  [self.splitView adjustSubviews];
+//  [self.splitView setHoldingPriority:editorHoldingPriority forSubviewAtIndex:1];
+//  [self.splitView setHoldingPriority:playgroundHoldingPriority forSubviewAtIndex:2];
     //    [self.splitView setPosition:0 ofDividerAtIndex:0];
   _windowConfiguration = newWindowConfiguration;
 }

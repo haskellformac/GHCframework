@@ -24,7 +24,7 @@
                 <splitView autosaveName="PlaygroundSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="04R-W1-2a8" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="522" height="272"/>
                     <subviews>
-                        <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" id="eLl-PP-4ag" userLabel="Bordered Scroll View - Code View" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
+                        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" id="eLl-PP-4ag" userLabel="Bordered Scroll View - Code View" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="271.5" height="272"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="mai-sj-4Ku">
@@ -47,6 +47,9 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </clipView>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Xc6-da-TzG"/>
+                            </constraints>
                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="OGT-pi-AfM">
                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -56,7 +59,7 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                         </scrollView>
-                        <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
+                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="272.5" y="0.0" width="249.5" height="272"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="DhE-t6-jl6">
@@ -141,6 +144,9 @@
                                 </subviews>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </clipView>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="5kT-C0-AKG"/>
+                            </constraints>
                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="289-19-chF">
                                 <rect key="frame" x="1" y="119" width="223" height="15"/>
                                 <autoresizingMask key="autoresizingMask"/>

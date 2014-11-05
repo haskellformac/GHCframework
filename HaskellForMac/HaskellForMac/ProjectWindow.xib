@@ -21,14 +21,14 @@
         <window title="HaskellForMac" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="qHE-kS-dao">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="112" y="329" width="627" height="507"/>
+            <rect key="contentRect" x="112" y="329" width="762" height="507"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
             <view key="contentView" id="PAm-tW-8ak">
-                <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
+                <rect key="frame" x="0.0" y="0.0" width="762" height="507"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <splitView autosaveName="WindowSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kS-X2-FR9" userLabel="Vertical Split View" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="627" height="507"/>
+                        <rect key="frame" x="0.0" y="0.0" width="762" height="507"/>
                         <subviews>
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fiD-Li-Mgi">
                                 <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
@@ -122,11 +122,11 @@
                                 </scroller>
                             </scrollView>
                             <customView id="hVH-bJ-KGO" userLabel="Editor View">
-                                <rect key="frame" x="166" y="0.0" width="228" height="507"/>
+                                <rect key="frame" x="166" y="0.0" width="363" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-C3-ErB">
-                                        <rect key="frame" x="58" y="239" width="113" height="30"/>
+                                        <rect key="frame" x="125" y="239" width="113" height="30"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="No Editor" id="ZV6-Ek-WYQ">
                                             <font key="font" metaFont="system" size="25"/>
                                             <color key="textColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -136,21 +136,21 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sSz-C3-ErB" secondAttribute="centerX" id="NBG-Kf-BMh"/>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="Qen-AZ-lRi"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Qen-AZ-lRi"/>
                                     <constraint firstAttribute="centerY" secondItem="sSz-C3-ErB" secondAttribute="centerY" id="hAI-WE-BGh"/>
                                 </constraints>
                             </customView>
                             <customView id="8bF-Zs-hji" userLabel="Playground View">
-                                <rect key="frame" x="395" y="0.0" width="232" height="507"/>
+                                <rect key="frame" x="530" y="0.0" width="232" height="507"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="vcX-at-eGc"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="vcX-at-eGc"/>
                                 </constraints>
                             </customView>
                         </subviews>
                         <holdingPriorities>
                             <real value="350"/>
-                            <real value="150"/>
+                            <real value="250"/>
                             <real value="250"/>
                         </holdingPriorities>
                         <userDefinedRuntimeAttributes>
