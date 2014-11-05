@@ -471,7 +471,30 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   [self.contextController jumpToPreviousIssue:sender];
 }
 
-#pragma mark NSUserInterfaceValidations protocol methods
+#pragma mark NSMenuValidation and NSUserInterfaceValidations protocol methods
+
+  // We set the appropriate menu titles in this method and defer to '-validateUserInterfaceItem:' for the actual
+  // validation.
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+  SEL action = [menuItem action];
+
+  if (action == @selector(toggleNavigatorView:)) {
+
+    menuItem.title = self.outlineScrollView.hidden ? @"Show Project Navigator" : @"Hide Project Navigator";
+
+  } else if (action == @selector(toggleEditorView:)) {
+
+    menuItem.title = self.editorView.hidden ? @"Show Editor" : @"Hide Editor";
+    
+  } else if (action == @selector(togglePlaygroundView:)) {
+
+    menuItem.title = self.playgroundView.hidden ? @"Show Playground" : @"Hide Playground";
+    
+  }
+  return [self validateUserInterfaceItem:menuItem];
+}
+
 
   // NB: At the moment, we only support individual selections (and not groups of selections). This will have to change
   //     at some point. Once, we supported selected groups, and the user right-clicks for the context menu, we need to
