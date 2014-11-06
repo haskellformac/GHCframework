@@ -584,11 +584,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   return (subview == self.editorView) ? NO : YES;
 }
 
-- (void)splitViewDidResizeSubviews:(NSNotification *)notification
-{
-
-}
-
 
 #pragma mark -
 #pragma mark NSTextFieldDelegate protocol methods
