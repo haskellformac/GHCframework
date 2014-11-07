@@ -203,6 +203,7 @@ eval (Session inlet) source line stmt
                   GHC.setContext iis >> runGHCiStatement resultMV
                 else do
               {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
+              ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
               ; hval <- GHC.compileExpr nodeExpr
               -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
               ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
