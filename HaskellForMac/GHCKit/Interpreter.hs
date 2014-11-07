@@ -198,14 +198,11 @@ eval (Session inlet) source line stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty -> do
               { dflags <- GHC.getDynFlags
-              ; GHC.liftIO $ putStrLn $ "before comparison: " ++ GHC.showSDoc dflags (GHC.pprType ty)
               ; if GHC.showSDoc dflags (GHC.pprType ty) /= "Graphics.SpriteKit.Node.Node"
                 then
                   GHC.setContext iis >> runGHCiStatement resultMV
                 else do
               {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
-              ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
-              ; GHC.liftIO $ putStrLn $ "nodeExpr: " ++ nodeExpr
               ; hval <- GHC.compileExpr nodeExpr
               -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
               ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
