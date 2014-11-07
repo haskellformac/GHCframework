@@ -818,6 +818,7 @@
 				E7A13AFF1888006C00D79087 /* Resources */,
 				E70A66CB197CC341006D3514 /* Embed Frameworks */,
 				E72F538B19C28A76002692E6 /* CopyFiles */,
+				E7C5DB391A0C9CB3002F6469 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1110,6 +1111,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/CBLPackage_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E7C5DB391A0C9CB3002F6469 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Unique build numbers calculated from Git commits http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode/\n\nbranch='master'\nbuildNumber=$(expr $(git rev-list $branch --count) - $(git rev-list HEAD..$branch --count))\necho \"Updating build number to $buildNumber using branch '$branch'.\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# The following command checks the source corresponding to a particular build number out\n#\n#   git checkout `git rev-list master | tail -n $1 | head -n 1`";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
