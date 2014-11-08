@@ -26,7 +26,11 @@
                             <menuItem isSeparatorItem="YES" id="236">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Preferences…" keyEquivalent="," id="129"/>
+                            <menuItem title="Preferences…" keyEquivalent="," id="129">
+                                <connections>
+                                    <action selector="showWindow:" target="YYC-eZ-6At" id="p24-Il-R05"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
@@ -383,7 +387,12 @@ CA
                 </menuItem>
             </items>
         </menu>
-        <customObject id="494" customClass="HFMAppDelegate"/>
+        <customObject id="494" customClass="AppDelegate">
+            <connections>
+                <outlet property="preferencesController" destination="YYC-eZ-6At" id="HDb-93-o9r"/>
+            </connections>
+        </customObject>
+        <customObject id="YYC-eZ-6At" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target"/>
         <customObject id="420" customClass="NSFontManager"/>
     </objects>
 </document>

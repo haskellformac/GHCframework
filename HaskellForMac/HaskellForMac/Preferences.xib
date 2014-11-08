@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window identifier="Preferences" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="Cv5-17-gJd">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <font key="font" metaFont="system"/>
+                        <tabViewItems>
+                            <tabViewItem label="General" identifier="1" id="6Ke-6O-Fcr">
+                                <view key="view" id="aZ1-h6-Bpw">
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Text Editing" identifier="2" id="zJ1-IR-5bH">
+                                <view key="view" id="VOv-xz-TEb">
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Account" identifier="" id="y0A-2s-KgI">
+                                <view key="view" id="Hu0-ba-Uys">
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
+                        </tabViewItems>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="neb-K6-mNA"/>
+                        </connections>
+                    </tabView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Cv5-17-gJd" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="Bc9-Ur-YpX"/>
+                    <constraint firstAttribute="bottom" secondItem="Cv5-17-gJd" secondAttribute="bottom" id="Sbe-iN-9D1"/>
+                    <constraint firstItem="Cv5-17-gJd" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="UVn-4d-Caj"/>
+                    <constraint firstAttribute="trailing" secondItem="Cv5-17-gJd" secondAttribute="trailing" id="sFw-be-l9G"/>
+                </constraints>
+            </view>
+            <toolbar key="toolbar" implicitIdentifier="534F17AC-CA1F-4ADE-A7BB-CD22D3A0EB50" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="Acm-L0-M8A">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="Bep-oH-LVK"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="qTY-jK-ZDE"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="ayu-Hu-knw"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="NKy-mg-RtX"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="h5p-Jn-B8B"/>
+                </allowedToolbarItems>
+                <defaultToolbarItems/>
+                <connections>
+                    <outlet property="delegate" destination="-2" id="wu6-E3-0Z1"/>
+                </connections>
+            </toolbar>
+            <connections>
+                <outlet property="delegate" destination="-2" id="i3d-ck-Z4T"/>
+            </connections>
+        </window>
+        <userDefaultsController id="dhi-EU-Nid"/>
+    </objects>
+</document>

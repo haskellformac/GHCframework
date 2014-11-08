@@ -57,7 +57,6 @@
 		E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B0D1888006C00D79087 /* InfoPlist.strings */; };
 		E7A13B111888006C00D79087 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B101888006C00D79087 /* main.m */; };
 		E7A13B151888006C00D79087 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B131888006C00D79087 /* Credits.rtf */; };
-		E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B171888006C00D79087 /* HFMAppDelegate.m */; };
 		E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B1C1888006C00D79087 /* Images.xcassets */; };
 		E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A13B041888006C00D79087 /* Cocoa.framework */; };
 		E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B2B1888006C00D79087 /* InfoPlist.strings */; };
@@ -68,6 +67,9 @@
 		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
 		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
 		E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5766019948C3000E6AAE0 /* Diagnostics.swift */; };
+		E7C5DB3B1A0DF54C002F6469 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */; };
+		E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */; };
+		E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
@@ -286,8 +288,6 @@
 		E7A13B0E1888006C00D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7A13B101888006C00D79087 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E7A13B141888006C00D79087 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		E7A13B161888006C00D79087 /* HFMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HFMAppDelegate.h; sourceTree = "<group>"; };
-		E7A13B171888006C00D79087 /* HFMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HFMAppDelegate.m; sourceTree = "<group>"; };
 		E7A13B1A1888006C00D79087 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		E7A13B1C1888006C00D79087 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HaskellForMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -303,6 +303,9 @@
 		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
 		E7B0AB001990B4890057FAD5 /* TextGutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextGutterView.swift; sourceTree = "<group>"; };
 		E7C5766019948C3000E6AAE0 /* Diagnostics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
+		E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
+		E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesController.swift; sourceTree = "<group>"; };
+		E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
@@ -589,12 +592,12 @@
 		E7A13B0A1888006C00D79087 /* HaskellForMac */ = {
 			isa = PBXGroup;
 			children = (
-				E7A13B161888006C00D79087 /* HFMAppDelegate.h */,
-				E7A13B171888006C00D79087 /* HFMAppDelegate.m */,
+				E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
-				E72AF5F619E37B5400753077 /* CloudController.swift */,
+				E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */,
 				E7CC64021999B4DD00D8E1CD /* ContextController.swift */,
+				E72AF5F619E37B5400753077 /* CloudController.swift */,
 				E7C5765E19948B3A00E6AAE0 /* Projects */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
@@ -650,9 +653,10 @@
 			children = (
 				E7A13B191888006C00D79087 /* MainMenu.xib */,
 				E7A13B47188E7BED00D79087 /* ProjectWindow.xib */,
+				E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */,
 				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
-				E7258C57198A2263004789CF /* Playground.xib */,
 				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
+				E7258C57198A2263004789CF /* Playground.xib */,
 				E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */,
 				E7CFFEA119F729B600356065 /* ResultPopover.xib */,
 				E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */,
@@ -976,6 +980,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7A13B0F1888006C00D79087 /* InfoPlist.strings in Resources */,
+				E7C5DB3B1A0DF54C002F6469 /* Preferences.xib in Resources */,
 				E70A66D3197CE04B006D3514 /* Info.plist in Resources */,
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
 				E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */,
@@ -1181,10 +1186,11 @@
 				E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */,
 				E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */,
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
-				E7A13B181888006C00D79087 /* HFMAppDelegate.m in Sources */,
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */,
 				E72AF5FC19E395F800753077 /* Error.swift in Sources */,
+				E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */,
+				E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */,
 				E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
