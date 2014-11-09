@@ -17,18 +17,10 @@ let kAccountPreferences     = "AccountPreferences"
 
 class PreferencesController: NSWindowController {
 
-  override init() {
-    super.init()
-//    PreferencesController(windowNibName: "Preferences")
-    super.init(windowNibName: "Preferences")
-  }
-
-  override init(window: NSWindow!) {
-    super.init(window: window)
-  }
-
-  required init?(coder: NSCoder) {
-      super.init(coder: coder)
+  // The nib containing the associated window.
+  //
+  override var windowNibName : String! {
+    return "Preferences"
   }
 
   override func windowDidLoad() {
