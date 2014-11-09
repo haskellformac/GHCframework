@@ -17,6 +17,8 @@ let kAccountPreferences     = "AccountPreferences"
 
 class PreferencesController: NSWindowController {
 
+  @IBOutlet weak var toolbar: NSToolbar!
+
   // The nib containing the associated window.
   //
   override var windowNibName : String! {
@@ -30,7 +32,11 @@ class PreferencesController: NSWindowController {
     window?.excludedFromWindowsMenu = true
     window?.identifier              = "Preferences"
     window?.restorationClass        = PreferencesController.self
-  }
+
+    toolbar.delegate = self
+    toolbar.selectedItemIdentifier = kGeneralPreferences
+}
+
 
   // Reopen the preferences window when the app's persistent state is restored.
   //
@@ -61,8 +67,27 @@ class PreferencesController: NSWindowController {
 
 extension PreferencesController: NSToolbarDelegate {
 
-  func toolbarSelectableItemIdentifiers(_toolbar: NSToolbar) -> [String] {
+//  func toolbarDefaultItemIdentifiers(toolbar: NSToolbar) -> [String] {
+//    return [kGeneralPreferences, kTextEditingPreferences, kAccountPreferences]
+//  }
+//
+//  func toolbarAllowedItemIdentifiers(toolbar: NSToolbar) -> [String] {
+//    return [kGeneralPreferences, kTextEditingPreferences, kAccountPreferences]
+//  }
+
+  func toolbarSelectableItemIdentifiers(toolbar: NSToolbar) -> [String] {
     return [kGeneralPreferences, kTextEditingPreferences, kAccountPreferences]
+  }
+}
+
+extension PreferencesController {
+
+  @IBAction func selectPreferenceTab(sender: NSToolbarItem) {
+    // nothing to be done (as we use bindings, but the toolbar item seems to need an action (and associated validation)
+  }
+
+  override func validateToolbarItem(theItem: NSToolbarItem) -> Bool {
+    return true
   }
 }
 

@@ -10,6 +10,12 @@ import Cocoa
 
 class AppDelegate: NSObject {
 
+  override class func initialize() {
+    let defaultValues = ["ExternalTextEditor": ""]    // use the default application by file extension
+    NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
+    NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
+  }
+
   @IBOutlet weak var preferencesController: PreferencesController!
 }
 

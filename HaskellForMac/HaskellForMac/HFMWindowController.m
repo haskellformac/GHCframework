@@ -271,10 +271,12 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
   HFMProject              *project     = (HFMProject*)self.document;
 
-  [[NSWorkspace sharedWorkspace] openURL:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]];
-    // FIXME: if editor set in defaults, invoke the set editor with the following message:
-//  [[NSWorkspace sharedWorkspace] openFile:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath].path
-//                          withApplication:@"???"];
+  NSString *externalTextEditor = [[NSUserDefaults standardUserDefaults] stringForKey:@"ExternalTextEditor"];
+  if (!externalTextEditor || externalTextEditor.length == 0)
+    [[NSWorkspace sharedWorkspace] openURL:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]];
+  else
+    [[NSWorkspace sharedWorkspace] openFile:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath].path
+                            withApplication:externalTextEditor];
 }
 
 - (IBAction)showInFinder:(NSMenuItem *)sender
