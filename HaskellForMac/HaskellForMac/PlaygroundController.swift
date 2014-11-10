@@ -113,8 +113,8 @@ class PlaygroundController: NSViewController {
     codeScrollView.hasVerticalRuler = true
     codeScrollView.rulersVisible    = true
 
-      // The size of the playground text views is fixed. We want them to be rigid.
-    codeTextView.horizontallyResizable   = true
+      // The size of the playground code view is fixed. We want it to be rigid.
+    codeTextView.horizontallyResizable = true
 
       // For now, we have got a fixed font.
     codeTextView.font = codeTextAttributes[NSFontAttributeName] as? NSFont
