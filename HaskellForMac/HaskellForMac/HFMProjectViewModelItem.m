@@ -12,12 +12,6 @@
 
 @interface HFMProjectViewModelItem ()
 
-/// The project view model that this item belongs to.
-///
-/// Weak reference as this item is owned by the model.
-///
-@property (weak, readonly) HFMProjectViewModel *model;
-
 /// Points to the parent item; 'nil' for group items.
 ///
 /// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of items in the
@@ -42,7 +36,7 @@
 /// NB: This property is only relevant for non-directory file wrappers (as they are immutable). In contrast, directory
 ///     file wrappers are always modified in place. (In other words, dirty here refers to the item being dirty wrt. to
 ///     keeping the file wrapper tree in sync — it makes no statement about whether any data needs to be saved to the
-///     file system. We leave that to the file wrappers to figure out.
+///     file system. We leave that to the file wrappers to figure out.)
 ///
 @property NSFileWrapper *dirtyFileWrapper;   // maybe nil
 
@@ -66,18 +60,21 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 
 + (instancetype)projectViewModelItemWithGroup:(PVMItemTag)tag
                                    identifier:(NSString *)identifier
+                                   playground:(ProjectViewModelPlayground*)playground
                                        parent:(HFMProjectViewModelItem *)parent
                                         model:(HFMProjectViewModel *)model
 
 {
   return [[HFMProjectViewModelItem alloc] initWithGroup:tag
                                              identifier:identifier
+                                             playground:playground
                                                  parent:parent
                                                   model:model];
 }
 
 - (instancetype)initWithGroup:(PVMItemTag)tag
                    identifier:(NSString *)identifier
+                   playground:(ProjectViewModelPlayground*)playground
                        parent:(HFMProjectViewModelItem *)parent
                         model:(HFMProjectViewModel *)model
 {
@@ -86,6 +83,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 
     _tag         = tag;
     _identifier  = identifier;
+    _playground  = playground;
     _parent      = parent;
     _model       = model;
     _theChildren = nil;
@@ -108,12 +106,12 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
         _tip = @"The executable program generated from these Haskell modules";
         break;
       case PVMItemTagFile:
-        _tip = @"Main Haskell module of this program";
-        break;
-      case PVMItemTagMainFile: {
         _tip = [[identifier pathExtension] isEqualToString:HFMProjectViewModel.haskellFileExtension]
                ? @"Haskell module"
                : @"Supporting file";
+        break;
+      case PVMItemTagMainFile: {
+        _tip = @"Main Haskell module of this program";
         break;
       }
       case PVMItemTagFolder:
@@ -222,6 +220,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                           projectViewModelItemWithGroup:PVMItemTagPackage
                                                                              identifier:self.model.identifier
+                                                                             playground:nil
                                                                                  parent:self
                                                                                   model:self.model]];
 
@@ -231,6 +230,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                           projectViewModelItemWithGroup:PVMItemTagExecutable
                                                                              identifier:self.model.executableName
+                                                                             playground:nil
                                                                                  parent:self
                                                                                   model:self.model]];
 
@@ -248,6 +248,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
             _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                             projectViewModelItemWithGroup:PVMItemTagFileGroup
                                                             identifier:self.model.dataDir
+                                                            playground:nil
                                                             parent:self
                                                             model:self.model]];
 
@@ -273,6 +274,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
           _theChildren = [NSMutableArray arrayWithObject:[HFMProjectViewModelItem
                                                           projectViewModelItemWithGroup:PVMItemTagFileGroup
                                                                              identifier:self.model.sourceDir
+                                                                             playground:nil
                                                                                  parent:self
                                                                                   model:self.model]];
 
@@ -445,8 +447,11 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   }
   NSString *identifier = [[Swift swift_nextName:@"NewSource" usedNames:usedNames]
                           stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
+  ProjectViewModelPlayground *newPlayground = [[ProjectViewModelPlayground alloc] initWithIdentifier:identifier
+                                                                                               model:self.model];
   HFMProjectViewModelItem *newChild = [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
                                                                                   identifier:identifier
+                                                                                  playground:newPlayground
                                                                                       parent:self
                                                                                        model:self.model];
   [self.theChildren insertObject:newChild atIndex:index];
@@ -630,18 +635,27 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
   for (NSString *string in dict) {
 
-    NSString *identifier =  string;
-    enum PVMItemTag tag  = ((NSDictionary *)dict[string]).count == 0 ? PVMItemTagFile : PVMItemTagFolder;
+    NSString *identifier                   =  string;
+    enum PVMItemTag tag                    = ((NSDictionary *)dict[string]).count == 0 ? PVMItemTagFile : PVMItemTagFolder;
+    ProjectViewModelPlayground *playground = nil;
 
     if (processingSourceModules && tag == PVMItemTagFile)
     {
-      if ([[string pathExtension] isEqualToString:haskellFileExtension])
+      if ([[string pathExtension] isEqualToString:haskellFileExtension])    // only the main file has an extension in the model
         tag = PVMItemTagMainFile;
       else
         identifier = [string stringByAppendingPathExtension:haskellFileExtension];
+
+      NSString      *playgroundFilename    = [ProjectViewModelPlayground implicitPlaygroundFilename:identifier];
+      NSFileWrapper *playgroundFileWrapper = self.fileWrapper.fileWrappers[playgroundFilename];
+      if (playgroundFileWrapper)
+        playground = [[ProjectViewModelPlayground alloc] initWithFileWrapper:playgroundFileWrapper model:self.model];
+      else
+        playground = [[ProjectViewModelPlayground alloc] initWithIdentifier:identifier model:self.model];
     }
     [children addObject:[HFMProjectViewModelItem projectViewModelItemWithGroup:tag
                                                                     identifier:identifier
+                                                                    playground:playground
                                                                         parent:self
                                                                          model:self.model]];
 

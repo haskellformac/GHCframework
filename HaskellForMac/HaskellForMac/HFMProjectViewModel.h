@@ -79,12 +79,16 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 #pragma mark Informative class methods
 
 /// The file extension of Cabal files.
-//
+///
 + (NSString *)cabalFileExtension;
 
 /// The file extension of Haskell files.
-//
+///
 + (NSString *)haskellFileExtension;
+
+/// The file extension of Haskell playground files.
+///
++ (NSString *)haskellPlaygroundFileExtension;
 
 
 #pragma mark -

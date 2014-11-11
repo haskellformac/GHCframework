@@ -57,6 +57,13 @@ static NSString *haskellFileExtension = @"hs";
   return haskellFileExtension;
 }
 
+static NSString *haskellPlaygroundFileExtension = @"hsplay";
++ (NSString *)haskellPlaygroundFileExtension
+{
+  return haskellPlaygroundFileExtension;
+}
+
+
 
 #pragma mark -
 #pragma mark Initialisation
@@ -121,18 +128,22 @@ static NSString *haskellFileExtension = @"hs";
     // IMPORTANT: The order here must match that in 'PVMGroupIndex'.
   _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kPackageGroupID
+                                                              playground:nil
                                                                   parent:nil
                                                                    model:self],
                   [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kDataGroupID
+                                                              playground:nil
                                                                   parent:nil
                                                                    model:self],
                   [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kExecutableGroupID
+                                                              playground:nil
                                                                   parent:nil
                                                                    model:self],
                   [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kExtraSourceGroupID
+                                                              playground:nil
                                                                   parent:nil
                                                                    model:self],
                   ];

@@ -41,6 +41,7 @@
                                         <size key="minSize" width="272" height="272"/>
                                         <size key="maxSize" width="463" height="10000000"/>
                                         <connections>
+                                            <binding destination="-2" name="attributedString" keyPath="projectViewModelItem.playground.attributedString" id="e2k-A8-oO1"/>
                                             <outlet property="delegate" destination="-2" id="Ald-1Z-rip"/>
                                         </connections>
                                     </textView>

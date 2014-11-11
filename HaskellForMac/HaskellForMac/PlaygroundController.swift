@@ -25,6 +25,8 @@ class PlaygroundController: NSViewController {
   @IBOutlet private      var codeTextView:     CodeView!
   @IBOutlet private weak var resultTableView:  NSTableView!
 
+  var projectViewModelItem: HFMProjectViewModelItem? = nil //FIXME: STill need to init this!!!!!!!!!!
+
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
   var codeStorageDelegate: CodeStorageDelegate!
@@ -35,7 +37,7 @@ class PlaygroundController: NSViewController {
 
   /// The GHC session associated with this playground.
   ///
-  /// NB: We need to use an implcit optional as we can only initialise after calling `super.init` in `init` (as we need
+  /// NB: We need to use an implicit optional as we can only initialise after calling `super.init` in `init` (as we need
   ///     to capture `self`).
   private let haskellSession: HaskellSession!
 

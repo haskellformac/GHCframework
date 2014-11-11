@@ -13,6 +13,8 @@
 #import "HFMProjectViewModel.h"
 
 
+@class ProjectViewModelPlayground;  // to avoid recursion through the bridging header
+
 /// Tag determining which of several flavours of project view model items we have.
 //
 typedef NS_ENUM(NSUInteger, PVMItemTag) {
@@ -34,6 +36,12 @@ extern NSString *const kExtraSourceGroupID;
 
 
 @interface HFMProjectViewModelItem : NSObject
+
+/// The project view model that this item belongs to.
+///
+/// Weak reference as this item is owned by the model.
+///
+@property (weak, readonly) HFMProjectViewModel *model;
 
 /// Determines which flavour of project view model item this is.
 ///
@@ -71,6 +79,10 @@ extern NSString *const kExtraSourceGroupID;
 @property NSString           *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
 @property NSAttributedString *attributedString;       // 'nil' unless 'fileWrapper' is wrapping a regular file
 
+/// If this item represents a Haskell module, it may have an associated playground.
+///
+@property (readonly) ProjectViewModelPlayground *playground;
+
 
 #pragma mark -
 #pragma mark Initialisation
@@ -79,6 +91,7 @@ extern NSString *const kExtraSourceGroupID;
 //
 + (instancetype)projectViewModelItemWithGroup:(PVMItemTag)tag
                                    identifier:(NSString *)identifier
+                                   playground:(ProjectViewModelPlayground*)playground
                                        parent:(HFMProjectViewModelItem *)parent
                                         model:(HFMProjectViewModel *)model;
 
@@ -86,6 +99,7 @@ extern NSString *const kExtraSourceGroupID;
 //
 - (instancetype)initWithGroup:(PVMItemTag)tag
                    identifier:(NSString *)identifier
+                   playground:(ProjectViewModelPlayground*)playground
                        parent:(HFMProjectViewModelItem *)parent
                         model:(HFMProjectViewModel *)model;
 

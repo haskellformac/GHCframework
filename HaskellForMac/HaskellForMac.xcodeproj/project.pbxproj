@@ -44,6 +44,7 @@
 		E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; };
 		E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */ = {isa = PBXBuildFile; fileRef = E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */; };
+		E75240941A107A6A00EF1023 /* ProjectViewModelPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75240931A107A6A00EF1023 /* ProjectViewModelPlayground.swift */; };
 		E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD13719A07E0300CDC18F /* StringExtensions.swift */; };
 		E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89119CD6C5700369A80 /* NameUtilities.swift */; };
 		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
@@ -270,6 +271,7 @@
 		E74B393819EB6E4200D60BE2 /* ghckit-support.cabal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "ghckit-support.cabal"; path = "GHCKit/ghckit-support/ghckit-support.cabal"; sourceTree = SOURCE_ROOT; };
 		E74B393A19EB6E5100D60BE2 /* PrintInterceptor.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintInterceptor.hs; path = "GHCKit/ghckit-support/PrintInterceptor.hs"; sourceTree = SOURCE_ROOT; };
 		E74B393C19EB6E5C00D60BE2 /* stableChanPtr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stableChanPtr.c; path = "GHCKit/ghckit-support/stableChanPtr.c"; sourceTree = SOURCE_ROOT; };
+		E75240931A107A6A00EF1023 /* ProjectViewModelPlayground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectViewModelPlayground.swift; sourceTree = "<group>"; };
 		E75DD13719A07E0300CDC18F /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		E76CD89119CD6C5700369A80 /* NameUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameUtilities.swift; sourceTree = "<group>"; };
 		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
@@ -673,6 +675,7 @@
 				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
 				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
 				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
+				E75240931A107A6A00EF1023 /* ProjectViewModelPlayground.swift */,
 			);
 			name = Projects;
 			sourceTree = "<group>";
@@ -1188,6 +1191,7 @@
 				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */,
+				E75240941A107A6A00EF1023 /* ProjectViewModelPlayground.swift in Sources */,
 				E72AF5FC19E395F800753077 /* Error.swift in Sources */,
 				E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */,
 				E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */,
