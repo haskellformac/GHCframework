@@ -36,7 +36,7 @@ func replaceStringWithString(inFile: String, string oldString: String, withStrin
 
 // MARK: Main
 
-let location    = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..")
+let location    = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..").stringByStandardizingPath
 let relativeBin = "usr/bin"
 let relativeLib = "usr/lib/ghc-7.8.3"
 let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
