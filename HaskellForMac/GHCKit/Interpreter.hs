@@ -80,7 +80,8 @@ data Result r = Result r
 start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
 start ghcBundlePath diagnosticHandler
   = do
-    { inlet <- newEmptyMVar
+    { putStrLn "Starting interactive session"
+    ; inlet <- newEmptyMVar
     ; forkIO $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet)
     ; return $ Session inlet
     }

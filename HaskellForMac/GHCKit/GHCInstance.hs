@@ -498,6 +498,7 @@ void GHCInstance_initialise(void);
                                  file:(typename NSString *)file
                           importPaths:(typename NSArray/*<NSString>*/ *)importPaths
 {
+  NSLog(@"Loading module for %@", file);
   return loadModuleText(self.interpreterSession, file, importPaths, moduleText);
 }
 
