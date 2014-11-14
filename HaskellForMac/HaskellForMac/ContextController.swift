@@ -138,7 +138,7 @@ final class ContextController : NSObject {
 
               if let playgroundController = PlaygroundController(nibName: kPlayground,
                                                                   bundle: nil,
-                                                    projectViewModelItem: item,
+                                              projectViewModelPlayground: item.playground,
                                                       diagnosticsHandler: processIssue)
               {
                 config            = .HaskellEditor(editorController, playgroundController)

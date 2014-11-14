@@ -25,15 +25,17 @@ class PlaygroundController: NSViewController {
   @IBOutlet private      var codeTextView:     CodeView!
   @IBOutlet private weak var resultTableView:  NSTableView!
 
-  var projectViewModelItem: HFMProjectViewModelItem? = nil //FIXME: STill need to init this!!!!!!!!!!
+  /// The playground model managed by this controller.
+  ///
+  private let projectViewModelPlayground: ProjectViewModelPlayground
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
-  var codeStorageDelegate: CodeStorageDelegate!
+  private var codeStorageDelegate: CodeStorageDelegate!
 
   /// We need to keep the result storage alive as the data source reference from `NSTableView` is weak.
   ///
-  var resultStorage: PlaygroundResultStorage!
+  private var resultStorage: PlaygroundResultStorage!
 
   /// The GHC session associated with this playground.
   ///
@@ -62,7 +64,7 @@ class PlaygroundController: NSViewController {
     return x.size.height
   }()
 
-  /// Bin to collext issues for this playground
+  /// Bin to collect issues for this playground
   ///
   private var issues = IssuesForFile(file: kPlaygroundSource, issues: [:])
 
@@ -80,11 +82,13 @@ class PlaygroundController: NSViewController {
   //MARK: Initialisation and deinitialisation
 
   init?(
-    nibName:              String!,
-    bundle:               NSBundle!,
-    projectViewModelItem: HFMProjectViewModelItem!,
-    diagnosticsHandler:   Issue -> Void)
+    nibName:                    String!,
+    bundle:                     NSBundle!,
+    projectViewModelPlayground: ProjectViewModelPlayground!,
+    diagnosticsHandler:         Issue -> Void)
   {
+    self.projectViewModelPlayground = projectViewModelPlayground
+    
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
 
@@ -94,6 +98,8 @@ class PlaygroundController: NSViewController {
   }
 
   required init?(coder: NSCoder) {
+    // just to keep the compiler happy...
+    self.projectViewModelPlayground = ProjectViewModelPlayground(identifier: "", model: HFMProjectViewModel())!
     haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in })
     super.init(coder: coder)
   }
@@ -155,7 +161,8 @@ class PlaygroundController: NSViewController {
     resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
     resultTableView.setDataSource(resultStorage)
 
-      // Enable highlighting.
+      // Get the initial code view contents and enable highlighting.
+    codeTextView.string = projectViewModelPlayground.string
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
     if let backgroundColour = codeTextView.backgroundColor.shadowWithLevel(0.05) {
       resultTableView.backgroundColor = backgroundColour
@@ -321,6 +328,17 @@ extension PlaygroundController {
     }
   }
 
+}
+
+
+// MARK: -
+// MARK: NSTextDelegate protocol methods (for the code view)
+
+extension PlaygroundController: NSTextDelegate {
+
+  func textDidChange(notification: NSNotification) {
+    projectViewModelPlayground.string = codeTextView.string ?? ""
+  }
 }
 
 

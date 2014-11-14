@@ -51,10 +51,10 @@ class ProjectViewModelPlayground: NSObject {
     }
   }
 
-  var attributeString: NSAttributedString {
-    get { return NSAttributedString(string: string) }
-    set { string = newValue.string }
-  }
+//  var attributeString: NSAttributedString {
+//    get { return NSAttributedString(string: string) }
+//    set { string = newValue.string }
+//  }
 
   /// Compute the implicit playground filename from the view model identifier.
   ///
