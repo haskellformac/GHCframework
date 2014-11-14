@@ -78,7 +78,7 @@ class ProjectViewModelPlayground: NSObject {
   /// Fails if the identifier doesn't refer to a Haskell file.
   ///
   init?(identifier: String, model: HFMProjectViewModel) {
-    self.model       = model
+    self.model          = model
     self.theFileWrapper = NSFileWrapper(regularFileWithContents: NSData())
     super.init()
 
@@ -90,9 +90,27 @@ class ProjectViewModelPlayground: NSObject {
   }
 
   init?(fileWrapper: NSFileWrapper, model: HFMProjectViewModel) {
-    self.model       = model
+    self.model          = model
     self.theFileWrapper = fileWrapper
     super.init()
     if !fileWrapper.regularFile { return nil }
+  }
+
+
+  // MARK: -
+  // MARK: File operations
+
+  /// Rename the associated file wrapper such that it matches the Haskell module with the given name in the directory
+  /// of the given parent directory file wrapper.
+  ///
+  func renameToTrackModule(moduleName: String, parent: NSFileWrapper) {
+    if let filename = ProjectViewModelPlayground.implicitPlaygroundFilename(moduleName) {
+
+        // NB: According to the docs, we should just be able to change the preferred filename, but that has led to
+        //     exceptions in the past; so, we play it safe.
+      parent.removeFileWrapper(theFileWrapper)
+      theFileWrapper.preferredFilename = filename
+      parent.addFileWrapper(theFileWrapper)
+    }
   }
 }

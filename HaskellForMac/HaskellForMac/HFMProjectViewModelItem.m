@@ -531,13 +531,15 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
 
     // NB: If we try to set the `preferredFileName` without removing the file wrapper from its parent first, we trigger
     //     a fast enumeration exception — although the docs suggest that the file wrapper class would handle that
-    //     automatically. Moreover, we disambiguate the name ourselves, because duplicate during adding also lead to
+    //     automatically. Moreover, we disambiguate the name ourselves, because duplicate during adding also leads to
     //     an exception.
   if (self.fileWrapper) {
     [parentFileWrapper removeFileWrapper:self.fileWrapper];
     self.fileWrapper.preferredFilename = uniqueIdentifier;
     [parentFileWrapper addFileWrapper:self.fileWrapper];
   }
+  if (self.playground)
+    [self.playground renameToTrackModule:uniqueIdentifier parent:parentFileWrapper];
 
   self.identifier = uniqueIdentifier;
   return ([newIdentifier isEqualToString:uniqueIdentifier] ? nil : uniqueIdentifier);
