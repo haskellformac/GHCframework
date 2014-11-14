@@ -41,7 +41,6 @@
                                         <size key="minSize" width="272" height="272"/>
                                         <size key="maxSize" width="463" height="10000000"/>
                                         <connections>
-                                            <binding destination="-2" name="attributedString" keyPath="projectViewModelItem.playground.attributedString" id="e2k-A8-oO1"/>
                                             <outlet property="delegate" destination="-2" id="Ald-1Z-rip"/>
                                         </connections>
                                     </textView>
@@ -60,7 +59,7 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                         </scrollView>
-                        <scrollView borderType="none" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
+                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="272.5" y="0.0" width="249.5" height="272"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="DhE-t6-jl6">
@@ -152,7 +151,7 @@
                                 <rect key="frame" x="1" y="119" width="223" height="15"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
-                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="F2w-Q3-P3i">
+                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="F2w-Q3-P3i">
                                 <rect key="frame" x="224" y="17" width="15" height="102"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
