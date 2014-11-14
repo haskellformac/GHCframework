@@ -347,7 +347,7 @@ evalText session source line exprText
     { result <- eval session source line exprText
     ; case result of
         Error                  -> return []
-        Result (Left fptr)     -> putStrLn ("evalText fptr conversion: " ++ show fptr) >> return [NSObject $ castForeignPtr fptr]
+        Result (Left fptr)     -> return [NSObject $ castForeignPtr fptr]
         Result (Right strings) -> mapM stringToNSObject strings
     }
   where
