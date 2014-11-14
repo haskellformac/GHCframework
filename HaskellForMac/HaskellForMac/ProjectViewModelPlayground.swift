@@ -33,21 +33,23 @@ class ProjectViewModelPlayground: NSObject {
   ///
   /// NB: We ensure that this file wrapper always has a preferred filename set.
   ///
-  private var fileWrapper: NSFileWrapper
+  private var theFileWrapper: NSFileWrapper
+
+  var fileWrapper: NSFileWrapper { return theFileWrapper }
 
   /// The view model data of the playground.
   ///
   var string: NSString {
     get {
-      if let data = fileWrapper.regularFileContents {
+      if let data = theFileWrapper.regularFileContents {
         return NSString(data: data, encoding: NSUTF8StringEncoding) ?? ""
       } else { return "" }
     }
 
     set(newString) {
-      let preferredFilename = fileWrapper.preferredFilename ?? ".Unknown.hsplay"
-      fileWrapper = NSFileWrapper(regularFileWithContents: newString.dataUsingEncoding(NSUTF8StringEncoding)!)
-      fileWrapper.preferredFilename = preferredFilename
+      let preferredFilename = theFileWrapper.preferredFilename ?? ".Unknown.hsplay"
+      theFileWrapper = NSFileWrapper(regularFileWithContents: newString.dataUsingEncoding(NSUTF8StringEncoding)!)
+      theFileWrapper.preferredFilename = preferredFilename
     }
   }
 
@@ -74,19 +76,19 @@ class ProjectViewModelPlayground: NSObject {
   ///
   init?(identifier: String, model: HFMProjectViewModel) {
     self.model       = model
-    self.fileWrapper = NSFileWrapper(regularFileWithContents: NSData())
+    self.theFileWrapper = NSFileWrapper(regularFileWithContents: NSData())
     super.init()
 
     if let filename = ProjectViewModelPlayground.implicitPlaygroundFilename(identifier) {
 
-      self.fileWrapper.preferredFilename = filename
+      self.theFileWrapper.preferredFilename = filename
 
     } else { return nil }
   }
 
   init?(fileWrapper: NSFileWrapper, model: HFMProjectViewModel) {
     self.model       = model
-    self.fileWrapper = fileWrapper
+    self.theFileWrapper = fileWrapper
     super.init()
     if !fileWrapper.regularFile { return nil }
   }

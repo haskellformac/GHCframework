@@ -597,9 +597,12 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
     case PVMItemTagPackage:       // package items represent the cabal file
     case PVMItemTagFile:
     case PVMItemTagMainFile: {
+      if (!parentFileWrapper || ![parentFileWrapper isDirectory]) break;
+
+        // Update the file associated with the current item.
       NSFileWrapper *oldFileWrapper     = item.fileWrapper;     // will change on accessing 'getUpdatedFileWrapper'
       NSFileWrapper *updatedFileWrapper = item.getUpdatedFileWrapper;
-      if (updatedFileWrapper && parentFileWrapper && [parentFileWrapper isDirectory]) {
+      if (updatedFileWrapper) {
 
         if (![updatedFileWrapper isRegularFile]) {
           NSLog(@"%s: file item '%@', but directory wrapper '%@'", __func__, item.filePath, parentFileWrapper.filename);
@@ -612,6 +615,19 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
         if (oldFileWrapper) [parentFileWrapper removeFileWrapper:oldFileWrapper];
         [parentFileWrapper addFileWrapper:updatedFileWrapper];
       }
+
+        // Update the playground, if any is associated with the current item.
+      if (item.playground) {
+
+        NSFileWrapper *playgroundFileWrapper    = item.playground.fileWrapper;
+        NSFileWrapper *oldPlaygroundFileWrapper = parentFileWrapper.fileWrappers[playgroundFileWrapper.preferredFilename];
+
+        if (![oldPlaygroundFileWrapper isEqual:playgroundFileWrapper]) {
+          if (oldPlaygroundFileWrapper) [parentFileWrapper removeFileWrapper:oldPlaygroundFileWrapper];
+          [parentFileWrapper addFileWrapper:playgroundFileWrapper];
+        }
+      }
+
       break;
     }
 
