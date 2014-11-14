@@ -9,7 +9,7 @@
 //
 //  The format of Haskell playground files is, for the moment, very simple:
 //
-//  * They are text files, with the first line being "-- Haskell Playground 1.0".
+//  * They are text files, with the first line being "-- Haskell Playground 1.0\n".
 //
 //  * After this, we have the verbatim playground source — i.e., a sequence of GHCi statements and import declarations,
 //    where every line that doesn't have white space in column 1, begins a new statement.
@@ -19,6 +19,13 @@
 
 import Foundation
 
+
+private let playgroundMagic = "-- Haskell Playground 1.0\n"
+
+private func stripPlaygroundMagic(contents: String) -> String {
+  if contents.hasPrefix(playgroundMagic) { return contents.substringFromIndex(playgroundMagic.endIndex) }
+  else { return "" }
+}
 
    // FIXME: subclass of NSObject, so we can '-alloc' it from ObjC, for the time being...
 class ProjectViewModelPlayground: NSObject {
@@ -42,21 +49,17 @@ class ProjectViewModelPlayground: NSObject {
   var string: NSString {
     get {
       if let data = theFileWrapper.regularFileContents {
-        return NSString(data: data, encoding: NSUTF8StringEncoding) ?? ""
+        return stripPlaygroundMagic(NSString(data: data, encoding: NSUTF8StringEncoding) ?? "")
       } else { return "" }
     }
 
     set(newString) {
       let preferredFilename = theFileWrapper.preferredFilename ?? ".Unknown.hsplay"
-      theFileWrapper = NSFileWrapper(regularFileWithContents: newString.dataUsingEncoding(NSUTF8StringEncoding)!)
+      let fileContents      = (playgroundMagic + newString).dataUsingEncoding(NSUTF8StringEncoding)!
+      theFileWrapper = NSFileWrapper(regularFileWithContents: fileContents)
       theFileWrapper.preferredFilename = preferredFilename
     }
   }
-
-//  var attributeString: NSAttributedString {
-//    get { return NSAttributedString(string: string) }
-//    set { string = newValue.string }
-//  }
 
   /// Compute the implicit playground filename from the view model identifier.
   ///
