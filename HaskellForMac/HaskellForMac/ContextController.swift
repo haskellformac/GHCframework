@@ -134,11 +134,11 @@ final class ContextController : NSObject {
                                                         filePath: filePath)
           {
             editor.memory = editorController
-            if fileExtension == HFMProjectViewModel.haskellFileExtension() {
+            if let viewModelPlayground = item.playground {
 
               if let playgroundController = PlaygroundController(nibName: kPlayground,
                                                                   bundle: nil,
-                                              projectViewModelPlayground: item.playground,
+                                              projectViewModelPlayground: viewModelPlayground,
                                                       diagnosticsHandler: processIssue)
               {
                 config            = .HaskellEditor(editorController, playgroundController)
@@ -198,7 +198,7 @@ final class ContextController : NSObject {
               case .None:                return [projectPath]
               case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
             }}()
-          if playground.loadContextModuleIntoPlayground(editor.textView.string,
+          if playground.loadContextModuleIntoPlayground(item.string,
                                                         file: fullFilename,
                                                         importPaths: importPaths) {
             playground.execute()

@@ -84,7 +84,7 @@ class PlaygroundController: NSViewController {
   init?(
     nibName:                    String!,
     bundle:                     NSBundle!,
-    projectViewModelPlayground: ProjectViewModelPlayground!,
+    projectViewModelPlayground: ProjectViewModelPlayground,
     diagnosticsHandler:         Issue -> Void)
   {
     self.projectViewModelPlayground = projectViewModelPlayground
@@ -363,6 +363,17 @@ extension PlaygroundController: NSTextViewDelegate {
   }
 
 }
+
+// MARK: -
+// MARK: First responder
+
+extension PlaygroundController {
+
+  func makeCodeViewFirstResponder () {
+    codeTextView.window?.makeFirstResponder(codeTextView)
+  }
+}
+
 
 // MARK: -
 // MARK: NSTableViewDelegate protocol methods

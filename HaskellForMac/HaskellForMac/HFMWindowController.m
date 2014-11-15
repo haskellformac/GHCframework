@@ -383,13 +383,23 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     // We cannot hide the editor unless the playground is visible.
   if (self.playgroundView.hidden && !self.editorView.hidden)
     [self.splitView animateSetSubview:self.playgroundView toCollapsed:NO completionHandler:^{
+
       if (!self.editorView.hidden)
         [self toggleEditorView:sender];
+
     }];
   else
     [self.splitView animateSetSubview:self.editorView toCollapsed:!self.editorView.hidden completionHandler:^{
+
         // We cannot hide the editor view without hiding the source view.
       if (self.editorView.hidden && !self.outlineScrollView.hidden) [self toggleNavigatorView:sender];
+
+        // Make editor the first responder if presented; otherwise, the playground.
+      if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
+        [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
+      else if (!self.playgroundView.hidden && self.playgroundController)
+        [self.playgroundController makeCodeViewFirstResponder];
+
     }];
 }
 
@@ -400,11 +410,21 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     // We cannot hide the playground unless the editor is visible.
   if (self.editorView.hidden && !self.playgroundView.hidden)
     [self.splitView animateSetSubview:self.editorView toCollapsed:NO completionHandler:^{
+
       if (!self.playgroundView.hidden)
         [self togglePlaygroundView:sender];
+
     }];
   else
-    [self.splitView animateSetSubview:self.playgroundView toCollapsed:!self.playgroundView.hidden completionHandler:nil];
+    [self.splitView animateSetSubview:self.playgroundView toCollapsed:!self.playgroundView.hidden completionHandler:^{
+
+        // Make playground the first responder if presented; otherwise, the editor.
+      if (!self.playgroundView.hidden && self.playgroundController)
+        [self.playgroundController makeCodeViewFirstResponder];
+      else if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
+        [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
+
+    }];
 }
 
 - (IBAction)moveViewLeft:(id)sender
@@ -417,6 +437,12 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:NO completionHandler:nil];  // reveal navigator
   else if (!self.playgroundView.hidden && !self.editorView.hidden && !self.outlineScrollView.hidden)
     [self.splitView animateSetSubview:self.playgroundView toCollapsed:YES completionHandler:nil];    // hide playground
+
+    // Make editor the first responder if presented; otherwise, the playground.
+  if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
+    [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
+  else if (!self.playgroundView.hidden && self.playgroundController)
+    [self.playgroundController makeCodeViewFirstResponder];
 }
 
 - (IBAction)moveViewRight:(id)sender
@@ -429,6 +455,12 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:YES completionHandler:nil]; // hide navigator
   else if (!self.playgroundView.hidden && !self.editorView.hidden)
     [self.splitView animateSetSubview:self.editorView toCollapsed:YES completionHandler:nil];        // hide editor
+
+    // Make playground the first responder if presented; otherwise, the editor.
+  if (!self.playgroundView.hidden && self.playgroundController)
+    [self.playgroundController makeCodeViewFirstResponder];
+  else if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
+    [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
 }
 
 #pragma mark Navigate menu target-action methods (forwarded)
@@ -634,6 +666,9 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     self.editorView.needsLayout  = YES;
     self.editorView.needsDisplay = YES;
     self.noEditorLabel.hidden    = YES;
+
+    if ([self.editorViewController isKindOfClass:[TextEditorController class]])
+      [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
 
   }
 

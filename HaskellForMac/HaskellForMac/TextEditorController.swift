@@ -12,9 +12,9 @@ class TextEditorController: NSViewController {
 
   /// Content views of the header editor
   ///
-  @IBOutlet weak var pathControl: NSPathControl!
-  @IBOutlet weak var scrollView:  NSScrollView!
-  @IBOutlet      var textView:    CodeView!
+  @IBOutlet private weak var pathControl: NSPathControl!
+  @IBOutlet private weak var scrollView:  NSScrollView!
+  @IBOutlet private      var textView:    CodeView!
 
   /// Project view model item representing the edited file.
   ///
@@ -167,5 +167,16 @@ extension TextEditorController {
 
   func jumpToPreviousIssue(sender: AnyObject!) {
     return textView.jumpToPreviousIssue(sender)
+  }
+}
+
+
+// MARK: -
+// MARK: First responder
+
+extension TextEditorController {
+
+  func makeCodeViewFirstResponder() {
+    textView.window?.makeFirstResponder(textView)
   }
 }
