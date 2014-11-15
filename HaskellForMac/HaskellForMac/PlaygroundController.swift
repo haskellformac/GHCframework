@@ -361,13 +361,16 @@ extension PlaygroundController: NSTextViewDelegate {
     }
     return false
   }
-
 }
 
 // MARK: -
 // MARK: First responder
 
 extension PlaygroundController {
+
+  func isCodeViewFirstResponder() -> Bool {
+    return codeTextView.window?.firstResponder === codeTextView
+  }
 
   func makeCodeViewFirstResponder () {
     codeTextView.window?.makeFirstResponder(codeTextView)

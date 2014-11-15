@@ -316,6 +316,13 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Navigate" id="maf-8i-Vsp" userLabel="Navigate">
                         <items>
+                            <menuItem title="Move Focus To Next Area" keyEquivalent="`" id="OWZ-xO-WsE">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="moveFocusToNextArea:" target="-1" id="C6n-aJ-o66"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="XVX-yz-yI4"/>
                             <menuItem title="Jump to Next Issue" keyEquivalent="'" id="HXu-6c-tjt" userLabel="Jump to Next Issue">
                                 <connections>
                                     <action selector="jumpToNextIssue:" target="-1" id="elt-hL-KQx"/>

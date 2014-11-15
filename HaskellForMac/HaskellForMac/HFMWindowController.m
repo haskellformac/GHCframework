@@ -465,6 +465,25 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
 #pragma mark Navigate menu target-action methods (forwarded)
 
+- (void)moveFocusToNextArea:(id)sender
+{
+#pragma unused(sender)
+
+  if ([self.editorViewController isKindOfClass:[TextEditorController class]] &&
+      [((TextEditorController *)self.editorViewController) isCodeViewFirstResponder]) {
+    if (!self.playgroundView.hidden && self.playgroundController)
+      [self.playgroundController makeCodeViewFirstResponder];
+  }
+  else if ([self.playgroundController isCodeViewFirstResponder]) {
+    if (!self.outlineScrollView.hidden)
+      [self.window makeFirstResponder:self.outlineView];
+  }
+  else if ([self.window.firstResponder isEqual:self.outlineView]) {
+    if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
+      [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
+  }
+}
+
 - (void)jumpToNextIssue:(id)sender
 {
   [self.contextController jumpToNextIssue:sender];
@@ -559,6 +578,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   } else if (action == @selector(runProjectInCloud:)) {
 
     return YES; // FIXME: Should only be YES if there are no errors etc and the cloud is not offline etc.
+
+  } else if (action == @selector(moveFocusToNextArea:)) {
+
+      // We need more than one area for moving the focus to make sense.
+    return !self.editorView.hidden && !self.playgroundView.hidden;
 
   } else if (action == @selector(jumpToNextIssue:) || action == @selector(jumpToPreviousIssue:)) {
 
@@ -667,8 +691,8 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     self.editorView.needsDisplay = YES;
     self.noEditorLabel.hidden    = YES;
 
-    if ([self.editorViewController isKindOfClass:[TextEditorController class]])
-      [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
+//    if ([self.editorViewController isKindOfClass:[TextEditorController class]])
+//      [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
 
   }
 

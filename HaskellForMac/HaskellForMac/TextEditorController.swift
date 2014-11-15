@@ -176,6 +176,10 @@ extension TextEditorController {
 
 extension TextEditorController {
 
+  func isCodeViewFirstResponder() -> Bool {
+    return textView.window?.firstResponder === textView
+  }
+
   func makeCodeViewFirstResponder() {
     textView.window?.makeFirstResponder(textView)
   }
