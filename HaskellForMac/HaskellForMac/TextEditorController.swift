@@ -22,7 +22,7 @@ class TextEditorController: NSViewController {
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
-  var codeStorageDelegate: CodeStorageDelegate!
+  private var codeStorageDelegate: CodeStorageDelegate!
 
   /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
   ///

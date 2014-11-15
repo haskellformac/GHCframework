@@ -11,17 +11,6 @@
 #import "HFMWindowController.h"
 
 
-/// Admissible window configuartions
-///
-typedef NS_ENUM(NSInteger, WindowConfiguration) {
-  WindowConfigurationAllVisible,    // All panes are visible (includes playground iff currently edited file is Haskell)
-  WindowConfigurationNoPlayground,  // No playground: only the source view and editor
-  WindowConfigurationOnlyEditor,    // Only editor (neither source view nor playground)
-  WindowConfigurationNoSourceView,  // Editor and playground (no source view)
-  WindowConfigurationOnlyPlayground // Only playground (neither source view nor editor)
-};
-
-
 @interface HFMWindowController ()
 
 // Views in 'ProjectWindow.xib'
@@ -47,10 +36,6 @@ typedef NS_ENUM(NSInteger, WindowConfiguration) {
 @property (nonatomic) NSViewController     *editorViewController;      // maybe nil
 @property (nonatomic) PlaygroundController *playgroundController;      // maybe nil
 
-/// Active window configuration.
-///
-@property (nonatomic) WindowConfiguration windowConfiguration;
-
 @end
 
 
@@ -58,11 +43,6 @@ typedef NS_ENUM(NSInteger, WindowConfiguration) {
 //
 NSString *const kGroupCellID = @"groupCellID";
 NSString *const kCabalCellID = @"cabalCellID";
-
-void windowElementVisibility(WindowConfiguration  windowConfiguration,
-                             BOOL                *isSourceViewVisible,
-                             BOOL                *isEditorViewVisible,
-                             BOOL                *isPlaygroundVisible);
 
 
 @implementation HFMWindowController
@@ -97,10 +77,6 @@ void windowElementVisibility(WindowConfiguration  windowConfiguration,
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
 
-    // Window configuration.
-    // FIXME: This needs to be made persistent.
-  _windowConfiguration = WindowConfigurationAllVisible;
-
     // We have got one cloud controller and one local context contoller for the lifetime of our window.
   self.cloudController   = [[CloudController alloc] initWithProject:self.document
                                               authenticationRequest:^(AuthenticationFlavour auth) {
@@ -113,12 +89,6 @@ void windowElementVisibility(WindowConfiguration  windowConfiguration,
                                                 return (BOOL)([alert runModal] == NSAlertFirstButtonReturn);
                                               }];
   self.contextController = [[ContextController alloc] initWithProject:self.document];
-
-    // FIXME: This is to early. We need to wait until the window elements have restored there state. Do we get a notification for that???
-  if ([self.splitView isSubviewCollapsed:self.outlineScrollView])
-    _windowConfiguration = WindowConfigurationNoSourceView;
-  else
-    _windowConfiguration = WindowConfigurationAllVisible;
 }
 
 
@@ -635,120 +605,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
   return [self.contextController commitEditing];
 }
-
-
-#pragma mark -
-#pragma mark Configuring the window configuration
-
-void windowElementVisibility(WindowConfiguration  windowConfiguration,
-                             BOOL                *isSourceViewVisible,
-                             BOOL                *isEditorViewVisible,
-                             BOOL                *isPlaygroundVisible)
-{
-  switch (windowConfiguration) {
-    case WindowConfigurationAllVisible:
-      *isSourceViewVisible = YES;
-      *isEditorViewVisible = YES;
-      *isPlaygroundVisible = YES;
-      break;
-
-    case WindowConfigurationNoPlayground:
-      *isSourceViewVisible = YES;
-      *isEditorViewVisible = YES;
-      *isPlaygroundVisible = NO;
-      break;
-
-    case WindowConfigurationOnlyEditor:
-      *isSourceViewVisible = NO;
-      *isEditorViewVisible = YES;
-      *isPlaygroundVisible = NO;
-      break;
-
-    case WindowConfigurationNoSourceView:
-      *isSourceViewVisible = NO;
-      *isEditorViewVisible = YES;
-      *isPlaygroundVisible = YES;
-      break;
-
-    case WindowConfigurationOnlyPlayground:
-      *isSourceViewVisible = NO;
-      *isEditorViewVisible = NO;
-      *isPlaygroundVisible = YES;
-      break;
-
-    default:
-      NSLog(@"%s: unknown configuration", __func__);
-      *isSourceViewVisible = YES;
-      *isEditorViewVisible = YES;
-      *isPlaygroundVisible = YES;
-      break;
-  }
-}
-
-- (void)setWindowConfiguration:(WindowConfiguration)newWindowConfiguration
-{
-  BOOL /*isSourceViewVisibleBefore,*/ isSourceViewVisibleAfter;
-  BOOL /*isEditorViewVisibleBefore,*/ isEditorViewVisibleAfter;
-  BOOL /*isPlaygroundVisibleBefore,*/ isPlaygroundVisibleAfter;
-
-//  windowElementVisibility(self.windowConfiguration,
-//                          &isSourceViewVisibleBefore, &isEditorViewVisibleBefore, &isPlaygroundVisibleBefore);
-// We would need the above information for animation, to determine whether there was a change.
-  windowElementVisibility(newWindowConfiguration,
-                          &isSourceViewVisibleAfter, &isEditorViewVisibleAfter, &isPlaygroundVisibleAfter);
-
-
-//    [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
-
-  [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!isSourceViewVisibleAfter completionHandler:nil];
-#if 0
-//  if (self.outlineScrollView.hidden && isSourceViewVisibleAfter) {
-  if (self.outlineScrollView.hidden) {
-    CGRect frame = self.outlineScrollView.frame;
-    [NSAnimationContext currentContext].duration = 0.25;
-//    [self.outlineScrollView setFrameSize:(CGSize){ .width = 1, .height = frame.size.height }];
-//    [[self.splitView animator] setPosition:1 ofDividerAtIndex:0];
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self.outlineScrollView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:50];
-
-    [self.outlineScrollView setHidden:NO];
-
-    NSArray *oldConstraints = self.outlineScrollView.constraints;
-    [self.outlineScrollView removeConstraints:oldConstraints];
-    [self.outlineScrollView addConstraint:constraint];
-    /*
-    dispatch_async(dispatch_get_main_queue(), ^{
-     */
-      [NSAnimationContext beginGrouping];
-    [NSAnimationContext currentContext].completionHandler = ^{ [self.outlineScrollView removeConstraint:constraint]; [self.outlineScrollView addConstraints:oldConstraints];
-      [self.splitView adjustSubviews];
-    };
-    [[constraint animator] setConstant:frame.size.width];
-//      [[self.outlineScrollView animator] setFrameSize:frame.size];
-//      [[self.splitView animator] setPosition:frame.size.width ofDividerAtIndex:0];
-      [NSAnimationContext endGrouping];
-    /*
-    });
-     */
-
-  } else
-    [self.outlineScrollView setHidden:YES];
-//  [self.outlineScrollView setHidden:!isSourceViewVisibleAfter];
-#endif
-
-
-  [self.editorView setHidden:!isEditorViewVisibleAfter];
-  [self.playgroundView setHidden:!isPlaygroundVisibleAfter];
-//  NSLayoutPriority editorHoldingPriority     = [self.splitView holdingPriorityForSubviewAtIndex:1];
-//  NSLayoutPriority playgroundHoldingPriority = [self.splitView holdingPriorityForSubviewAtIndex:2];
-//  [self.splitView setHoldingPriority:NSLayoutPriorityDefaultLow forSubviewAtIndex:1];
-//  [self.splitView setHoldingPriority:NSLayoutPriorityDefaultLow forSubviewAtIndex:2];
-//  [self.splitView adjustSubviews];
-//  [self.splitView setHoldingPriority:editorHoldingPriority forSubviewAtIndex:1];
-//  [self.splitView setHoldingPriority:playgroundHoldingPriority forSubviewAtIndex:2];
-    //    [self.splitView setPosition:0 ofDividerAtIndex:0];
-  _windowConfiguration = newWindowConfiguration;
-}
-
 
 /// Configure a new editor and playground controller.
 ///
