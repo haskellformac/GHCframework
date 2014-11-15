@@ -411,16 +411,6 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
   }
 }
 
-- (NSAttributedString *)attributedString
-{
-  return [[NSAttributedString alloc] initWithString:self.string];
-}
-
-- (void)setAttributedString:(NSAttributedString *)attributedString
-{
-  self.string = [attributedString string];
-}
-
 
 #pragma mark -
 #pragma mark Edits

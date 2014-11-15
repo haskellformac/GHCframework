@@ -74,10 +74,9 @@ extern NSString *const kExtraSourceGroupID;
 /// item becomes dirty (and an updated file wrapper is transparently created, which may be accessed via
 /// 'getUpdatedFileWrapper').
 ///
-/// These properties are KVO compliant. Both properties refer to the same data, but present it in different formats.
+/// The property is KVO compliant.
 ///
-@property NSString           *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
-@property NSAttributedString *attributedString;       // 'nil' unless 'fileWrapper' is wrapping a regular file
+@property NSString *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
 
 /// If this item represents a Haskell module, it may have an associated playground.
 ///

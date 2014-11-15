@@ -43,7 +43,7 @@
                                 <size key="minSize" width="480" height="252"/>
                                 <size key="maxSize" width="480" height="10000000"/>
                                 <connections>
-                                    <binding destination="Csf-UD-gao" name="attributedString" keyPath="selection.attributedString" id="mUb-OL-BPd"/>
+                                    <outlet property="delegate" destination="-2" id="eft-qi-Y23"/>
                                 </connections>
                             </textView>
                         </subviews>

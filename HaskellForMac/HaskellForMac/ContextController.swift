@@ -147,7 +147,7 @@ final class ContextController : NSObject {
                   // Initialise the issues bag.
                 issues = IssuesForFile(file: fileURL.path!, issues: [:])
 
-                  // Register the tokeniser for syntax highlighting.
+                  // Register the tokeniser for syntax highlighting. (The editor depends on the playground for that.)
                 editorController.enableHighlighting(playgroundController.tokeniseHaskell(fileURL.path!))
               } else {
                 config = .TextEditor(editorController)

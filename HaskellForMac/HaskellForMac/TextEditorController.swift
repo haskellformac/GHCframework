@@ -95,9 +95,43 @@ class TextEditorController: NSViewController {
       textStorage.delegate = codeStorageDelegate
     }
 
+      // Get the intial edited code.
+    textView.string = viewModelItem.string;
+
       // Execute the awake action. (We do that last to ensure all connections are already set up.)
     awakeAction()
     awakeAction = {()}
+  }
+}
+
+// MARK: -
+// MARK: Syntax highlighting
+
+extension TextEditorController {
+
+  func enableHighlighting(tokeniser: HighlightingTokeniser) {
+
+      // If the text view isn't initialised yet, defer the set up until we awake from NIB loading.
+    if let textView = self.textView {
+      textView.enableHighlighting(tokeniser)
+    } else {
+      let oldAwakeAction = awakeAction
+      awakeAction = { [unowned self] in
+        oldAwakeAction()
+        self.textView.enableHighlighting(tokeniser)
+      }
+    }
+  }
+}
+
+
+// MARK: -
+// MARK: NSTextDelegate protocol methods
+
+extension TextEditorController: NSTextDelegate {
+
+  func textDidChange(notification: NSNotification) {
+    viewModelItem.string = textView.string ?? ""
   }
 }
 
@@ -133,26 +167,5 @@ extension TextEditorController {
 
   func jumpToPreviousIssue(sender: AnyObject!) {
     return textView.jumpToPreviousIssue(sender)
-  }
-  
-}
-
-// MARK: -
-// MARK: Syntax highlighting
-
-extension TextEditorController {
-
-  func enableHighlighting(tokeniser: HighlightingTokeniser) {
-
-      // If the text view isn't initialised yet, defer the set up until we awake from NIB loading.
-    if let textView = self.textView {
-      textView.enableHighlighting(tokeniser)
-    } else {
-      let oldAwakeAction = awakeAction
-      awakeAction = { [unowned self] in
-        oldAwakeAction()
-        self.textView.enableHighlighting(tokeniser)
-      }
-    }
   }
 }

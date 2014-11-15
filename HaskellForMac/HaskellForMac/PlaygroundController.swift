@@ -94,7 +94,6 @@ class PlaygroundController: NSViewController {
 
       // Launch a GHC session for this playground.
     haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler))
-//    haskellSKInit()
   }
 
   required init?(coder: NSCoder) {
