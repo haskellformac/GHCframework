@@ -103,14 +103,14 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
         // FIXME: this is dodgy and really only works, because we only get here in the case where only one line was
         //        modified; we would probably need split `rescanTokenLines` into the fixing up of the start indicies
         //        and the recomputation of the token array, and then. compute the lineRange in the middle...
-      let rescanLines = clampRange(extendRange(lines, rescanOffsets), 1..<lineMap.lastLine)
+      let rescanLines = clampRange(extendRange(lines, rescanOffsets), 1...lineMap.lastLine)
       lineMap = rescanTokenLines(lineMap, rescanLines, textStorage.string, tokeniser)
 
     }
 
-      // For highlighting, we interested in the new set of lines.
+      // For highlighting, we are interested in the new set of lines.
     let editedLines      = lineMap.lineRange(fromNSRange(editedRange))
-    let rehighlightLines = clampRange(extendRange(editedLines, rescanOffsets), 1..<lineMap.lastLine)
+    let rehighlightLines = clampRange(extendRange(editedLines, rescanOffsets), 1...lineMap.lastLine)
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       layoutManager.highlight(lineMap, lineRange:rehighlightLines)
       if didEditNewline {

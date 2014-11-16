@@ -284,10 +284,14 @@ extension CodeView {
     layoutManager?.enableHighlighting(tokeniser)
   }
 
+  /// Perform syntax highlighting for the given line range.
+  ///
   func highlight(lineRange: Range<Line>) {
     if let lineMap = self.lineMap { layoutManager?.highlight(lineMap, lineRange: lineRange) }
   }
 
+  /// Perform syntax highlighting for the entire text.
+  ///
   func highlight() {
     if let lineMap = self.lineMap { layoutManager?.highlight(lineMap) }
   }
@@ -299,10 +303,14 @@ extension NSLayoutManager {
     (textStorage?.delegate as? CodeStorageDelegate)?.enableHighlighting(tokeniser)
   }
 
+  /// Perform syntax highlighting for all lines in the line map.
+  ///
   func highlight(lineTokenMap: LineTokenMap) {
-    highlight(lineTokenMap, lineRange: 1..<lineTokenMap.lastLine)
+    highlight(lineTokenMap, lineRange: 1...lineTokenMap.lastLine)
   }
 
+  /// Perform syntax highlighting for the given range of lines in the line map.
+  ///
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     if lineRange.isEmpty { return }
 
@@ -311,7 +319,6 @@ extension NSLayoutManager {
 
       let end = lineTokenMap.endOfLine(lineRange.endIndex - 1)
       setTemporaryAttributes([:], forCharacterRange: toNSRange(start..<end))
-
     }
 
       // Apply highlighting to all tokens in the affected range.

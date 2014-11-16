@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 // MARK: -
 // MARK: Line maps
 
@@ -17,12 +18,14 @@ import Foundation
 /// If the array is `lineMap`, then `lineMap[0]` is initialised, but unused; `lineMap[1]` is the info for the 1st line,
 /// `lineMap[2]` for the second, and so on.
 ///
-/// The `indexOfLine(0)` is the `endIndex` of the associated string.
+/// The `startOfLine(0)` is the `endIndex` of the associated string.
 ///
 public struct StringLineMap<LineInfo> {
   private typealias MapElement = (index: String.UTF16View.Index, info: [LineInfo])
   private var map: [MapElement]
 
+  /// The last line that has got any characters.
+  ///
   public var lastLine: Line {
     get {
       return map.count <= 1 ? 0 : UInt(map.count - 1)
