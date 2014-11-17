@@ -445,6 +445,7 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
                                                                                               parent:self
                                                                                                model:self.model];
   [self.theChildren insertObject:newChild atIndex:index];
+  newChild.string = @"";      // This marks the items as dirty.
   return YES;
 }
 
