@@ -36,6 +36,10 @@
 @property (nonatomic) NSViewController     *editorViewController;      // maybe nil
 @property (nonatomic) PlaygroundController *playgroundController;      // maybe nil
 
+// If we are currently editing the name of an item in the outline view, this property will refer to that item.
+//
+@property (weak, nonatomic) HFMProjectViewModelItem *editedItem;       // maybe nil
+
 @end
 
 
@@ -298,9 +302,10 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   }
 }
 
-- (void)fileEdit:(HFMProjectViewModelItem*)newItem
+- (void)fileEdit:(HFMProjectViewModelItem*)editedItem
 {
-  [self.outlineView editColumn:0 row:[self.outlineView rowForItem:newItem] withEvent:nil select:YES];
+  self.editedItem = editedItem;
+  [self.outlineView editColumn:0 row:[self.outlineView rowForItem:editedItem] withEvent:nil select:YES];
 }
 
 - (IBAction)rename:(NSMenuItem *)sender {
@@ -632,9 +637,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
   NSText                  *text      = notification.userInfo[@"NSFieldEditor"];
   NSTextField             *textField = notification.object;
-  HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:[self.outlineView selectedRow]];
+  HFMProjectViewModelItem *item      = self.editedItem;
   NSString                *oldName   = item.identifier;
   NSString                *newName   = text.string;
+
+    // If the edited item disappeared, ignore this notification.
+  if (!item) return;
+  self.editedItem = nil;
 
     // Add a Haskell file extension to file names if not present yet.
   if ((item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)

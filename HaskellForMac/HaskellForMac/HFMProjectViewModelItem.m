@@ -439,11 +439,11 @@ NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
                           stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
   ProjectViewModelPlayground *newPlayground = [[ProjectViewModelPlayground alloc] initWithIdentifier:identifier
                                                                                                model:self.model];
-  HFMProjectViewModelItem *newChild = [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
-                                                                                  identifier:identifier
-                                                                                  playground:newPlayground
-                                                                                      parent:self
-                                                                                       model:self.model];
+  HFMProjectViewModelItem    *newChild      = [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
+                                                                                          identifier:identifier
+                                                                                          playground:newPlayground
+                                                                                              parent:self
+                                                                                               model:self.model];
   [self.theChildren insertObject:newChild atIndex:index];
   return YES;
 }
