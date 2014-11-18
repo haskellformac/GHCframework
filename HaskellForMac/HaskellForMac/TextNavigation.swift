@@ -64,7 +64,26 @@ class CodeView: NSTextView {
 
 
 // MARK: -
-// Mark: menu actions
+// MARK: Command processing
+
+extension CodeView: NSTextInputClient {
+
+  // We pick out the interesting commands and forward everything else to the `NSTextView` superclass.
+  override func doCommandBySelector(selector: Selector) {
+    if (selector == "insertTab:") {
+
+      var lineStart: Int = 0
+      (string! as NSString).getLineStart(&lineStart, end: nil, contentsEnd: nil, forRange: selectedRange())
+      let spacesCount = indentWidth - (selectedRange().location - lineStart) % indentWidth
+      let spaces      = String(count: spacesCount, repeatedValue: Character(" "))
+      insertText(spaces)
+
+    } else { super.doCommandBySelector(selector) }
+  }
+}
+
+// MARK: -
+// MARK: menu actions
 
 extension CodeView: NSUserInterfaceValidations {
 
