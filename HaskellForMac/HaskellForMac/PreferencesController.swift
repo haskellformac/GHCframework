@@ -25,6 +25,26 @@ class PreferencesController: NSWindowController {
     return "Preferences"
   }
 
+  // Set the defaults before the nib is loaded.
+  //
+  override class func initialize() {
+    let defaultValues = [ kPreferenceIndentationWidth:   2
+                        , kPreferenceExternalTextEditor: ""    // use the default application by file extension
+                        ]
+    NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
+    NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
+  }
+
+  // Reopen the preferences window when the app's persistent state is restored.
+  //
+  class func restoreWindowWithIdentifier(identifier: String,
+    state: NSCoder,
+    completionHandler: (NSWindow, NSError!) -> Void) -> Bool
+  {
+    completionHandler(((NSApp as NSApplication).delegate as AppDelegate).preferencesController.window!, nil)
+    return true
+  }
+
   override func windowDidLoad() {
     super.windowDidLoad()
 
@@ -33,19 +53,9 @@ class PreferencesController: NSWindowController {
     window?.identifier              = "Preferences"
     window?.restorationClass        = PreferencesController.self
 
-    toolbar.delegate = self
-    toolbar.selectedItemIdentifier = kGeneralPreferences
-}
-
-
-  // Reopen the preferences window when the app's persistent state is restored.
-  //
-  class func restoreWindowWithIdentifier(identifier: String,
-                                         state: NSCoder,
-                                         completionHandler: (NSWindow, NSError!) -> Void) -> Bool
-  {
-    completionHandler(((NSApp as NSApplication).delegate as AppDelegate).preferencesController.window!, nil)
-    return true
+    toolbar.delegate               = self
+    toolbar.selectedItemIdentifier = kGeneralPreferences   // FIXME: this should come from autosave, but it doesn't...
+    window?.title                  = "General";            //        this, too, of course
   }
 
   // MARK: -
@@ -82,8 +92,11 @@ extension PreferencesController: NSToolbarDelegate {
 
 extension PreferencesController {
 
-  @IBAction func selectPreferenceTab(sender: NSToolbarItem) {
-    // nothing to be done (as we use bindings, but the toolbar item seems to need an action (and associated validation)
+  @IBAction func selectPreferenceTab(item: NSToolbarItem) {
+
+    // The change propagates automatically to the tab view by way of a binding. NB: the toolbar item seems to need this
+    // action (and associated validation), even if it is empty.
+    window?.title = item.label
   }
 
   override func validateToolbarItem(theItem: NSToolbarItem) -> Bool {

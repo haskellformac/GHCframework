@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target">
@@ -47,16 +47,59 @@
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z3P-yb-cgA">
-                                            <rect key="frame" x="58" y="162" width="128" height="17"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iqS-5b-LQE">
+                                            <rect key="frame" x="104" y="230" width="115" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Indentation width:" id="rRb-jA-VtI">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="joZ-Xr-FgU">
+                                            <rect key="frame" x="264" y="225" width="19" height="27"/>
+                                            <stepperCell key="cell" continuous="YES" alignment="left" minValue="1" maxValue="100" doubleValue="1" id="8Bl-zu-ves"/>
+                                            <connections>
+                                                <binding destination="evc-ih-bm0" name="value" keyPath="values.IndentationWidth" id="Ehl-rz-IJM"/>
+                                            </connections>
+                                        </stepper>
+                                        <textField toolTip="The number of spaces to use to indent blocks of code." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OgR-rF-frA">
+                                            <rect key="frame" x="225" y="228" width="36" height="22"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="36" id="sBH-Dc-Jnd"/>
+                                            </constraints>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="right" placeholderString="2" drawsBackground="YES" id="e2F-sE-6VX">
+                                                <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="QFh-Jo-cmy">
+                                                    <real key="minimum" value="1"/>
+                                                </numberFormatter>
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <binding destination="evc-ih-bm0" name="value" keyPath="values.IndentationWidth" id="JwG-Wb-hmg"/>
+                                            </connections>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="plj-hl-CAJ">
+                                            <rect key="frame" x="286" y="230" width="48" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="spaces" id="noJ-lO-WTr">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField toolTip="Application to use if you open a file with ⌘E in another editor" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Z3P-yb-cgA">
+                                            <rect key="frame" x="93" y="200" width="126" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="External text editor:" id="H9a-oX-t11">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField identifier="External Text Editor" toolTip="Determines the application that is used when a source file is opened in an external editor" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m71-aK-kTK">
-                                            <rect key="frame" x="192" y="159" width="160" height="22"/>
+                                        <textField identifier="External Text Editor" toolTip="Application to use if you open a file with ⌘E in another editor" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m71-aK-kTK">
+                                            <rect key="frame" x="225" y="198" width="160" height="22"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="160" id="CDI-z0-tb8"/>
+                                            </constraints>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="ExternalTextEditor" placeholderString="Your favourite text editor" drawsBackground="YES" id="hxZ-Ff-yop">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -67,7 +110,25 @@
                                             </connections>
                                         </textField>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Z3P-yb-cgA" firstAttribute="baseline" secondItem="m71-aK-kTK" secondAttribute="baseline" id="52d-6O-37y"/>
+                                        <constraint firstItem="OgR-rF-frA" firstAttribute="leading" secondItem="iqS-5b-LQE" secondAttribute="trailing" constant="8" id="5fw-cH-WGy"/>
+                                        <constraint firstItem="iqS-5b-LQE" firstAttribute="baseline" secondItem="plj-hl-CAJ" secondAttribute="baseline" id="CdU-7m-OFn"/>
+                                        <constraint firstItem="m71-aK-kTK" firstAttribute="leading" secondItem="Z3P-yb-cgA" secondAttribute="trailing" constant="8" id="PH5-t6-3Fr"/>
+                                        <constraint firstItem="iqS-5b-LQE" firstAttribute="trailing" secondItem="Z3P-yb-cgA" secondAttribute="trailing" id="Tob-hW-u87"/>
+                                        <constraint firstItem="plj-hl-CAJ" firstAttribute="leading" secondItem="joZ-Xr-FgU" secondAttribute="trailing" constant="8" id="UZG-Pk-x6c"/>
+                                        <constraint firstItem="iqS-5b-LQE" firstAttribute="top" secondItem="VOv-xz-TEb" secondAttribute="top" constant="23" id="XbZ-SM-AOK"/>
+                                        <constraint firstItem="joZ-Xr-FgU" firstAttribute="leading" secondItem="OgR-rF-frA" secondAttribute="trailing" constant="6" id="ZTy-OQ-GRE"/>
+                                        <constraint firstItem="OgR-rF-frA" firstAttribute="centerY" secondItem="joZ-Xr-FgU" secondAttribute="centerY" id="gmY-KI-3Wj"/>
+                                        <constraint firstItem="iqS-5b-LQE" firstAttribute="baseline" secondItem="OgR-rF-frA" secondAttribute="baseline" id="jIv-yn-Ybv"/>
+                                        <constraint firstItem="Z3P-yb-cgA" firstAttribute="leading" secondItem="VOv-xz-TEb" secondAttribute="leading" constant="95" id="qyh-6w-Jdf"/>
+                                        <constraint firstItem="Z3P-yb-cgA" firstAttribute="top" secondItem="iqS-5b-LQE" secondAttribute="bottom" constant="13" id="zIY-Lf-N0o"/>
+                                        <constraint firstAttribute="trailing" secondItem="m71-aK-kTK" secondAttribute="trailing" constant="95" id="zXA-Ku-Fd5"/>
+                                    </constraints>
                                 </view>
+                                <connections>
+                                    <outlet property="initialFirstResponder" destination="m71-aK-kTK" id="hTg-q3-rwz"/>
+                                </connections>
                             </tabViewItem>
                             <tabViewItem label="Account" identifier="AccountPreferences" id="y0A-2s-KgI">
                                 <view key="view" id="Hu0-ba-Uys">

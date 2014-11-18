@@ -8,9 +8,6 @@
 
 import Foundation
 
-@objc class Swift {
-}
-
 /// Given a base name and an array of already used names, return a name built from the base name and a numeric suffix,
 /// which hasn't been used yet.
 ///

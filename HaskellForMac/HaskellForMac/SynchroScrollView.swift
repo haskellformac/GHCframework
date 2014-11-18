@@ -14,7 +14,7 @@ class SynchroScrollView: NSScrollView {
   var synchronisedScrollView: NSScrollView?
 
   /// Associate a second scroll view with the current one, such that changes in the vertical position of the associated
-  /// scroll view are reflected int he current one.
+  /// scroll view are reflected in the current one.
   //
   func setSynchronisedScrollView(scrollView: NSScrollView) {
 
@@ -30,9 +30,9 @@ class SynchroScrollView: NSScrollView {
 
       // Register for bounds changed notifications on the synchronised content view.
     NSNotificationCenter.defaultCenter().addObserver(self,
-      selector: "synchronisedViewContentBoundsDidChange:",
-      name: NSViewBoundsDidChangeNotification,
-      object: synchronisedContentView)
+                                                     selector: "synchronisedViewContentBoundsDidChange:",
+                                                     name: NSViewBoundsDidChangeNotification,
+                                                     object: synchronisedContentView)
 
   }
 
@@ -44,8 +44,8 @@ class SynchroScrollView: NSScrollView {
         // Remove the notification registration
       let synchronisedContentView = synchronisedScrollView?.contentView
       NSNotificationCenter.defaultCenter().removeObserver(self,
-        name: NSViewBoundsDidChangeNotification,
-        object: synchronisedContentView)
+                                                          name: NSViewBoundsDidChangeNotification,
+                                                          object: synchronisedContentView)
 
         // Drop the association
       synchronisedScrollView = nil

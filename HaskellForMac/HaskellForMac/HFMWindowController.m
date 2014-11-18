@@ -245,7 +245,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
   HFMProject              *project     = (HFMProject*)self.document;
 
-  NSString *externalTextEditor = [[NSUserDefaults standardUserDefaults] stringForKey:@"ExternalTextEditor"];
+  NSString *externalTextEditor = [[NSUserDefaults standardUserDefaults] stringForKey:Swift.swift_kPreferenceExternalTextEditor];
   if (!externalTextEditor || externalTextEditor.length == 0)
     [[NSWorkspace sharedWorkspace] openURL:[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]];
   else

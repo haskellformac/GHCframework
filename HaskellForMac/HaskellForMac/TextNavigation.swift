@@ -28,6 +28,38 @@ class CodeView: NSTextView {
       return enclosingScrollView?.verticalRulerView as? TextGutterView
     }
   }
+
+  /// Number of spaces to use for block indentation — determined by application defaults.
+  ///
+  var indentWidth: Int
+
+  override init() {
+    indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
+    super.init()
+
+    NSNotificationCenter.defaultCenter().addObserver(self,
+                                                     selector: "userDefaultsDidChange:",
+                                                     name: NSUserDefaultsDidChangeNotification,
+                                                     object: NSUserDefaults.standardUserDefaults())
+  }
+
+  required init?(coder: NSCoder) {
+    indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
+    super.init(coder: coder)
+
+    NSNotificationCenter.defaultCenter().addObserver(self,
+                                                     selector: "userDefaultsDidChange:",
+                                                     name: NSUserDefaultsDidChangeNotification,
+                                                     object: NSUserDefaults.standardUserDefaults())
+  }
+
+  deinit {
+    NSNotificationCenter.defaultCenter().removeObserver(self)
+  }
+
+  func userDefaultsDidChange(notification: NSNotification) {
+    indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
+  }
 }
 
 

@@ -104,6 +104,7 @@ class PlaygroundController: NSViewController {
   }
 
   deinit {
+    resultScrollView.stopSynchronising()
     codeScrollView.stopSynchronising()
   }
 
