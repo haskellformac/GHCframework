@@ -25,6 +25,8 @@ let stringAttributes          = [NSForegroundColorAttributeName: NSColor(calibra
 let numberAttributes          = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
 let keywordAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
 let commentAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed: 195/255, green: 116/255, blue:  28/255, alpha: 1)]
+let tabHighlightingAttributes = [ NSBackgroundColorAttributeName: NSColor(calibratedRed: 255/255, green: 150/255, blue:  0/255, alpha: 0.5)
+                                , NSToolTipAttributeName        : "Tab characters are problematic in Haskell code"]
 
 /// Theme = dictionary to look up attributes for a given token type.
 ///
@@ -314,11 +316,26 @@ extension NSLayoutManager {
   func highlight(lineTokenMap: LineTokenMap, lineRange: Range<Line>) {
     if lineRange.isEmpty { return }
 
-      // Remove any existing temporary attributes in the entire range.
+      // Remove any existing temporary attributes in the entire range and highlight tabs.
     if let start = lineTokenMap.startOfLine(lineRange.startIndex) {
 
       let end = lineTokenMap.endOfLine(lineRange.endIndex - 1)
       setTemporaryAttributes([:], forCharacterRange: toNSRange(start..<end))
+
+        // Mark all tab characters.
+      let tabCharacterSet: NSCharacterSet = NSCharacterSet(charactersInString: "\t")
+      let string:          NSString       = textStorage!.string
+      var charIndex:       Int            = start
+      while (charIndex != NSNotFound && charIndex < end) {
+        let searchRange = NSRange(location: charIndex, length: end - charIndex)
+        let foundRange  = string.rangeOfCharacterFromSet(tabCharacterSet, options: nil, range: searchRange)
+        if foundRange.location != NSNotFound {
+
+          addTemporaryAttributes(tabHighlightingAttributes, forCharacterRange: foundRange)
+          charIndex = NSMaxRange(foundRange)
+
+        } else { charIndex = NSNotFound }
+      }
     }
 
       // Apply highlighting to all tokens in the affected range.
