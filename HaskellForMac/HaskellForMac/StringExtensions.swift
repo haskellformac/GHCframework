@@ -88,9 +88,9 @@ public struct StringLineMap<LineInfo> {
     }
   }
 
-  // Determine the line on which a character is by binary search.
-  //
-  private func line(charIndex: Int) -> Line {
+  /// Determine the line on which a character is according to the line map by binary search.
+  ///
+  public func line(charIndex: Int) -> Line {
     var lineRange = 0...lastLine
     while lineRange.endIndex - lineRange.startIndex > 1 {
       let middle = Line(lineRange.startIndex + (lineRange.endIndex - lineRange.startIndex) / 2)
@@ -133,16 +133,33 @@ public struct StringLineMap<LineInfo> {
 
 
 // MARK: -
-// MARK: Extensions to 'NSString' (i.e., the underlying text storage)
+// MARK: Extensions to 'NSString'
 
-// FIXME: this version can go once we have rewritten TextGutter to use Swift strings; arggghhh...and we need it in
-//        TextEditorController in `textStorageDidProcessEditing()`
 extension NSString {
-  func lineNumberAtLocation(loc: Int) -> UInt {
-    switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {
-    case 0: return 1
-    case let start: return lineNumberAtLocation(start - 1) + 1
+
+  /// Compute the line number of a character location, using a line map if available.
+  ///
+  func lineNumber<LineInfo>(lineMap: StringLineMap<LineInfo>?, atLocation loc: Int) -> UInt {
+    if let lineMap = lineMap { return lineMap.line(loc) }
+    else {
+      switch self.lineRangeForRange(NSRange(location: loc, length: 0)).location {
+      case 0:         return 1
+      case let start: return lineNumber(lineMap, atLocation: start - 1) + 1
+      }
     }
+  }
+
+  /// Determines the indentation (initial span of whitespace characters) of the given line.
+  ///
+  func indentOf<LineInfo>(lineMap: StringLineMap<LineInfo>, line: Line) -> Int {
+    if let startIndex = lineMap.startOfLine(line) {
+
+      let whitespace = NSCharacterSet.whitespaceCharacterSet()
+      var i          = startIndex
+      while (i < self.length && whitespace.characterIsMember(self.characterAtIndex(i))) { i++ }
+      return i - startIndex
+
+    } else { return 0 }
   }
 }
 
@@ -150,16 +167,10 @@ extension NSString {
 // MARK: Extensions to Swift Strings
 
 extension String {
-  func lineNumberAtLocation(loc: String.Index) -> UInt {
-    let startOfLine = self.lineRangeForRange(loc...loc).startIndex
-    if startOfLine == self.startIndex {
-      return 1
-    } else {
-      return lineNumberAtLocation(advance(startOfLine, -1)) + 1
-    }
-  }
 
-  func replicate(n: Int) -> String {
-    return (n <= 0) ? "" : self + self.replicate(n - 1)
+  /// Compute the line number of a character location, using a line map if available.
+  ///
+  func lineNumber<LineInfo>(lineMap: StringLineMap<LineInfo>?, atLocation loc: String.Index) -> UInt {
+    return lineNumber(lineMap, atLocation: self[self.startIndex..<loc].utf16.endIndex)
   }
 }

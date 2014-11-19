@@ -233,6 +233,7 @@ class PlaygroundController: NSViewController {
     let layoutManager = codeTextView.layoutManager
     let textContainer = codeTextView.textContainer
     let string        = codeTextView.textStorage!.string
+    let lineMap       = codeTextView.lineMap
     let gutter        = codeScrollView.verticalRulerView as TextGutterView
 
       // Discard all old issues.
@@ -256,9 +257,9 @@ class PlaygroundController: NSViewController {
       let span         = string.startIndex..<initialCharIndex
       let firstIndex   = string[span].utf16Count
       let indexLength  = string[initialCharIndex..<charIndex].utf16Count
-      let glyphRange = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
-                                                                  actualCharacterRange: nil)
-      let rect       = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
+      let glyphRange   = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
+                                                                    actualCharacterRange: nil)
+      let rect         = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
       return (charIndex, command, rect.size.height)
     }
 
@@ -267,7 +268,7 @@ class PlaygroundController: NSViewController {
     var commandIndex                          = 0
     while string.endIndex > firstIndexOfNextCommand {
 
-      let lineNumber                   = string.lineNumberAtLocation(firstIndexOfNextCommand)
+      let lineNumber                   = string.lineNumber(lineMap, atLocation: firstIndexOfNextCommand)
       let (nextIndex, command, height) = extractCommandAtCharIndex(firstIndexOfNextCommand)
       firstIndexOfNextCommand          = nextIndex
 

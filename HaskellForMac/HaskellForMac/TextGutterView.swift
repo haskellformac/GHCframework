@@ -226,7 +226,7 @@ class TextGutterView: NSRulerView {
   }
 
   override func drawHashMarksAndLabelsInRect(rect: NSRect) {
-    let textView      = self.clientView as NSTextView
+    let textView      = self.clientView as CodeView
     let layoutManager = textView.layoutManager!
     let textContainer = textView.textContainer
     let string        = textView.textStorage!.string
@@ -238,7 +238,7 @@ class TextGutterView: NSRulerView {
     let charRange     = layoutManager.characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
 
       // Line number of first visible line
-    let firstLineNumber = string.lineNumberAtLocation(charRange.location)
+    let firstLineNumber = string.lineNumber(textView.lineMap, atLocation: charRange.location)
 
       // Remove the diagnostics popover if it is visible.
     if popover != nil && popover!.shown {
@@ -352,7 +352,7 @@ class TextGutterView: NSRulerView {
 
 extension TextGutterView {
   override func mouseDown(event: NSEvent) {
-    let textView      = self.clientView as NSTextView
+    let textView      = self.clientView as CodeView
     let layoutManager = textView.layoutManager
     let textContainer = textView.textContainer!
     let string        = textView.textStorage!.string
@@ -364,7 +364,7 @@ extension TextGutterView {
       let textLoc    = NSPoint(x: 0, y: visibleRect.origin.y + rulerLoc.y)
       let glyphIndex = layoutManager!.glyphIndexForPoint(textLoc, inTextContainer: textContainer)
       let charIndex  = layoutManager!.characterIndexForGlyphAtIndex(glyphIndex)
-      let lineNumber = string.lineNumberAtLocation(charIndex)
+      let lineNumber = string.lineNumber(textView.lineMap, atLocation: charIndex)
 
       jumpToIssueAtLine(lineNumber)
     }
