@@ -20,7 +20,7 @@
                             <menuItem title="About Haskell for Mac" id="58">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="orderFrontStandardAboutPanel:" target="-2" id="142"/>
+                                    <action selector="orderFrontHfMAboutPanel:" target="-1" id="v9b-KU-BH1"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="236">

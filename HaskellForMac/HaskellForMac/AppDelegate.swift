@@ -27,4 +27,8 @@ extension AppDelegate: NSApplicationDelegate {
     // initialisation code
   }
 
+  func orderFrontHfMAboutPanel(sender: AnyObject) {
+    NSApp.orderFrontStandardAboutPanelWithOptions(["ApplicationName": "Haskell for Mac"])
+  }
+
 }
