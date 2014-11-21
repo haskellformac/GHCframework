@@ -74,8 +74,9 @@ extension CodeView: NSTextInputClient {
     if (selector == "insertTab:") {
 
       let here = selectedRange().location
-      if let lineStart = string?.lineNumber(lineMap, atLocation: here) {
-        insertSpaces(indentWidth - (here - Int(lineStart)) % indentWidth)
+      if let lineNumber = string?.lineNumber(lineMap, atLocation: here) {
+        let lineStart = string!.indentOf(lineMap!, line: lineNumber)
+        insertSpaces(indentWidth - ((here - 1) - lineStart) % indentWidth)    // 'here - 1' as column 1 is leftmost
       }
 
     } else if (selector == "insertNewline:") {
