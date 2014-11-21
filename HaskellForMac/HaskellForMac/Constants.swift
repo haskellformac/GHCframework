@@ -13,8 +13,10 @@ import Foundation
 
 let kPreferenceIndentationWidth   = "IndentationWidth"
 let kPreferenceExternalTextEditor = "ExternalTextEditor"
+let kPreferenceEnableCloud        = "EnableCloud"
 
 extension Swift {
   class var swift_kPreferenceIndentationWidth:   String { get { return kPreferenceIndentationWidth } }
   class var swift_kPreferenceExternalTextEditor: String { get { return kPreferenceExternalTextEditor } }
+  class var swift_kPreferenceEnableCloud:        String { get { return kPreferenceEnableCloud } }
 }

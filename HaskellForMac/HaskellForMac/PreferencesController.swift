@@ -17,7 +17,8 @@ let kAccountPreferences     = "AccountPreferences"
 
 class PreferencesController: NSWindowController {
 
-  @IBOutlet weak var toolbar: NSToolbar!
+  @IBOutlet weak var cloudMenu: NSMenuItem!
+  @IBOutlet weak var toolbar:   NSToolbar!
 
   // The nib containing the associated window.
   //
@@ -30,6 +31,7 @@ class PreferencesController: NSWindowController {
   override class func initialize() {
     let defaultValues = [ kPreferenceIndentationWidth:   2
                         , kPreferenceExternalTextEditor: ""    // use the default application by file extension
+                        , kPreferenceEnableCloud: false
                         ]
     NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
     NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
@@ -56,6 +58,8 @@ class PreferencesController: NSWindowController {
     toolbar.delegate               = self
     toolbar.selectedItemIdentifier = kGeneralPreferences   // FIXME: this should come from autosave, but it doesn't...
     window?.title                  = "General";            //        this, too, of course
+
+    cloudMenu.hidden               = !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud)
   }
 
   // MARK: -
