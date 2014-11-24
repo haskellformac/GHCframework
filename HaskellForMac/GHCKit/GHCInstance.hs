@@ -13,6 +13,7 @@ module GHCInstance () where
 
   -- standard libraries
 import Control.Applicative
+import Data.List
 import Data.Time
 import Data.Typeable
 import Data.Word
@@ -342,9 +343,16 @@ mockListOfNSObjectToNSArray = error "mockListOfNSObjectToNSArray: shouldn't be e
 objc_marshaller 'listOfNSObjectToNSArray 'mockListOfNSObjectToNSArray
 
 evalText :: Session -> String -> Int -> String -> IO [NSObject]
-evalText session source line exprText
+evalText session source line stmtText
+  | "import " `isPrefixOf` stmtText
   = do
-    { result <- eval session source line exprText
+    { executeImport session source line stmtText
+        -- we are ignoring the result value for now
+    ; return []
+    }
+  | otherwise
+  = do
+    { result <- eval session source line stmtText
     ; case result of
         Error                  -> return []
         Result (Left fptr)     -> return [NSObject $ castForeignPtr fptr]

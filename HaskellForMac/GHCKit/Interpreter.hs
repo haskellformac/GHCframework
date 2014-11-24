@@ -9,7 +9,7 @@
 
 module Interpreter (
   Session, Result(..), EvalResult,
-  start, stop, tokenise, eval, inferType, load 
+  start, stop, tokenise, eval, inferType, executeImport, load 
 ) where
 
   -- standard libraries
@@ -257,6 +257,27 @@ eval (Session inlet) source line stmt
 -- FIXME: improve error reporting
 inferType :: Session -> String -> Int -> String -> IO (Result String)
 inferType = error "inferType is not implemented"
+
+-- Execute an import statement in the given interpreter session.
+--
+-- GHC errors are reported asynchronously through the diagnostics handler.
+--
+executeImport :: Session -> String -> Int -> String -> IO (Result ())
+executeImport (Session inlet) _source _line stmt
+  = do
+    { resultMV <- newEmptyMVar
+    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
+        { iis <- GHC.getContext
+        ; importDecl <- GHC.parseImportDecl stmt
+        ; GHC.setContext (GHC.IIDecl importDecl : iis)
+
+            -- Communicate the result back to the main thread
+        ; GHC.liftIO $ 
+            putMVar resultMV (Result ())
+        }
+    ; takeMVar resultMV
+    }
 
 -- Load a module into in the given interpreter session.
 --
