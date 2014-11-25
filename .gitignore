@@ -44,3 +44,7 @@ HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Nod
 HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Texture_objc.h
 
 HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Texture_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Path_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Path_objc.m
