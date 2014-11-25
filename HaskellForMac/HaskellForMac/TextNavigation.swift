@@ -81,10 +81,11 @@ extension CodeView: NSTextInputClient {
 
     } else if (selector == "insertNewline:") {
 
-      super.doCommandBySelector(selector)
-      if let currentLine = string?.lineNumber(lineMap, atLocation: selectedRange().location) {
-        let indent = currentLine == 1 ? 0 : string!.indentOf(lineMap!, line: currentLine - 1)
-        insertSpaces(indent)
+      let location = selectedRange().location     // location on key press
+      super.doCommandBySelector(selector)         // process the newline
+      if let currentLine = string?.lineNumber(lineMap, atLocation: location) {
+        let indent = string!.indentOf(lineMap!, line: currentLine)
+        insertSpaces(indent)                      // indent according to the line we came from
       }
 
     } else { super.doCommandBySelector(selector) }
