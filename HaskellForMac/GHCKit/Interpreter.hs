@@ -37,6 +37,7 @@ import qualified GHC          as GHC
 import qualified GhcMonad     as GHC
 import qualified Lexer        as GHC
 import qualified MonadUtils   as GHC
+import qualified Name         as GHC
 import qualified StringBuffer as GHC
 import qualified PprTyThing   as GHC
 import qualified Type         as GHC
@@ -192,26 +193,26 @@ eval (Session inlet) source line stmt
                                 , GHC.ideclHiding    = Nothing
                                 }
         ; GHC.setContext (GHC.IIDecl spriteKitImport : iis)
+        ; nodeNames <- GHC.parseName "Graphics.SpriteKit.Node"
         ; GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
 
            -- try determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
-            Right ty -> do
-              { dflags <- GHC.getDynFlags
-              ; if GHC.showSDoc dflags (GHC.pprType ty) /= "Graphics.SpriteKit.Node.Node"
-                then
-                  GHC.setContext iis >> runGHCiStatement resultMV
-                else do
-              {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
-              ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
-              ; hval <- GHC.compileExpr nodeExpr
-              -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
-              ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
-              ; GHC.liftIO $ putMVar resultMV (Result (Left result))
-              ; GHC.setContext iis
-              } }
-            Left  _e -> GHC.setContext iis >> runGHCiStatement resultMV
+            Right ty ->
+              case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of     -- look through type synonyms & extract the base type
+                Just tycon | GHC.getName tycon `elem` nodeNames
+                  -> do
+                     {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
+                     ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
+                     ; hval <- GHC.compileExpr nodeExpr
+                     -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
+                     ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
+                     ; GHC.liftIO $ putMVar resultMV (Result (Left result))
+                     ; GHC.setContext iis
+                     }
+                _ -> GHC.setContext iis >> runGHCiStatement resultMV
+            Left _e -> GHC.setContext iis >> runGHCiStatement resultMV
         }
     ; takeMVar resultMV
     }
