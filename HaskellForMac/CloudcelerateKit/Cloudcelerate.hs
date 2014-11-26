@@ -9,6 +9,8 @@
 -- Maintainer: Manuel M T Chakravarty <chak@justtesting.org>
 --
 -- Cloudcelerate API
+--
+-- The API definition is at https://github.com/mchakravarty/cloudcelerate#api-endpoint-documentation
 
 module Cloudcelerate () where
 
@@ -46,27 +48,30 @@ import Network.Wreq
 objc_import ["<Foundation/Foundation.h>", "GHC/HsFFI.h"]
 
 
-sandboxURL = "http://api.sandbox.cloudcelerate.io/v1.0"
+cloudcelerateAPIVersion = "v1.0"
+sandboxBaseURL          = "http://api.sandbox.cloudcelerate.io"
+sandboxVersionedURL     = "http://api.sandbox.cloudcelerate.io" </> cloudcelerateAPIVersion
 
 postUsersMac :: String -> String -> IO (Maybe String)
 postUsersMac username storeReceiptPath
   = do
     { let opts = defaults & param "type   "  .~ ["mac"]
                           & param "username" .~ [fromString username]
-    ; resp <- postWith opts (sandboxURL </> "users") (partFile "file" storeReceiptPath)
+    ; resp <- postWith opts (sandboxVersionedURL </> "users") (partFile "file" storeReceiptPath)
     ; return $ if resp^.responseStatus == created201
                then Just $ show $ resp^.responseBody.(key "api_key")._String
                else Nothing
     }
     `Exc.catch` (\(_e :: HttpException) -> return Nothing)      -- FIXME: we need to log the exception!
-  
+
+-- Cf. https://github.com/mchakravarty/cloudcelerate/issues/72
 getPing :: Maybe String -> String -> IO Bool
 getPing username apiKey
   = do
     { let opts = case username of 
                    Nothing       -> defaults
                    Just username -> defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
-    ; resp <- getWith opts (sandboxURL </> "ping")
+    ; resp <- getWith opts (sandboxBaseURL </> "ping")          -- NB: ping doesn't include the API version
     ; return $ resp^.responseStatus == ok200
     }
     `Exc.catch` (\(_e :: HttpException) -> return False)
@@ -88,7 +93,7 @@ postPrograms username apiKey projectPath
     doUpload sdistPath
       = do
         { let opts = defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
-        ; resp <- postWith opts (sandboxURL </> "programs") (partFile "file" sdistPath)
+        ; resp <- postWith opts (sandboxVersionedURL </> "programs") (partFile "file" sdistPath)
         ; return $ if resp^.responseStatus == created201
                    then Nothing 
                    else (Just "Unable to upload project.")
@@ -180,7 +185,7 @@ postJobs username apiKey programName dataName
           optsFinal = case dataName of
                         Nothing       -> optsBase
                         Just dataName -> optsBase & param "dataset" .~ [fromString dataName]
-    ; resp <- postWith optsFinal (sandboxURL </> "jobs") ([] :: [Part])
+    ; resp <- postWith optsFinal (sandboxVersionedURL </> "jobs") ([] :: [Part])
     ; return $ if resp^.responseStatus == created201
                then Nothing 
                else (Just "Failed to initiate compute job.")
