@@ -78,8 +78,8 @@ data Result r = Result r
 --
 -- The file path specifies the 'GHC.framework location (from where we locate the package database).
 --
-start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> IO Session
-start ghcBundlePath diagnosticHandler
+start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> Int -> IO Session
+start ghcBundlePath diagnosticHandler logLevel
   = do
     { putStrLn "Starting interactive session"
     ; inlet <- newEmptyMVar
@@ -102,8 +102,7 @@ start ghcBundlePath diagnosticHandler
                                                  , GHC.log_action       = logAction
                                                  , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
-                                                 , GHC.verbosity        = 0
-                                                 -- , GHC.verbosity        = 3
+                                                 , GHC.verbosity        = logLevel
                                                  }
         ; GHC.liftIO $ 
             putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging

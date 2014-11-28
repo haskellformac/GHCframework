@@ -32,6 +32,9 @@ class PreferencesController: NSWindowController {
     let defaultValues = [ kPreferenceIndentationWidth:   2
                         , kPreferenceExternalTextEditor: ""    // use the default application by file extension
                         , kPreferenceEnableCloud: false
+                        , kPreferenceGHCLogLevel: 0
+                        , kPreferenceSpriteKitLogLevel: 0
+                        , kPreferenceCloudLogLevel: 0
                         ]
     NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
     NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues

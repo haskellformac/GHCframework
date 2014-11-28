@@ -95,15 +95,15 @@ objc_marshaller 'ghcInstance 'ghcInstance
 
 -- Create a new GHC session that reports diagnostics through the provided object using the method
 --
-startWithHandlerObject :: GHCInstance -> IO Session
-startWithHandlerObject handlerObject 
+startWithHandlerObject :: GHCInstance -> Int -> IO Session
+startWithHandlerObject handlerObject logLevel
   = do
     { 
     ; ghcBundlePath <-
         $(objc [] $ ''String <: 
            [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
     ; $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
-    ; start ghcBundlePath (reportDiagnostics handlerObject)
+    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel
     }
   where
 
@@ -452,7 +452,12 @@ objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'tokenise
 // The handler to process diagnostic messages arriving from GHC.
 @property (strong) typename DiagnosticsHandler diagnosticsHandler;
 
+// GHC log level from defaults.
+@property typename NSInteger logLevel;
+
 @end
+
+typename NSString *kPreferenceGHCLogLevel = @"GHCLogLevel";
 
 // Init and deinit
 // --
@@ -476,8 +481,10 @@ void GHCInstance_initialise(void);
   self = [super init];
   if (self) {
     
-    NSLog(@"GHC instance start");
-    self.interpreterSession = startWithHandlerObject(self);
+    _logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceGHCLogLevel];
+    if (_logLevel)
+      NSLog(@"GHC instance start");
+    self.interpreterSession = startWithHandlerObject(self, _logLevel);
     self.diagnosticsHandler  = handler;
     
   }
@@ -487,7 +494,8 @@ void GHCInstance_initialise(void);
 - (void)dealloc
 {
   stop(self.interpreterSession);
-  NSLog(@"GHC instance stop");
+  if (_logLevel)
+    NSLog(@"GHC instance stop");
   hs_free_stable_ptr(self.interpreterSession);
 }
 
@@ -506,7 +514,8 @@ void GHCInstance_initialise(void);
                                  file:(typename NSString *)file
                           importPaths:(typename NSArray/*<NSString>*/ *)importPaths
 {
-  NSLog(@"Loading module for %@", file);
+  if (self.logLevel)
+    NSLog(@"Loading module for %@", file);
   return loadModuleText(self.interpreterSession, file, importPaths, moduleText);
 }
 
