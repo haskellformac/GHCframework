@@ -132,17 +132,17 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
                                                                   parent:nil
                                                                    model:self],
                   [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kDataGroupID
-                                                              playground:nil
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kExecutableGroupID
                                                               playground:nil
                                                                   parent:nil
                                                                    model:self],
                   [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
                                                               identifier:kExtraSourceGroupID
+                                                              playground:nil
+                                                                  parent:nil
+                                                                   model:self],
+                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
+                                                              identifier:kDataGroupID
                                                               playground:nil
                                                                   parent:nil
                                                                    model:self],

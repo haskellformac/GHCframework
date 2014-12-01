@@ -13,11 +13,12 @@ module GHCInstance () where
 
   -- standard libraries
 import Control.Applicative
+import Control.Monad        hiding (void)
 import Data.List
 import Data.Time
 import Data.Typeable
 import Data.Word
-import System.IO.Unsafe (unsafePerformIO)
+import System.IO.Unsafe     (unsafePerformIO)
 
   -- language-c-inline
 import Language.C.Quote.ObjC
@@ -93,20 +94,22 @@ ghcInstance :: GHCInstance -> IO GHCInstance
 ghcInstance = return
 objc_marshaller 'ghcInstance 'ghcInstance
 
--- Create a new GHC session that reports diagnostics through the provided object using the method
+-- Create a new GHC session that reports diagnostics through the provided object using the method 
+-- 'reportWithSeverity:filename:line:column:lines:endColumn:message:'.
 --
-startWithHandlerObject :: GHCInstance -> Int -> IO Session
-startWithHandlerObject handlerObject logLevel
+-- The file path (third argument) is the working directory for interactive Haskell execution.
+--
+startWithHandlerObject :: GHCInstance -> Int -> Maybe String{-FilePath-} -> IO Session
+startWithHandlerObject handlerObject logLevel cwd
   = do
     { 
     ; ghcBundlePath <-
         $(objc [] $ ''String <: 
            [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
-    ; $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
-    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel
+    ; when (logLevel > 0) $
+        $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
+    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel cwd
     }
-  where
-
 
 reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
 reportDiagnostics handlerObject severity srcSpan msg
@@ -393,7 +396,8 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 
 /// Initialise a new GHC instance.
 ///
-- (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler;
+- (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler
+               interactiveWorkingDirectory:(typename NSString *)workingDirectory;
 
 /// Turn a string of Haskell code into an array of tokens.
 ///
@@ -473,10 +477,11 @@ void GHCInstance_initialise(void);
 
 - (instancetype)init
 {
-  return [self initWithDiagnosticsHandler:nil];
+  return [self initWithDiagnosticsHandler:nil interactiveWorkingDirectory:nil];
 }
 
-- (instancetype)initWithDiagnosticsHandler:(typename DiagnosticsHandler)handler
+- (instancetype)initWithDiagnosticsHandler:(typename DiagnosticsHandler)handler 
+              interactiveWorkingDirectory:(typename NSString *)workingDirectory
 {
   self = [super init];
   if (self) {
@@ -484,7 +489,7 @@ void GHCInstance_initialise(void);
     _logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceGHCLogLevel];
     if (_logLevel)
       NSLog(@"GHC instance start");
-    self.interpreterSession = startWithHandlerObject(self, _logLevel);
+    self.interpreterSession = startWithHandlerObject(self, _logLevel, workingDirectory);
     self.diagnosticsHandler  = handler;
     
   }

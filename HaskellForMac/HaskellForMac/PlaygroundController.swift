@@ -82,10 +82,11 @@ class PlaygroundController: NSViewController {
   //MARK: Initialisation and deinitialisation
 
   init?(
-    nibName:                    String!,
-    bundle:                     NSBundle!,
-    projectViewModelPlayground: ProjectViewModelPlayground,
-    diagnosticsHandler:         Issue -> Void)
+    nibName:                         String!,
+    bundle:                          NSBundle!,
+    projectViewModelPlayground:      ProjectViewModelPlayground,
+    diagnosticsHandler:              Issue -> Void,
+    interactiveWorkingDirectory cwd: String)
   {
     self.projectViewModelPlayground = projectViewModelPlayground
     
@@ -93,13 +94,15 @@ class PlaygroundController: NSViewController {
     super.init(nibName: nibName, bundle: bundle)
 
       // Launch a GHC session for this playground.
-    haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler))
+    haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler),
+                                    interactiveWorkingDirectory: cwd)
   }
 
   required init?(coder: NSCoder) {
     // just to keep the compiler happy...
     self.projectViewModelPlayground = ProjectViewModelPlayground(identifier: "", model: HFMProjectViewModel())!
-    haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in })
+    haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in },
+                                    interactiveWorkingDirectory: nil)
     super.init(coder: coder)
   }
 

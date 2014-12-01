@@ -139,7 +139,9 @@ final class ContextController : NSObject {
               if let playgroundController = PlaygroundController(nibName: kPlayground,
                                                                   bundle: nil,
                                               projectViewModelPlayground: viewModelPlayground,
-                                                      diagnosticsHandler: processIssue)
+                                                      diagnosticsHandler: processIssue,
+                                             interactiveWorkingDirectory:
+                                               project.fileURL!.path!.stringByAppendingPathComponent(item.model.dataDir ?? ""))
               {
                 config            = .HaskellEditor(editorController, playgroundController)
                 playground.memory = playgroundController

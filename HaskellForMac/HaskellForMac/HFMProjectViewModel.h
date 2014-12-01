@@ -27,11 +27,11 @@
 //
 typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
   PVMItemGroupIndexPackage = 0,         // Package group (this must be the *first* index)
-  PVMItemGroupIndexData,                // Data group
   PVMItemGroupIndexExecutable,          // Executable group
-  PVMItemGroupIndexExtraSource          // Extra source group
+  PVMItemGroupIndexExtraSource,         // Extra source group
+  PVMItemGroupIndexData                 // Data group
 };
-#define PVM_ITEM_GROUP_INDEX_LAST   PVMItemGroupIndexExtraSource
+#define PVM_ITEM_GROUP_INDEX_LAST   PVMItemGroupIndexData
 
 
 @interface HFMProjectViewModel : NSObject

@@ -22,6 +22,7 @@ import Control.Monad
 import Data.Dynamic                 hiding (typeOf)
 import Data.Maybe
 import Foreign                      hiding (void)
+import System.Directory
 import System.FilePath
 import System.IO
 import Unsafe.Coerce                (unsafeCoerce)
@@ -66,7 +67,8 @@ ccWrapper = "../MacOS" </> "ToolWrapper"
 
 -- |Abstract handle of an interpreter session.
 --
-newtype Session = Session (MVar (Maybe (GHC.Ghc ())))
+data Session = Session (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to the interpreter thread
+                       Int                           -- log level
 
 -- |Possible results of executing an interpreter action. 
 --
@@ -76,24 +78,24 @@ data Result r = Result r
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
--- The file path specifies the 'GHC.framework location (from where we locate the package database).
---
-start :: FilePath -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ()) -> Int -> IO Session
-start ghcBundlePath diagnosticHandler logLevel
+start :: FilePath                                           -- ^GHC.framework location (to locate the package database).
+      -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ())   -- ^Callback to report diagnostics.
+      -> Int                                                -- ^Log level == GHC verbosity (0 == no logging)
+      -> Maybe FilePath                                     -- ^Working directory for interactive Haskell statement execution.
+      -> IO Session
+start ghcBundlePath diagnosticHandler logLevel cwd
   = do
-    { putStrLn "Starting interactive session"
+    { when (logLevel > 0) $ putStrLn "Starting interactive session"
     ; inlet <- newEmptyMVar
     ; forkIO $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet)
-    ; return $ Session inlet
+    ; return $ Session inlet logLevel
     }
   where
     startSession inlet 
       = do
         {   -- Initialise the session by reading the package database
-        ; dflagsRaw  <- GHC.getSessionDynFlags
-        -- FIXME: the following doesn't help with OpenGL in the Playground
-        ; let dflags   = GHC.gopt_unset dflagsRaw GHC.Opt_GhciSandbox
-              settings = GHC.settings dflags
+        ; dflags     <- GHC.getSessionDynFlags
+        ; let settings = GHC.settings dflags
         ; packageIds <- GHC.setSessionDynFlags $ dflags 
                                                  { GHC.ghcLink          = GHC.LinkInMemory
                                                  , GHC.hscTarget        = GHC.HscInterpreted
@@ -104,8 +106,7 @@ start ghcBundlePath diagnosticHandler logLevel
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
                                                  , GHC.verbosity        = logLevel
                                                  }
-        ; GHC.liftIO $ 
-            putStrLn $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)  -- FIXME: needs proper logging
+        ; logMsg logLevel $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
         -- ; unless (???successfully loaded???) $
@@ -122,6 +123,11 @@ start ghcBundlePath diagnosticHandler logLevel
         ; case maybe_chan of
             Nothing   -> error "PANIC: could not get 'interactivePrintChan'"
             Just chan -> GHC.liftIO $ writeIORef chanRef chan
+            
+            -- Set the working directory for Haskell evaluation.
+        ; logMsg logLevel $ "current working directory at GHC session start = " ++ show cwd
+        ; GHC.modifySession $ \hsc ->
+            let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
 
         ; session inlet
         }
@@ -141,12 +147,12 @@ start ghcBundlePath diagnosticHandler logLevel
 -- Terminate an interpreter session.
 --
 stop :: Session -> IO ()
-stop (Session inlet) = putMVar inlet Nothing
+stop (Session inlet _logLevel) = putMVar inlet Nothing
 
 -- Tokenise a string of Haskell code.
 --
 tokenise :: Session -> GHC.StringBuffer -> GHC.RealSrcLoc -> IO [GHC.Located GHC.Token]
-tokenise (Session inlet) strbuf loc
+tokenise (Session inlet _logLevel) strbuf loc
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $ do
@@ -174,7 +180,7 @@ type EvalResult = Result (Either (ForeignPtr ()) [String])
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 eval :: Session -> String -> Int -> String -> IO EvalResult
-eval (Session inlet) source line stmt
+eval (Session inlet _logLevel) source line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
@@ -199,15 +205,16 @@ eval (Session inlet) source line stmt
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty ->
-              case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of     -- look through type synonyms & extract the base type
+              case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
                 Just tycon | GHC.getName tycon `elem` nodeNames
-                  -> do
+                  -> withVirtualCWD $ do                                -- code executon needs to use the IC working directory
                      {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
                      ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
                      ; hval <- GHC.compileExpr nodeExpr
                      -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
-                     ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))
+                     ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))   -- force evaluation => contain effects
                      ; GHC.liftIO $ putMVar resultMV (Result (Left result))
+
                      ; GHC.setContext iis
                      }
                 _ -> GHC.setContext iis >> runGHCiStatement resultMV
@@ -263,7 +270,7 @@ inferType = error "inferType is not implemented"
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 executeImport :: Session -> String -> Int -> String -> IO (Result ())
-executeImport (Session inlet) _source _line stmt
+executeImport (Session inlet _logLevel) _source _line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
@@ -284,12 +291,14 @@ executeImport (Session inlet) _source _line stmt
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 load :: Session -> [String] -> GHC.Target -> IO (Result ())
-load (Session inlet) importPaths target
+load (Session inlet _logLevel) importPaths target
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        {
+        {   -- Save the working directory for Haskell evaluation.
+        ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
+
             -- Revert CAFs from previous evaluations
         ; GHC.liftIO $ rts_revertCAFs
         
@@ -312,6 +321,10 @@ load (Session inlet) importPaths target
                          ; dflags <- GHC.getSessionDynFlags
                          ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
                                                      in he {GHC.hsc_IC = new_ic})
+
+                             -- Set the working directory for Haskell evaluation again in the interactive context.
+                         ; GHC.modifySession $ \hsc ->
+                             let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
 
                              -- Only make the user module available for interactive use
                          ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
@@ -345,11 +358,49 @@ chanRef :: IORef (TChan String)
 {-# NOINLINE chanRef #-}
 chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initialised")
 
+
 -- Utitlity functions
 -- ------------------
 
 modifyDynFlags :: (GHC.DynFlags -> GHC.DynFlags) -> GHC.Ghc ()
 modifyDynFlags f = GHC.getSessionDynFlags >>= void . GHC.setSessionDynFlags . f
+
+-- FIXME: This should go through NSLog(). Easiest is probably to pass a logging function in from GHCInstance.
+logMsg :: Int -> String -> GHC.Ghc ()
+logMsg logLevel msg
+  | logLevel > 0
+  = GHC.liftIO $ hPutStrLn stderr ("[Interpreter] " ++ msg)
+  | otherwise
+  = return ()
+
+-- |Wrap a command to execute in the context of the working directory of the interactive context.
+--
+-- GHC does that for 'runStmtWithLocation', but we need that for other ways of executing Haskel code, too.
+--
+withVirtualCWD :: GHC.GhcMonad m => m a -> m a
+withVirtualCWD m 
+  = do
+    { hsc <- GHC.getSession
+    ; let ic = GHC.hsc_IC hsc
+
+    ; let set_cwd 
+            = do
+              { dir <- GHC.liftIO $ getCurrentDirectory
+              ; case GHC.ic_cwd ic of
+                  Just dir -> GHC.liftIO $ setCurrentDirectory dir
+                  Nothing  -> return ()
+              ; return dir
+              }
+          reset_cwd orig_dir 
+            = do
+              { virt_dir <- GHC.liftIO $ getCurrentDirectory
+              ; hsc <- GHC.getSession
+              ; GHC.setSession $ hsc { GHC.hsc_IC = (GHC.hsc_IC hsc) { GHC.ic_cwd = Just virt_dir } }
+              ; GHC.liftIO $ setCurrentDirectory orig_dir
+              }
+
+    ; GHC.gbracket set_cwd reset_cwd $ const m
+    }
 
 
 -- Runtime system support

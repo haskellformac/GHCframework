@@ -30,9 +30,9 @@ typedef NS_ENUM(NSUInteger, PVMItemTag) {
 /// Outline view group ids
 //
 extern NSString *const kPackageGroupID;
-extern NSString *const kDataGroupID;
 extern NSString *const kExecutableGroupID;
 extern NSString *const kExtraSourceGroupID;
+extern NSString *const kDataGroupID;
 
 
 @interface HFMProjectViewModelItem : NSObject

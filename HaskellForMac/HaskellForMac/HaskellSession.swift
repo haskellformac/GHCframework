@@ -47,8 +47,8 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(diagnosticsHandler: GHCKit.DiagnosticsHandler) {
-    ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler)
+  init(diagnosticsHandler: GHCKit.DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
+    ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
   }
 
 

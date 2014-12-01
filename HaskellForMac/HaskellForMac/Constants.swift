@@ -9,7 +9,7 @@
 
 import Foundation
 
-@objc class Swift { }     // for briding
+@objc class Swift { }     // for bridging
 
 let kPreferenceIndentationWidth   = "IndentationWidth"
 let kPreferenceExternalTextEditor = "ExternalTextEditor"

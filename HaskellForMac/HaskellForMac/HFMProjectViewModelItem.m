@@ -46,9 +46,9 @@
 /// Outline view group ids
 //
 NSString *const kPackageGroupID     = @"Project information";
-NSString *const kDataGroupID        = @"Additional files";
 NSString *const kExecutableGroupID  = @"Programs";
 NSString *const kExtraSourceGroupID = @"Non-Haskell sources";
+NSString *const kDataGroupID        = @"Supporting files";
 
 
 @implementation HFMProjectViewModelItem
