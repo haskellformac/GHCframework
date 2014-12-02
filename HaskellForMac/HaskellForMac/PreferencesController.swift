@@ -17,8 +17,9 @@ let kAccountPreferences     = "AccountPreferences"
 
 class PreferencesController: NSWindowController {
 
-  @IBOutlet weak var cloudMenu: NSMenuItem!
-  @IBOutlet weak var toolbar:   NSToolbar!
+  @IBOutlet weak var cloudMenu:          NSMenuItem!
+  @IBOutlet weak var toolbar:            NSToolbar!
+  @IBOutlet weak var accountToolbarItem: NSToolbarItem!
 
   // The nib containing the associated window.
   //
@@ -50,6 +51,15 @@ class PreferencesController: NSWindowController {
     return true
   }
 
+  override func awakeFromNib() {
+    super.awakeFromNib()
+
+      // Get rid of the Cloud menu if the cloud is disabled.
+      //
+      // NB: `windowDidLoad()` is too late for that as the Preferences window is not in the main nib.
+    cloudMenu.hidden = !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud)
+  }
+
   override func windowDidLoad() {
     super.windowDidLoad()
 
@@ -62,7 +72,10 @@ class PreferencesController: NSWindowController {
     toolbar.selectedItemIdentifier = kGeneralPreferences   // FIXME: this should come from autosave, but it doesn't...
     window?.title                  = "General";            //        this, too, of course
 
-    cloudMenu.hidden               = !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud)
+      // Currently, we don't dynamically enable and disable the account preferences tab. Its status is determined once.
+    if !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud) {
+      toolbar.removeItemAtIndex((toolbar.items as NSArray).indexOfObject(accountToolbarItem))
+    }
   }
 
   // MARK: -
@@ -106,8 +119,15 @@ extension PreferencesController {
     window?.title = item.label
   }
 
-  override func validateToolbarItem(theItem: NSToolbarItem) -> Bool {
-    return true
+  override func validateToolbarItem(toolbarItem: NSToolbarItem) -> Bool {
+
+    let identifier = toolbarItem.itemIdentifier;
+
+    if (identifier == kAccountPreferences) {
+
+      return NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud)
+
+    } else { return true }
   }
 }
 

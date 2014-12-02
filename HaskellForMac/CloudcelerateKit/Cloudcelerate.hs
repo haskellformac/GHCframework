@@ -16,16 +16,18 @@ module Cloudcelerate () where
 
   -- standard libraries
 import Control.Concurrent
-import Control.Exception (SomeException, mask, try, throwIO)
-import qualified Control.Exception as Exc
+import Control.Exception            (SomeException, mask, try, throwIO)
+import qualified 
+       Control.Exception as Exc
 import Control.DeepSeq (rnf)
-import Control.Monad
+import Control.Monad                hiding (void)
+import Data.ByteString.Lazy         (ByteString)
 import Data.List
 import Data.String
 import Data.Word
 import Foreign.C.Error
 import Foreign.Ptr
-import GHC.IO.Exception ( ioException, IOErrorType(..), IOException(..) )
+import GHC.IO.Exception             (ioException, IOErrorType(..), IOException(..))
 import System.Exit
 import System.FilePath
 import System.IO
@@ -40,46 +42,76 @@ import Language.C.Inline.ObjC
 import Control.Lens
 import Data.Aeson
 import Data.Aeson.Lens
-import qualified Data.Map  as Map
-import Network.HTTP.Types  hiding (statusCode)
-import Network.HTTP.Client (HttpException)
+import Data.Default.Class
+import qualified Data.Map           as Map
+import Network.Connection
+import Network.HTTP.Types           hiding (statusCode)
+import Network.HTTP.Client          (HttpException)
+import Network.HTTP.Client.TLS      (tlsManagerSettings, mkManagerSettings)
 import Network.Wreq
 
 objc_import ["<Foundation/Foundation.h>", "GHC/HsFFI.h"]
 
 
-cloudcelerateAPIVersion = "v1.0"
-sandboxBaseURL          = "http://api.sandbox.cloudcelerate.io"
-sandboxVersionedURL     = "http://api.sandbox.cloudcelerate.io" </> cloudcelerateAPIVersion
+-- Constants
+-- ---------
 
-postUsersMac :: String -> String -> IO (Maybe String)
-postUsersMac username storeReceiptPath
+sandboxBaseURL          = "https://api.sandbox.cloudcelerate.io"
+cloudcelerateAPIVersion = "v1.0"
+sandboxVersionedURL     = sandboxBaseURL </> cloudcelerateAPIVersion
+
+-- NB: THIS MUST BE 'False' FOR RELEASE BUILDS.
+disableCertificateValidation = True
+
+
+-- Settings
+-- --------
+
+cloudcelerateDefaults 
+  = let tlsManager = mkManagerSettings (def {settingDisableCertificateValidation = disableCertificateValidation}) Nothing
+    in 
+    defaults & manager .~ Left tlsManager
+
+
+-- Cloudcelerate API calls
+-- -----------------------
+
+postUsersMac :: String -> String -> Int -> IO (Maybe String)
+postUsersMac username storeReceiptPath logLevel
   = do
-    { let opts = defaults & param "type   "  .~ ["mac"]
-                          & param "username" .~ [fromString username]
-    ; resp <- postWith opts (sandboxVersionedURL </> "users") (partFile "file" storeReceiptPath)
+    { logMsg logLevel $ "users [store receipt path = " ++ show storeReceiptPath ++ "]"
+
+    ; let opts = cloudcelerateDefaults & param "type   "  .~ ["mac"]
+                                       & param "username" .~ [fromString username]
+    ; resp <- logResp logLevel $ 
+                postWith opts (sandboxVersionedURL </> "users") (partFile "file" storeReceiptPath)
     ; return $ if resp^.responseStatus == created201
                then Just $ show $ resp^.responseBody.(key "api_key")._String
                else Nothing
     }
-    `Exc.catch` (\(_e :: HttpException) -> return Nothing)      -- FIXME: we need to log the exception!
+    `Exc.catch` (\(e :: HttpException) -> logHttpException logLevel e >> return Nothing)
 
 -- Cf. https://github.com/mchakravarty/cloudcelerate/issues/72
-getPing :: Maybe String -> String -> IO Bool
-getPing username apiKey
+getPing :: Maybe String -> String -> Int -> IO Bool
+getPing username apiKey logLevel
   = do
-    { let opts = case username of 
-                   Nothing       -> defaults
-                   Just username -> defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
-    ; resp <- getWith opts (sandboxBaseURL </> "ping")          -- NB: ping doesn't include the API version
+    { logMsg logLevel $ "ping (for username = " ++ show username ++ ")"
+    
+    ; let opts = case username of 
+                   Nothing       -> cloudcelerateDefaults
+                   Just username -> cloudcelerateDefaults & auth .~ basicAuth (fromString username) (fromString apiKey)
+    ; resp <- logResp logLevel $ 
+                getWith opts (sandboxBaseURL </> "ping")          -- NB: ping doesn't include the API version
     ; return $ resp^.responseStatus == ok200
     }
-    `Exc.catch` (\(_e :: HttpException) -> return False)
+    `Exc.catch` (\(e :: HttpException) -> logHttpException logLevel e >> return False)
 
-postPrograms :: String -> String -> String -> IO (Maybe String)
-postPrograms username apiKey projectPath
+postPrograms :: String -> String -> String -> Int -> IO (Maybe String)
+postPrograms username apiKey projectPath logLevel
   = do
-    { (exitCode, stdout, stderr) <- readProcessWithExitCode_atProjectPath "cabal" ["sdist"] ""
+    { logMsg logLevel $ "programs [project path = " ++ show projectPath ++ "]"
+
+    ; (exitCode, stdout, stderr) <- readProcessWithExitCode_atProjectPath "cabal" ["sdist"] ""
     ; if exitCode /= ExitSuccess
       then return $ Just (last . lines $ stderr)
       else do
@@ -92,13 +124,14 @@ postPrograms username apiKey projectPath
   where
     doUpload sdistPath
       = do
-        { let opts = defaults & auth .~ basicAuth (fromString username) (fromString apiKey)
-        ; resp <- postWith opts (sandboxVersionedURL </> "programs") (partFile "file" sdistPath)
+        { let opts = cloudcelerateDefaults & auth .~ basicAuth (fromString username) (fromString apiKey)
+        ; resp <- logResp logLevel $ 
+                    postWith opts (sandboxVersionedURL </> "programs") (partFile "file" sdistPath)
         ; return $ if resp^.responseStatus == created201
                    then Nothing 
                    else (Just "Unable to upload project.")
         }
-        `Exc.catch` (\(e :: HttpException) -> return $ Just ("Internal error: " ++ show e))
+        `Exc.catch` (\(e :: HttpException) -> logHttpException logLevel e >> (return $ Just ("Internal error: " ++ show e)))
     --
     -- NB: The following was copied from System.Process to be able to set the CWD.
     readProcessWithExitCode_atProjectPath cmd args input = do
@@ -177,20 +210,47 @@ postPrograms username apiKey projectPath
                                            | Errno ioe == ePIPE -> return ()
                                          _ -> throwIO e
 
-postJobs :: String -> String -> String -> Maybe String -> IO (Maybe String)
-postJobs username apiKey programName dataName
+postJobs :: String -> String -> String -> Maybe String -> Int -> IO (Maybe String)
+postJobs username apiKey programName dataName logLevel
   = do
-    { let optsBase  = defaults & auth            .~ basicAuth (fromString username) (fromString apiKey)
-                               & param "program" .~ [fromString programName]
+    { logMsg logLevel $ "jobs (for program = " ++ show programName ++ "; data = " ++ show dataName ++ ")"
+
+    ; let optsBase  = cloudcelerateDefaults & auth            .~ basicAuth (fromString username) (fromString apiKey)
+                                            & param "program" .~ [fromString programName]
           optsFinal = case dataName of
                         Nothing       -> optsBase
                         Just dataName -> optsBase & param "dataset" .~ [fromString dataName]
-    ; resp <- postWith optsFinal (sandboxVersionedURL </> "jobs") ([] :: [Part])
+    ; resp <- logResp logLevel $ 
+                postWith optsFinal (sandboxVersionedURL </> "jobs") ([] :: [Part])
     ; return $ if resp^.responseStatus == created201
                then Nothing 
                else (Just "Failed to initiate compute job.")
     }
-   `Exc.catch` (\(e :: HttpException) -> return $ Just ("Internal error: " ++ show e))
+   `Exc.catch` (\(e :: HttpException) -> logHttpException logLevel e >> (return $ Just ("Internal error: " ++ show e)))
+
+
+-- Logging
+-- -------
+
+logMsg :: Int -> String -> IO ()
+logMsg logLevel msg
+  | logLevel > 0 = $(objc ['msg :> ''String] $ void [cexp| NSLog(@"[cloud] %@", msg) |])
+  | otherwise    = return ()
+
+-- We log the actual response content from log level 2 upwards; at level 1, we only log the response status.
+logResp :: Int -> IO (Response ByteString) -> IO (Response ByteString)
+logResp 0        req = req
+logResp logLevel req
+  = do
+    { resp <- req
+    ; if logLevel == 1
+      then logMsg logLevel (show $ resp^.responseStatus)
+      else logMsg logLevel (show resp)
+    ; return resp
+    }
+
+logHttpException :: Int -> HttpException -> IO ()
+logHttpException logLevel = logMsg logLevel . show
 
 
 objc_interface [cunit|
@@ -235,6 +295,7 @@ void CloudcelerateKit_initialise(void);
 
 objc_implementation [Typed 'postUsersMac, Typed 'getPing, Typed 'postPrograms, Typed 'postJobs] [cunit|
 
+typename NSString *kPreferenceCloudLogLevel = @"CloudLogLevel";
 
 void Cloudcelerate_initialise(void);
 void CloudcelerateKit_initialise()
@@ -246,19 +307,22 @@ void CloudcelerateKit_initialise()
 
 + (typename NSString *)newMASAccount:(typename NSString *)username storeReceiptPath:(typename NSString *)storeReceiptPath
 {
-  return postUsersMac(username, storeReceiptPath);
+  typename NSInteger logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceCloudLogLevel];
+  return postUsersMac(username, storeReceiptPath, logLevel);
 }
 
 + (typename BOOL)validateUsername:(typename NSString *)username apiKey:(typename NSString *)apiKey
 {
-  return getPing(username, apiKey);
+  typename NSInteger logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceCloudLogLevel];
+  return getPing(username, apiKey, logLevel);
 }
 
 + (typename NSString *)uploadProgramFor:(typename NSString *)username 
                                  apiKey:(typename NSString *)apiKey
                                 fileURL:(typename NSURL    *)fileURL
 {
-  return postPrograms(username, apiKey, [fileURL path]); 
+  typename NSInteger logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceCloudLogLevel];
+  return postPrograms(username, apiKey, [fileURL path], logLevel); 
 }
 
 + (typename NSString *)runJobFor:(typename NSString *)username
@@ -266,7 +330,8 @@ void CloudcelerateKit_initialise()
                      programName:(typename NSString *)programName
                         dataName:(typename NSString *)dataName;
 {
-  return postJobs(username, apiKey, programName, dataName);
+  typename NSInteger logLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferenceCloudLogLevel];
+  return postJobs(username, apiKey, programName, dataName, logLevel);
 }
 
 @end

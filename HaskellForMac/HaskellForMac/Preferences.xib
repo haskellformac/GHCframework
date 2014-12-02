@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C68k" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target">
             <connections>
+                <outlet property="accountToolbarItem" destination="MBn-lv-dJO" id="qJ0-jq-Mzi"/>
                 <outlet property="toolbar" destination="Acm-L0-M8A" id="3pJ-mq-Dnl"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gGR-rs-ckq"/>
             </connections>
@@ -172,7 +173,7 @@
                             <action selector="selectPreferenceTab:" target="-2" id="kHc-9a-2fa"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="F509ECFB-3BF5-45ED-9183-ADB4A924483C" explicitItemIdentifier="AccountPreferences" label="Account" paletteLabel="Account" toolTip="Cloudcelerate account settings" tag="-1" autovalidates="NO" selectable="YES" id="MBn-lv-dJO">
+                    <toolbarItem implicitItemIdentifier="F509ECFB-3BF5-45ED-9183-ADB4A924483C" explicitItemIdentifier="AccountPreferences" label="Account" paletteLabel="Account" toolTip="Cloudcelerate account settings" tag="-1" selectable="YES" id="MBn-lv-dJO">
                         <connections>
                             <action selector="selectPreferenceTab:" target="-2" id="rz2-Yd-BVe"/>
                         </connections>

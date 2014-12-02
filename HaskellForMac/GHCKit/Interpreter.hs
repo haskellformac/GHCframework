@@ -365,7 +365,8 @@ chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initial
 modifyDynFlags :: (GHC.DynFlags -> GHC.DynFlags) -> GHC.Ghc ()
 modifyDynFlags f = GHC.getSessionDynFlags >>= void . GHC.setSessionDynFlags . f
 
--- FIXME: This should go through NSLog(). Easiest is probably to pass a logging function in from GHCInstance.
+-- FIXME: This should go through NSLog(). Easiest is probably to pass a logging function in from GHCInstance and store it in the
+--        session data.
 logMsg :: Int -> String -> GHC.Ghc ()
 logMsg logLevel msg
   | logLevel > 0

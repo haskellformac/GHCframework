@@ -461,7 +461,7 @@ objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'tokenise
 
 @end
 
-typename NSString *kPreferenceGHCLogLevel = @"GHCLogLevel";
+typename NSString *kPreferenceGHCLogLevel = @"GHCLogLevel";     // Must match the HfM key.
 
 // Init and deinit
 // --

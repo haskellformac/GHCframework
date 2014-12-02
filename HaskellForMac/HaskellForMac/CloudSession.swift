@@ -24,7 +24,7 @@ class CloudSession {
   ///
   class func theSession(username: String) -> ErrorOr<CloudSession> {
 
-      // Try to retrieve the API key for the given userName from the keychain.
+      // Try to retrieve the API key for the given username from the keychain.
     let res: ErrorOr<CloudSession> =
       serverName.withCString{ serverNameUnsafePtr in
       username.withCString{ usernameUnsafePtr in
@@ -56,7 +56,7 @@ class CloudSession {
           }
 
         } else {
-          return error("No API key avilable")
+          return error("No API key available")
         }
       }
     }

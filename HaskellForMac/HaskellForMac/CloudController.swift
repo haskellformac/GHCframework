@@ -21,9 +21,6 @@ enum AuthenticationFlavour {
 }
 */
 
-// FIXME: this needs to go into a file specifically for all the default management.
-private let defaultsKeyUsername = "username"
-
 /// Callback to request the UI to authenticate the Cloudcelerate user.
 ///
 /// The result indicates whether the use approved authenticaion (== `true`) or requested to cancel (== `false`).
@@ -52,8 +49,13 @@ final class CloudController : NSObject {
 
   /// Try to obtain a cloud session.
   ///
+  /// This always fails if Cloud services are not enabled.
+  ///
   private var session: CloudSession? {
     get {
+      let userDefaults = NSUserDefaults.standardUserDefaults()
+      if !userDefaults.boolForKey(kPreferenceEnableCloud) { return nil }      // Cloud disabled => refuse session
+
         // If we are not yet authenticated; try to sign in or sign up.
       if theSession == nil {
 
@@ -61,8 +63,7 @@ final class CloudController : NSObject {
           //
           // NB: It's important to check the defaults before hitting the keychain as we don't want to risk a keychain
           //     permission alert before the sign up permission dialog.
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        if let username = userDefaults.stringForKey(defaultsKeyUsername) {   // sign in
+        if let username = userDefaults.stringForKey(kPreferenceUsername) {   // sign in
           switch CloudSession.theSession(username) {
 
           case .Result(let session): theSession = session.unbox
@@ -79,7 +80,7 @@ final class CloudController : NSObject {
           let newUsername = macAddress.base64EncodedStringWithOptions(nil)
           if let (finalUsername, session) = signup(newUsername) {
 
-            userDefaults.setObject(finalUsername, forKey: defaultsKeyUsername)
+            userDefaults.setObject(finalUsername, forKey: kPreferenceUsername)
             theSession = session
           }
         }
@@ -124,10 +125,12 @@ final class CloudController : NSObject {
 
   /// Have we signed up for a Mac account already?
   ///
-  /// FIXME: the result needs to be tertairy: (1) no account, (2) Mac account, or (3) full account.
+  /// NB: This doesn't hit the network (i.e., can be used to validate interface items etc).
+  ///
+  /// FIXME: the result needs to be tertiary: (1) no account, (2) Mac account, or (3) full account.
   func accountStatus() -> Bool {
     let userDefaults = NSUserDefaults.standardUserDefaults()
-    return userDefaults.stringForKey(defaultsKeyUsername) != nil
+    return userDefaults.stringForKey(kPreferenceUsername) != nil
   }
 
   
