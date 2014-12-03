@@ -242,17 +242,15 @@ eval (Session inlet _logLevel) source line stmt
     parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
     --
     renderTypes :: [GHC.Name] -> GHC.Ghc [String]
-    renderTypes [name] = (:[]) <$> typeOf name
     renderTypes names  
       = do
         { dflags <- GHC.getDynFlags
-        ; mapM (\name -> ((GHC.showPpr dflags name ++ " :: ") ++) <$> typeOf name) names
+        ; mapM (\name -> ((GHC.showPpr dflags name ++ " :: ") ++) <$> typeOf dflags name) names
         }
     --
-    typeOf name
+    typeOf dflags name
       = do
-        { dflags <- GHC.getDynFlags
-        ; ty <- GHC.exprType (GHC.showPpr dflags name)
+        { ty <- GHC.exprType (GHC.showPpr dflags name)
         ; unqual <- GHC.getPrintUnqual
         ; return $ GHC.showSDocForUser dflags unqual (GHC.pprTypeForUser ty)
         }
