@@ -180,12 +180,14 @@ type EvalResult = Result (Either (ForeignPtr ()) [String])
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 eval :: Session -> String -> Int -> String -> IO EvalResult
-eval (Session inlet _logLevel) source line stmt
+eval (Session inlet logLevel) source line stmt
   = do
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        {  -- we need to have spritekit available
+        { logCode logLevel $ "evaluating: " ++ stmt
+        
+            -- we need to have spritekit available
         ; iis <- GHC.getContext
         ; let spriteKitImport = GHC.ImportDecl
                                 { GHC.ideclName      = GHC.noLoc (GHC.mkModuleName "Graphics.SpriteKit")
@@ -198,7 +200,8 @@ eval (Session inlet _logLevel) source line stmt
                                 , GHC.ideclHiding    = Nothing
                                 }
         ; GHC.setContext (GHC.IIDecl spriteKitImport : iis)
-        ; nodeNames <- GHC.parseName "Graphics.SpriteKit.Node"
+        ; nodeNames  <- GHC.parseName "Graphics.SpriteKit.Node"
+        ; sceneNames <- GHC.parseName "Graphics.SpriteKit.Scene"
         ; GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
 
            -- try determine the type of the statement if it is an expression
@@ -206,26 +209,34 @@ eval (Session inlet _logLevel) source line stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty ->
               case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
-                Just tycon | GHC.getName tycon `elem` nodeNames
-                  -> withVirtualCWD $ do                                -- code executon needs to use the IC working directory
-                     {   -- result is a SpriteKit node => get a reference to that node instead of pretty printing
-                     ; let nodeExpr = "Graphics.SpriteKit.nodeToForeignPtr " ++ parens stmt
-                     ; hval <- GHC.compileExpr nodeExpr
-                     -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
-                     ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))   -- force evaluation => contain effects
-                     ; GHC.liftIO $ putMVar resultMV (Result (Left result))
-
-                     ; GHC.setContext iis
-                     }
-                _ -> GHC.setContext iis >> runGHCiStatement resultMV
+                Just tycon 
+                  | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  resultMV iis
+                  | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" resultMV iis
+                _                                       -> GHC.setContext iis >> runGHCiStatement resultMV
             Left _e -> GHC.setContext iis >> runGHCiStatement resultMV
         }
     ; takeMVar resultMV
     }
   where
+    runNodeEval conversionName resultMV iis
+      = withVirtualCWD $ do                                -- code executon needs to use the IC working directory
+      { logMsg logLevel "evaluating SpriteKit node"
+      
+          -- result is a SpriteKit node => get a reference to that node instead of pretty printing
+      ; let nodeExpr = conversionName ++ " " ++ parens stmt
+      ; hval <- GHC.compileExpr nodeExpr
+      -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
+      ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))   -- force evaluation => contain effects
+      ; GHC.liftIO $ putMVar resultMV (Result (Left result))
+      
+      ; GHC.setContext iis
+      }
+        
     runGHCiStatement resultMV
       = do
-        {   -- GHCi-style command execution
+        { logMsg logLevel "evaluating general statement"
+        
+            -- GHCi-style command execution
         ; runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
         ; result <- case runResult of
                      GHC.RunOk names       -> do
@@ -366,8 +377,14 @@ modifyDynFlags f = GHC.getSessionDynFlags >>= void . GHC.setSessionDynFlags . f
 -- FIXME: This should go through NSLog(). Easiest is probably to pass a logging function in from GHCInstance and store it in the
 --        session data.
 logMsg :: Int -> String -> GHC.Ghc ()
-logMsg logLevel msg
-  | logLevel > 0
+logMsg = logMsgFromLevel 1
+
+logCode :: Int -> String -> GHC.Ghc ()
+logCode = logMsgFromLevel 2
+
+logMsgFromLevel :: Int -> Int -> String -> GHC.Ghc ()
+logMsgFromLevel minLogLevel logLevel msg
+  | logLevel >= minLogLevel
   = GHC.liftIO $ hPutStrLn stderr ("[Interpreter] " ++ msg)
   | otherwise
   = return ()
