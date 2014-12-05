@@ -9,6 +9,7 @@
 //  context. A new context implies the creation of a new playground.
 
 import Cocoa
+import SpriteKit
 import GHCKit
 import HaskellSpriteKit
 
