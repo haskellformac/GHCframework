@@ -444,22 +444,16 @@ extension PlaygroundController: NSTableViewDelegate {
                 else { return extent }
               }
 
-                // We want to show the entire scene and center it.
-              var sceneFrame = scene.calculateAccumulatedFrame()
-              if !isfinite(sceneFrame.origin.x) { sceneFrame.origin.x = 0 }
-              if !isfinite(sceneFrame.origin.y) { sceneFrame.origin.y = 0 }
-              if !isfinite(sceneFrame.size.width)  || sceneFrame.size.width  < 10 { sceneFrame.size.width  = 10 }
-              if !isfinite(sceneFrame.size.height) || sceneFrame.size.height < 10 { sceneFrame.size.height = 10 }
-
-              scene.anchorPoint = CGPoint(x: -sceneFrame.origin.x / sceneFrame.size.width,
-                                          y: -sceneFrame.origin.y / sceneFrame.size.height)
+                // Ensure the scene size is valid.
+              var sceneSize = scene.size
+              if !isfinite(sceneSize.width)  || sceneSize.width  < 30 { sceneSize.width  = 30 }
+              if !isfinite(sceneSize.height) || sceneSize.height < 30 { sceneSize.height = 30 }
+              scene.size = sceneSize
 
                 // Constrain the popover size.
-              let resultSize = CGSize(width:  clampExtent(sceneFrame.size.width,  50, 600),
-                                      height: clampExtent(sceneFrame.size.height, 50, 400))
-              var resultView = SKView(frame: CGRect(origin: CGPoint(x: (resultSize.width  - sceneFrame.size.width)  / 2,
-                                                                    y: (resultSize.height - sceneFrame.size.height) / 2),
-                                                    size: sceneFrame.size))
+              let resultSize = CGSize(width:  clampExtent(sceneSize.width,  50, 1024),
+                                      height: clampExtent(sceneSize.height, 50, 768))
+              var resultView = SKView(frame: CGRect(origin: CGPointZero, size: resultSize))
               resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
               resultView.translatesAutoresizingMaskIntoConstraints = true
               resultView.presentScene(scene)
