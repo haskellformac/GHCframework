@@ -548,7 +548,6 @@ void GHCInstance_initialise(void);
 @end
 |]
 
-
 objc_emit
 
 foreign export ccall "GHCInstance_initialise" objc_initialise :: IO ()
