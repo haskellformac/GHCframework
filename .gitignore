@@ -48,3 +48,7 @@ HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Tex
 HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Path_objc.h
 
 HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Path_objc.m
+
+HaskellForMac/GHCKit/GHCInstance_objc.h
+
+HaskellForMac/GHCKit/GHCInstance_objc.m

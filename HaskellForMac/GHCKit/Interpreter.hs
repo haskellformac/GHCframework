@@ -181,10 +181,8 @@ type EvalResult = Result (Either (ForeignPtr ()) [String])
 --
 eval :: Session -> String -> Int -> String -> IO EvalResult
 eval (Session inlet logLevel) source line stmt
-  = do
-    { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
+  = tryGhcAction inlet (\msg -> Result $ Right [msg]) $
+        GHC.handleSourceError (\e -> handleError e >> return Error) $ do
         { logCode logLevel $ "evaluating: " ++ stmt
         
             -- we need to have spritekit available
@@ -210,15 +208,13 @@ eval (Session inlet logLevel) source line stmt
             Right ty ->
               case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
                 Just tycon 
-                  | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  resultMV iis
-                  | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" resultMV iis
-                _                                       -> GHC.setContext iis >> runGHCiStatement resultMV
-            Left _e -> GHC.setContext iis >> runGHCiStatement resultMV
+                  | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  iis
+                  | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" iis
+                _                                       -> GHC.setContext iis >> runGHCiStatement
+            Left _e -> GHC.setContext iis >> runGHCiStatement
         }
-    ; takeMVar resultMV
-    }
   where
-    runNodeEval conversionName resultMV iis
+    runNodeEval conversionName iis
       = do
         { logMsg logLevel "evaluating SpriteKit node"
         
@@ -230,29 +226,28 @@ eval (Session inlet logLevel) source line stmt
                       GHC.liftIO $
                         GHC.try $ 
                           (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
-        ; case result of
-            Right result -> GHC.liftIO $ putMVar resultMV (Result $ Left result)
-            Left  exc    -> GHC.liftIO $ putMVar resultMV (Result $ Right ["** Exception: " ++ show (exc :: SomeException)])
-        
+
         ; GHC.setContext iis
+        ; case result of
+            Right result -> return $ Result (Left result)
+            Left  exc    -> return $ Result (Right ["** Exception: " ++ show (exc :: SomeException)])        
         }
         
-    runGHCiStatement resultMV
+    runGHCiStatement 
       = do
         { logMsg logLevel "evaluating general statement"
         
             -- GHCi-style command execution
         ; runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
-        ; result <- case runResult of
-                     GHC.RunOk names       -> do
-                                              { chan        <- GHC.liftIO $ readIORef chanRef
-                                              ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
-                                              ; types       <- renderTypes names
-                                              ; return $ Result (Right $ fromMaybe "" maybe_value : types)
-                                              }
-                     GHC.RunException exc  -> return $ Result (Right ["** Exception: " ++ show exc])
-                     _                     -> return $ Result (Right ["** Exception: <unexpected break point>"])
-        ; GHC.liftIO $ putMVar resultMV result
+        ; case runResult of
+            GHC.RunOk names       -> do
+                                     { chan        <- GHC.liftIO $ readIORef chanRef
+                                     ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
+                                     ; types       <- renderTypes names
+                                     ; return $ Result (Right $ fromMaybe "" maybe_value : types)
+                                     }
+            GHC.RunException exc  -> return $ Result (Right ["** Exception: " ++ show exc])
+            _                     -> return $ Result (Right ["** Exception: <unexpected break point>"])
         }
     --
     parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
@@ -394,7 +389,7 @@ logMsgFromLevel minLogLevel logLevel msg
   | otherwise
   = return ()
 
--- |Wrap a command to execute in the context of the working directory of the interactive context.
+-- Wrap a command to execute in the context of the working directory of the interactive context.
 --
 -- GHC does that for 'runStmtWithLocation', but we need that for other ways of executing Haskel code, too.
 --
@@ -421,6 +416,32 @@ withVirtualCWD m
               }
 
     ; GHC.gbracket set_cwd reset_cwd $ const m
+    }
+
+-- Execute the given given GHC action in the interpreter thread through the inlet (first argument). Gracefully handle all
+-- exceptions and ensure that the action is terminated within a fixed timeframe.
+--
+-- FIXME: This is currently only being used for evaluation. Other GHC actions should be protected, too.
+tryGhcAction :: MVar (Maybe (GHC.Ghc ())) -> (String -> result) -> GHC.Ghc result -> IO result
+tryGhcAction inlet errMsgHandler action
+  = do
+    { resultMV <- newEmptyMVar
+    ; putMVar inlet $ Just $ do    -- the interpreter command we send over to the interpreter thread
+        { tid <- GHC.liftIO $ myThreadId
+        ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 2000000 >> throwTo tid GHC.UserInterrupt
+        ; result <- GHC.gtry $ do {result <- action; GHC.liftIO $ killThread watchdogTid; return result}
+        ; case result of
+            Left exc -> 
+              case GHC.fromException exc of
+                Just GHC.UserInterrupt -> 
+                  GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: evaluation timed out (took too long)")
+                Just asyncExc -> 
+                  GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: " ++ show asyncExc)
+                Nothing -> 
+                  GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: " ++ show (exc :: SomeException))
+            Right result -> GHC.liftIO $ putMVar resultMV result
+        }
+    ; takeMVar resultMV
     }
 
 
