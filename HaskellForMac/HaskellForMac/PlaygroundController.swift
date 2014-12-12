@@ -404,7 +404,11 @@ extension PlaygroundController: NSTableViewDelegate {
       case kValueCell:
         if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
           cell.textField?.stringValue = result.value
-          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          if result.value.hasPrefix("** Exception: ") {   // FIXME: make this less ad hoc
+            cell.textField?.textColor = result.stale ? NSColor.redColor().highlightWithLevel(0.5) : NSColor.redColor()
+          } else {
+            cell.textField?.textColor = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
+          }
           return cell
         } else { return nil }
       default:

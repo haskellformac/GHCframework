@@ -73,8 +73,8 @@ data Session = Session (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to
 -- |Possible results of executing an interpreter action. 
 --
 --FIXME: we want to make this asynchronous...
-data Result r = Result r
-              | Error
+data Result r = Result r        -- ^Success or dynamic error, including error message as a string.
+              | Error           -- ^Static error: error information is delivered asynchonously.
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
@@ -219,18 +219,23 @@ eval (Session inlet logLevel) source line stmt
     }
   where
     runNodeEval conversionName resultMV iis
-      = withVirtualCWD $ do                                -- code executon needs to use the IC working directory
-      { logMsg logLevel "evaluating SpriteKit node"
-      
-          -- result is a SpriteKit node => get a reference to that node instead of pretty printing
-      ; let nodeExpr = conversionName ++ " " ++ parens stmt
-      ; hval <- GHC.compileExpr nodeExpr
-      -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
-      ; result <- GHC.liftIO (unsafeCoerce hval :: IO (ForeignPtr ()))   -- force evaluation => contain effects
-      ; GHC.liftIO $ putMVar resultMV (Result (Left result))
-      
-      ; GHC.setContext iis
-      }
+      = do
+        { logMsg logLevel "evaluating SpriteKit node"
+        
+            -- result is a SpriteKit node => get a reference to that node instead of pretty printing
+        ; let nodeExpr = conversionName ++ " " ++ parens stmt
+        ; hval <- GHC.compileExpr nodeExpr
+        -- FIXME: we need to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'
+        ; result <- withVirtualCWD $                                    -- code executon needs to use the IC working directory
+                      GHC.liftIO $
+                        GHC.try $ 
+                          (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
+        ; case result of
+            Right result -> GHC.liftIO $ putMVar resultMV (Result $ Left result)
+            Left  exc    -> GHC.liftIO $ putMVar resultMV (Result $ Right ["** Exception: " ++ show (exc :: SomeException)])
+        
+        ; GHC.setContext iis
+        }
         
     runGHCiStatement resultMV
       = do
@@ -245,8 +250,8 @@ eval (Session inlet logLevel) source line stmt
                                               ; types       <- renderTypes names
                                               ; return $ Result (Right $ fromMaybe "" maybe_value : types)
                                               }
-                     GHC.RunException exc  -> return $ Result (Right ["Exception: " ++ show exc])
-                     _                     -> return $ Result (Right ["<unexpected break point>"])
+                     GHC.RunException exc  -> return $ Result (Right ["** Exception: " ++ show exc])
+                     _                     -> return $ Result (Right ["** Exception: <unexpected break point>"])
         ; GHC.liftIO $ putMVar resultMV result
         }
     --
