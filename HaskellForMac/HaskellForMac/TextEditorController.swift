@@ -42,15 +42,10 @@ class TextEditorController: NSViewController {
 
   /// Initialise the view controller by loading its NIB file and also set the associated file URL.
   ///
-  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!, filePath: String) {
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!) {
     viewModelItem = projectViewModelItem
 
     super.init(nibName: nibName, bundle: bundle)
-
-    awakeAction   = { [unowned self] in
-      // Initialise the path control (whose referenced isn't initialised yet).
-      self.pathControl.URL = NSURL(string: filePath)
-    }
 
       // We use our gutter class as a ruler for the text view.
     NSScrollView.setRulerViewClass(TextGutterView)
@@ -98,7 +93,10 @@ class TextEditorController: NSViewController {
       // Get the intial edited code.
     textView.string = viewModelItem.string;
 
-      // Execute the awake action. (We do that last to ensure all connections are already set up.)
+      // Set the item's path on the path control.
+    self.pathControl.URL = NSURL(string: viewModelItem.filePath())
+
+    // Execute the awake action. (We do that last to ensure all connections are already set up.)
     awakeAction()
     awakeAction = {()}
   }

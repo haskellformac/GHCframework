@@ -37,7 +37,8 @@
     NSFileWrapper *projectFileWrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:@{}];
     [projectFileWrapper setPreferredFilename:@"Untitled.hsproj"];   // NB: not an absolute path; needs to be updated before saving
     _projectModel = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
-                                                               cabalFileWrapper:nil];
+                                                               cabalFileWrapper:nil
+                                                                    documentURL:self.fileURL];
     if (!_projectModel) {
 
       NSLog(@"%s: failed to create a new project",__func__);
@@ -92,7 +93,8 @@
 
     // Initialise the project view model with the project and Cabal file wrappers. The latter *may* be nil!
   _projectModel  = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
-                                                              cabalFileWrapper:cabalFile];
+                                                              cabalFileWrapper:cabalFile
+                                                                   documentURL:self.fileURL]; // FIXME: Cocoa docs advise against doing this. Might want to use `-readFromURL:ofType:error:` instead of current method.
 
   if (self.projectModel)
     readSuccess = YES;

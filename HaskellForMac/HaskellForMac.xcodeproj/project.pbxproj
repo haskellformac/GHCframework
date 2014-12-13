@@ -52,6 +52,8 @@
 		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
 		E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89619D1207700369A80 /* UtilitiesTests.swift */; };
 		E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89819D4207E00369A80 /* HighlightingTests.swift */; };
+		E785311B1A3C016000B6A6B0 /* QuicklookController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78531191A3C016000B6A6B0 /* QuicklookController.swift */; };
+		E785311C1A3C016000B6A6B0 /* Quicklook.xib in Resources */ = {isa = PBXBuildFile; fileRef = E785311A1A3C016000B6A6B0 /* Quicklook.xib */; };
 		E78E73F619D52DCE0046BA51 /* Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78E73F519D52DCE0046BA51 /* Range.swift */; };
 		E791CF3F19F8B35800DECDC4 /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E791CF3E19F8B35800DECDC4 /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E791CF4D19F9DB2200DECDC4 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF4219F8B48100DECDC4 /* GHC.framework */; };
@@ -281,6 +283,8 @@
 		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		E76CD89619D1207700369A80 /* UtilitiesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilitiesTests.swift; sourceTree = "<group>"; };
 		E76CD89819D4207E00369A80 /* HighlightingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightingTests.swift; sourceTree = "<group>"; };
+		E78531191A3C016000B6A6B0 /* QuicklookController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuicklookController.swift; sourceTree = "<group>"; };
+		E785311A1A3C016000B6A6B0 /* Quicklook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Quicklook.xib; sourceTree = "<group>"; };
 		E78E73F519D52DCE0046BA51 /* Range.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Range.swift; sourceTree = "<group>"; };
 		E791CF3E19F8B35800DECDC4 /* ToolWrapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = ToolWrapper; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/ToolWrapper"; sourceTree = "<absolute>"; };
 		E791CF4219F8B48100DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = GHC.framework; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/GHC.framework"; sourceTree = "<absolute>"; };
@@ -533,6 +537,14 @@
 			name = Utilities;
 			sourceTree = "<group>";
 		};
+		E78531181A3C011F00B6A6B0 /* Quicklook */ = {
+			isa = PBXGroup;
+			children = (
+				E78531191A3C016000B6A6B0 /* QuicklookController.swift */,
+			);
+			name = Quicklook;
+			sourceTree = "<group>";
+		};
 		E791CF7519FA595A00DECDC4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -610,6 +622,7 @@
 				E7C5765E19948B3A00E6AAE0 /* Projects */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
+				E78531181A3C011F00B6A6B0 /* Quicklook */,
 				E7F7988B198A609B0063294F /* Playground */,
 				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E72AF5F819E38C6E00753077 /* Cloud */,
@@ -665,6 +678,7 @@
 				E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */,
 				E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */,
 				E7ED6895198FAF4100A1E8FE /* TextEditor.xib */,
+				E785311A1A3C016000B6A6B0 /* Quicklook.xib */,
 				E7258C57198A2263004789CF /* Playground.xib */,
 				E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */,
 				E7CFFEA119F729B600356065 /* ResultPopover.xib */,
@@ -995,6 +1009,7 @@
 				E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */,
 				E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */,
 				E7258C58198A2263004789CF /* Playground.xib in Resources */,
+				E785311C1A3C016000B6A6B0 /* Quicklook.xib in Resources */,
 				E7A13B1D1888006C00D79087 /* Images.xcassets in Resources */,
 				E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */,
 				E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */,
@@ -1192,6 +1207,7 @@
 				E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */,
 				E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */,
 				E71D5AE61A1AF6AE0040045D /* Constants.swift in Sources */,
+				E785311B1A3C016000B6A6B0 /* QuicklookController.swift in Sources */,
 				E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */,
 				E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */,
 				E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */,

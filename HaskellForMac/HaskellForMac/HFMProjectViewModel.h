@@ -40,6 +40,7 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 ///
 @property (readonly) NSFileWrapper *fileWrapper;
 @property (readonly) NSString      *cabalFileName;
+@property (readonly) NSURL         *documentURL;             // URL of the represented document at load time.
 
 // Project properties
 //
@@ -101,7 +102,8 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 //
 // FIXME: we need to report errors with more information.
 + (instancetype)projectViewModelWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
-                                      cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper;
+                                      cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
+                                           documentURL:(NSURL *)documentURL;
 
 /// Initialise a project model for the project given by the file wrappers. The 'cabalFileWrapper' refers to the Cabal
 /// file of the project. The latter *may* be 'nil', in which case, it needs to be created.
@@ -110,7 +112,8 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 //
 // FIXME: we need to report errors with more information.
 - (instancetype)initWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
-                          cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper;
+                          cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
+                               documentURL:(NSURL *)documentURL;
 
 /// Configure an initialised, but still empty project as a default Haskell project.
 //

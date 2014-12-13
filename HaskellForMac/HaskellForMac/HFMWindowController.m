@@ -700,9 +700,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     self.editorView.needsDisplay = YES;
     self.noEditorLabel.hidden    = YES;
 
-//    if ([self.editorViewController isKindOfClass:[TextEditorController class]])
-//      [((TextEditorController *)self.editorViewController) makeCodeViewFirstResponder];
-
   }
 
     // Enter playground view into the view hierachy if available.

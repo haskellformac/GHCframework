@@ -10,6 +10,7 @@
 //  in the outline view.
 
 #import <Foundation/Foundation.h>
+#import <Quartz/Quartz.h>
 #import "HFMProjectViewModel.h"
 
 
@@ -35,7 +36,7 @@ extern NSString *const kExtraSourceGroupID;
 extern NSString *const kDataGroupID;
 
 
-@interface HFMProjectViewModelItem : NSObject
+@interface HFMProjectViewModelItem : NSObject<QLPreviewItem>
 
 /// The project view model that this item belongs to.
 ///

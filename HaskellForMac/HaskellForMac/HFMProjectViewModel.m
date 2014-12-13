@@ -70,9 +70,11 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 
 + (instancetype)projectViewModelWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
                                       cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
+                                           documentURL:(NSURL *)documentURL
 {
   return [[HFMProjectViewModel alloc] initWithProjectFileWrapper:projectFileWrapper
-                                                cabalFileWrapper:cabalFileWrapper];
+                                                cabalFileWrapper:cabalFileWrapper
+                                                     documentURL:documentURL];
 }
 
 - (instancetype)init
@@ -83,6 +85,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 
 - (instancetype)initWithProjectFileWrapper:(NSFileWrapper *)projectFileWrapper
                           cabalFileWrapper:(NSFileWrapper *)cabalFileWrapper
+                               documentURL:(NSURL *)documentURL
 {
   self = [super init];
   if (self) {
@@ -113,6 +116,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 
     }
     _cabalFileName = cabalFileWrapper.preferredFilename;
+    _documentURL   = documentURL;
 
       // Set up the group items
     [self initGroupItems];

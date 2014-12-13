@@ -722,4 +722,13 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
   return nil;     // not found
 }
 
+
+#pragma mark -
+#pragma mark QLPreviewItem protocol methods
+
+- (NSURL *)previewItemURL
+{
+  return [self.model.documentURL URLByAppendingPathComponent:self.filePath];
+}
+
 @end

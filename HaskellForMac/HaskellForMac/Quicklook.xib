@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C68k" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="QuicklookController" customModule="Haskell" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="nT0-Aq-uDe" id="zLc-k5-qgX"/>
+                <outlet property="pathControl" destination="Fb6-GA-CZS" id="Vpf-Vf-F9h"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fb6-GA-CZS">
+                    <rect key="frame" x="0.0" y="252" width="480" height="20"/>
+                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" id="ZvA-G5-KwM">
+                        <font key="font" metaFont="smallSystem"/>
+                        <url key="url" string="file://localhost/Applications/"/>
+                        <color key="backgroundColor" red="0.8980392157" green="0.92549019610000005" blue="0.97254901959999995" alpha="1" colorSpace="deviceRGB"/>
+                    </pathCell>
+                </pathControl>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="nT0-Aq-uDe">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="252"/>
+                </customView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="nT0-Aq-uDe" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="4Y0-nm-Qkz"/>
+                <constraint firstItem="Fb6-GA-CZS" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="9qx-r6-UkL"/>
+                <constraint firstItem="Fb6-GA-CZS" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Vyg-6J-UNd"/>
+                <constraint firstAttribute="trailing" secondItem="Fb6-GA-CZS" secondAttribute="trailing" id="hi8-CW-sUc"/>
+                <constraint firstItem="nT0-Aq-uDe" firstAttribute="top" secondItem="Fb6-GA-CZS" secondAttribute="bottom" id="jN4-nx-Pc2"/>
+                <constraint firstAttribute="trailing" secondItem="nT0-Aq-uDe" secondAttribute="trailing" id="pV0-qL-CMO"/>
+                <constraint firstAttribute="bottom" secondItem="nT0-Aq-uDe" secondAttribute="bottom" id="t6g-sw-oXO"/>
+            </constraints>
+        </customView>
+    </objects>
+</document>

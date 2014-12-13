@@ -15,11 +15,12 @@ import Cocoa
 // MARK: -
 // MARK: Constants
 
-/// Editor NIB file names
+/// NIB file names
 ///
 private let kPackageHeaderEditor = "PackageHeaderEditor"
 private let kTextEditor          = "TextEditor"
 private let kPlayground          = "Playground"
+private let kQuicklook           = "Quicklook"
 
 /// A dictionary associating file extensions with the editor used to edit files of that type. Editors are identified
 /// be the name of their NIB file.
@@ -34,6 +35,7 @@ private let editors = ["cabal": kPackageHeaderEditor,
 ///
 private enum Configuration {
   case NoEditor
+  case Quicklook(QuicklookController)
   case PackageHeaderEditor(HFMHeaderEditorController)
   case TextEditor(TextEditorController)
   case HaskellEditor(TextEditorController, PlaygroundController)
@@ -101,7 +103,7 @@ final class ContextController : NSObject {
 
       let fileExtension = filePath.pathExtension
 
-      // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
+        // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
       var error: NSError?
       if !item.dirty && !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
         NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
@@ -110,10 +112,22 @@ final class ContextController : NSObject {
       }
 
       // Select a suitable editor, and try to load the editor and maybe also playground.
-      let nibName = editors[fileExtension]
-      if let nibName = nibName {
+      let nibName = editors[fileExtension] ?? kQuicklook
+//      if let nibName = nibName {
+      if true {
 
         switch nibName {
+
+        case kQuicklook:
+          if let quicklookController = QuicklookController(nibName: nibName,
+                                                            bundle: nil,
+                                              projectViewModelItem: item)
+          {
+            config        = .Quicklook(quicklookController)
+            editor.memory = quicklookController
+          } else {
+            config = .NoEditor
+          }
 
         case kPackageHeaderEditor:
           if let editorController = HFMHeaderEditorController(nibName: nibName,
@@ -130,8 +144,7 @@ final class ContextController : NSObject {
         case kTextEditor:
           if let editorController = TextEditorController(nibName: nibName,
                                                           bundle: nil,
-                                            projectViewModelItem: item,
-                                                        filePath: filePath)
+                                            projectViewModelItem: item)
           {
             editor.memory = editorController
             if let viewModelPlayground = item.playground {
@@ -248,6 +261,9 @@ extension ContextController {
     switch config {
 
     case .NoEditor:
+      break
+
+    case .Quicklook(_):
       break
 
     case .PackageHeaderEditor(let headerEditor):
