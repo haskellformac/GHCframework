@@ -52,3 +52,15 @@ HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Pat
 HaskellForMac/GHCKit/GHCInstance_objc.h
 
 HaskellForMac/GHCKit/GHCInstance_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Action_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Action_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Event_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Event_objc.m
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Scene_objc.h
+
+HaskellForMac/HaskellSpriteKit/HaskellSpriteKit/spritekit/Graphics/SpriteKit/Scene_objc.m
