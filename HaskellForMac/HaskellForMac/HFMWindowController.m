@@ -267,6 +267,36 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
    activateFileViewerSelectingURLs:@[[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]]];
 }
 
+- (IBAction)addExistingFiles:(NSMenuItem *)sender
+{
+#pragma unused(sender)
+  NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
+                                                      : [self.outlineView clickedRow];
+  HFMProject              *project    = (HFMProject*)self.document;
+  HFMProjectViewModelItem *parentItem;
+  NSInteger                itemIndex;
+  if (row < 0) {    // no item clicked or selected
+
+    parentItem = project.projectModel.groupItems[PVMItemGroupIndexData];
+    itemIndex  = 0;
+
+  } else {
+
+    HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
+    parentItem                           = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
+                                           ? [self.outlineView parentForItem:clickedItem]
+                                           : clickedItem;
+    itemIndex                            = (parentItem == clickedItem) ? 0 : (NSInteger)[clickedItem index] + 1;
+  }
+
+  NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+  openPanel.canChooseDirectories    = NO;
+  openPanel.allowsMultipleSelection = YES;
+  openPanel.title                   = @"Add files";
+  openPanel.prompt                  = @"Add";
+  NSInteger button = [openPanel runModal];
+}
+
 - (IBAction)newFile:(NSMenuItem *)sender
 {
 #pragma unused(sender)
@@ -298,7 +328,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     HFMProjectViewModelItem *newItem = [project outlineView:self.outlineView child:(NSInteger)itemIndex ofItem:parentItem];
     [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.3];
       // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
-      //     delay editing. It does seem like a hack, though. Is there any better way to achieve this?
+      //     delay editing. It does seem like a hack, though. Is there a better way to achieve this?
   }
 }
 
@@ -538,6 +568,14 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
     return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile
            || item.tag == PVMItemTagMainFile;
+
+  } else if (action == @selector(addExistingFiles:)) {
+
+    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
+    return (item.tag == PVMItemTagGroup && ([item.identifier isEqualToString:kExtraSourceGroupID]
+                                            || [item.identifier isEqualToString:kDataGroupID]));
+      // FIXME: The above should also return YES for files and folders within those two groups. To determine that the
+      //         view model item class needs to export a method that returns the group to which an item belongs.
 
   } else if (action == @selector(newFile:)) {
 

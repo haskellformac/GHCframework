@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C68k" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
@@ -70,11 +70,24 @@
                 <menuItem title="File" id="83">
                     <menu key="submenu" title="File" id="81">
                         <items>
+                            <menuItem title="New Haskell File…" keyEquivalent="n" id="ltb-YK-l0u">
+                                <connections>
+                                    <action selector="newFile:" target="-1" id="jLq-3h-igy"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="New Project…" keyEquivalent="N" id="82">
                                 <connections>
                                     <action selector="newDocument:" target="-1" id="373"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="UwF-RN-S6t"/>
+                            <menuItem title="Add Existing Files…" keyEquivalent="a" id="gy8-Cb-ACR">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="addExistingFiles:" target="-1" id="Tea-oq-cki"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="mzP-oX-cfU"/>
                             <menuItem title="Open…" keyEquivalent="o" id="72">
                                 <connections>
                                     <action selector="openDocument:" target="-1" id="374"/>
@@ -340,14 +353,14 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Cloud" id="Rn4-x1-yF4" userLabel="Cloud">
                         <items>
-                            <menuItem title="New account..." id="YIV-Rm-IKN">
+                            <menuItem title="New account…" id="YIV-Rm-IKN">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="newCloudAccount:" target="-1" id="a8u-KP-DRT"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="dWW-47-ZtT"/>
-                            <menuItem title="Run project..." id="RCg-rr-2gB" userLabel="Run project...">
+                            <menuItem title="Run project…" id="RCg-rr-2gB" userLabel="Run project...">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runProjectInCloud:" target="-1" id="921-s0-kKr"/>
