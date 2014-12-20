@@ -12,13 +12,6 @@
 
 @interface HFMProjectViewModelItem ()
 
-/// Points to the parent item; 'nil' for group items.
-///
-/// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of items in the
-/// outline view.
-///
-@property (weak, readonly) HFMProjectViewModelItem *parent;
-
 /// Mutable set of children of an item.
 ///
 /// This property is initialised to 'nil' and computed on demand.

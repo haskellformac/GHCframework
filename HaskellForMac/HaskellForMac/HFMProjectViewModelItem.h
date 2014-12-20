@@ -52,6 +52,13 @@ extern NSString *const kDataGroupID;
 ///
 @property (nonatomic) NSString *identifier;
 
+/// Points to the parent item; 'nil' for group items.
+///
+/// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of items in the
+/// outline view.
+///
+@property (weak, readonly) HFMProjectViewModelItem *parent;
+
 /// Help text.
 ///
 @property (nonatomic) NSString *tip;

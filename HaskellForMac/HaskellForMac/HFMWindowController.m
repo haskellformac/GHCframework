@@ -199,26 +199,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
 {
-  NSOutlineView *outlineView = [notification object];
-  NSInteger      row         = [outlineView selectedRow];
-
-  if (row != -1) {   // If a row is selected...
-
-    HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
-
-    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)) {
-
-      NSViewController     *editorController     = nil;
-      PlaygroundController *playgroundController = nil;
-
-      [self.contextController selectItem:item returningEditor:&editorController playground:&playgroundController];
-      [self configureEditor:editorController playground:playgroundController];
-
-        // Load the newly selected module right away.
-      [self.contextController loadContextModule];
-    }
-
-  }
+  [self configureContextForSelectedItemInOutlineView:[notification object]];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView
@@ -287,8 +268,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
                                            : clickedItem;
     itemIndex                            = (parentItem == clickedItem) ? 0 : (NSInteger)[clickedItem index] + 1;
   }
+  if (!parentItem.fileWrapper.isDirectory) return;      // We can only add files to directories.
 
-    // Ensure the on disk state of the project is up to date and that our target is a directory.
+    // Ensure that the document representation memory and on disk are in sync.
+    // NB: Do this before the open panel as it needs a run loop iteration to take effect.
+  [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
 
     // Ask the user to specify all files (no directories at the moment) that should be copied into the project.
     //
@@ -298,9 +282,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   openPanel.title                   = @"Add files";
   openPanel.prompt                  = @"Add";
   if ([openPanel runModal] == NSFileHandlingPanelCancelButton) return;
-
-    // Ensure that the document representation memory and on disk are in sync.
-  [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
 
     // Try to add the selected files to the project, one by one.
   for (NSURL *url in openPanel.URLs) {
@@ -330,7 +311,12 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
       // Add the given file to the project model.
     NSError *error;
-    [parentItem copyFileAtURL:url toIndex:(NSUInteger)itemIndex error:&error];
+    if (![parentItem copyFileAtURL:url toIndex:(NSUInteger)itemIndex error:&error]) {
+
+      NSAlert *alert = [NSAlert alertWithError:error];
+      [alert runModal];
+      return;
+    }
 
       // Update the outline view.
     [self.outlineView beginUpdates];
@@ -340,8 +326,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     [self.outlineView endUpdates];
 
   }
+    // Re-read the project to ensure it is not regarded as changed by another app on the next save.
+  NSError *error;
+  if (![project revertToContentsOfURL:project.fileURL ofType:project.fileType error:&error])
+    NSLog(@"%s: problem reverting: %@", __func__, error);
 
-    // FIXME: update the quicklook view if the currently displayed file was updated (or just update in any case...)
+    // Update the context if the currently selected item may have changed.
+  NSInteger selected = [self.outlineView selectedRow];
+  if (selected >= 0 && [((HFMProjectViewModelItem*)[self.outlineView itemAtRow:selected]).parent isEqual:parentItem])
+    [self configureContextForSelectedItemInOutlineView:self.outlineView];
 }
 
 - (IBAction)newFile:(NSMenuItem *)sender
@@ -754,6 +747,35 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 - (BOOL)commitEditing
 {
   return [self.contextController commitEditing];
+}
+
+
+#pragma mark -
+#pragma mark Configuration management
+
+/// Configure the context according to the currently selected item in the source view.
+///
+- (void)configureContextForSelectedItemInOutlineView:(NSOutlineView *)outlineView
+{
+  NSInteger row = [outlineView selectedRow];
+
+  if (row != -1) {   // If a row is selected...
+
+    HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
+
+    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)) {
+
+      NSViewController     *editorController     = nil;
+      PlaygroundController *playgroundController = nil;
+
+      [self.contextController selectItem:item returningEditor:&editorController playground:&playgroundController];
+      [self configureEditor:editorController playground:playgroundController];
+
+        // Load the newly selected module right away.
+      [self.contextController loadContextModule];
+    }
+
+  }
 }
 
 /// Configure a new editor and playground controller.
