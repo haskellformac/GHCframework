@@ -365,6 +365,17 @@ NSString *const kDataGroupID        = @"Supporting files";
   return [NSString pathWithComponents:path];
 }
 
+/// Returns the URL from which this item was loaded if any.
+///
+/// WARNING: Use this sparringly. Only use this for file operations and for Quicklook previews, which operate on the
+///          underlying file; otherwise, always use the data from the file wrapper instead. Before accessing the file
+///          system representation, ensure the project was saved (i.e., isn't dirty)!
+///
+- (NSURL *)URL
+{
+  return [self.model.documentURL URLByAppendingPathComponent:self.filePath];
+}
+
 - (NSFileWrapper *)getUpdatedFileWrapper
 {
   NSFileWrapper *updatedFileWrapper;
@@ -421,6 +432,44 @@ NSString *const kDataGroupID        = @"Supporting files";
     self.dirtyFileWrapper                   = [[NSFileWrapper alloc] initRegularFileWithContents:[NSData data]];
     self.dirtyFileWrapper.preferredFilename = self.identifier;
   }
+}
+
+- (BOOL)copyFileAtURL:(NSURL *)url toIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error
+{
+  if ((self.tag != PVMItemTagGroup)
+      && self.tag != PVMItemTagExecutable
+      && self.tag != PVMItemTagFileGroup
+      && self.tag != PVMItemTagFolder) return NO;
+  if (self.children.count < index) return NO;
+
+    // Attempt to copy the file.
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString      *identifier  = [url lastPathComponent];
+  NSURL         *destination = [[self URL] URLByAppendingPathComponent:identifier];
+  if (![fileManager copyItemAtURL:url toURL:destination error:error])
+    return NO;
+
+    // Update the current item's file wrapper (to pick up the new file).
+  if (![self.fileWrapper readFromURL:[self URL] options:0 error:error])
+    return NO;
+
+    // Grab the file wrapper of the new item.
+  NSFileWrapper *newItemFileWrapper = self.fileWrapper.fileWrappers[identifier];
+  if (!newItemFileWrapper) {
+
+    *error = [NSError errorWithDomain:@"HFM Internal Error" code:-1 userInfo:nil];
+    return NO;
+
+  }
+
+  HFMProjectViewModelItem *newChild= [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagFile
+                                                                                 identifier:identifier
+                                                                                 playground:nil
+                                                                                     parent:self
+                                                                                      model:self.model];
+  [self.theChildren insertObject:newChild atIndex:index];
+
+  return YES;
 }
 
 - (BOOL)newHaskellSourceAtIndex:(NSUInteger)index
@@ -728,7 +777,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
 - (NSURL *)previewItemURL
 {
-  return [self.model.documentURL URLByAppendingPathComponent:self.filePath];
+  return [self URL];
 }
 
 @end

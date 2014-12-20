@@ -269,7 +269,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
 - (IBAction)addExistingFiles:(NSMenuItem *)sender
 {
-#pragma unused(sender)
   NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                       : [self.outlineView clickedRow];
   HFMProject              *project    = (HFMProject*)self.document;
@@ -289,12 +288,60 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     itemIndex                            = (parentItem == clickedItem) ? 0 : (NSInteger)[clickedItem index] + 1;
   }
 
+    // Ensure the on disk state of the project is up to date and that our target is a directory.
+
+    // Ask the user to specify all files (no directories at the moment) that should be copied into the project.
+    //
   NSOpenPanel *openPanel = [NSOpenPanel openPanel];
   openPanel.canChooseDirectories    = NO;
   openPanel.allowsMultipleSelection = YES;
   openPanel.title                   = @"Add files";
   openPanel.prompt                  = @"Add";
-  NSInteger button = [openPanel runModal];
+  if ([openPanel runModal] == NSFileHandlingPanelCancelButton) return;
+
+    // Ensure that the document representation memory and on disk are in sync.
+  [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
+
+    // Try to add the selected files to the project, one by one.
+  for (NSURL *url in openPanel.URLs) {
+
+    NSString *fname        = [url lastPathComponent];
+    BOOL      skipThisFile = NO;
+    for (HFMProjectViewModelItem *child in parentItem.children) {
+
+        // Name clash => ask user for resolution
+      if ([fname isEqualToString:child.identifier]) {
+
+          // Set up overwrite conformation alert.
+        NSAlert *alert        = [[NSAlert alloc] init];
+        alert.messageText     = [NSString stringWithFormat:@"There is already a file called '%@' at this location.",
+                                 fname];
+        alert.informativeText = @"If you add the new file, the contents of the existing file will be overwritten.";
+        [alert addButtonWithTitle:@"Overwrite existing file"];
+        [alert addButtonWithTitle:@"Keep the existing file"];
+
+        if ([alert runModal] == NSAlertSecondButtonReturn)   // Keep existing file
+          skipThisFile = YES;
+        break;                                               // Skip iterating over the other children of 'parentItem'
+
+      }
+    }
+    if (skipThisFile) continue;     // User declined to overwrite an existing file => bail
+
+      // Add the given file to the project model.
+    NSError *error;
+    [parentItem copyFileAtURL:url toIndex:(NSUInteger)itemIndex error:&error];
+
+      // Update the outline view.
+    [self.outlineView beginUpdates];
+    [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)itemIndex]
+                                  inParent:parentItem
+                             withAnimation:NSTableViewAnimationSlideDown];
+    [self.outlineView endUpdates];
+
+  }
+
+    // FIXME: update the quicklook view if the currently displayed file was updated (or just update in any case...)
 }
 
 - (IBAction)newFile:(NSMenuItem *)sender
@@ -314,7 +361,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     // Add a new source file to the view model and if successful...
   if ([parentItem newHaskellSourceAtIndex:itemIndex]) {
 
-      // Update the UI.
+      // Update the outline view.
     [self.outlineView beginUpdates];
     [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:itemIndex]
                                   inParent:parentItem

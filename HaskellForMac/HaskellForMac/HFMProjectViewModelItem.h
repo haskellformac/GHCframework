@@ -121,7 +121,7 @@ extern NSString *const kDataGroupID;
 ///
 - (NSArray/*<HFMProjectModelItem>*/ *)children;
 
-/// Returns the item's file path relative to the document root, or the empty string if the item is not associated with
+/// Returns the item's file path *relative* to the document root, or the empty string if the item is not associated with
 /// a file.
 ///
 - (NSString *)filePath;
@@ -144,6 +144,10 @@ extern NSString *const kDataGroupID;
 /// NB: If no text is entered, we do not create an empty file in the file system on save.
 ///
 - (void)touchFileWrapper;
+
+/// Copy the given file into the current item (which must be a folder or group) at the given child index.
+///
+- (BOOL)copyFileAtURL:(NSURL *)url toIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error;
 
 /// Create a new item for a Haskell source file as a child of the current item at the given child index.
 ///
