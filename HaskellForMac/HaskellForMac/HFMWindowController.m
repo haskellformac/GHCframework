@@ -136,7 +136,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
 #pragma unused(outlineView)
 
-  return item.tag == PVMItemTagGroup;
+  return (item) ? item.tag == PVMItemTagGroup : NO;
 }
 
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView

@@ -132,7 +132,7 @@ NSString *const kDataGroupID        = @"Supporting files";
         break;
         
       case PVMItemTagPackage:
-        _fileWrapper = [self.model.fileWrapper fileWrappers][self.model.cabalFileName];
+        _fileWrapper = self.model.fileWrapper.fileWrappers[self.model.cabalFileName];
         if (!_fileWrapper)
           NSLog(@"%s: cabal file wrapper with filename '%@' disappeared", __func__, self.model.cabalFileName);
         break;
@@ -462,7 +462,7 @@ NSString *const kDataGroupID        = @"Supporting files";
                                                                                       model:self.model];
   [self.theChildren insertObject:newChild atIndex:index];
 
-  return YES;
+  return [self.model writeCabalFileWithError:error];
 }
 
 - (BOOL)newHaskellSourceAtIndex:(NSUInteger)index

@@ -410,12 +410,20 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 {
 #pragma unused(outError)
 
-  HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
-  NSArray                 *otherGroupItems  = [self.groupItems subarrayWithRange:(NSRange){PVMItemGroupIndexPackage + 1,
-                                                                                           PVM_ITEM_GROUP_INDEX_LAST}];
-
-    // First, we must flush all file wrapper (except the Cabal file one).
+    // First, we must flush all file wrapper (except the Cabal file one) — i.e., leave out the package group item.
+  NSArray *otherGroupItems  = [self.groupItems subarrayWithRange:(NSRange){PVMItemGroupIndexPackage + 1,
+                                                                           PVM_ITEM_GROUP_INDEX_LAST}];
   updateFileWrappers(self.fileWrapper, otherGroupItems);
+
+    // Then, we flush the Cabal one.
+  [self flushCabalFile];
+
+  return self.fileWrapper;
+}
+
+- (void)flushCabalFile
+{
+  HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
 
     // Then, we recreate the file-dependent project properties from the model view items — this will change data in the
     // Cabal file if any files were added, deleted, or their names edited
@@ -430,8 +438,37 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   if (![cabalFileItem.string isEqualToString:newCabalString])        // Better than updating in vain, but a dirty...
     cabalFileItem.string = newCabalString;                          // ...flag on the cabal fields would be even better.
   updateFileWrapper(self.fileWrapper, packageGroupItem);
+}
 
-  return self.fileWrapper;
+- (BOOL)writeCabalFileWithError:(NSError *__autoreleasing *)error
+{
+  NSFileManager *fileManager      = [NSFileManager defaultManager];
+  NSURL         *cabalFileURL     = [self.documentURL URLByAppendingPathComponent:self.cabalFileName];
+  NSURL         *cabalFileTempURL = [cabalFileURL URLByAppendingPathExtension:@".temp"];
+
+    // Flush all changes of the view model into the in-memory model.
+  [self flushCabalFile];
+
+    // Move the old Cabal file out of the way (otherwise, writing will fail).
+  if (![fileManager moveItemAtURL:cabalFileURL toURL:cabalFileTempURL error:error])
+    return NO;
+
+    // Write the updated Cabal file.
+  NSFileWrapper *cabalFileWrapper = self.fileWrapper.fileWrappers[self.cabalFileName];
+  if (! cabalFileWrapper
+      || ![cabalFileWrapper writeToURL:cabalFileURL
+                               options:0
+                   originalContentsURL:nil
+                                 error:error]) {
+
+    NSLog(@"%s: writing the updated Cabal file failed", __func__);
+    [fileManager moveItemAtURL:cabalFileTempURL toURL:cabalFileURL error:error];  // move the old version back
+    return NO;
+
+  }
+
+    // Get rid of the old version of the Cabal file.
+  return [fileManager removeItemAtURL:cabalFileTempURL error:error];
 }
 
 - (void)updateDataGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items

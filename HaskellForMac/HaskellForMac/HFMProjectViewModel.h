@@ -130,4 +130,12 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 //
 - (NSFileWrapper *)fileWrapperWithError:(NSError *__autoreleasing *)outError;
 
+/// Serialise the Cabal file information in the model to disk.
+///
+/// Usually, we save the entire document with `-[HFMProjectViewModel fileWrapperWithError:]`. However, after direct
+/// file system changes (e.g., to copy in existing files), we need to flush out the Cabal file only (as writing the
+/// whole document at this point would fail due to the file system changes).
+///
+- (BOOL)writeCabalFileWithError:(NSError *__autoreleasing *)error;
+
 @end
