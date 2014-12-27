@@ -71,7 +71,7 @@
 {
 #pragma unused(typeName)
 
-  BOOL readSuccess = NO;
+  BOOL reverting   = _projectModel != nil;      // Are we replacing an existing model (reverting the document).
 
     // FIXME: supposedly, we should disable undo during file reading with '[[self undoManager] disableUndoRegistration]'
 
@@ -81,7 +81,7 @@
     // Find the Cabal file.
   NSString      *cabalFileExtension = [HFMProjectViewModel cabalFileExtension];
   NSDictionary  *wrappers           = [projectFileWrapper fileWrappers];
-  NSFileWrapper *cabalFile;
+  NSFileWrapper *cabalFile          = nil;
 
   for (NSString *fname in wrappers)
     if ([[fname pathExtension] isEqualToString:cabalFileExtension] && [wrappers[fname] isRegularFile]) {
@@ -96,9 +96,16 @@
                                                               cabalFileWrapper:cabalFile
                                                                    documentURL:self.fileURL]; // FIXME: Cocoa docs advise against doing this. Might want to use `-readFromURL:ofType:error:` instead of current method.
 
-  if (self.projectModel)
-    readSuccess = YES;
+  BOOL readSuccess = self.projectModel != nil;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
+    // If we are reverting an existing document, make sure the associated windows get updated.
+  if (readSuccess && reverting)
+    [self.windowControllers makeObjectsPerformSelector:@selector(refreshWindowContents)];
+#pragma clang diagnostic pop
+
+    // Error handling.
   if (!readSuccess && outError)
     *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSFileReadUnknownError userInfo:nil];
   return readSuccess;
@@ -145,7 +152,7 @@
         case NSFileHandlingPanelOKButton:
           self.fileURL = [panel URL];
           [self.projectModel createProjectForURL:self.fileURL];
-          [myWindowController refreshOutlineView];
+          [myWindowController refreshWindowContents];
           break;
 
         default:

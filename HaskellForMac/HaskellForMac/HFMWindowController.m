@@ -70,16 +70,8 @@ NSString *const kCabalCellID = @"cabalCellID";
   self.outlineView.delegate   = self;
   self.outlineView.dataSource = self.document;
 
-  [self.outlineView reloadData];
-
     // Set delegate of the split view to be this window controller.
   self.splitView.delegate = self;
-
-    // Expand all root items without animation.
-  [NSAnimationContext beginGrouping];
-  [[NSAnimationContext currentContext] setDuration:0];
-  [self.outlineView expandItem:nil expandChildren:YES];
-  [NSAnimationContext endGrouping];
 
     // We have got one cloud controller and one local context contoller for the lifetime of our window.
   self.cloudController   = [[CloudController alloc] initWithProject:self.document
@@ -93,14 +85,18 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                 return (BOOL)([alert runModal] == NSAlertFirstButtonReturn);
                                               }];
   self.contextController = [[ContextController alloc] initWithProject:self.document];
+
+    // Display the current document state.
+  [self refreshWindowContents];
 }
 
 
 #pragma mark -
 #pragma mark Notifications
 
-- (void)refreshOutlineView
+- (void)refreshWindowContents
 {
+    // Populate the outline view.
   [self.outlineView reloadData];
 
     // Expand all root items without animation.
@@ -108,6 +104,9 @@ NSString *const kCabalCellID = @"cabalCellID";
   [[NSAnimationContext currentContext] setDuration:0];
   [self.outlineView expandItem:nil expandChildren:YES];
   [NSAnimationContext endGrouping];
+
+    // Reset the document context.
+  [self configureContextForSelectedItemInOutlineView:self.outlineView];
 }
 
 
@@ -319,6 +318,8 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     }
 
       // Update the outline view.
+      // FIXME: The animation is not visible as we revert the document a bit further down. We should also preserve the
+      //        selection, which is also messed up by reverting.
     [self.outlineView beginUpdates];
     [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)itemIndex]
                                   inParent:parentItem
@@ -331,10 +332,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   if (![project revertToContentsOfURL:project.fileURL ofType:project.fileType error:&error])
     NSLog(@"%s: problem reverting: %@", __func__, error);
 
-    // Update the context if the currently selected item may have changed.
-  NSInteger selected = [self.outlineView selectedRow];
-  if (selected >= 0 && [((HFMProjectViewModelItem*)[self.outlineView itemAtRow:selected]).parent isEqual:parentItem])
-    [self configureContextForSelectedItemInOutlineView:self.outlineView];
+  // NB: Our model just changed, don't touch view model objects anymore, as they are all invalid now.
 }
 
 - (IBAction)newFile:(NSMenuItem *)sender
@@ -612,8 +610,9 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   } else if (action == @selector(addExistingFiles:)) {
 
     HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
-    return (item.tag == PVMItemTagGroup && ([item.identifier isEqualToString:kExtraSourceGroupID]
-                                            || [item.identifier isEqualToString:kDataGroupID]));
+    return (row == -1
+            || (item.tag == PVMItemTagGroup && ([item.identifier isEqualToString:kExtraSourceGroupID]
+                                                || [item.identifier isEqualToString:kDataGroupID])));
       // FIXME: The above should also return YES for files and folders within those two groups. To determine that the
       //         view model item class needs to export a method that returns the group to which an item belongs.
 
@@ -774,6 +773,11 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
         // Load the newly selected module right away.
       [self.contextController loadContextModule];
     }
+
+  } else {          // If there is no selection...
+
+    [self.contextController deselectCurrentItem];
+    [self configureEditor:nil playground:nil];
 
   }
 }

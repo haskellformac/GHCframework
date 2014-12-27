@@ -26,9 +26,9 @@ typedef NS_ENUM(NSInteger, AuthenticationFlavour) {
 #pragma mark -
 #pragma mark Notifications
 
-/// The data source of the outline view changed. Bring the view up to date.
+/// Make sure the window contents is up to date (e.g., after reverting a document or otherwise changing the data source).
 ///
-- (void)refreshOutlineView;
+- (void)refreshWindowContents;
 
 
 #pragma mark -
