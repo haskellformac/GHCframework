@@ -694,6 +694,16 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   return (subview == self.editorView) ? NO : YES;
 }
 
+- (BOOL)splitView:(NSSplitView *)splitView
+shouldCollapseSubview:(NSView *)subview
+forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
+{
+#pragma unused(splitView)
+
+  return (([subview isEqual:self.outlineScrollView] && dividerIndex == 0)
+          || ([subview isEqual:self.playgroundView] && dividerIndex == 1));
+}
+
 
 #pragma mark -
 #pragma mark NSTextFieldDelegate protocol methods

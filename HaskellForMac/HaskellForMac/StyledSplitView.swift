@@ -11,6 +11,10 @@
 //  temporary constraints reconfiguring the view over the course of the animation. If another animation is requested,
 //  while one is already in progress, we cancel the first one before issuing the second. (This is to avoid conflicts.)
 //  Only one subview is being animated at any one time.
+//
+//  We don't animate on Mavericks for now as it leads to UI glitches in its current form. The pre-Yosemite code also
+//  assumes, in its size calculation, that we do not hide the divide of a collapsed subview. Moreover, it assumes we are
+//  having a horizontal split view. (All this could be easily generalised.)
 
 import Cocoa
 
@@ -46,7 +50,7 @@ class StyledSplitView: NSSplitView {
   ///
   func animateSetSubview(subview: NSView, toCollapsed collapsed: Bool, completionHandler completion: (() -> ())?) {
 
-      // If we are already animating, cancel the animation and out the new one into the completion handler.
+      // If we are already animating, cancel the animation and put the new one into the completion handler.
     if let constraint = animationConstraint {
       NSAnimationContext.runAnimationGroup(
         { context in
@@ -60,7 +64,16 @@ class StyledSplitView: NSSplitView {
       return
     }
 
-    if subview.hidden == collapsed { return }           // If we are already in the target state, we are done
+    if subview.hidden == collapsed { return }           // If we are already in the target state, we are done.
+
+      // If we are not at least on OS X 10.10, just hidding a subview is not sufficient to collapse it. Hence, we
+      // need to do some extra work and cut out the animation.
+//    if !isOperatingSystemAtLeastVersion10_10() {
+    if true {
+      legacyToggleCollapsedState(subview)
+      completion?()
+      return
+    }
 
     if subview.hidden { subview.hidden = false }        // The view needs to be visible for the animation
 
@@ -99,5 +112,47 @@ class StyledSplitView: NSSplitView {
           // Run the completion handler.
         completion?()
     })
+  }
+}
+
+// The following code is only exercised on systems before OS X 10.10, where simply hiding a subview is not sufficient
+// to collapse it.
+//
+extension StyledSplitView {
+
+  func legacyToggleCollapsedState(subview: NSView) {
+
+    let isCollapsed  = isSubviewCollapsed(subview)
+    let subviewIndex = (subviews as NSArray).indexOfObject(subview)
+    if subviewIndex == NSNotFound { return } // PANIC
+
+    func visibleSubviewAtIndex(index: Int) -> NSView? {
+      if index >= subviews.startIndex && index < subviews.endIndex {
+        let view = subviews[index] as NSView
+        if isSubviewCollapsed(view) { return nil } else { return view }
+      } else { return nil }
+    }
+    let leftSubview  = visibleSubviewAtIndex(subviewIndex - 1)
+    let rightSubview = visibleSubviewAtIndex(subviewIndex + 1)
+
+      // If collapsing grow the surrounding views by the width of the collapsed view; if uncollapsing, shrink the
+      // surrounding view.
+    let sign: CGFloat = isCollapsed ? -1 : 1      // whether we need to add or subtract from the sourrounding views
+    switch (leftSubview, rightSubview) {
+    case (nil, nil): ()
+
+    case (.Some(let left), nil):
+      left.frame.size.width  += sign * subview.frame.size.width
+
+    case (nil, .Some(let right)):
+      right.frame.size.width += sign * subview.frame.size.width
+
+    case (.Some(let left), .Some(let right)):
+      let delta = trunc(subview.frame.size.width / 2)
+      left.frame.size.width  += sign * delta
+      right.frame.size.width += sign * (subview.frame.size.width - delta)
+    default: ()
+    }
+    subview.hidden = !isCollapsed
   }
 }
