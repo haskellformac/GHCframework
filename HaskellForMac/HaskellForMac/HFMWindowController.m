@@ -691,7 +691,8 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
 #pragma unused(splitView)
 
-  return (subview == self.editorView) ? NO : YES;
+    // The editor view can only be collapsed if the outline view is already collapsed.
+  return (subview != self.editorView || [self.splitView isSubviewCollapsed:self.outlineScrollView]) ? YES : NO;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView

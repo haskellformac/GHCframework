@@ -122,8 +122,10 @@ extension StyledSplitView {
 
   func legacyToggleCollapsedState(subview: NSView) {
 
-    let isCollapsed  = isSubviewCollapsed(subview)
     let subviewIndex = (subviews as NSArray).indexOfObject(subview)
+    let isCollapsed  = isSubviewCollapsed(subview)
+    let isRightmost  = subviewIndex == subviews.endIndex - 1
+    /*
     if subviewIndex == NSNotFound { return } // PANIC
 
     func visibleSubviewAtIndex(index: Int) -> NSView? {
@@ -153,6 +155,26 @@ extension StyledSplitView {
       right.frame.size.width += sign * (subview.frame.size.width - delta)
     default: ()
     }
-    subview.hidden = !isCollapsed
+*/
+//    subview.hidden = !isCollapsed
+
+      // We always move the divide to the right of the to-be-collapsed view to the left; unless it is the rightmost view,
+      // then we move the divider to the left over to the right.
+    if isCollapsed {
+      if !isRightmost {
+        setPosition(CGRectGetMaxX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex)
+      } else {
+        setPosition(CGRectGetMinX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex - 1)
+      }
+    } else {
+      if !isRightmost {
+        setPosition(CGRectGetMinX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex)
+      } else {
+        setPosition(CGRectGetMaxX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex - 1)
+      }
+    }
+    adjustSubviews()
+    subview.needsLayout = true
+    subview.needsDisplay = true
   }
 }
