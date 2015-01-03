@@ -47,6 +47,8 @@ class TextEditorController: NSViewController {
 
     super.init(nibName: nibName, bundle: bundle)
 
+    if viewModelItem.string == nil { return nil }   // Bail out if file contents cannot be regarded as a string
+
       // We use our gutter class as a ruler for the text view.
     NSScrollView.setRulerViewClass(TextGutterView)
   }

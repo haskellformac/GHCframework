@@ -715,7 +715,9 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
 #pragma unused(control)
 
-  if (!self.editedItem) return NO;
+  HFMProjectViewModelItem *item = self.editedItem;
+
+  if (!item) return NO;
 
   PVMItemTag tag = self.editedItem.tag;
 
@@ -723,9 +725,9 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
   NSString *extension = [string pathExtension];
   NSString *name      = [string stringByDeletingPathExtension];
 
-    // FIXME: We need to look up higher up the parent chain and always get the group. We also need some constraints on the names of non-Haskell files.
-  if (tag == PVMItemTagFile && ([self.editedItem.parent.identifier isEqualToString:kDataGroupID]
-                                || [self.editedItem.parent.identifier isEqualToString:kExtraSourceGroupID]))
+    // FIXME: We need to look up higher up the parent chain and always get the group. We also need some constraints on the names of non-Haskell files. The same fix needs to be applied in `-controlTextDidEndEditing:`.
+  if (tag == PVMItemTagFile && ([item.parent.identifier isEqualToString:kDataGroupID]
+                                || [item.parent.identifier isEqualToString:kExtraSourceGroupID]))
       return YES;
 
   if (tag == PVMItemTagFile || tag == PVMItemTagMainFile)
@@ -750,9 +752,11 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
   if (!item) return;
   self.editedItem = nil;
 
-    // Add a Haskell file extension to file names if not present yet.
+    // Add a Haskell file extension to file names if not present yet and not in the support files or extra sources groups.
   if ((item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)
-      && ![[newName pathExtension] isEqualToString:[HFMProjectViewModel haskellFileExtension]]) {
+      && ![[newName pathExtension] isEqualToString:[HFMProjectViewModel haskellFileExtension]]
+      && !([item.parent.identifier isEqualToString:kDataGroupID]
+           || [item.parent.identifier isEqualToString:kExtraSourceGroupID])) {
     newName = [newName stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
     textField.stringValue = newName;
   }
