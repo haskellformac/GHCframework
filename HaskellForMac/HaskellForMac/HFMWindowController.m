@@ -715,11 +715,26 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
 #pragma unused(control)
 
+  if (!self.editedItem) return NO;
+
+  PVMItemTag tag = self.editedItem.tag;
+
     // Accept Haskell module names with a '.hs' suffix (for modules) and plain Haskell module names for folders.
   NSString *extension = [string pathExtension];
   NSString *name      = [string stringByDeletingPathExtension];
-  return ([Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]])
-         || [Swift swift_isValidModuleName:string];
+
+    // FIXME: We need to look up higher up the parent chain and always get the group. We also need some constraints on the names of non-Haskell files.
+  if (tag == PVMItemTagFile && ([self.editedItem.parent.identifier isEqualToString:kDataGroupID]
+                                || [self.editedItem.parent.identifier isEqualToString:kExtraSourceGroupID]))
+      return YES;
+
+  if (tag == PVMItemTagFile || tag == PVMItemTagMainFile)
+    return ([Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]]);
+
+  if (tag == PVMItemTagFolder)
+    return [Swift swift_isValidModuleName:string];
+
+  return NO;
 }
 
   // This is used when the editing of a text field of the source view ends.
