@@ -635,12 +635,14 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
   } else if (action == @selector(toggleNavigatorView:)) {
 
-    return YES;
+    return [Swift swift_isOperatingSystemAtLeastVersion10_10]   // always avaliable on 10.10 and later
+           || !self.editorView.hidden;
 
   } else if (action == @selector(toggleEditorView:)) {
 
-    return YES;
-    
+    return [Swift swift_isOperatingSystemAtLeastVersion10_10]   // always avaliable on 10.10 and later
+           || self.outlineScrollView.hidden;
+
   } else if (action == @selector(togglePlaygroundView:)) {
 
     return YES;

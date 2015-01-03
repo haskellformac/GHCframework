@@ -68,8 +68,7 @@ class StyledSplitView: NSSplitView {
 
       // If we are not at least on OS X 10.10, just hidding a subview is not sufficient to collapse it. Hence, we
       // need to do some extra work and cut out the animation.
-//    if !isOperatingSystemAtLeastVersion10_10() {
-    if true {
+    if !isOperatingSystemAtLeastVersion10_10() {
       legacyToggleCollapsedState(subview)
       completion?()
       return
@@ -118,6 +117,8 @@ class StyledSplitView: NSSplitView {
 // The following code is only exercised on systems before OS X 10.10, where simply hiding a subview is not sufficient
 // to collapse it.
 //
+// NB: This code is *not* safe on 10.10. It may lead to autolayout exceptions in certain situations.
+//
 extension StyledSplitView {
 
   func legacyToggleCollapsedState(subview: NSView) {
@@ -125,38 +126,7 @@ extension StyledSplitView {
     let subviewIndex = (subviews as NSArray).indexOfObject(subview)
     let isCollapsed  = isSubviewCollapsed(subview)
     let isRightmost  = subviewIndex == subviews.endIndex - 1
-    /*
     if subviewIndex == NSNotFound { return } // PANIC
-
-    func visibleSubviewAtIndex(index: Int) -> NSView? {
-      if index >= subviews.startIndex && index < subviews.endIndex {
-        let view = subviews[index] as NSView
-        if isSubviewCollapsed(view) { return nil } else { return view }
-      } else { return nil }
-    }
-    let leftSubview  = visibleSubviewAtIndex(subviewIndex - 1)
-    let rightSubview = visibleSubviewAtIndex(subviewIndex + 1)
-
-      // If collapsing grow the surrounding views by the width of the collapsed view; if uncollapsing, shrink the
-      // surrounding view.
-    let sign: CGFloat = isCollapsed ? -1 : 1      // whether we need to add or subtract from the sourrounding views
-    switch (leftSubview, rightSubview) {
-    case (nil, nil): ()
-
-    case (.Some(let left), nil):
-      left.frame.size.width  += sign * subview.frame.size.width
-
-    case (nil, .Some(let right)):
-      right.frame.size.width += sign * subview.frame.size.width
-
-    case (.Some(let left), .Some(let right)):
-      let delta = trunc(subview.frame.size.width / 2)
-      left.frame.size.width  += sign * delta
-      right.frame.size.width += sign * (subview.frame.size.width - delta)
-    default: ()
-    }
-*/
-//    subview.hidden = !isCollapsed
 
       // We always move the divide to the right of the to-be-collapsed view to the left; unless it is the rightmost view,
       // then we move the divider to the left over to the right.
@@ -173,8 +143,5 @@ extension StyledSplitView {
         setPosition(CGRectGetMaxX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex - 1)
       }
     }
-    adjustSubviews()
-    subview.needsLayout = true
-    subview.needsDisplay = true
   }
 }

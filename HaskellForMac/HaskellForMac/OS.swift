@@ -18,3 +18,9 @@ func isOperatingSystemAtLeastVersion10_10() -> Bool {
 
   } else { return false }
 }
+
+extension Swift {
+  class func swift_isOperatingSystemAtLeastVersion10_10() -> Bool {
+    return isOperatingSystemAtLeastVersion10_10()
+  }
+}
