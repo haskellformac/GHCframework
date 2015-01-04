@@ -38,6 +38,9 @@
 
 // If we are currently editing the name of an item in the outline view, this property will refer to that item.
 //
+// NB: This property only get set to the edited item iff `-rename:` was invoked via a menu action. If editing is
+//     invoked by clicking a selected item, the edited item is the selected item instead.
+//
 @property (weak, nonatomic) HFMProjectViewModelItem *editedItem;       // maybe nil
 
 @end
@@ -715,11 +718,10 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
 #pragma unused(control)
 
-  HFMProjectViewModelItem *item = self.editedItem;
-
-  if (!item) return NO;
-
-  PVMItemTag tag = self.editedItem.tag;
+    // Either we initiated editing through a menu action or the edited item must be the selected.
+  HFMProjectViewModelItem *item = self.editedItem ? self.editedItem
+                                                  : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
+  PVMItemTag               tag  = item.tag;
 
     // Accept Haskell module names with a '.hs' suffix (for modules) and plain Haskell module names for folders.
   NSString *extension = [string pathExtension];
@@ -744,12 +746,12 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
   NSText                  *text      = notification.userInfo[@"NSFieldEditor"];
   NSTextField             *textField = notification.object;
-  HFMProjectViewModelItem *item      = self.editedItem;
+    // Either we initiated editing through a menu action or the edited item must be the selected.
+  HFMProjectViewModelItem *item      = self.editedItem ? self.editedItem
+                                                       : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
   NSString                *oldName   = item.identifier;
   NSString                *newName   = text.string;
 
-    // If the edited item disappeared, ignore this notification.
-  if (!item) return;
   self.editedItem = nil;
 
     // Add a Haskell file extension to file names if not present yet and not in the support files or extra sources groups.

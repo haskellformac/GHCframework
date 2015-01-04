@@ -173,7 +173,7 @@
                                    child:(NSInteger)index
                                   ofItem:(HFMProjectViewModelItem *)item
 {
-#pragma unused(outlineView, index, item)
+#pragma unused(outlineView)
 
 
   if (!item) {            // If this is a group item, get the static group item from the model
