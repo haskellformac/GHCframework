@@ -435,10 +435,14 @@ NSString *const kDataGroupID        = @"Supporting files";
       && self.tag != PVMItemTagFolder) return NO;
   if (self.children.count < index) return NO;
 
-    // Attempt to copy the file.
+    // Attempt to copy the file. (We attempt to remove any file at the target's name first; if there is a name clash,
+    // the caller will have made sure that overwritting the original file is ok.)
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString      *identifier  = [url lastPathComponent];
   NSURL         *destination = [[self URL] URLByAppendingPathComponent:identifier];
+  if ([fileManager fileExistsAtPath:[destination path]] &&
+      ![fileManager trashItemAtURL:destination resultingItemURL:nil error:error])
+    return NO;
   if (![fileManager copyItemAtURL:url toURL:destination error:error])
     return NO;
 

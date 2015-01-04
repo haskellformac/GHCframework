@@ -154,6 +154,8 @@ extern NSString *const kDataGroupID;
 
 /// Copy the given file into the current item (which must be a folder or group) at the given child index.
 ///
+/// NB: Overwrites any existing file at the destination without further checking.
+///
 - (BOOL)copyFileAtURL:(NSURL *)url toIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error;
 
 /// Create a new item for a Haskell source file as a child of the current item at the given child index.
