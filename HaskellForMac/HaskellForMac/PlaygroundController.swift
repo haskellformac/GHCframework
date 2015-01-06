@@ -226,6 +226,9 @@ class PlaygroundController: NSViewController {
       // Mark all current results as being stale.
     resultStorage.invalidate()
 
+      // Do not actually execute the playground if it is hidden.
+    if view.superview!.hidden { return }
+
       // To give AppKit an opportunity to update the gutter and results table (render as stale), we schedule the
       // remainder of this function as a continuation.
     dispatch_async(dispatch_get_main_queue(), {
