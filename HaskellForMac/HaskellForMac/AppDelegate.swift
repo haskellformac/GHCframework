@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Crashlytics
 
 class AppDelegate: NSObject {
 
@@ -24,7 +25,7 @@ extension AppDelegate: NSApplicationDelegate {
 
   func applicationDidFinishLaunching(notification: NSNotification) {
 
-    // initialisation code
+    Crashlytics.startWithAPIKey("149e2f1c071531ba90e5d1baef11804ef2d0f2e9")
   }
 
   func orderFrontHfMAboutPanel(sender: AnyObject) {

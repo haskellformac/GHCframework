@@ -35,6 +35,7 @@
 		E72AF5F719E37B5400753077 /* CloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F619E37B5400753077 /* CloudController.swift */; };
 		E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5F919E38D0400753077 /* CloudSession.swift */; };
 		E72AF5FC19E395F800753077 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72AF5FB19E395F800753077 /* Error.swift */; };
+		E72E4A981A5B67DA0034DF0F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */; };
 		E73120CF1A158CBC00E9535A /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E73120CE1A158CBC00E9535A /* SpriteKit.framework */; };
 		E731781119FF853600D8FDC0 /* HaskellSpriteKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF7A19FA595B00DECDC4 /* HaskellSpriteKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E73178171A01A58F00D8FDC0 /* ResultViewPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */; };
@@ -265,6 +266,7 @@
 		E72AF5F619E37B5400753077 /* CloudController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudController.swift; sourceTree = "<group>"; };
 		E72AF5F919E38D0400753077 /* CloudSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudSession.swift; sourceTree = "<group>"; };
 		E72AF5FB19E395F800753077 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		E73120CE1A158CBC00E9535A /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewPopover.xib; sourceTree = "<group>"; };
 		E739EF7F1A05F40100236051 /* GHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GHC.xcodeproj; path = ../GHC/GHC.xcodeproj; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 				E70A66C4197CC341006D3514 /* GHCKit.framework in Frameworks */,
 				E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */,
 				E739EF871A05F44C00236051 /* GHC.framework in Frameworks */,
+				E72E4A981A5B67DA0034DF0F /* Crashlytics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -591,6 +594,7 @@
 		E7A13B031888006C00D79087 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */,
 				E73120CE1A158CBC00E9535A /* SpriteKit.framework */,
 				E7258C5019879728004789CF /* libHSrts_thr-ghc7.8.0.20140317.dylib */,
 				E70A6716197E2E0E006D3514 /* libiconv.dylib */,
@@ -850,6 +854,7 @@
 				E70A66CB197CC341006D3514 /* Embed Frameworks */,
 				E72F538B19C28A76002692E6 /* CopyFiles */,
 				E7C5DB391A0C9CB3002F6469 /* ShellScript */,
+				E72E4A941A5B622E0034DF0F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1085,6 +1090,19 @@
 			shellPath = /bin/sh;
 			shellScript = "# We need to standardise these paths as they will end up in Haskell package config files.\nSTANDARDIZE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/Executables/StandardizePath\nGHC_CURRENT=`$STANDARDIZE $CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current`\nGHCBIN=$GHC_CURRENT/usr/bin\nGHCLIB=$GHC_CURRENT/usr/lib/ghc-7.8.3\nGHCSHARE=$GHC_CURRENT/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nNAME=ghckit-support-0.0.2.0/libHSghckit-support-0.0.2.0-ghc7.8.3.dylib\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries --haddockdir=$GHCDOC/html/libraries --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling GHCKit/ghckit-support\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n  # Get rid of absolute RPATHs to avoid hiding bugs in debug runs that affect the release.\n  for path in `otool -l $GHCLIB/$NAME | grep path | grep DerivedData | cut -d ' ' -f 11`; do\n    install_name_tool -delete_rpath $path $GHCLIB/$NAME\n  done\nfi\n";
 			showEnvVarsInLog = 0;
+		};
+		E72E4A941A5B622E0034DF0F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Crashlytics.framework/run 149e2f1c071531ba90e5d1baef11804ef2d0f2e9 ede29a60dbb0fb982f7150eaba8d906091f92d232c47a32de4e4a62901b363fb";
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1625,6 +1643,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -1744,6 +1763,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
@@ -1795,6 +1815,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
