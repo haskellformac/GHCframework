@@ -9,7 +9,7 @@
 
 module Interpreter (
   Session, Result(..), EvalResult,
-  start, stop, tokenise, eval, inferType, executeImport, load 
+  start, stop, tokenise, eval, inferType, executeImport, declare, load 
 ) where
 
   -- standard libraries
@@ -251,20 +251,6 @@ eval (Session inlet logLevel) source line stmt
         }
     --
     parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
-    --
-    renderTypes :: [GHC.Name] -> GHC.Ghc [String]
-    renderTypes names  
-      = do
-        { dflags <- GHC.getDynFlags
-        ; mapM (\name -> ((GHC.showPpr dflags name ++ " :: ") ++) <$> typeOf dflags name) names
-        }
-    --
-    typeOf dflags name
-      = do
-        { ty <- GHC.exprType (GHC.showPpr dflags name)
-        ; unqual <- GHC.getPrintUnqual
-        ; return $ GHC.showSDocForUser dflags unqual (GHC.pprTypeForUser ty)
-        }
 
 -- Infer the type of a Haskell expression in the given interpreter session.
 --
@@ -291,6 +277,26 @@ executeImport (Session inlet _logLevel) _source _line stmt
             -- Communicate the result back to the main thread
         ; GHC.liftIO $ 
             putMVar resultMV (Result ())
+        }
+    ; takeMVar resultMV
+    }
+
+-- Bring a set of delcrations into scope in the given interpreter session.
+--
+-- GHC errors are reported asynchronously through the diagnostics handler.
+--
+declare :: Session -> String -> Int -> String -> IO (Result [String])
+declare (Session inlet _logLevel) source line stmt
+  = do
+    { resultMV <- newEmptyMVar
+    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
+        { names <- GHC.runDeclsWithLocation source line stmt
+        ; types <- renderTypes names
+
+            -- Communicate the result back to the main thread
+        ; GHC.liftIO $ 
+            putMVar resultMV (Result types)
         }
     ; takeMVar resultMV
     }
@@ -444,6 +450,24 @@ tryGhcAction inlet errMsgHandler action
     ; takeMVar resultMV
     }
 
+-- Given a set of names, pretty print the bound 'TyThing' headers.
+--
+renderTypes :: [GHC.Name] -> GHC.Ghc [String]
+renderTypes names  
+  = do
+    { dflags <- GHC.getDynFlags
+    ; unqual <- GHC.getPrintUnqual
+    ; mapM (\name -> typeOf dflags unqual name) names
+    }
+  where
+    typeOf dflags unqual name
+      = do
+        { maybe_tyThing <- GHC.lookupName name
+        ; case maybe_tyThing of
+            Nothing      -> return ""
+            Just tyThing -> return $ GHC.showSDocForUser dflags unqual (GHC.pprTyThingHdr tyThing)
+        }
+    
 
 -- Runtime system support
 -- ----------------------

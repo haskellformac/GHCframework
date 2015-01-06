@@ -353,6 +353,13 @@ evalText session source line stmtText
         -- we are ignoring the result value for now
     ; return []
     }
+  | any (flip isPrefixOf stmtText) declPrefixes
+  = do 
+    { result <- declare session source line stmtText
+    ; case result of
+        Error          -> return []
+        Result strings -> mapM stringToNSObject ("":strings)
+    }
   | otherwise
   = do
     { result <- eval session source line stmtText
@@ -368,6 +375,10 @@ evalText session source line stmtText
         ; let NSString fptr = nsStr
         ; return $ NSObject (castForeignPtr fptr)
         }
+
+    -- As in GHCi: if one of these strings prefixes a command, then we treat it as a decl rather than a stmt.
+    declPrefixes = ["class ","data ","newtype ","type ","instance ", "deriving ", "foreign ", "default ", "default("]
+
 
 -- 'Interpreter.inferType' is not implemented yet.
 --
