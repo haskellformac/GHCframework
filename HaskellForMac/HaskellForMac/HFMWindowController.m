@@ -822,6 +822,8 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 ///
 - (void)configureEditor:(NSViewController *)newEditor playground:(PlaygroundController *)newPlayground
 {
+  BOOL previousConfigurationHadAPlayground = self.playgroundController != nil;
+
     // Remove the current editor view and playground view.
   if (self.editorViewController) {
 
@@ -848,6 +850,10 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
   }
 
     // Enter playground view into the view hierachy if available.
+    //
+    // We hide the playground view if no playground is available iff it was hidden *and* no playground was available in
+    // the previous configuration. (In other words, if there was a playground in the previous configuration and it was
+    // hidden, keep it hidden.)
   self.playgroundController = newPlayground;
   if (self.playgroundController) {
 
@@ -859,7 +865,11 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
     self.playgroundView.needsLayout  = YES;
     self.playgroundView.needsDisplay = YES;
 
-  }
+    if (self.playgroundView.hidden && !previousConfigurationHadAPlayground)
+      [self togglePlaygroundView:self];
+
+  } else if (!self.playgroundView.hidden)
+    [self togglePlaygroundView:self];
 }
 
 @end
