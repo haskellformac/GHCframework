@@ -364,9 +364,9 @@ evalText session source line stmtText
   = do
     { result <- eval session source line stmtText
     ; case result of
-        Error                  -> return []
-        Result (Left fptr)     -> return [NSObject $ castForeignPtr fptr]
-        Result (Right strings) -> mapM stringToNSObject strings
+        Error                          -> return []
+        Result (Left fptr, ty_strs)    -> (NSObject (castForeignPtr fptr):) <$> mapM stringToNSObject ty_strs
+        Result (Right result, ty_strs) -> mapM stringToNSObject (result:ty_strs)
     }
   where
     stringToNSObject str 

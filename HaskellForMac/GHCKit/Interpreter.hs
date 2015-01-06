@@ -169,9 +169,9 @@ tokenise (Session inlet _logLevel) strbuf loc
     }
 
 -- The result of evaluation is usually a 'show'ed result together with the types of binders. However, it can also be a
--- reference to an Objective-C representation of the result (without any type information).
+-- reference to an Objective-C representation of the result (again with type information in the second component).
 --
-type EvalResult = Result (Either (ForeignPtr ()) [String])
+type EvalResult = Result (Either (ForeignPtr ()) String, [String])
 
 -- Evaluate a Haskell expression in the given interpreter session, 'show'ing its result. Also return the types of all binders
 -- (being 'it' in the case of a vanilla expression). Alternatively, the result may be a reference to an Objective-C
@@ -181,9 +181,9 @@ type EvalResult = Result (Either (ForeignPtr ()) [String])
 --
 eval :: Session -> String -> Int -> String -> IO EvalResult
 eval (Session inlet logLevel) source line stmt
-  = tryGhcAction inlet (\msg -> Result $ Right [msg]) $
+  = tryGhcAction inlet (\msg -> Result (Right msg, [])) $
         GHC.handleSourceError (\e -> handleError e >> return Error) $ do
-        { logCode logLevel $ "evaluating: " ++ stmt
+        { logCode logLevel $ "evaluating: «" ++ stmt ++ "»"
         
             -- we need to have spritekit available
         ; iis <- GHC.getContext
@@ -205,16 +205,18 @@ eval (Session inlet logLevel) source line stmt
            -- try determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
-            Right ty ->
-              case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
-                Just tycon 
-                  | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  iis
-                  | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" iis
-                _                                       -> GHC.setContext iis >> runGHCiStatement
-            Left _e -> GHC.setContext iis >> runGHCiStatement
+            Right ty -> do
+              { ty_str <- renderType ty
+              ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
+                  Just tycon 
+                    | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  iis ty_str
+                    | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" iis ty_str
+                  _                                       -> GHC.setContext iis >> runGHCiStatement (Just ty_str)
+              }
+            Left _e -> GHC.setContext iis >> runGHCiStatement Nothing
         }
   where
-    runNodeEval conversionName iis
+    runNodeEval conversionName iis ty_str
       = do
         { logMsg logLevel "evaluating SpriteKit node"
         
@@ -229,12 +231,14 @@ eval (Session inlet logLevel) source line stmt
 
         ; GHC.setContext iis
         ; case result of
-            Right result -> return $ Result (Left result)
-            Left  exc    -> return $ Result (Right ["** Exception: " ++ show (exc :: SomeException)])        
+            Right result -> return $ Result (Left result, [ty_str])
+            Left  exc    -> return $ Result (Right $ "** Exception: " ++ show (exc :: SomeException), [ty_str])
         }
         
-    runGHCiStatement 
-      = do
+    runGHCiStatement maybe_ty_str
+      = GHC.handleSourceError (\e -> case maybe_ty_str of
+                                       Nothing     -> handleError e >> return Error
+                                       Just ty_str -> return $ Result (Right "«cannot show this type»", [ty_str])) $ do
         { logMsg logLevel "evaluating general statement"
         
             -- GHCi-style command execution
@@ -243,11 +247,17 @@ eval (Session inlet logLevel) source line stmt
             GHC.RunOk names       -> do
                                      { chan        <- GHC.liftIO $ readIORef chanRef
                                      ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
-                                     ; types       <- renderTypes names
-                                     ; return $ Result (Right $ fromMaybe "" maybe_value : types)
+                                     ; types       <- renderTypesOfNames names
+                                     ; GHC.liftIO $ putStrLn $ "maybe_value = " ++ show maybe_value
+                                     ; GHC.liftIO $ putStrLn $ "length names = " ++ show (length names)
+                                     ; if isNothing maybe_value && null names
+                                       then
+                                         return $ Result (Right "", maybeToList maybe_ty_str)
+                                       else
+                                         return $ Result (Right $ fromMaybe "" maybe_value, types)
                                      }
-            GHC.RunException exc  -> return $ Result (Right ["** Exception: " ++ show exc])
-            _                     -> return $ Result (Right ["** Exception: <unexpected break point>"])
+            GHC.RunException exc  -> return $ Result (Right $ "** Exception: " ++ show exc, maybeToList maybe_ty_str)
+            _                     -> return $ Result (Right $ "** Exception: <unexpected break point>", maybeToList maybe_ty_str)
         }
     --
     parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
@@ -292,7 +302,7 @@ declare (Session inlet _logLevel) source line stmt
     ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
         { names <- GHC.runDeclsWithLocation source line stmt
-        ; types <- renderTypes names
+        ; types <- renderTypesOfNames names
 
             -- Communicate the result back to the main thread
         ; GHC.liftIO $ 
@@ -452,8 +462,8 @@ tryGhcAction inlet errMsgHandler action
 
 -- Given a set of names, pretty print the bound 'TyThing' headers.
 --
-renderTypes :: [GHC.Name] -> GHC.Ghc [String]
-renderTypes names  
+renderTypesOfNames :: [GHC.Name] -> GHC.Ghc [String]
+renderTypesOfNames names  
   = do
     { dflags <- GHC.getDynFlags
     ; unqual <- GHC.getPrintUnqual
@@ -467,7 +477,15 @@ renderTypes names
             Nothing      -> return ""
             Just tyThing -> return $ GHC.showSDocForUser dflags unqual (GHC.pprTyThingHdr tyThing)
         }
-    
+
+renderType :: GHC.Type -> GHC.Ghc String
+renderType ty
+  = do
+    { dflags <- GHC.getDynFlags
+    ; unqual <- GHC.getPrintUnqual
+    ; return $ GHC.showSDocForUser dflags unqual (GHC.pprTypeForUser ty)
+    }
+
 
 -- Runtime system support
 -- ----------------------
