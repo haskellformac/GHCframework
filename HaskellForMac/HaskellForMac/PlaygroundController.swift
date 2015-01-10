@@ -417,60 +417,62 @@ extension PlaygroundController: NSTableViewDelegate {
   func tableViewSelectionDidChange(notification: NSNotification) {
     let tableView = notification.object as NSTableView
     let row       = tableView.selectedRow
+    if row == -1 { return }  // no row selected
 
-    if row != -1 {   // If a row is selected...
-      if let result = resultStorage.queryResult(row) {
+    if let result = resultStorage.queryResult(row) {
 
-          // Get the frame of the table view cell whose contents is to be displayed in the popover.
-        let rowView  = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
-        if let frame = rowView?.frame {
+        // Get the frame of the table view cell whose contents is to be displayed in the popover.
+      let rowView  = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
+      if let frame = rowView?.frame {
 
-          switch result.value {
-          case .SKSceneResult(let scene0):     // result with a SpriteKit scene
+        switch result.value {
+        case .SKSceneResult(let scene0):     // result with a SpriteKit scene
 
-            let scene: SKScene = scene0 // FIXME: current version of the Swift compilers needs this to infer the right type
-            let bundle = NSBundle.mainBundle()
-            if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
-              NSLog("%@: could not load result popover NIB", __FUNCTION__)
-            } else {
+          let scene: SKScene = scene0 // FIXME: current version of the Swift compilers needs this to infer the right type
+          let bundle = NSBundle.mainBundle()
+          if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
+            NSLog("%@: could not load result popover NIB", __FUNCTION__)
+          } else {
 
-              // FIXME: move into a file in Utilities
-              func clampExtent(extent: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
-                if extent < min { return min }
-                else if extent > max { return max }
-                else { return extent }
-              }
-
-                // Ensure the scene size is valid.
-              var sceneSize = scene.size
-              if !isfinite(sceneSize.width)  || sceneSize.width  < 30 { sceneSize.width  = 30 }
-              if !isfinite(sceneSize.height) || sceneSize.height < 30 { sceneSize.height = 30 }
-              scene.size = sceneSize
-
-                // Constrain the popover size.
-              let resultSize = CGSize(width:  clampExtent(sceneSize.width,  50, 1024),
-                                      height: clampExtent(sceneSize.height, 50, 768))
-              var resultView = SKView(frame: CGRect(origin: CGPointZero, size: resultSize))
-              resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
-              resultView.translatesAutoresizingMaskIntoConstraints = true
-              resultView.presentScene(scene)
-
-                // Add the SpriteKit view to the popover.
-              for view in resultPopoverView.subviews { view.removeFromSuperview() }
-              resultPopoverView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: resultSize)
-              resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
-              resultPopoverView.translatesAutoresizingMaskIntoConstraints = true
-              resultPopoverView.addSubview(resultView)
-
-                // And present it.
-              resultPopover?.contentSize = resultSize
-              resultPopover?.behavior    = .Semitransient
-              resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
-                                                ofView: resultTableView,
-                                                preferredEdge: NSMaxYEdge)
+            // FIXME: move into a file in Utilities
+            func clampExtent(extent: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
+              if extent < min { return min }
+              else if extent > max { return max }
+              else { return extent }
             }
 
-          case .StringResult(let string):     // text only result
+              // Ensure the scene size is valid.
+            var sceneSize = scene.size
+            if !isfinite(sceneSize.width)  || sceneSize.width  < 30 { sceneSize.width  = 30 }
+            if !isfinite(sceneSize.height) || sceneSize.height < 30 { sceneSize.height = 30 }
+            scene.size = sceneSize
+
+              // Constrain the popover size.
+            let resultSize = CGSize(width:  clampExtent(sceneSize.width,  50, 1024),
+                                    height: clampExtent(sceneSize.height, 50, 768))
+            var resultView = SKView(frame: CGRect(origin: CGPointZero, size: resultSize))
+            resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+            resultView.translatesAutoresizingMaskIntoConstraints = true
+            resultView.presentScene(scene)
+
+              // Add the SpriteKit view to the popover.
+            for view in resultPopoverView.subviews { view.removeFromSuperview() }
+            resultPopoverView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: resultSize)
+            resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+            resultPopoverView.translatesAutoresizingMaskIntoConstraints = true
+            resultPopoverView.addSubview(resultView)
+
+              // And present it.
+            resultPopover?.contentSize = resultSize
+            resultPopover?.behavior    = .Semitransient
+            resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
+                                              ofView: resultTableView,
+                                              preferredEdge: NSMaxYEdge)
+          }
+
+        case .StringResult(let string0):     // text only result
+          let string: String = string0 // FIXME: current version of the Swift compilers needs this to infer the right type
+          if !string.isEmpty {
 
             let bundle = NSBundle.mainBundle()
             if !bundle.loadNibNamed("ResultPopover", owner: self, topLevelObjects: nil) {
@@ -493,8 +495,8 @@ extension PlaygroundController: NSTableViewDelegate {
           }
         }
       }
-      resultTableView.deselectRow(row)    // .. so that selecting again will call this function again
     }
+    resultTableView.deselectRow(row)    // .. so that selecting again will call this function again
   }
 
   //  func tableViewColumnDidMove(_notification: NSNotification) {
