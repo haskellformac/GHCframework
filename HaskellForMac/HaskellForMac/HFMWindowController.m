@@ -70,8 +70,9 @@ NSString *const kCabalCellID = @"cabalCellID";
     // Initialise the size and data for the project outline view. The delegate is this window controller and data source
     // is the document project.
   [self.outlineView sizeLastColumnToFit];
-  self.outlineView.delegate   = self;
-  self.outlineView.dataSource = self.document;
+  self.outlineView.delegate     = self;
+  self.outlineView.dataSource   = self.document;
+  self.outlineView.action       = @selector(clickSourceView:);
 
     // Set delegate of the split view to be this window controller.
   self.splitView.delegate = self;
@@ -201,20 +202,42 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
 {
+  if (self.outlineView.selectedRow != -1) {
+
+    NSTableCellView *cellView = [self.outlineView viewAtColumn:self.outlineView.selectedColumn
+                                                           row:self.outlineView.selectedRow
+                                               makeIfNecessary:NO];
+    cellView.textField.refusesFirstResponder = YES;
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([NSEvent doubleClickInterval] * 1.5 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     cellView.textField.refusesFirstResponder = NO;
+                   });
+
+  }
+
   [self configureContextForSelectedItemInOutlineView:[notification object]];
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView
-shouldEditTableColumn:(NSTableColumn *)tableColumn
-               item:(HFMProjectViewModelItem*)item
-{
-#pragma unused(outlineView, tableColumn)
-  return (item.tag == PVMItemTagFile);
-}
+// Do not try to use
+// - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item;
+// as it is only for cell-based table views.
 
 
 #pragma mark -
 #pragma mark NSOutlineView context menu target-action methods
+
+-(void)clickSourceView:(id)sender
+{
+#pragma unused(sender)
+
+    // We use the action at the moment, but we need to register it for the following reason: Without setting an action
+    // method on the outline view, a right-click/control-click (to get the context menu) will also start editing the
+    // clicked on cell view if it is already selected. Unfortunately, setting the action also has the side effect of
+    // delivering clicks onto a cell view twice (which starts editing cells with a single click). To avoid that, we
+    // that cell views refuse first responder for a brief time interval after having been selected in
+    // '-[outlineViewSelectionDidChange:]'.
+}
 
 #pragma mark File menu target-action methods
 
@@ -740,6 +763,9 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 
   return NO;
 }
+
+#pragma mark -
+#pragma mark NSControl protocol methods
 
   // This is used when the editing of a text field of the source view ends.
 - (void)controlTextDidEndEditing:(NSNotification *)notification

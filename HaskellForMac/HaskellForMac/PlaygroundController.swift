@@ -158,7 +158,8 @@ class PlaygroundController: NSViewController {
       // Set up the delegate and data source for the result view.
     let reloadDataForRow: Int -> () = { [unowned self] (row: Int) in
       let rowSet    = NSIndexSet(index: row)
-      let columnSet = NSIndexSet(indexesInRange: NSRange(location: 0, length: 2))
+      let columnSet = NSIndexSet(indexesInRange: NSRange(location: 0,
+                                                         length: self.resultTableView.tableColumns.count))
       self.resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
     }
     resultTableView.setDelegate(self)
@@ -285,8 +286,7 @@ class PlaygroundController: NSViewController {
       if let resultScene = spriteKitView(evalResult) {
 
           // Graphical result with custom presentation view.
-        resultStorage.reportResult("«click to display scene»",
-                                   scene: resultScene,
+        resultStorage.reportResult(.SKSceneResult(scene: resultScene),
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -294,8 +294,7 @@ class PlaygroundController: NSViewController {
       } else if let resultText = evalResult as? String {
 
           // The result is just a string.
-        resultStorage.reportResult(resultText,
-                                   scene: nil,
+        resultStorage.reportResult(.StringResult(string: resultText),
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -303,8 +302,7 @@ class PlaygroundController: NSViewController {
       } else {
 
           // No idea what this result is.
-        resultStorage.reportResult("«unknown type of result»",
-                                   scene: nil,
+        resultStorage.reportResult(.StringResult(string: "«unknown type of result»"),
                                    type: ", ".join(evalTypes),
                                    height: height,
                                    atCommandIndex: commandIndex)
@@ -396,28 +394,17 @@ extension PlaygroundController: NSTableViewDelegate {
 
     if let result = resultStorage.queryResult(row) {
 
-      let identifier = column.identifier
-      switch identifier {
-      case kTypeCell:
-        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
-          cell.textField?.stringValue = result.type
-          cell.textField?.textColor   = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
-          return cell
-        } else { return nil }
-      case kValueCell:
-        if let cell = tableView.makeViewWithIdentifier(identifier, owner: self) as? NSTableCellView {
-          cell.textField?.stringValue = result.value
-          if result.value.hasPrefix("** Exception: ") {   // FIXME: make this less ad hoc; also, the red should be that of the error indicator
-            cell.textField?.textColor = result.stale ? NSColor.redColor().highlightWithLevel(0.5) : NSColor.redColor()
-          } else {
-            cell.textField?.textColor = result.stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
-          }
-          return cell
-        } else { return nil }
-      default:
-        return nil
-      }
+      if let cell = tableView.makeViewWithIdentifier(kResultCell, owner: self) as? ResultCellView {
 
+        switch result.value {
+        case .StringResult(let string): cell.configureTextualResult(string, type: result.type, stale: result.stale)
+        case .SKSceneResult(let scene):
+          // FIXME: render preview image
+          cell.configureImageResult(NSImage(named: NSImageNameQuickLookTemplate)!, type: result.type, stale: result.stale)
+        }
+        return cell
+
+      } else { return nil }
     } else { return nil }
   }
 
@@ -438,8 +425,10 @@ extension PlaygroundController: NSTableViewDelegate {
         let rowView  = resultTableView.rowViewAtRow(row, makeIfNecessary: false) as? NSView
         if let frame = rowView?.frame {
 
-          if let scene = result.scene {       // result with a SpriteKit scene
+          switch result.value {
+          case .SKSceneResult(let scene0):     // result with a SpriteKit scene
 
+            let scene: SKScene = scene0 // FIXME: current version of the Swift compilers needs this to infer the right type
             let bundle = NSBundle.mainBundle()
             if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
               NSLog("%@: could not load result popover NIB", __FUNCTION__)
@@ -481,14 +470,14 @@ extension PlaygroundController: NSTableViewDelegate {
                                                 preferredEdge: NSMaxYEdge)
             }
 
-          } else {                            // text only result
+          case .StringResult(let string):     // text only result
 
             let bundle = NSBundle.mainBundle()
             if !bundle.loadNibNamed("ResultPopover", owner: self, topLevelObjects: nil) {
               NSLog("%@: could not load popover NIB", __FUNCTION__)
             } else {
 
-              let resultString = NSAttributedString(string: result.value)
+              let resultString = NSAttributedString(string: string)
 
               popoverTextView.textStorage!.setAttributedString(resultString)
               popover?.behavior = .Semitransient
