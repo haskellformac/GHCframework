@@ -85,13 +85,13 @@
                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                 <prototypeCellViews>
                                                     <tableCellView identifier="ResultCell" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="246.5" height="17"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="246.5" height="15"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <stackView orientation="horizontal" alignment="centerY" horizontalHuggingPriority="249" verticalHuggingPriority="249" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                <rect key="frame" x="0.0" y="0.0" width="246" height="15"/>
+                                                            <stackView orientation="horizontal" alignment="centerY" horizontalHuggingPriority="249" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
+                                                                <rect key="frame" x="0.0" y="0.0" width="246.5" height="15"/>
                                                                 <beginningViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
                                                                         <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
@@ -101,13 +101,13 @@
                                                                     </textField>
                                                                 </beginningViews>
                                                                 <middleViews>
-                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
+                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
                                                                         <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
                                                                         <imageCell key="cell" controlSize="small" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="iuw-Pe-pAG"/>
                                                                     </imageView>
                                                                 </middleViews>
                                                                 <endViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
                                                                         <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultType" usesSingleLineMode="YES" id="r7K-wl-Fvb">
                                                                             <font key="font" metaFont="fixedUser" size="11"/>
