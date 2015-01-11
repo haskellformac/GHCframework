@@ -93,7 +93,7 @@
                                                                 <beginningViews>
                                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
-                                                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
+                                                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
                                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

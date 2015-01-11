@@ -238,7 +238,7 @@ eval (Session inlet logLevel) source line stmt
     runGHCiStatement maybe_ty_str
       = GHC.handleSourceError (\e -> case maybe_ty_str of
                                        Nothing     -> handleError e >> return Error
-                                       Just ty_str -> return $ Result (Right "«cannot show this type»", [ty_str])) $ do
+                                       Just ty_str -> return $ Result (Right "«cannot show values of this type»", [ty_str])) $ do
         { logMsg logLevel "evaluating general statement"
         
             -- GHCi-style command execution
