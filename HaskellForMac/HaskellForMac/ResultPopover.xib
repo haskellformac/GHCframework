@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="popover" destination="ga8-P9-NYo" id="lHp-3D-Vgb"/>
                 <outlet property="popoverController" destination="Mc3-5T-Qgh" id="caT-OA-1UX"/>
+                <outlet property="popoverScrollView" destination="A9b-c6-crM" id="hxG-Wq-1oA"/>
                 <outlet property="popoverTextField" destination="WgM-RP-tDc" id="8Py-S9-c7F"/>
             </connections>
         </customObject>
@@ -18,7 +19,7 @@
             <rect key="frame" x="0.0" y="0.0" width="400" height="19"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A9b-c6-crM">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="A9b-c6-crM">
                     <rect key="frame" x="0.0" y="0.0" width="400" height="19"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="T47-hz-urk">
                         <rect key="frame" x="1" y="1" width="166" height="79"/>

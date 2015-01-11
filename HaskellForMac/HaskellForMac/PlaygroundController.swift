@@ -71,13 +71,14 @@ class PlaygroundController: NSViewController {
 
   // Objects from the results popover nib.
   //
-  @IBOutlet private var popover:           NSPopover?               // referenced to retain
-  @IBOutlet private var popoverController: NSViewController!        // referenced to retain
-  @IBOutlet private var popoverTextField:   NSTextField!              // This is where the textual result goes.
+  @IBOutlet private weak var popover:           NSPopover?               // referenced to retain
+  @IBOutlet private weak var popoverController: NSViewController!        // referenced to retain
+  @IBOutlet private weak var popoverScrollView: NSScrollView!
+  @IBOutlet private weak var popoverTextField:  NSTextField!             // This is where the textual result goes.
 
-  @IBOutlet private var resultPopover:           NSPopover?         // referenced to retain
-  @IBOutlet private var resultPopoverController: NSViewController!  // referenced to retain
-  @IBOutlet private var resultPopoverView:       NSView!            // This is where the graphical result goes.
+  @IBOutlet private weak var resultPopover:           NSPopover?         // referenced to retain
+  @IBOutlet private weak var resultPopoverController: NSViewController!  // referenced to retain
+  @IBOutlet private weak var resultPopoverView:       NSView!            // This is where the graphical result goes.
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
@@ -479,16 +480,25 @@ extension PlaygroundController: NSTableViewDelegate {
               NSLog("%@: could not load popover NIB", __FUNCTION__)
             } else {
 
-                // By default, we go for the width of the window in the NIB.
+                // By default, we go for the width of the window in the NIB and compute the required height given the
+                // string we need to display.
               let width = popover?.contentViewController?.view.bounds.size.width ?? 400
               popoverTextField.stringValue             = string
               popoverTextField.preferredMaxLayoutWidth = width
               popoverTextField.sizeToFit()
 
               let textSize     = popoverTextField.intrinsicContentSize
-              let contentWidth = textSize.width < width ? max(textSize.width, 100) : width
-              popover?.contentSize = NSSize(width: contentWidth, height: textSize.height > 500 ? 500 : textSize.height)
+              let contentWidth = textSize.width < width ? max(textSize.width, 50) : width
+              if textSize.width < contentWidth {
+                // FIXME: center the content when it is smaller than the popover, but how?
+              }
+              let contentSize    = NSSize(width: contentWidth, height: textSize.height > 500 ? 500 : textSize.height)
+                // FIXME: How can we determine the constants programatically? NSScrollView.frameSizeForContentSize(:::::)
+                //        doesn't seem to work as exepcted.
+              let scrollViewSize = CGSize(width: contentSize.width + 4, height: contentSize.height + 4)
+              popover?.contentSize = scrollViewSize
               popover?.behavior    = .Semitransient
+
               popover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
                                           ofView: resultTableView,
                                           preferredEdge: NSMaxYEdge)
