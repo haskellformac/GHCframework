@@ -464,6 +464,7 @@ extension PlaygroundController: NSTableViewDelegate {
             resultPopoverView.addSubview(resultView)
 
               // And present it.
+            resultPopover?.delegate    = self
             resultPopover?.contentSize = resultSize
             resultPopover?.behavior    = .Semitransient
             resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
@@ -493,7 +494,7 @@ extension PlaygroundController: NSTableViewDelegate {
                 // FIXME: center the content when it is smaller than the popover, but how?
               }
               let contentSize    = NSSize(width: contentWidth, height: textSize.height > 500 ? 500 : textSize.height)
-                // FIXME: How can we determine the constants programatically? NSScrollView.frameSizeForContentSize(:::::)
+                // FIXME: How can we determine the constants programatically? NSScrollView.frameSizeForContentSize(_:_:_:_:_:)
                 //        doesn't seem to work as exepcted.
               let scrollViewSize = CGSize(width: contentSize.width + 4, height: contentSize.height + 4)
               popover?.contentSize = scrollViewSize
@@ -518,4 +519,17 @@ extension PlaygroundController: NSTableViewDelegate {
   //
   //  func tableViewSelectionIsChanging(_notification: NSNotification) {
   //  }
+}
+
+
+// MARK: -
+// MARK: NSPopoverDelegate protocol methods
+
+
+extension PlaygroundController: NSPopoverDelegate {
+
+    // We currently only use this notification to stop the animation in SKView popovers when they are closed.
+  func popoverDidClose(notification: NSNotification) {
+    for view in resultPopoverView.subviews { (view as? SKView)?.scene?.paused = true }
+  }
 }

@@ -85,15 +85,18 @@
                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                 <prototypeCellViews>
                                                     <tableCellView identifier="ResultCell" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="246.5" height="15"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="247" height="15"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <stackView orientation="horizontal" alignment="centerY" horizontalHuggingPriority="249" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                <rect key="frame" x="0.0" y="0.0" width="246.5" height="15"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="247" height="15"/>
                                                                 <beginningViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsExpansionToolTips="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
-                                                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="76" id="dcy-Be-Vy9"/>
+                                                                        </constraints>
+                                                                        <textFieldCell key="cell" controlSize="small" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
                                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -118,8 +121,8 @@
                                                                 </endViews>
                                                                 <constraints>
                                                                     <constraint firstAttribute="centerY" secondItem="Fxw-e7-huc" secondAttribute="centerY" id="2nN-kc-tMa"/>
-                                                                    <constraint firstItem="gVD-20-bsq" firstAttribute="top" secondItem="uM6-ov-6ex" secondAttribute="top" id="DUI-iz-pHr"/>
-                                                                    <constraint firstItem="gVD-20-bsq" firstAttribute="height" secondItem="uM6-ov-6ex" secondAttribute="height" id="IcO-DG-UlH"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="gVD-20-bsq" secondAttribute="bottom" id="RVG-8b-RWr"/>
+                                                                    <constraint firstItem="gVD-20-bsq" firstAttribute="top" secondItem="uM6-ov-6ex" secondAttribute="top" id="ceJ-1f-9wS"/>
                                                                     <constraint firstItem="q9z-KZ-ky3" firstAttribute="top" secondItem="uM6-ov-6ex" secondAttribute="top" id="dQo-x5-aON"/>
                                                                     <constraint firstAttribute="height" secondItem="q9z-KZ-ky3" secondAttribute="height" id="fS6-Qu-lNH"/>
                                                                 </constraints>
