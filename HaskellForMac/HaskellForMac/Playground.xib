@@ -141,7 +141,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="bottom" secondItem="uM6-ov-6ex" secondAttribute="bottom" id="Im9-SX-4t9"/>
                                                             <constraint firstItem="uM6-ov-6ex" firstAttribute="leading" secondItem="T48-Mu-9IN" secondAttribute="leading" id="bg3-Wm-F6U"/>
-                                                            <constraint firstAttribute="trailing" secondItem="uM6-ov-6ex" secondAttribute="trailing" id="gTE-sJ-Kbf"/>
+                                                            <constraint firstAttribute="trailing" secondItem="uM6-ov-6ex" secondAttribute="trailing" priority="999" id="gTE-sJ-Kbf"/>
                                                             <constraint firstItem="uM6-ov-6ex" firstAttribute="top" secondItem="T48-Mu-9IN" secondAttribute="top" id="rdI-e6-44O"/>
                                                         </constraints>
                                                         <connections>
