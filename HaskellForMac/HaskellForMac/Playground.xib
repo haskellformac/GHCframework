@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C81f" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C94b" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
@@ -35,10 +35,10 @@
                                         <rect key="frame" x="0.0" y="0.0" width="249" height="272"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <size key="minSize" width="271.5" height="272"/>
+                                        <size key="minSize" width="272" height="272"/>
                                         <size key="maxSize" width="533" height="10000000"/>
                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <size key="minSize" width="271.5" height="272"/>
+                                        <size key="minSize" width="272" height="272"/>
                                         <size key="maxSize" width="533" height="10000000"/>
                                         <connections>
                                             <outlet property="delegate" destination="-2" id="Ald-1Z-rip"/>
@@ -71,7 +71,7 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                         <tableColumns>
-                                            <tableColumn identifier="ResultCell" editable="NO" width="246.5" maxWidth="3.4028234663852886e+38" id="3Z5-W4-nJV">
+                                            <tableColumn identifier="ResultCell" editable="NO" width="249.5" maxWidth="3.4028234663852886e+38" id="3Z5-W4-nJV">
                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                     <font key="font" metaFont="smallSystem"/>
                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -85,23 +85,26 @@
                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                 <prototypeCellViews>
                                                     <tableCellView identifier="ResultCell" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="247" height="15"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="251.5" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <stackView orientation="horizontal" alignment="centerY" horizontalHuggingPriority="249" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                <rect key="frame" x="0.0" y="0.0" width="247" height="15"/>
+                                                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="750" verticalStackHuggingPriority="250" horizontalHuggingPriority="249" verticalHuggingPriority="249" placeholderIntrinsicWidth="251" placeholderIntrinsicHeight="15" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
+                                                                <rect key="frame" x="0.0" y="0.0" width="251.5" height="17"/>
                                                                 <beginningViews>
                                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsExpansionToolTips="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
-                                                                        <constraints>
-                                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="76" id="dcy-Be-Vy9"/>
-                                                                        </constraints>
                                                                         <textFieldCell key="cell" controlSize="small" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
                                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                         </textFieldCell>
                                                                     </textField>
+                                                                    <customView horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uVU-jC-k7g">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="163" height="96"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="900" constant="30" id="moY-0l-I3m"/>
+                                                                        </constraints>
+                                                                    </customView>
                                                                 </beginningViews>
                                                                 <middleViews>
                                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
@@ -119,19 +122,14 @@
                                                                         </textFieldCell>
                                                                     </textField>
                                                                 </endViews>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="centerY" secondItem="Fxw-e7-huc" secondAttribute="centerY" id="2nN-kc-tMa"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="gVD-20-bsq" secondAttribute="bottom" id="RVG-8b-RWr"/>
-                                                                    <constraint firstItem="gVD-20-bsq" firstAttribute="top" secondItem="uM6-ov-6ex" secondAttribute="top" id="ceJ-1f-9wS"/>
-                                                                    <constraint firstItem="q9z-KZ-ky3" firstAttribute="top" secondItem="uM6-ov-6ex" secondAttribute="top" id="dQo-x5-aON"/>
-                                                                    <constraint firstAttribute="height" secondItem="q9z-KZ-ky3" secondAttribute="height" id="fS6-Qu-lNH"/>
-                                                                </constraints>
                                                                 <visibilityPriorities>
+                                                                    <integer value="1000"/>
                                                                     <integer value="1000"/>
                                                                     <integer value="1000"/>
                                                                     <integer value="1000"/>
                                                                 </visibilityPriorities>
                                                                 <customSpacing>
+                                                                    <real value="3.4028234663852886e+38"/>
                                                                     <real value="3.4028234663852886e+38"/>
                                                                     <real value="3.4028234663852886e+38"/>
                                                                     <real value="3.4028234663852886e+38"/>
@@ -145,7 +143,8 @@
                                                             <constraint firstItem="uM6-ov-6ex" firstAttribute="top" secondItem="T48-Mu-9IN" secondAttribute="top" id="rdI-e6-44O"/>
                                                         </constraints>
                                                         <connections>
-                                                            <outlet property="resultImage" destination="Fxw-e7-huc" id="Ao5-ug-m4B"/>
+                                                            <outlet property="resultImage" destination="Fxw-e7-huc" id="aIL-Wl-hBL"/>
+                                                            <outlet property="resultSceneView" destination="uVU-jC-k7g" id="OcJ-lK-Ct3"/>
                                                             <outlet property="resultString" destination="gVD-20-bsq" id="h7l-dW-h2T"/>
                                                             <outlet property="resultType" destination="q9z-KZ-ky3" id="irU-KB-UOS"/>
                                                             <outlet property="stackView" destination="uM6-ov-6ex" id="E1P-1E-EGM"/>

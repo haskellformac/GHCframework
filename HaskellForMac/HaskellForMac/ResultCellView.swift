@@ -10,6 +10,7 @@
 //  Each cell consists of a result type and either a textual or graphical result value.
 
 import Cocoa
+import SpriteKit
 
 // FIXME: The corresponding emil is not properly bridged to Swift yet.
 let NSStackViewVisibilityPriorityMustHold: Float              = 1000
@@ -20,10 +21,11 @@ class ResultCellView: NSTableCellView {
 
   // The entire view area of the cell is occupied by a stack view.
   //
-  @IBOutlet private weak var stackView:    NSStackView!
-  @IBOutlet private weak var resultString: NSTextField!
-  @IBOutlet private weak var resultImage:  NSImageView!
-  @IBOutlet private weak var resultType:   NSTextField!
+  @IBOutlet private weak var stackView:       NSStackView!
+  @IBOutlet private weak var resultString:    NSTextField!
+  @IBOutlet private weak var resultSceneView: NSView!
+  @IBOutlet private weak var resultImage:     NSImageView!
+  @IBOutlet private weak var resultType:      NSTextField!
 
   /// The red colour used to highlight exceptional results.
   ///
@@ -37,10 +39,12 @@ class ResultCellView: NSTableCellView {
     resultType.stringValue   = type
     if result.isEmpty {
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible, forView: resultString)
+      stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible, forView: resultSceneView)
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible, forView: resultImage)
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityMustHold,   forView: resultType)
     } else {
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityMustHold,              forView: resultString)
+      stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultSceneView)
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultImage)
       stackView.setVisibilityPriority(NSStackViewVisibilityPriorityDetachOnlyIfNecessary, forView: resultType)
     }
@@ -54,12 +58,49 @@ class ResultCellView: NSTableCellView {
     resultImage.image      = result
     resultType.stringValue = type
     stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultString)
+    stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultSceneView)
     stackView.setVisibilityPriority(NSStackViewVisibilityPriorityMustHold,              forView: resultImage)
     stackView.setVisibilityPriority(NSStackViewVisibilityPriorityDetachOnlyIfNecessary, forView: resultType)
     configureAppearance(nil, stale: stale)
   }
 
-  // FIXME: Images should also be drawn faded out when they are stale!
+  /// Displays a graphical as a SpriteKit scene and its type.
+  ///
+  func configureSceneResult(scene: SKScene, type: String, stale: Bool) {
+
+    // Ensure the scene size is valid.
+    var sceneSize = scene.size
+    if !isfinite(sceneSize.width)  || sceneSize.width  < 15 { sceneSize.width  = 15 }
+    if !isfinite(sceneSize.height) || sceneSize.height < 15 { sceneSize.height = 15 }
+    scene.size = sceneSize
+
+    scene.scaleMode = .AspectFit
+    var resultSKView = SKView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)))
+    resultSKView.translatesAutoresizingMaskIntoConstraints = false
+//    resultSKView.paused =  true
+    scene.paused = true
+    for view in resultSceneView.subviews { view.removeFromSuperview() }
+    resultSceneView.addSubview(resultSKView)
+    let constraintsH = NSLayoutConstraint.constraintsWithVisualFormat("|[resultSKView]|",
+                                                                      options: nil,
+                                                                      metrics: [:],
+                                                                      views: ["resultSKView": resultSKView])
+    let constraintsV = NSLayoutConstraint.constraintsWithVisualFormat("V:|[resultSKView]|",
+                                                                      options: nil,
+                                                                      metrics: [:],
+                                                                      views: ["resultSKView": resultSKView])
+    resultSceneView.addConstraints(constraintsH + constraintsV)
+    resultSKView.presentScene(scene)
+
+    resultType.stringValue = type
+    stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultString)
+    stackView.setVisibilityPriority(NSStackViewVisibilityPriorityMustHold,              forView: resultSceneView)
+    stackView.setVisibilityPriority(NSStackViewVisibilityPriorityNotVisible,            forView: resultImage)
+    stackView.setVisibilityPriority(NSStackViewVisibilityPriorityDetachOnlyIfNecessary, forView: resultType)
+    configureAppearance(nil, stale: stale)
+  }
+  
+  // FIXME: Images and scenes should also be drawn faded out when they are stale!
   private func configureAppearance(stringResult: String?, stale: Bool) {
     let isException      = stringResult != nil && stringResult!.hasPrefix("** Exception: ")
     let isNote           = stringResult != nil &&

@@ -400,8 +400,7 @@ extension PlaygroundController: NSTableViewDelegate {
         switch result.value {
         case .StringResult(let string): cell.configureTextualResult(string, type: result.type, stale: result.stale)
         case .SKSceneResult(let scene):
-          // FIXME: render preview image
-          cell.configureImageResult(NSImage(named: NSImageNameQuickLookTemplate)!, type: result.type, stale: result.stale)
+          cell.configureSceneResult(scene, type: result.type, stale: result.stale)
         }
         return cell
 
