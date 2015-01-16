@@ -84,14 +84,14 @@
                                                 </textFieldCell>
                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                 <prototypeCellViews>
-                                                    <tableCellView identifier="ResultCell" placeholderIntrinsicWidth="251.5" placeholderIntrinsicHeight="17" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="251.5" height="28"/>
+                                                    <tableCellView identifier="ResultCell" placeholderIntrinsicWidth="252" placeholderIntrinsicHeight="15" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="251.5" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="750" verticalStackHuggingPriority="250" horizontalHuggingPriority="249" verticalHuggingPriority="249" misplaced="YES" placeholderIntrinsicWidth="251" placeholderIntrinsicHeight="15" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                <rect key="frame" x="0.0" y="0.0" width="251.5" height="17"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="251.5" height="15"/>
                                                                 <beginningViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" allowsExpansionToolTips="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
                                                                         <textFieldCell key="cell" controlSize="small" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
@@ -113,7 +113,7 @@
                                                                     </imageView>
                                                                 </middleViews>
                                                                 <endViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="500" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
                                                                         <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultType" usesSingleLineMode="YES" id="r7K-wl-Fvb">
                                                                             <font key="font" metaFont="fixedUser" size="11"/>
