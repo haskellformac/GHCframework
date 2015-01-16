@@ -105,7 +105,9 @@ start ghcBundlePath diagnosticHandler logLevel cwd
                                                  , GHC.extraPkgConfs    = const [GHC.GlobalPkgConf]
                                                  , GHC.packageFlags     = [GHC.ExposePackage "ghckit-support"]
                                                  , GHC.verbosity        = logLevel
-                                                 }
+                                                 } 
+                                                 `GHC.xopt_set`   GHC.Opt_ExtendedDefaultRules        -- extra options for..
+                                                 `GHC.xopt_unset` GHC.Opt_MonomorphismRestriction     -- interactive evaluation
         ; logMsg logLevel $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
