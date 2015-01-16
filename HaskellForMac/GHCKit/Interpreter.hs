@@ -20,6 +20,7 @@ import Control.Concurrent.STM
 import Control.Exception            (SomeException, evaluate)
 import Control.Monad
 import Data.Dynamic                 hiding (typeOf)
+import Data.Either
 import Data.Maybe
 import Foreign                      hiding (void)
 import System.Directory
@@ -187,38 +188,28 @@ eval (Session inlet logLevel) source line stmt
         GHC.handleSourceError (\e -> handleError e >> return Error) $ do
         { logCode logLevel $ "evaluating: «" ++ stmt ++ "»"
         
-            -- we need to have spritekit available
-        ; iis <- GHC.getContext
-        ; let spriteKitImport = GHC.ImportDecl
-                                { GHC.ideclName      = GHC.noLoc (GHC.mkModuleName "Graphics.SpriteKit")
-                                , GHC.ideclPkgQual   = Nothing
-                                , GHC.ideclSource    = False
-                                , GHC.ideclSafe      = False
-                                , GHC.ideclQualified = True
-                                , GHC.ideclImplicit  = False
-                                , GHC.ideclAs        = Nothing
-                                , GHC.ideclHiding    = Nothing
-                                }
-        ; GHC.setContext (GHC.IIDecl spriteKitImport : iis)
-        ; nodeNames  <- GHC.parseName "Graphics.SpriteKit.Node"
-        ; sceneNames <- GHC.parseName "Graphics.SpriteKit.Scene"
-        ; GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
+            -- if SpriteKit is available, test for return types that we render specially
+        ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
+            GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
+            :: GHC.Ghc (Either GHC.SourceError GHC.RunResult))
+        ; nodeNames  <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"  else return []
+        ; sceneNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene" else return []
 
-           -- try determine the type of the statement if it is an expression
+           -- try to determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty -> do
               { ty_str <- renderType ty
               ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
                   Just tycon 
-                    | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  iis ty_str
-                    | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" iis ty_str
-                  _                                       -> GHC.setContext iis >> runGHCiStatement (Just ty_str)
+                    | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  {-iis-} ty_str
+                    | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" {-iis-} ty_str
+                  _                                       -> {-GHC.setContext iis >> -} runGHCiStatement (Just ty_str)
               }
-            Left _e -> GHC.setContext iis >> runGHCiStatement Nothing
+            Left _e -> {-GHC.setContext iis >> -} runGHCiStatement Nothing
         }
   where
-    runNodeEval conversionName iis ty_str
+    runNodeEval conversionName {-iis-} ty_str
       = do
         { logMsg logLevel "evaluating SpriteKit node"
         
@@ -231,7 +222,7 @@ eval (Session inlet logLevel) source line stmt
                         GHC.try $ 
                           (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
 
-        ; GHC.setContext iis
+        -- ; GHC.setContext iis
         ; case result of
             Right result -> return $ Result (Left result, [ty_str])
             Left  exc    -> return $ Result (Right $ "** Exception: " ++ show (exc :: SomeException), [ty_str])
@@ -250,8 +241,6 @@ eval (Session inlet logLevel) source line stmt
                                      { chan        <- GHC.liftIO $ readIORef chanRef
                                      ; maybe_value <- GHC.liftIO $ atomically $ tryReadTChan chan
                                      ; types       <- renderTypesOfNames names
-                                     ; GHC.liftIO $ putStrLn $ "maybe_value = " ++ show maybe_value
-                                     ; GHC.liftIO $ putStrLn $ "length names = " ++ show (length names)
                                      ; if isNothing maybe_value && null names
                                        then
                                          return $ Result (Right "", maybeToList maybe_ty_str)
