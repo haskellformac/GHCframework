@@ -68,6 +68,16 @@ class ResultCellView: NSTableCellView {
   ///
   func configureSceneResult(scene: SKScene, type: String, stale: Bool) {
 
+      // Changes the selection of the enclosing table view to select this result. We use this in the mouseDown event
+      // handler of the `SKView`.
+    func selectThisResult() {
+      if let rowView = superview as? NSTableRowView {
+        if let tableView = rowView.superview as? NSTableView {
+          tableView.selectRowIndexes(NSIndexSet(index: tableView.rowForView(rowView)), byExtendingSelection: false)
+        }
+      }
+    }
+
       // Scene result views need to be layer-baked as they embed `SKView`s; otherwise, the interaction with the scroll
       // view leads to graphical artifacts.
     wantsLayer = true
@@ -79,7 +89,7 @@ class ResultCellView: NSTableCellView {
     scene.size = sceneSize
 
     scene.scaleMode = .AspectFit
-    var resultSKView = MiniSceneView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)))
+    var resultSKView = MiniSceneView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)), doSelectThisScene: selectThisResult)
     resultSKView.translatesAutoresizingMaskIntoConstraints = false
     for view in resultSceneView.subviews { view.removeFromSuperview() }
     resultSceneView.addSubview(resultSKView)
@@ -127,7 +137,18 @@ class ResultCellView: NSTableCellView {
 
 class MiniSceneView: SKView {
 
-  override func mouseDown(theEvent: NSEvent) {
+  let doSelectThisScene: () -> Void
+
+  init(frame frameRect: NSRect, doSelectThisScene: () -> Void) {
+    self.doSelectThisScene = doSelectThisScene
+    super.init(frame: frameRect)
   }
 
+  required init?(coder: NSCoder) {
+      fatalError("init(coder:) has not been implemented")
+  }
+
+  override func mouseDown(theEvent: NSEvent) {
+    doSelectThisScene()
+  }
 }
