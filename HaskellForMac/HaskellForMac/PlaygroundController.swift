@@ -71,13 +71,13 @@ class PlaygroundController: NSViewController {
 
   // Objects from the results popover nib.
   //
-  @IBOutlet private weak var popover:           NSPopover?               // referenced to retain
-  @IBOutlet private weak var popoverController: NSViewController!        // referenced to retain
+  @IBOutlet private      var popover:           NSPopover?               // referenced to retain
+  @IBOutlet private      var popoverController: NSViewController!        // referenced to retain
   @IBOutlet private weak var popoverScrollView: NSScrollView!
   @IBOutlet private weak var popoverTextField:  NSTextField!             // This is where the textual result goes.
 
-  @IBOutlet private weak var resultPopover:           NSPopover?         // referenced to retain
-  @IBOutlet private weak var resultPopoverController: NSViewController!  // referenced to retain
+  @IBOutlet private      var resultPopover:           NSPopover?         // referenced to retain
+  @IBOutlet private      var resultPopoverController: NSViewController!  // referenced to retain
   @IBOutlet private weak var resultPopoverView:       NSView!            // This is where the graphical result goes.
 
   //MARK: -
@@ -166,6 +166,7 @@ class PlaygroundController: NSViewController {
     resultTableView.setDelegate(self)
     resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
     resultTableView.setDataSource(resultStorage)
+//    resultTableView.wantsLayer = true
 
       // Get the initial code view contents and enable highlighting.
     codeTextView.string = projectViewModelPlayground.string

@@ -68,6 +68,10 @@ class ResultCellView: NSTableCellView {
   ///
   func configureSceneResult(scene: SKScene, type: String, stale: Bool) {
 
+      // Scene result views need to be layer-baked as they embed `SKView`s; otherwise, the interaction with the scroll
+      // view leads to graphical artifacts.
+    wantsLayer = true
+
       // Ensure the scene size is valid.
     var sceneSize = scene.size
     if !isfinite(sceneSize.width)  || sceneSize.width  < 15 { sceneSize.width  = 15 }
@@ -75,7 +79,7 @@ class ResultCellView: NSTableCellView {
     scene.size = sceneSize
 
     scene.scaleMode = .AspectFit
-    var resultSKView = SKView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)))
+    var resultSKView = MiniSceneView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)))
     resultSKView.translatesAutoresizingMaskIntoConstraints = false
     for view in resultSceneView.subviews { view.removeFromSuperview() }
     resultSceneView.addSubview(resultSKView)
@@ -92,7 +96,7 @@ class ResultCellView: NSTableCellView {
     resultSKView.asynchronous = false     // Stay in sync with Core Animation
     scene.paused              = true      // Don't advance the scene
       // Give the 'SKView' an opportunity to update before pausing it.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC / 10)), dispatch_get_main_queue(), {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC / 2)), dispatch_get_main_queue(), {
       resultSKView.paused =  true
     })
 
@@ -119,4 +123,11 @@ class ResultCellView: NSTableCellView {
     resultString.textColor = valueTextColor
     resultType.textColor   = defaultTextColor
   }
+}
+
+class MiniSceneView: SKView {
+
+  override func mouseDown(theEvent: NSEvent) {
+  }
+
 }
