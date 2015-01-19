@@ -338,10 +338,6 @@ load (Session inlet _logLevel) importPaths target
                          ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
                                                      in he {GHC.hsc_IC = new_ic})
 
-                             -- Set the working directory for Haskell evaluation again in the interactive context.
-                         ; GHC.modifySession $ \hsc ->
-                             let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
-
                              -- Only make the user module available for interactive use
                          ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
 
@@ -350,6 +346,10 @@ load (Session inlet _logLevel) importPaths target
                              putMVar resultMV (Result ())
                          }
             []        -> GHC.liftIO $ putMVar resultMV Error
+
+            -- Set the working directory for Haskell evaluation again in the new interactive context.
+        ; GHC.modifySession $ \hsc ->
+            let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
         }
     ; takeMVar resultMV
     }
