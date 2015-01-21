@@ -31,9 +31,20 @@ class ResultCellView: NSTableCellView {
   ///
   private let exceptionRedColor = NSColor(deviceRed: 180/256, green: 35/256, blue: 18/256, alpha: 1)
 
-  /// Displays a string result and its type. If the string result is the empty string, its view is supressed.
+  /// Configure the cell to display a result and its type.
   ///
-  func configureTextualResult(result: String, type: String, stale: Bool) {
+  func configureResult(result: Result) {
+
+    switch result.value {
+    case .StringResult(let string): configureTextualResult(string, type: result.type, stale: result.stale)
+    case .ImageResult(let image):   configureImageResult(image, type: result.type, stale: result.stale)
+    case .SKSceneResult(let scene): configureSceneResult(scene, type: result.type, stale: result.stale)
+    }
+  }
+
+  /// Displays a string result and its type. If the string result is the empty string, its view is suppressed.
+  ///
+  private func configureTextualResult(result: String, type: String, stale: Bool) {
 
     resultString.stringValue = result
     resultType.stringValue   = type
@@ -53,7 +64,7 @@ class ResultCellView: NSTableCellView {
 
   /// Displays a graphical result and its type.
   ///
-  func configureImageResult(result: NSImage, type: String, stale: Bool) {
+  private func configureImageResult(result: NSImage, type: String, stale: Bool) {
 
     resultImage.image      = result
     resultType.stringValue = type
@@ -66,7 +77,7 @@ class ResultCellView: NSTableCellView {
 
   /// Displays a graphical as a SpriteKit scene and its type.
   ///
-  func configureSceneResult(scene: SKScene, type: String, stale: Bool) {
+  private func configureSceneResult(scene: SKScene, type: String, stale: Bool) {
 
       // Changes the selection of the enclosing table view to select this result. We use this in the mouseDown event
       // handler of the `SKView`.

@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 -- |
 -- Module    : Interpreter
 -- Copyright : [2014] Manuel M T Chakravarty
@@ -192,26 +194,44 @@ eval (Session inlet logLevel) source line stmt
         ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
             GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
             :: GHC.Ghc (Either GHC.SourceError GHC.RunResult))
-        ; nodeNames  <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"  else return []
-        ; sceneNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene" else return []
+        ; skImageNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Image" else return []
+        ; nodeNames    <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"  else return []
+        ; sceneNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene" else return []
+        
+            -- if JuicyPixels is available, test for image return types
+        ; imageNames        <- ((++) <$> GHC.parseName "Codec.Picture.Image" 
+                                     <*> GHC.parseName "Codec.Picture.DynamicImage")
+--                               `GHC.gcatch` \(_exc :: GHC.SourceError) -> return []
 
-           -- try to determine the type of the statement if it is an expression
+            -- try to determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
         ; case ty :: Either GHC.SourceError GHC.Type of
             Right ty -> do
               { ty_str <- renderType ty
               ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
                   Just tycon 
-                    | GHC.getName tycon `elem` nodeNames  -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  {-iis-} ty_str
-                    | GHC.getName tycon `elem` sceneNames -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" {-iis-} ty_str
-                  _                                       -> {-GHC.setContext iis >> -} runGHCiStatement (Just ty_str)
+                    | GHC.getName tycon `elem` skImageNames -> runNodeEval "Graphics.SpriteKit.imageToForeignPtr" ty_str
+                    | GHC.getName tycon `elem` nodeNames    -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"  ty_str
+                    | GHC.getName tycon `elem` sceneNames   -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr" ty_str
+                    | GHC.getName tycon `elem` imageNames   -> runImageEval isSpriteKitAvailable ty_str
+                  _                                         -> runGHCiStatement (Just ty_str)
               }
-            Left _e -> {-GHC.setContext iis >> -} runGHCiStatement Nothing
+            Left _e -> runGHCiStatement Nothing
         }
   where
-    runNodeEval conversionName {-iis-} ty_str
+    runImageEval isSpriteKitAvailable ty_str
+      | not isSpriteKitAvailable
+      = return $ Result (Right $ "** Exception: import Graphics.SpriteKit to render images", [ty_str])
+      | otherwise
       = do
-        { logMsg logLevel "evaluating SpriteKit node"
+        { logMsg logLevel "evaluating JuicyPixels image"
+        
+        ; runNodeEval "Graphics.SpriteKit.imageToForeignPtr" ty_str
+        }
+      
+    runNodeEval conversionName ty_str
+      = do
+        { logMsg logLevel ("evaluating SpriteKit with " ++ conversionName)
         
             -- result is a SpriteKit node => get a reference to that node instead of pretty printing
         ; let nodeExpr = conversionName ++ " " ++ parens stmt

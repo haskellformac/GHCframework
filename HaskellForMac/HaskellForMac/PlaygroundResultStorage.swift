@@ -29,6 +29,7 @@ struct Result {
 ///
 enum ResultValue {
   case StringResult(string: String)       // Result is just text
+  case ImageResult(image: NSImage)        // Result is a static image
   case SKSceneResult(scene: SKScene)      // Result renders in a SpriteKit scene.
 }
 

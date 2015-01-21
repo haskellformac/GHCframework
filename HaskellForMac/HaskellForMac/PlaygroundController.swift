@@ -293,9 +293,17 @@ class PlaygroundController: NSViewController {
                                    height: height,
                                    atCommandIndex: commandIndex)
 
+      } else if let resultImage = evalResult as? NSImage {
+
+          // The result is just a static image.
+        resultStorage.reportResult(.ImageResult(image: resultImage),
+                                   type: ", ".join(evalTypes),
+                                   height: height,
+                                   atCommandIndex: commandIndex)
+
       } else if let resultText = evalResult as? String {
 
-          // The result is just a string.
+        // The result is just a string.
         resultStorage.reportResult(.StringResult(string: resultText),
                                    type: ", ".join(evalTypes),
                                    height: height,
@@ -395,14 +403,9 @@ extension PlaygroundController: NSTableViewDelegate {
   func tableView(tableView: NSTableView, viewForTableColumn column: NSTableColumn, row: Int) -> NSTableCellView? {
 
     if let result = resultStorage.queryResult(row) {
-
       if let cell = tableView.makeViewWithIdentifier(kResultCell, owner: self) as? ResultCellView {
 
-        switch result.value {
-        case .StringResult(let string): cell.configureTextualResult(string, type: result.type, stale: result.stale)
-        case .SKSceneResult(let scene):
-          cell.configureSceneResult(scene, type: result.type, stale: result.stale)
-        }
+        cell.configureResult(result)
         return cell
 
       } else { return nil }
@@ -471,6 +474,9 @@ extension PlaygroundController: NSTableViewDelegate {
                                               ofView: resultTableView,
                                               preferredEdge: NSMaxYEdge)
           }
+
+        case .ImageResult(let image):
+          ()
 
         case .StringResult(let string0):     // text only result
           let string: String = string0 // FIXME: current version of the Swift compilers needs this to infer the right type
