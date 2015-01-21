@@ -431,19 +431,11 @@ extension PlaygroundController: NSTableViewDelegate {
 
         switch result.value {
         case .SKSceneResult(let scene0):     // result with a SpriteKit scene
-
           let scene: SKScene = scene0 // FIXME: current version of the Swift compilers needs this to infer the right type
           let bundle = NSBundle.mainBundle()
           if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
             NSLog("%@: could not load result popover NIB", __FUNCTION__)
           } else {
-
-            // FIXME: move into a file in Utilities
-            func clampExtent(extent: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
-              if extent < min { return min }
-              else if extent > max { return max }
-              else { return extent }
-            }
 
               // Ensure the scene size is valid.
             var sceneSize = scene.size
@@ -475,8 +467,41 @@ extension PlaygroundController: NSTableViewDelegate {
                                               preferredEdge: NSMaxYEdge)
           }
 
-        case .ImageResult(let image):
-          ()
+          // FIXME: There is a lot of overlap between this and the scene case => refactor
+        case .ImageResult(let image0):
+          let image: NSImage = image0 // FIXME: current version of the Swift compilers needs this to infer the right type
+          let bundle = NSBundle.mainBundle()
+          if !bundle.loadNibNamed("ResultViewPopover", owner: self, topLevelObjects: nil) {
+            NSLog("%@: could not load result popover NIB", __FUNCTION__)
+          } else {
+
+              // Ensure the image size is valid.
+            var imageSize = image.size
+            if !isfinite(imageSize.width)  || imageSize.width  < 30 { imageSize.width  = 30 }
+            if !isfinite(imageSize.height) || imageSize.height < 30 { imageSize.height = 30 }
+
+              // Constrain the popover size.
+            let resultSize = CGSize(width:  clampExtent(imageSize.width,  50, 1024),
+                                    height: clampExtent(imageSize.height, 50, 768))
+            var resultView = NSImageView(frame: CGRect(origin: CGPointZero, size: resultSize))
+            resultView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+            resultView.translatesAutoresizingMaskIntoConstraints = true
+            resultView.image = image
+
+              // Add the image view to the popover.
+            for view in resultPopoverView.subviews { view.removeFromSuperview() }
+            resultPopoverView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: resultSize)
+            resultPopoverView.autoresizingMask = NSAutoresizingMaskOptions.ViewNotSizable
+            resultPopoverView.translatesAutoresizingMaskIntoConstraints = true
+            resultPopoverView.addSubview(resultView)
+
+              // And present it.
+            resultPopover?.contentSize = resultSize
+            resultPopover?.behavior    = .Semitransient
+            resultPopover?.showRelativeToRect(NSRect(origin: frame.origin, size: CGSize(width: 10, height: 15)),
+                                              ofView: resultTableView,
+                                              preferredEdge: NSMaxYEdge)
+          }
 
         case .StringResult(let string0):     // text only result
           let string: String = string0 // FIXME: current version of the Swift compilers needs this to infer the right type

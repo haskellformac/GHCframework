@@ -78,6 +78,7 @@
 		E7C5DB3B1A0DF54C002F6469 /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */; };
 		E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */; };
 		E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */; };
+		E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C9F0201A6FD9B900913B76 /* Geometry.swift */; };
 		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
@@ -322,6 +323,7 @@
 		E7C5DB3A1A0DF54C002F6469 /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesController.swift; sourceTree = "<group>"; };
 		E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		E7C9F0201A6FD9B900913B76 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
 		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
@@ -541,6 +543,7 @@
 				E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */,
 				E75DD13719A07E0300CDC18F /* StringExtensions.swift */,
 				E78E73F519D52DCE0046BA51 /* Range.swift */,
+				E7C9F0201A6FD9B900913B76 /* Geometry.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -1250,6 +1253,7 @@
 				E7A13B111888006C00D79087 /* main.m in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
 				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
+				E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
 				E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */,
 				E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */,
