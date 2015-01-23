@@ -199,10 +199,13 @@ eval (Session inlet logLevel) source line stmt
         ; nodeNames    <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"    else return []
         ; sceneNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene"   else return []
         
+        ; dflags <- GHC.getSessionDynFlags
+        ; GHC.liftIO $ putStrLn (GHC.showPpr dflags textureNames)
+        
             -- if JuicyPixels is available, test for image return types
         ; imageNames        <- ((++) <$> GHC.parseName "Codec.Picture.Image" 
                                      <*> GHC.parseName "Codec.Picture.DynamicImage")
---                               `GHC.gcatch` \(_exc :: GHC.SourceError) -> return []
+                               `GHC.gcatch` \(_exc :: GHC.SourceError) -> return []
 
             -- try to determine the type of the statement if it is an expression
         ; ty <- GHC.gtry $ GHC.exprType stmt
