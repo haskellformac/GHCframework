@@ -194,13 +194,11 @@ eval (Session inlet logLevel) source line stmt
         ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
             GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
             :: GHC.Ghc (Either GHC.SourceError GHC.RunResult))
+        ; colorNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Color"   else return []
         ; skImageNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Image"   else return []
         ; textureNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Texture" else return []
         ; nodeNames    <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"    else return []
         ; sceneNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene"   else return []
-        
-        ; dflags <- GHC.getSessionDynFlags
-        ; GHC.liftIO $ putStrLn (GHC.showPpr dflags textureNames)
         
             -- if JuicyPixels is available, test for image return types
         ; imageNames        <- ((++) <$> GHC.parseName "Codec.Picture.Image" 
@@ -214,6 +212,7 @@ eval (Session inlet logLevel) source line stmt
               { ty_str <- renderType ty
               ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
                   Just tycon 
+                    | GHC.getName tycon `elem` colorNames   -> runNodeEval "Graphics.SpriteKit.colorToForeignPtr"   ty_str
                     | GHC.getName tycon `elem` skImageNames -> runNodeEval "Graphics.SpriteKit.imageToForeignPtr"   ty_str
                     | GHC.getName tycon `elem` textureNames -> runNodeEval "Graphics.SpriteKit.textureToForeignPtr" ty_str
                     | GHC.getName tycon `elem` nodeNames    -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"    ty_str
