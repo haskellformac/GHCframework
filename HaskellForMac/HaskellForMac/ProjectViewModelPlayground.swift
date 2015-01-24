@@ -100,6 +100,14 @@ class ProjectViewModelPlayground: NSObject {
   // MARK: -
   // MARK: File operations
 
+  /// Remove the associated file wrapper.
+  ///
+  func remove(moduleName: String, parent: NSFileWrapper) {
+    if let filename = ProjectViewModelPlayground.implicitPlaygroundFilename(moduleName) {
+      parent.removeFileWrapper(theFileWrapper)
+    }
+  }
+
   /// Rename the associated file wrapper such that it matches the Haskell module with the given name in the directory
   /// of the given parent directory file wrapper.
   ///

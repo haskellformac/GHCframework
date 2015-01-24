@@ -72,6 +72,8 @@ extern NSString *const kDataGroupID;
 /// The reference is strong as we may temporarily be the only owner of file wrapper while, e.g., moving it around in the
 /// hierarchy — and there is no risk of a back reference.
 ///
+/// FIXME: This property should never be 'nil' for file-related items. Leaving it as `nil`, while eg a new empty file
+///        has not been written out yet has only caused problems.
 @property (nonatomic, readonly) NSFileWrapper *fileWrapper;     // maybe nil
 
 /// Does this item have unsaved changes?

@@ -363,7 +363,6 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (IBAction)newFile:(NSMenuItem *)sender
 {
-#pragma unused(sender)
   NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
@@ -385,8 +384,10 @@ NSString *const kCabalCellID = @"cabalCellID";
                              withAnimation:NSTableViewAnimationSlideDown];
     [self.outlineView endUpdates];
 
-      // Mark document as edited.
+      // Mark document as edited and save it to create the new file on external storage.
     [self.document updateChangeCount:NSChangeDone];
+    [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
+
 
       // Select and enter editing mode for the newly added item.
     HFMProjectViewModelItem *newItem = [project outlineView:self.outlineView child:(NSInteger)itemIndex ofItem:parentItem];
@@ -791,9 +792,13 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
   NSString *finalName = [item renameTo:newName];
   if (finalName) textField.stringValue = finalName;
 
-    // Mark document as edited.
-  if (![textField.stringValue isEqualToString:oldName])
+    // Mark document as edited and save to change filename on external storage.
+  if (![textField.stringValue isEqualToString:oldName]) {
+
     [self.document updateChangeCount:NSChangeDone];
+    [self.document saveDocument:self];    // FIXME: Is this really the right way to save the document programmatically?
+
+  }
 
     // Make sure any change of the string in this method is reflected in the UI.
   [self.outlineView reloadItem:item];

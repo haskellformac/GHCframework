@@ -527,6 +527,10 @@ NSString *const kDataGroupID        = @"Supporting files";
     return NO;
   }
 
+    // Remove the associated playground if any.
+  if (self.playground)
+    [self.playground remove:self.identifier parent:(self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper];
+
     // Remove this item from the hierarchy.
   return [self.parent removeChild:self];
 }
@@ -554,7 +558,8 @@ NSString *const kDataGroupID        = @"Supporting files";
 {
   NSFileWrapper *parentFileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
 
-    // Make sure the new identifier is unique (can't let the file wrappers do this as `self.fileWrapper` may be `nil`.
+    // Make sure the new identifier is unique (although, `self.fileWrapper` should not be `nil`, it seemed tricky in
+    // the past to just let the file wrappers pick a unique name).
   NSMutableArray *usedNames = [NSMutableArray array];
   NSMutableArray *children  = [self.parent.theChildren mutableCopy];
   [children removeObject:self];
@@ -568,7 +573,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 
     // NB: If we try to set the `preferredFileName` without removing the file wrapper from its parent first, we trigger
     //     a fast enumeration exception — although the docs suggest that the file wrapper class would handle that
-    //     automatically. Moreover, we disambiguate the name ourselves, because duplicate during adding also leads to
+    //     automatically. Moreover, we disambiguate the name ourselves, because a duplicate during adding also leads to
     //     an exception.
   if (self.fileWrapper) {
     [parentFileWrapper removeFileWrapper:self.fileWrapper];
@@ -648,9 +653,6 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
           break;
         }
 
-          // Relace the old by the updated wrapper. (The old one may not actually exist and we don't save empty files
-          // created by touching.)
-        if (!oldFileWrapper && [updatedFileWrapper regularFileContents].length == 0) break;
         if (oldFileWrapper) [parentFileWrapper removeFileWrapper:oldFileWrapper];
         [parentFileWrapper addFileWrapper:updatedFileWrapper];
       }
