@@ -54,9 +54,9 @@ class TextGutterView: NSRulerView {
 
   // Objects from the diagnostics popover nib.
   //
-  @IBOutlet private var popover:           NSPopover?           // referenced to retain
-  @IBOutlet private var popoverController: NSViewController!    // referenced to retain
-  @IBOutlet private var popoverTextView:   NSTextView!          // This is where the diagnostics goes.
+  @IBOutlet private      var popover:           NSPopover?           // referenced to retain
+  @IBOutlet private      var popoverController: NSViewController!    // referenced to retain
+  @IBOutlet private weak var popoverTextField:  NSTextField!         // This is where the diagnostics goes.
 
 
   // MARK: -
@@ -202,13 +202,31 @@ class TextGutterView: NSRulerView {
 
           let msg = NSAttributedString(string: issues.map{$0.message}.reduce(""){$0 + $1},
             attributes: diagnosticsTextAttributes)
-          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
-          let textSize    = msg.size
-          let insetSize   = NSSize(width: 0, height: 10)
-          let height      = textSize.height + insetSize.height
-          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
-          popoverTextView.textContainerInset = insetSize
-          popover?.contentSize               = contentSize
+
+            // By default, we go for the width of the window in the NIB and compute the required height given the
+            // string we need to display.
+          let width = popover?.contentViewController?.view.bounds.size.width ?? 600
+          popoverTextField.attributedStringValue   = msg
+          popoverTextField.preferredMaxLayoutWidth = width
+          popoverTextField.sizeToFit()
+
+          let textSize     = popoverTextField.intrinsicContentSize
+          let contentWidth = textSize.width < width ? max(textSize.width, 50) : width
+          if textSize.width < contentWidth {
+            // FIXME: center the content when it is smaller than the popover, but how?
+          }
+          let contentSize    = NSSize(width: contentWidth, height: textSize.height > 500 ? 500 : textSize.height)
+          // FIXME: How can we determine the constants programatically? NSScrollView.frameSizeForContentSize(_:_:_:_:_:)
+          //        doesn't seem to work as exepcted.
+          let scrollViewSize = CGSize(width: contentSize.width + 4, height: contentSize.height + 4)
+
+//          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
+//          let textSize    = msg.size
+//          let insetSize   = NSSize(width: 0, height: 10)
+//          let height      = textSize.height + insetSize.height
+//          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
+//          popoverTextView.textContainerInset = insetSize
+          popover?.contentSize               = scrollViewSize
           popover?.behavior                  = .Semitransient
           popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: NSMaxYEdge)
         }

@@ -73,7 +73,6 @@ class PlaygroundController: NSViewController {
   //
   @IBOutlet private      var popover:           NSPopover?               // referenced to retain
   @IBOutlet private      var popoverController: NSViewController!        // referenced to retain
-  @IBOutlet private weak var popoverScrollView: NSScrollView!
   @IBOutlet private weak var popoverTextField:  NSTextField!             // This is where the textual result goes.
 
   @IBOutlet private      var resultPopover:           NSPopover?         // referenced to retain
