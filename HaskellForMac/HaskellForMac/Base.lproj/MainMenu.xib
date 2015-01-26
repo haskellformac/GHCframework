@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C68k" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C99d" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
@@ -397,9 +397,16 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="491">
                         <items>
-                            <menuItem title="HaskellForMac Help" keyEquivalent="?" id="492">
+                            <menuItem title="Haskell Library Documentation" keyEquivalent="0" id="492">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
-                                    <action selector="showHelp:" target="-1" id="493"/>
+                                    <action selector="showWindow:" target="MaV-Bt-s4O" id="qVF-Ql-3VM"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="The Haskell Programming Language" id="UW2-61-mLS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="gotoHaskellPortal:" target="MaV-Bt-s4O" id="tZj-Se-eFR"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -417,6 +424,7 @@ CA
                 <outlet property="cloudMenu" destination="jwO-1d-hy5" id="4so-8B-aeb"/>
             </connections>
         </customObject>
+        <customObject id="MaV-Bt-s4O" customClass="DocumentationController" customModule="Haskell" customModuleProvider="target"/>
         <customObject id="420" customClass="NSFontManager"/>
     </objects>
 </document>
