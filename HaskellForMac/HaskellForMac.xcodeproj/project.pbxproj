@@ -862,6 +862,7 @@
 			buildPhases = (
 				E7A13AFD1888006C00D79087 /* Sources */,
 				E7A13AFE1888006C00D79087 /* Frameworks */,
+				E7590EDE1A764C5500A74041 /* ShellScript */,
 				E7A13AFF1888006C00D79087 /* Resources */,
 				E70A66CB197CC341006D3514 /* Embed Frameworks */,
 				E72F538B19C28A76002692E6 /* CopyFiles */,
@@ -1175,6 +1176,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Copy all public generated headers to the framework's 'Headers' directory\nif [ -e ${DERIVED_FILE_DIR}/CBLPackage_objc.h ]; then\n  ditto ${DERIVED_FILE_DIR}/CBLPackage_objc.h ${BUILT_PRODUCTS_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}/CBLPackage_objc.h\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E7590EDE1A764C5500A74041 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Generate the master index for the library documentation\n\nGHCROOT=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/\nDOCROOT=$GHCROOT/usr/share/doc/ghc/html/libraries\n\nargs=\"\"\nfor lib in `ls $DOCROOT/*/*.haddock`\ndo\n  args=\"-i `basename \\`dirname $lib\\``,$lib $args\"\ndone\necho haddock --gen-contents --gen-index --title=\"Library Documentation\" --odir=$DOCROOT $args\nhaddock --gen-contents --gen-index --title=\"Library Documentation\" --odir=$DOCROOT $args\n";
 			showEnvVarsInLog = 0;
 		};
 		E7C5DB391A0C9CB3002F6469 /* ShellScript */ = {
