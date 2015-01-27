@@ -18,7 +18,8 @@ class AppDelegate: NSObject {
 //    NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
 //  }
 
-  @IBOutlet weak var preferencesController: PreferencesController!
+  @IBOutlet weak var preferencesController:   PreferencesController!
+  @IBOutlet weak var documentationController: DocumentationController!
 }
 
 extension AppDelegate: NSApplicationDelegate {

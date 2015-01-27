@@ -30,7 +30,7 @@ class DocumentationController: NSWindowController {
     state: NSCoder,
     completionHandler: (NSWindow, NSError!) -> Void) -> Bool
   {
-    completionHandler(((NSApp as NSApplication).delegate as AppDelegate).preferencesController.window!, nil)
+    completionHandler(((NSApp as NSApplication).delegate as AppDelegate).documentationController.window!, nil)
     return true
   }
 
@@ -38,10 +38,10 @@ class DocumentationController: NSWindowController {
     super.windowDidLoad()
 
     window?.identifier       = "Documentation"
-    window?.restorationClass = PreferencesController.self
+    window?.restorationClass = DocumentationController.self
     window?.title            = "Haskell Library Documentation"
 
-    webView.mainFrame.loadRequest(NSURLRequest(URL: NSURL(string: documentationRoot)!))
+    webView.mainFrameURL = documentationRoot
   }
 }
 
@@ -49,5 +49,11 @@ extension DocumentationController {
 
   @IBAction func gotoHaskellPortal(sender: NSMenuItem) {
     NSWorkspace.sharedWorkspace().openURL(haskellPortal)
+  }
+
+  @IBAction func shareToSafari(sender: NSButton) {
+    if let url = NSURL(string: webView.mainFrameURL) {
+      NSWorkspace.sharedWorkspace().openURL(url)
+    }
   }
 }
