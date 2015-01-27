@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C99d" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C106a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
@@ -37,10 +37,63 @@
                     <constraint firstAttribute="trailing" secondItem="SX1-0R-c0x" secondAttribute="trailing" id="xxr-A4-ebr"/>
                 </constraints>
             </view>
+            <toolbar key="toolbar" implicitIdentifier="18E60DDE-7488-487B-BA75-11E4100877F2" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="LpK-63-naB">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="8BB-fJ-IGv"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="BlC-Iz-7mt"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="XQI-gh-tdi"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Jkl-yb-ULs"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="7AB-ON-f9W"/>
+                    <toolbarItem implicitItemIdentifier="D68F198D-11B2-4283-91C2-46F1456BD66B" label="" paletteLabel="" image="NSGoLeftTemplate" selectable="YES" id="a7I-YG-rOa">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="30" height="28"/>
+                        <size key="maxSize" width="30" height="28"/>
+                        <button key="view" verticalHuggingPriority="750" id="a7s-2l-I7j">
+                            <rect key="frame" x="29" y="14" width="30" height="28"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Back" bezelStyle="texturedRounded" image="NSGoLeftTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="fEj-bV-DJ1">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                                <string key="keyEquivalent"></string>
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="goBack:" target="SX1-0R-c0x" id="cBQ-gx-Im1"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="48858E47-A352-4DFE-9A4C-3068563324BD" label="" paletteLabel="" image="NSGoRightTemplate" selectable="YES" id="PIk-3c-Frw">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="30" height="25"/>
+                        <size key="maxSize" width="30" height="28"/>
+                        <button key="view" verticalHuggingPriority="750" id="iqt-HB-4bI">
+                            <rect key="frame" x="0.0" y="14" width="30" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Forward" bezelStyle="texturedRounded" image="NSGoRightTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XqI-Xn-88c">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                                <string key="keyEquivalent"></string>
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="goForward:" target="SX1-0R-c0x" id="wkN-a7-0jR"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="a7I-YG-rOa"/>
+                    <toolbarItem reference="PIk-3c-Frw"/>
+                </defaultToolbarItems>
+            </toolbar>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
                 <outlet property="initialFirstResponder" destination="SX1-0R-c0x" id="3W9-3l-G9f"/>
             </connections>
         </window>
     </objects>
+    <resources>
+        <image name="NSGoLeftTemplate" width="9" height="12"/>
+        <image name="NSGoRightTemplate" width="9" height="12"/>
+    </resources>
 </document>
