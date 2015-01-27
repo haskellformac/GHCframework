@@ -88,6 +88,7 @@
 		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
 		E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CFFEA119F729B600356065 /* ResultPopover.xib */; };
 		E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E5DE9B19E4FD30008A101B /* MACAddress.m */; };
+		E7EC45831A776BA0004AFA98 /* ValidatingToolbarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
 		E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F7988D198A610F0063294F /* PlaygroundController.swift */; };
 		E7F79896198B06850063294F /* SynchroScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F79895198B06850063294F /* SynchroScrollView.swift */; };
@@ -337,6 +338,7 @@
 		E7CFFEA119F729B600356065 /* ResultPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultPopover.xib; sourceTree = "<group>"; };
 		E7E5DE9B19E4FD30008A101B /* MACAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MACAddress.m; sourceTree = "<group>"; };
 		E7E5DE9D19E4FD63008A101B /* MACAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MACAddress.h; sourceTree = "<group>"; };
+		E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatingToolbarItem.swift; sourceTree = "<group>"; };
 		E7ED6895198FAF4100A1E8FE /* TextEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditor.xib; sourceTree = "<group>"; };
 		E7F7988C198A610F0063294F /* HaskellForMac-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HaskellForMac-Bridging-Header.h"; sourceTree = "<group>"; };
 		E7F7988D198A610F0063294F /* PlaygroundController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
@@ -643,6 +645,7 @@
 				E7F7988B198A609B0063294F /* Playground */,
 				E7C5765F19948BA800E6AAE0 /* Processor */,
 				E72AF5F819E38C6E00753077 /* Cloud */,
+				E7EC457F1A776B5D004AFA98 /* CustomisedCocoaObjects */,
 				E739EF911A071DAC00236051 /* CustomisedViews */,
 				E76CD89319CD6DC600369A80 /* Utilities */,
 				E7A13B4A188E7F1C00D79087 /* Interfaces */,
@@ -726,6 +729,14 @@
 				E7C5766019948C3000E6AAE0 /* Diagnostics.swift */,
 			);
 			name = Processor;
+			sourceTree = "<group>";
+		};
+		E7EC457F1A776B5D004AFA98 /* CustomisedCocoaObjects */ = {
+			isa = PBXGroup;
+			children = (
+				E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */,
+			);
+			name = CustomisedCocoaObjects;
 			sourceTree = "<group>";
 		};
 		E7F7988B198A609B0063294F /* Playground */ = {
@@ -1247,6 +1258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */,
+				E7EC45831A776BA0004AFA98 /* ValidatingToolbarItem.swift in Sources */,
 				E721D8F819B354F600DCBF68 /* SyntaxHighlighting.swift in Sources */,
 				E742321C1A4EB18C0098DF7E /* OS.swift in Sources */,
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,

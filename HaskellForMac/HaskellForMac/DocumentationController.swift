@@ -16,7 +16,9 @@ let haskellPortal     = NSURL(string: "https://haskell.org/")!
 
 class DocumentationController: NSWindowController {
 
-  @IBOutlet private weak var webView: WebView!
+  @IBOutlet private weak var webView:            WebView!
+  @IBOutlet private weak var backToolbarItem:    ValidatingToolbarItem!
+  @IBOutlet private weak var forwardToolbarItem: ValidatingToolbarItem!
 
   // The nib containing the associated window.
   //
@@ -41,11 +43,20 @@ class DocumentationController: NSWindowController {
     window?.restorationClass = DocumentationController.self
     window?.title            = "Haskell Library Documentation"
 
+    backToolbarItem.validator    = toolbarItemValidator()
+    forwardToolbarItem.validator = toolbarItemValidator()
+
     webView.mainFrameURL = documentationRoot
   }
 }
 
 extension DocumentationController {
+
+    // NB: We need the extra () argument to work around a swiftc bug.
+  func toolbarItemValidator()(item: ValidatingToolbarItem) {
+    if item == backToolbarItem    { item.enabled = webView.canGoBack }
+    if item == forwardToolbarItem { item.enabled = webView.canGoForward }
+  }
 
   @IBAction func gotoHaskellPortal(sender: NSMenuItem) {
     NSWorkspace.sharedWorkspace().openURL(haskellPortal)

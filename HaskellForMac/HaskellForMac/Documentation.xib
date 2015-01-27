@@ -8,6 +8,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DocumentationController" customModule="Haskell" customModuleProvider="target">
             <connections>
+                <outlet property="backToolbarItem" destination="a7I-YG-rOa" id="DNz-qd-Ae0"/>
+                <outlet property="forwardToolbarItem" destination="PIk-3c-Frw" id="msE-AV-yRL"/>
                 <outlet property="webView" destination="SX1-0R-c0x" id="Onr-op-0b6"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
@@ -44,7 +46,7 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="XQI-gh-tdi"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Jkl-yb-ULs"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="7AB-ON-f9W"/>
-                    <toolbarItem implicitItemIdentifier="D68F198D-11B2-4283-91C2-46F1456BD66B" label="" paletteLabel="" image="NSGoLeftTemplate" selectable="YES" id="a7I-YG-rOa">
+                    <toolbarItem implicitItemIdentifier="D68F198D-11B2-4283-91C2-46F1456BD66B" label="" paletteLabel="" image="NSGoLeftTemplate" selectable="YES" id="a7I-YG-rOa" customClass="ValidatingToolbarItem" customModule="Haskell" customModuleProvider="target">
                         <nil key="toolTip"/>
                         <size key="minSize" width="30" height="28"/>
                         <size key="maxSize" width="30" height="28"/>
@@ -57,12 +59,12 @@
                                 <string key="keyEquivalent"></string>
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </buttonCell>
-                            <connections>
-                                <action selector="goBack:" target="SX1-0R-c0x" id="cBQ-gx-Im1"/>
-                            </connections>
                         </button>
+                        <connections>
+                            <action selector="goBack:" target="SX1-0R-c0x" id="DML-VS-SMb"/>
+                        </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="48858E47-A352-4DFE-9A4C-3068563324BD" label="" paletteLabel="" image="NSGoRightTemplate" selectable="YES" id="PIk-3c-Frw">
+                    <toolbarItem implicitItemIdentifier="48858E47-A352-4DFE-9A4C-3068563324BD" label="" paletteLabel="" image="NSGoRightTemplate" selectable="YES" id="PIk-3c-Frw" customClass="ValidatingToolbarItem" customModule="Haskell" customModuleProvider="target">
                         <nil key="toolTip"/>
                         <size key="minSize" width="30" height="25"/>
                         <size key="maxSize" width="30" height="28"/>
@@ -75,10 +77,10 @@
                                 <string key="keyEquivalent"></string>
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </buttonCell>
-                            <connections>
-                                <action selector="goForward:" target="SX1-0R-c0x" id="wkN-a7-0jR"/>
-                            </connections>
                         </button>
+                        <connections>
+                            <action selector="goForward:" target="SX1-0R-c0x" id="tFg-hi-120"/>
+                        </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="BD8DB61D-23A1-4ECF-9090-2EE93CAD731A" label="" paletteLabel="" image="NSShareTemplate" selectable="YES" id="QuG-c8-Z7c">
                         <nil key="toolTip"/>
