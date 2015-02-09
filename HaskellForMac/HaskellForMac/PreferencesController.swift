@@ -12,6 +12,7 @@ import Cocoa
 // IB identifiers of the various preferences views.
 //
 let kGeneralPreferences     = "GeneralPreferences"
+let kThemesPreferences      = "ThemesPreferences"
 let kTextEditingPreferences = "TextEditingPreferences"
 let kAccountPreferences     = "AccountPreferences"
 
@@ -106,7 +107,7 @@ extension PreferencesController: NSToolbarDelegate {
 //  }
 
   func toolbarSelectableItemIdentifiers(toolbar: NSToolbar) -> [String] {
-    return [kGeneralPreferences, kTextEditingPreferences, kAccountPreferences]
+    return [kGeneralPreferences, kThemesPreferences, kTextEditingPreferences, kAccountPreferences]
   }
 }
 
