@@ -51,15 +51,6 @@ class PlaygroundController: NSViewController {
     return [NSFontAttributeName: menlo13]
   }()
 
-//  /// The text attributes to be applied to all text in the result text views. (Currently, they are fixed.)
-//  ///
-//  private let resultTextAttributes: NSDictionary = {
-//    let menlo13        = NSFont(name: "Menlo-Regular", size:13)!
-//    let paragraphStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as NSMutableParagraphStyle
-//    paragraphStyle.lineBreakMode = .ByTruncatingTail
-//    return [NSFontAttributeName: menlo13, NSParagraphStyleAttributeName: paragraphStyle]
-//  }()
-
   private let fontHeight: CGFloat = {
     let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)!])
     return x.size.height
@@ -127,9 +118,6 @@ class PlaygroundController: NSViewController {
 
       // The size of the playground code view is fixed. We want it to be rigid.
     codeTextView.horizontallyResizable = true
-
-      // For now, we have got a fixed font.
-    codeTextView.font = codeTextAttributes[NSFontAttributeName] as? NSFont
 
       // Set up for code editing (not prose).
     codeTextView.automaticDashSubstitutionEnabled   = false

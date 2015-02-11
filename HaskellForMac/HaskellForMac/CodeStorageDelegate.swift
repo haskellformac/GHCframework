@@ -41,24 +41,29 @@ final class CodeStorageDelegate: NSObject {
     self.textStorage = textStorage
     self.lineMap     = lineTokenMap(textStorage.string, { _string in [] })
 //    self.theme       =
-
     super.init()
-
-      // NB: We cannot register the code view itself for reporting as `NSTextViews` cannot have weak references.
-    ThemesController.sharedThemesController().reportThemeInformation(self,
-      fontChangeNotification: curry{
-        $0.textStorage.font = $1
-      },
-      themeChangeNotification: curry{ obj, theme in return })
   }
 
 
   // MARK: -
-  // MARK: Highlighting
+  // MARK: Font and highlighting
+
+  /// Set a new font in the associated text view.
+  ///
+  func newFontForTextView(font: NSFont) {
+    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
+      layoutManager.firstTextView?.font = font
+    }
+  }
 
   /// Set a tokeniser for highlighting.
   ///
   func enableHighlighting(tokeniser: HighlightingTokeniser) {
+    // NB: We cannot register the code view itself for reporting as `NSTextViews` cannot have weak references.
+    ThemesController.sharedThemesController().reportThemeInformation(self,
+      fontChangeNotification: curry{ $0.newFontForTextView($1) },
+      themeChangeNotification: curry{ obj, theme in return })
+
     highlightingTokeniser = tokeniser
     lineMap               = lineTokenMap(textStorage.string, tokeniser)
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {

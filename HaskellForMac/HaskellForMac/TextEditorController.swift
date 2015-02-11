@@ -61,9 +61,6 @@ class TextEditorController: NSViewController {
 
   override func awakeFromNib() {
 
-      // Fixed for now.
-    textView.font = textAttributes[NSFontAttributeName] as? NSFont;
-
       // Set up for code editing (not prose).
     textView.automaticDashSubstitutionEnabled   = false
     textView.automaticDataDetectionEnabled      = false
