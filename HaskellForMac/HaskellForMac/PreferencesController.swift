@@ -24,8 +24,13 @@ class PreferencesController: NSWindowController {
   @IBOutlet private weak var toolbar:            NSToolbar!
   @IBOutlet private weak var accountToolbarItem: NSToolbarItem!
 
-    // Controller objects
-  @IBOutlet private var themesController: ThemesController!
+    // Themes tab outlets (not private so that the themes controller can access them)
+  @IBOutlet         weak var fontSizeTextField:    NSTextField!
+  @IBOutlet         weak var fontSizeStepper:      NSStepper!
+  @IBOutlet         weak var sampleCodeScrollView: NSScrollView!
+  @IBOutlet              var sampleCodeView:       CodeView!
+
+  @IBOutlet dynamic var themesController: ThemesController!   // Must not be private as it is used in bindings.
 
   // The nib containing the associated window.
   //
@@ -83,7 +88,7 @@ class PreferencesController: NSWindowController {
       toolbar.removeItemAtIndex((toolbar.items as NSArray).indexOfObject(accountToolbarItem))
     }
 
-    themesController.setup()
+    themesController.setup(self)
   }
 
   // MARK: -

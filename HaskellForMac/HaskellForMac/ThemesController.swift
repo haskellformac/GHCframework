@@ -14,10 +14,8 @@ typealias ThemeChangeNotification = Theme -> ()
 
 class ThemesController: NSController {
 
-  @IBOutlet private weak var fontSizeTextField:    NSTextField!
-  @IBOutlet private weak var fontSizeStepper:      NSStepper!
-  @IBOutlet private weak var sampleCodeScrollView: NSScrollView!
-  @IBOutlet private      var sampleCodeView:       CodeView!
+    // Available once the preferences window has been loaded (for access to the views of the theme tab)
+  weak var preferencesController: PreferencesController!
 
     // Bindings for the font selection: font popup button & combo box for the size
   dynamic var availableFonts:  [String] = ["Menlo-Regular"]
@@ -28,7 +26,9 @@ class ThemesController: NSController {
 
     // Bindings for the theme editor
   dynamic var themeNames:        [String] = defaultThemes.map{$0.name}
+    { didSet { notifyThemeChange(currentTheme) } }
   dynamic var currentThemeIndex: Int      = 0
+    { didSet { notifyThemeChange(currentTheme) } }
 
     // Definitive reference for the currently available themes.
   var themes: [Theme] = defaultThemes
@@ -59,15 +59,24 @@ class ThemesController: NSController {
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
 
-
-  /// Initialisation
+  /// Get the themes controller from the main menu nib.
   ///
-  func setup() {
+  class func sharedThemesController() -> ThemesController {
+    return ((NSApp as NSApplication).delegate as AppDelegate).themesController
+  }
+
+  /// Initialisation after the preferences window has been loaded.
+  ///
+  func setup(preferencesController: PreferencesController) {
+
+    self.preferencesController = preferencesController
 
       // Font size bounds
     let smallestFontSize = 9
-    if let formatter = fontSizeTextField.formatter as? NSNumberFormatter { formatter.minimum = smallestFontSize }
-    fontSizeStepper.minValue = Double(smallestFontSize)
+    if let formatter = preferencesController.fontSizeTextField.formatter as? NSNumberFormatter {
+      formatter.minimum = smallestFontSize
+    }
+    preferencesController.fontSizeStepper.minValue = Double(smallestFontSize)
 
       // Get the initial list of available fonts.
     updateAvailableFonts()
@@ -80,16 +89,15 @@ class ThemesController: NSController {
 
       // Set up the the text view.
     NSScrollView.setRulerViewClass(TextGutterView)
-    if let textStorage = sampleCodeView.layoutManager?.textStorage { // Highlighting requires the text storage delegate.
+    if let textStorage = preferencesController.sampleCodeView.layoutManager?.textStorage { // Highlighting requires the text storage delegate.
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
     }
-    sampleCodeScrollView.hasVerticalRuler = true        // Set up the gutter.
-    sampleCodeScrollView.rulersVisible    = true
-    reportFontInformation(self, curry{ $0.sampleCodeView.font = $1 }, themeChangeNotification: curry{ obj, theme in return })
-    sampleCodeView.string = sampleCode
-    sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})        // We always produce the same tokens.
-    sampleCodeView.highlight()
+    preferencesController.sampleCodeScrollView.hasVerticalRuler = true        // Set up the gutter.
+    preferencesController.sampleCodeScrollView.rulersVisible    = true
+    preferencesController.sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})  // We always produce the same tokens.
+    preferencesController.sampleCodeView.string = sampleCode
+    preferencesController.sampleCodeView.highlight()
   }
 
   /// Determine the list of available fixed pitch fonts and provide them by way of `availableFonts`.
@@ -105,9 +113,9 @@ class ThemesController: NSController {
   ///
   /// We keep a strong reference to the callback functions, but *not* to the object.
   ///
-  func reportFontInformation<S: AnyObject>(object:                  S,
-                                           fontChangeNotification:  S -> FontChangeNotification,
-                                           themeChangeNotification: S -> ThemeChangeNotification)
+  func reportThemeInformation<S: AnyObject>(object:                  S,
+                                            fontChangeNotification:  S -> FontChangeNotification,
+                                            themeChangeNotification: S -> ThemeChangeNotification)
   {
     fontChangeNotifications.append(WeakApply(fontChangeNotification, object))
     fontChangeNotification(object)(currentFont)
@@ -125,6 +133,18 @@ class ThemesController: NSController {
 
       // Prune stale notification callbacks.
     fontChangeNotifications = fontChangeNotifications.filter{ $0.unbox != nil }
+  }
+
+  /// Invoke all register callbacks waiting for theme changes.
+  ///
+  private func notifyThemeChange(newTheme: Theme)
+  {
+    for notification in themeChangeNotifications {
+      if let callback = notification.unbox { callback(newTheme) }
+    }
+
+    // Prune stale notification callbacks.
+    themeChangeNotifications = themeChangeNotifications.filter{ $0.unbox != nil }
   }
 }
 

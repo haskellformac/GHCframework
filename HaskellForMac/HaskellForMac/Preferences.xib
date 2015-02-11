@@ -8,7 +8,10 @@
         <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target">
             <connections>
                 <outlet property="accountToolbarItem" destination="MBn-lv-dJO" id="qJ0-jq-Mzi"/>
-                <outlet property="themesController" destination="vAy-Hm-mvX" id="jZc-2H-NhN"/>
+                <outlet property="fontSizeStepper" destination="gTL-B4-7OD" id="n1C-LD-OtN"/>
+                <outlet property="fontSizeTextField" destination="ldG-QS-Rlb" id="CJy-zB-M2d"/>
+                <outlet property="sampleCodeScrollView" destination="stv-kO-qap" id="dA5-nv-rzk"/>
+                <outlet property="sampleCodeView" destination="L5v-IN-HrF" id="Zwn-DA-u5T"/>
                 <outlet property="toolbar" destination="Acm-L0-M8A" id="3pJ-mq-Dnl"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gGR-rs-ckq"/>
             </connections>
@@ -33,7 +36,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r3e-fQ-VX9">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r3e-fQ-VX9">
                                             <rect key="frame" x="172" y="169" width="137" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="General options TBD" id="rYa-A3-4g1">
                                                 <font key="font" metaFont="system"/>
@@ -43,8 +46,8 @@
                                         </textField>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerX" secondItem="aZ1-h6-Bpw" secondAttribute="centerX" id="9mm-oP-qfy"/>
-                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerY" secondItem="aZ1-h6-Bpw" secondAttribute="centerY" id="XNB-yU-bnn"/>
+                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerY" secondItem="aZ1-h6-Bpw" secondAttribute="centerY" id="KaD-5b-h7y"/>
+                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerX" secondItem="aZ1-h6-Bpw" secondAttribute="centerX" id="QRN-GS-mR2"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -102,7 +105,7 @@
                                                             </tableColumn>
                                                         </tableColumns>
                                                         <connections>
-                                                            <binding destination="vAy-Hm-mvX" name="content" keyPath="themeNames" id="6Lc-k3-0J3"/>
+                                                            <binding destination="-2" name="content" keyPath="themesController.themeNames" id="0ID-IC-5VQ"/>
                                                         </connections>
                                                     </tableView>
                                                 </subviews>
@@ -159,8 +162,8 @@
                                                 </menu>
                                             </popUpButtonCell>
                                             <connections>
-                                                <binding destination="vAy-Hm-mvX" name="contentValues" keyPath="availableFonts" id="ecC-kN-xqh"/>
-                                                <binding destination="vAy-Hm-mvX" name="selectedValue" keyPath="currentFontName" previousBinding="ecC-kN-xqh" id="33A-xV-JGZ"/>
+                                                <binding destination="-2" name="contentValues" keyPath="themesController.availableFonts" id="JtI-e4-5QA"/>
+                                                <binding destination="-2" name="selectedValue" keyPath="themesController.currentFontName" previousBinding="JtI-e4-5QA" id="gpb-nG-vcM"/>
                                             </connections>
                                         </popUpButton>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ldG-QS-Rlb" userLabel="Font Size">
@@ -175,14 +178,14 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="vAy-Hm-mvX" name="value" keyPath="currentFontSize" id="2m1-wP-wPA"/>
+                                                <binding destination="-2" name="value" keyPath="themesController.currentFontSize" id="Xhn-2C-2T9"/>
                                             </connections>
                                         </textField>
                                         <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gTL-B4-7OD">
                                             <rect key="frame" x="426" y="309" width="19" height="27"/>
                                             <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="vLw-9Q-aGl"/>
                                             <connections>
-                                                <binding destination="vAy-Hm-mvX" name="value" keyPath="currentFontSize" id="Ono-7L-baD"/>
+                                                <binding destination="-2" name="value" keyPath="themesController.currentFontSize" id="mVF-NV-AiZ"/>
                                             </connections>
                                         </stepper>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cMq-nY-tUl">
@@ -433,14 +436,6 @@
         </window>
         <userDefaultsController id="dhi-EU-Nid"/>
         <userDefaultsController representsSharedInstance="YES" id="evc-ih-bm0"/>
-        <customObject id="vAy-Hm-mvX" customClass="ThemesController" customModule="Haskell" customModuleProvider="target">
-            <connections>
-                <outlet property="fontSizeStepper" destination="gTL-B4-7OD" id="EOy-Re-La8"/>
-                <outlet property="fontSizeTextField" destination="ldG-QS-Rlb" id="Ydp-Vo-RiU"/>
-                <outlet property="sampleCodeScrollView" destination="stv-kO-qap" id="dSP-sk-GJb"/>
-                <outlet property="sampleCodeView" destination="L5v-IN-HrF" id="g0Y-Cm-Yz2"/>
-            </connections>
-        </customObject>
     </objects>
     <resources>
         <image name="NSColorPanel" width="32" height="32"/>

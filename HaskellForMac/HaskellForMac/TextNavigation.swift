@@ -5,8 +5,8 @@
 //  Created by Manuel M T Chakravarty on 16/10/2014.
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
-//  HfM-specific navigation functionality for `NSTextView`s used for code. They are identified by using a 
-//  `CodeStorageDelegate` as the delegate of their text storage.
+//  HfM-specific navigation functionality for `NSTextView`s used for code. In additon to be `CodeView`s, they are using
+//  a `CodeStorageDelegate` as the delegate of their text storage.
 
 import Cocoa
 

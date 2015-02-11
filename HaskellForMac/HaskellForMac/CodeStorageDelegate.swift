@@ -27,6 +27,10 @@ final class CodeStorageDelegate: NSObject {
   ///
   private var highlightingTokeniser: HighlightingTokeniser?
 
+  /// The currently used theme of the associated code view.
+  ///
+  var theme: Theme?
+
   /// Map from line numbers to pairs of character index (where the line starts) and tokens on that line.
   ///
   /// This value is mutable as it changes while the underlying text storage is being edited.
@@ -36,13 +40,23 @@ final class CodeStorageDelegate: NSObject {
   init(textStorage: NSTextStorage) {
     self.textStorage = textStorage
     self.lineMap     = lineTokenMap(textStorage.string, { _string in [] })
+//    self.theme       =
+
+    super.init()
+
+      // NB: We cannot register the code view itself for reporting as `NSTextViews` cannot have weak references.
+    ThemesController.sharedThemesController().reportThemeInformation(self,
+      fontChangeNotification: curry{
+        $0.textStorage.font = $1
+      },
+      themeChangeNotification: curry{ obj, theme in return })
   }
 
 
   // MARK: -
   // MARK: Highlighting
 
-  /// Set a tokeniser to for highlighting.
+  /// Set a tokeniser for highlighting.
   ///
   func enableHighlighting(tokeniser: HighlightingTokeniser) {
     highlightingTokeniser = tokeniser

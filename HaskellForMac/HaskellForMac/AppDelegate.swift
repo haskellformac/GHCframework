@@ -19,6 +19,7 @@ class AppDelegate: NSObject {
 //  }
 
   @IBOutlet weak var preferencesController:   PreferencesController!
+  @IBOutlet weak var themesController:        ThemesController!
   @IBOutlet weak var documentationController: DocumentationController!
 }
 
