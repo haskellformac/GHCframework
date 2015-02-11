@@ -35,7 +35,7 @@ import qualified SrcLoc       as GHC
   -- friends
 import Interpreter
 
-objc_import ["<Cocoa/Cocoa.h>", "GHC/HsFFI.h", "GHCSeverity.h", "GHCToken.h"]
+objc_import ["<Cocoa/Cocoa.h>", "GHC/HsFFI.h", "GHCKit/GHCSeverity.h", "GHCKit/GHCToken.h"]
 
 
 -- Marshalling support

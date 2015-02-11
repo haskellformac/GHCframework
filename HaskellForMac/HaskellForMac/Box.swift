@@ -18,7 +18,8 @@ final public class Box<T> {
 /// Wrap an object reference such that is only weakly referenced. (This is, e.g., useful to have an array of object
 /// references that doesn't keep the referenced objects alive.)
 ///
-public struct WeakBox<T: AnyObject> {     // aka Schrödinger Box
+/// WARNING: Trying to use a struct, rather than a class here leads swiftc to generate crashing code (XCode 6.1.1)!
+public class WeakBox<T: AnyObject> {     // aka Schrödinger Box
   private weak var box: T?
   public var unbox: T? { get { return box } }
   public init(_ value: T) { self.box = value }
