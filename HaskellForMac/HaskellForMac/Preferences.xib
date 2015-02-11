@@ -33,7 +33,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r3e-fQ-VX9">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r3e-fQ-VX9">
                                             <rect key="frame" x="172" y="169" width="137" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="General options TBD" id="rYa-A3-4g1">
                                                 <font key="font" metaFont="system"/>
@@ -123,7 +123,7 @@
                                                 <rect key="frame" x="1" y="1" width="223" height="133"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" usesRuler="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="L5v-IN-HrF">
+                                                    <textView editable="NO" importsGraphics="NO" usesRuler="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="L5v-IN-HrF" customClass="CodeView" customModule="Haskell" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="223" height="185"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -437,6 +437,7 @@
             <connections>
                 <outlet property="fontSizeStepper" destination="gTL-B4-7OD" id="EOy-Re-La8"/>
                 <outlet property="fontSizeTextField" destination="ldG-QS-Rlb" id="Ydp-Vo-RiU"/>
+                <outlet property="sampleCodeScrollView" destination="stv-kO-qap" id="dSP-sk-GJb"/>
                 <outlet property="sampleCodeView" destination="L5v-IN-HrF" id="g0Y-Cm-Yz2"/>
             </connections>
         </customObject>

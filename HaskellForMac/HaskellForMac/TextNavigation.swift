@@ -10,6 +10,7 @@
 
 import Cocoa
 
+// FIXME: This file needs to be renamed...
 
 class CodeView: NSTextView {
 

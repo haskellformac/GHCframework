@@ -37,6 +37,8 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   return lhs.kind == rhs.kind && lhs.span == rhs.span
 }
 
+public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
+
 
 // FIXME: Why '@objc'?
 @objc class HaskellSession {
@@ -47,7 +49,7 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(diagnosticsHandler: GHCKit.DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
+  init(diagnosticsHandler: DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
     ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
   }
 

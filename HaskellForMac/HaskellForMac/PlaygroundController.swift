@@ -165,7 +165,6 @@ class PlaygroundController: NSViewController {
     resultTableView.setDelegate(self)
     resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
     resultTableView.setDataSource(resultStorage)
-//    resultTableView.wantsLayer = true
 
       // Get the initial code view contents and enable highlighting.
     codeTextView.string = projectViewModelPlayground.string

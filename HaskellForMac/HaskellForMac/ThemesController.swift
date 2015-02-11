@@ -14,9 +14,10 @@ typealias ThemeChangeNotification = Theme -> ()
 
 class ThemesController: NSController {
 
-  @IBOutlet private weak var fontSizeTextField: NSTextField!
-  @IBOutlet private weak var fontSizeStepper:   NSStepper!
-  @IBOutlet private      var sampleCodeView:    NSTextView!
+  @IBOutlet private weak var fontSizeTextField:    NSTextField!
+  @IBOutlet private weak var fontSizeStepper:      NSStepper!
+  @IBOutlet private weak var sampleCodeScrollView: NSScrollView!
+  @IBOutlet private      var sampleCodeView:       CodeView!
 
     // Bindings for the font selection: font popup button & combo box for the size
   dynamic var availableFonts:  [String] = ["Menlo-Regular"]
@@ -54,6 +55,10 @@ class ThemesController: NSController {
   private var fontChangeNotifications:  [WeakApply<FontChangeNotification>]  = []
   private var themeChangeNotifications: [WeakApply<ThemeChangeNotification>] = []
 
+  /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
+  ///
+  private var codeStorageDelegate: CodeStorageDelegate!
+
 
   /// Initialisation
   ///
@@ -67,10 +72,24 @@ class ThemesController: NSController {
       // Get the initial list of available fonts.
     updateAvailableFonts()
 
+      // Tokenise the sample code by running a temporary Haskell session.
+    let handler: DiagnosticsHandler = { unusedArg in return }
+    let haskellSession     = HaskellSession(diagnosticsHandler: handler, interactiveWorkingDirectory: "/tmp")
+    let tokens             = haskellSession.tokeniseHaskell(sampleCode, file: "PreferencesSampleCode", line: 1, column: 1)
+    let highlightingTokens = map(tokens){ HighlightingToken(ghcToken: $0) }
+
       // Set up the the text view.
-    sampleCodeView.font   = currentFont
+    NSScrollView.setRulerViewClass(TextGutterView)
+    if let textStorage = sampleCodeView.layoutManager?.textStorage { // Highlighting requires the text storage delegate.
+      codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
+      textStorage.delegate = codeStorageDelegate
+    }
+    sampleCodeScrollView.hasVerticalRuler = true        // Set up the gutter.
+    sampleCodeScrollView.rulersVisible    = true
+    reportFontInformation(self, curry{ $0.sampleCodeView.font = $1 }, themeChangeNotification: curry{ obj, theme in return })
     sampleCodeView.string = sampleCode
-    registerFontNotification(self, curry{ ($0 as ThemesController).sampleCodeView.font = $1 }, themeChangeNotification: curry{ obj, theme in return })
+    sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})        // We always produce the same tokens.
+    sampleCodeView.highlight()
   }
 
   /// Determine the list of available fixed pitch fonts and provide them by way of `availableFonts`.
@@ -82,16 +101,18 @@ class ThemesController: NSController {
   }
 
   /// Objects (e.g., code views) register to be notified of font and theme changes. The notification is automatically
-  /// deregistered if the object gets deallocated.
+  /// deregistered if the object gets deallocated. The callback will be executed right away with the initial value.
   ///
   /// We keep a strong reference to the callback functions, but *not* to the object.
   ///
-  func registerFontNotification<S: AnyObject>(object:                  S,
-                                              fontChangeNotification:  S -> FontChangeNotification,
-                                              themeChangeNotification: S -> ThemeChangeNotification)
+  func reportFontInformation<S: AnyObject>(object:                  S,
+                                           fontChangeNotification:  S -> FontChangeNotification,
+                                           themeChangeNotification: S -> ThemeChangeNotification)
   {
     fontChangeNotifications.append(WeakApply(fontChangeNotification, object))
+    fontChangeNotification(object)(currentFont)
     themeChangeNotifications.append(WeakApply(themeChangeNotification, object))
+    themeChangeNotification(object)(currentTheme)
   }
 
   /// Invoke all register callbacks waiting for font changes.
@@ -107,7 +128,19 @@ class ThemesController: NSController {
   }
 }
 
-let sampleCode = "\n".join([ "map :: (a -> b) -> [a] -> [b]"
-                           , "map f [] = []"
-                           , "map f (x:xs) = f x : map f xs"
+let sampleCode = "\n".join([ "-- Select any text to edit"
+                           , "-- its highlighting."
+                           , ""
+                           , "data Maybe a = Nothing | Just a"
+//                           , ""
+//                           , "map :: (a -> b) -> [a] -> [b]"
+//                           , "map f []     = []"
+//                           , "map f (x:xs) = f x : map f xs"
+                           , ""
+                           , "theAnswer :: Maybe Integer"
+                           , "{-# INLINE theAnswer #-}"
+                           , "theAnswer = Just 42"
+                           , ""
+                           , "main = putStrLn $"
+                           , "  \"The answer is \" ++ show theAnswer"
                            ])
