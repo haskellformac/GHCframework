@@ -9,12 +9,6 @@
 import Foundation
 
 
-/// The Swift compiler should do this automatically...
-final public class Box<T> {
-  public let unbox: T
-  public init(_ value: T) { self.unbox = value }
-}
-
 /// A value that we might fail to obtain, in which case we get an error object instead.
 ///
 enum ErrorOr<ResultType> {

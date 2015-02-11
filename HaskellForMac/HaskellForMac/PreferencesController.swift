@@ -18,9 +18,14 @@ let kAccountPreferences     = "AccountPreferences"
 
 class PreferencesController: NSWindowController {
 
-  @IBOutlet weak var cloudMenu:          NSMenuItem!
-  @IBOutlet weak var toolbar:            NSToolbar!
-  @IBOutlet weak var accountToolbarItem: NSToolbarItem!
+  @IBOutlet private weak var cloudMenu:          NSMenuItem!
+
+    // Toolbar outlets
+  @IBOutlet private weak var toolbar:            NSToolbar!
+  @IBOutlet private weak var accountToolbarItem: NSToolbarItem!
+
+    // Controller objects
+  @IBOutlet private var themesController: ThemesController!
 
   // The nib containing the associated window.
   //
@@ -77,6 +82,8 @@ class PreferencesController: NSWindowController {
     if !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud) {
       toolbar.removeItemAtIndex((toolbar.items as NSArray).indexOfObject(accountToolbarItem))
     }
+
+    themesController.setup()
   }
 
   // MARK: -

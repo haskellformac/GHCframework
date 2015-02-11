@@ -21,6 +21,7 @@
 		E70D409719409AB700CA3455 /* CabalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70D409619409AB700CA3455 /* CabalTest.swift */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
+		E7196C361A8A173200521BD0 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7196C351A8A173200521BD0 /* Box.swift */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
 		E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */; };
 		E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */; };
@@ -43,6 +44,8 @@
 		E739EF871A05F44C00236051 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; };
 		E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E739EF921A07200C00236051 /* StyledSplitView.swift */; };
+		E74058061A899E1E004B3846 /* ThemesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74058051A899E1E004B3846 /* ThemesController.swift */; };
+		E74058081A89BB91004B3846 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74058071A89BB91004B3846 /* Theme.swift */; };
 		E742321C1A4EB18C0098DF7E /* OS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E742321B1A4EB18C0098DF7E /* OS.swift */; };
 		E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E743140119A46F70003A3934 /* CloudcelerateKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E743140E19A46F70003A3934 /* CloudcelerateKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E743140D19A46F70003A3934 /* CloudcelerateKitTests.swift */; };
@@ -256,6 +259,7 @@
 		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
 		E713E3D818A491FF00504164 /* HFMProjectViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModel.h; sourceTree = "<group>"; };
 		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
+		E7196C351A8A173200521BD0 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
 		E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextNavigation.swift; sourceTree = "<group>"; };
@@ -277,6 +281,8 @@
 		E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewPopover.xib; sourceTree = "<group>"; };
 		E739EF7F1A05F40100236051 /* GHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GHC.xcodeproj; path = ../GHC/GHC.xcodeproj; sourceTree = "<group>"; };
 		E739EF921A07200C00236051 /* StyledSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledSplitView.swift; sourceTree = "<group>"; };
+		E74058051A899E1E004B3846 /* ThemesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemesController.swift; sourceTree = "<group>"; };
+		E74058071A89BB91004B3846 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E742321B1A4EB18C0098DF7E /* OS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OS.swift; sourceTree = "<group>"; };
 		E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CloudcelerateKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E743140019A46F70003A3934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -493,6 +499,16 @@
 			name = CustomisedViews;
 			sourceTree = "<group>";
 		};
+		E74058021A899D31004B3846 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */,
+				E74058051A899E1E004B3846 /* ThemesController.swift */,
+				E74058071A89BB91004B3846 /* Theme.swift */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
 		E74313FE19A46F70003A3934 /* CloudcelerateKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -550,6 +566,7 @@
 				E75DD13719A07E0300CDC18F /* StringExtensions.swift */,
 				E78E73F519D52DCE0046BA51 /* Range.swift */,
 				E7C9F0201A6FD9B900913B76 /* Geometry.swift */,
+				E7196C351A8A173200521BD0 /* Box.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -634,10 +651,10 @@
 				E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */,
 				E7A13B45188E7BED00D79087 /* HFMWindowController.h */,
 				E7A13B46188E7BED00D79087 /* HFMWindowController.m */,
-				E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */,
 				E7590ED81A75DB3100A74041 /* DocumentationController.swift */,
 				E7CC64021999B4DD00D8E1CD /* ContextController.swift */,
 				E72AF5F619E37B5400753077 /* CloudController.swift */,
+				E74058021A899D31004B3846 /* Preferences */,
 				E7C5765E19948B3A00E6AAE0 /* Projects */,
 				E719C7B718E91F8B00586434 /* PackageHeaderEditor */,
 				E719C7B818E9285000586434 /* TextEditor */,
@@ -1113,7 +1130,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# We need to standardise these paths as they will end up in Haskell package config files.\nSTANDARDIZE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/Executables/StandardizePath\nGHC_CURRENT=`$STANDARDIZE $CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current`\nGHCBIN=$GHC_CURRENT/usr/bin\nGHCLIB=$GHC_CURRENT/usr/lib/ghc-7.8.3\nGHCSHARE=$GHC_CURRENT/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nPKG=ghckit-support-0.0.2.0\nNAME=$PKG/libHS${PKG}-ghc7.8.3.dylib\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries/$PKG --haddockdir=$GHCDOC/html/libraries/$PKG --package-db=$GHCLIB/package.conf.d --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling --disable-documentation GHCKit/ghckit-support\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n  # Get rid of absolute RPATHs to avoid hiding bugs in debug runs that affect the release.\n  for path in `otool -l $GHCLIB/$NAME | grep path | grep DerivedData | cut -d ' ' -f 11`; do\n    install_name_tool -delete_rpath $path $GHCLIB/$NAME\n  done\nfi\n";
+			shellScript = "# We need to standardise these paths as they will end up in Haskell package config files.\nSTANDARDIZE=$CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current/Executables/StandardizePath\nGHC_CURRENT=`$STANDARDIZE $CONFIGURATION_BUILD_DIR/GHC.framework/Versions/Current`\nGHCBIN=$GHC_CURRENT/usr/bin\nGHCLIB=$GHC_CURRENT/usr/lib/ghc-7.8.3\nGHCSHARE=$GHC_CURRENT/usr/share\nGHCDOC=$GHCSHARE/doc/ghc\n\n# FIXME: This check is too crude: we only test for change of one file in the package.\nPKG=ghckit-support-0.0.2.0\nNAME=$PKG/libHS${PKG}-ghc7.8.3.dylib\nif [ $GHCLIB/$NAME -ot ${SRCROOT}/GHCKit/ghckit-support/PrintInterceptor.hs ]; then\n  echo cabal install --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries/$PKG --haddockdir=$GHCDOC/html/libraries/$PKG --package-db=$GHCLIB/package.conf.d --shadow-installed-packages --reinstall --force-reinstalls --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling --disable-documentation GHCKit/ghckit-support\n  cabal install -v --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --docdir=$GHCDOC --htmldir=$GHCDOC/html/libraries/$PKG --haddockdir=$GHCDOC/html/libraries/$PKG --package-db=$GHCLIB/package.conf.d --shadow-installed-packages --reinstall --force-reinstalls --with-compiler=$GHCBIN/ghc --with-hc-pkg=$GHCBIN/ghc-pkg --disable-library-profiling --disable-documentation GHCKit/ghckit-support\n  echo \"Fix install name and rpath: $NAME\"\n  install_name_tool -id \"@rpath/$NAME\" $GHCLIB/$NAME\n  install_name_tool -add_rpath \"@loader_path/..\" $GHCLIB/$NAME\n  # Get rid of absolute RPATHs to avoid hiding bugs in debug runs that affect the release.\n  for path in `otool -l $GHCLIB/$NAME | grep path | grep DerivedData | cut -d ' ' -f 11`; do\n    install_name_tool -delete_rpath $path $GHCLIB/$NAME\n  done\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		E72E4A941A5B622E0034DF0F /* ShellScript */ = {
@@ -1286,6 +1303,9 @@
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7590EDA1A75DB3200A74041 /* DocumentationController.swift in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
+				E7196C361A8A173200521BD0 /* Box.swift in Sources */,
+				E74058061A899E1E004B3846 /* ThemesController.swift in Sources */,
+				E74058081A89BB91004B3846 /* Theme.swift in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
 				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
 				E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */,
