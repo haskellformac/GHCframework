@@ -53,7 +53,10 @@ final class CodeStorageDelegate: NSObject {
 
       // Set the font on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
-      layoutManager.firstTextView?.font = font
+      if let codeView = layoutManager.firstTextView as? CodeView {
+        codeView.font                                                 = font
+        codeView.enclosingScrollView?.verticalRulerView?.needsDisplay = true    // dependent on font size
+      }
     }
   }
 
