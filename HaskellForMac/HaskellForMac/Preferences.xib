@@ -29,6 +29,9 @@
                 <subviews>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="Cv5-17-gJd">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="354"/>
+                        <constraints>
+                            <constraint firstAttribute="centerY" secondItem="r3e-fQ-VX9" secondAttribute="centerY" constant="84.5" id="t9I-Co-w0l"/>
+                        </constraints>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="General" identifier="GeneralPreferences" id="6Ke-6O-Fcr">
@@ -46,8 +49,7 @@
                                         </textField>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerY" secondItem="aZ1-h6-Bpw" secondAttribute="centerY" id="KaD-5b-h7y"/>
-                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerX" secondItem="aZ1-h6-Bpw" secondAttribute="centerX" id="QRN-GS-mR2"/>
+                                        <constraint firstItem="r3e-fQ-VX9" firstAttribute="centerX" secondItem="aZ1-h6-Bpw" secondAttribute="centerX" id="9Pl-6X-m4t"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -62,7 +64,7 @@
                                                 <rect key="frame" x="1" y="0.0" width="238" height="134"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="jb9-lb-JHt">
+                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="jb9-lb-JHt">
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -93,7 +95,7 @@
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
                                                                                 <connections>
-                                                                                    <binding destination="IwF-VV-ubZ" name="value" keyPath="objectValue" id="kLk-Tw-3eg"/>
+                                                                                    <binding destination="IwF-VV-ubZ" name="value" keyPath="objectValue.name" id="oeR-fq-ZVh"/>
                                                                                 </connections>
                                                                             </textField>
                                                                         </subviews>
@@ -105,7 +107,8 @@
                                                             </tableColumn>
                                                         </tableColumns>
                                                         <connections>
-                                                            <binding destination="-2" name="content" keyPath="themesController.themeNames" id="0ID-IC-5VQ"/>
+                                                            <binding destination="zOS-Kt-ysP" name="content" keyPath="arrangedObjects" id="ePK-Tp-Y7i"/>
+                                                            <binding destination="zOS-Kt-ysP" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="ePK-Tp-Y7i" id="PqL-Ka-CCl"/>
                                                         </connections>
                                                     </tableView>
                                                 </subviews>
@@ -436,6 +439,12 @@
         </window>
         <userDefaultsController id="dhi-EU-Nid"/>
         <userDefaultsController representsSharedInstance="YES" id="evc-ih-bm0"/>
+        <arrayController id="zOS-Kt-ysP">
+            <connections>
+                <binding destination="-2" name="contentArray" keyPath="themesController.themes" id="Hh3-I8-luP"/>
+                <binding destination="-2" name="selectionIndexes" keyPath="themesController.currentThemeIndexes" id="9Kq-JY-5GZ"/>
+            </connections>
+        </arrayController>
     </objects>
     <resources>
         <image name="NSColorPanel" width="32" height="32"/>

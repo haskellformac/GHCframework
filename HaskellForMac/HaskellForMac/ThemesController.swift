@@ -25,13 +25,10 @@ class ThemesController: NSController {
     { didSet { notifyFontChange(currentFont) } }
 
     // Bindings for the theme editor
-  dynamic var themeNames:        [String] = defaultThemes.map{$0.name}
+  dynamic var themes:              [Theme]    = defaultThemes  // Definitive reference for the currently available themes.
     { didSet { notifyThemeChange(currentTheme) } }
-  dynamic var currentThemeIndex: Int      = 0
+  dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
     { didSet { notifyThemeChange(currentTheme) } }
-
-    // Definitive reference for the currently available themes.
-  var themes: [Theme] = defaultThemes
 
     // Computed values.
   var currentFont: NSFont {
@@ -40,6 +37,7 @@ class ThemesController: NSController {
   }
   var currentTheme: Theme {
     get {
+      let currentThemeIndex = currentThemeIndexes.count == 1 ? currentThemeIndexes.firstIndex : 0
       if currentThemeIndex >= themes.startIndex && currentThemeIndex < themes.endIndex {
         return themes[currentThemeIndex]
       } else {
