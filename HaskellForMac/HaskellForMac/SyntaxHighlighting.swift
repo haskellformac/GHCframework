@@ -17,26 +17,29 @@ public enum HighlightingTokenKind {
   case Constructor, String, Number, Keyword, LineComment, BlockComment, Other
 }
 
-/// Constants for the hardcoded theme
-// FIXME: must be variable
-let highlightBackgroundColour = NSColor(calibratedRed: 255/255, green: 252/255, blue: 235/255, alpha: 1)
-let constructorAttributes     = [NSForegroundColorAttributeName: NSColor(calibratedRed: 180/255, green:  69/255, blue:   0/255, alpha: 1)]
-let stringAttributes          = [NSForegroundColorAttributeName: NSColor(calibratedRed: 223/255, green:   7/255, blue:   0/255, alpha: 1)]
-let numberAttributes          = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
-let keywordAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed:  41/255, green:  66/255, blue: 119/255, alpha: 1)]
-let commentAttributes         = [NSForegroundColorAttributeName: NSColor(calibratedRed: 195/255, green: 116/255, blue:  28/255, alpha: 1)]
-let tabHighlightingAttributes = [ NSBackgroundColorAttributeName: NSColor(calibratedRed: 255/255, green: 150/255, blue:  0/255, alpha: 0.5)
-                                , NSToolTipAttributeName        : "Tab characters are problematic in Haskell code"]
-
-/// Theme = dictionary to look up attributes for a given token type.
+/// Map of kinds of highlighting tokens to the foreground colour for tokens of that kind.
 ///
-let theme: [HighlightingTokenKind: [NSString: NSColor]] = [ .Constructor:  constructorAttributes
-                                                          , .String:       stringAttributes
-                                                          , .Number:       numberAttributes
-                                                          , .Keyword:      keywordAttributes
-                                                          , .LineComment:  commentAttributes
-                                                          , .BlockComment: commentAttributes
-                                                          ]
+/// FIXME: Needs to include information concerning underlining, too.
+public typealias ThemeDictionary = [HighlightingTokenKind: [NSString: NSColor]]
+
+/// Special highlighting for tab characters.
+///
+let tabHighlightingAttributes
+  = [ NSBackgroundColorAttributeName: NSColor(calibratedRed: 255/255, green: 150/255, blue:  0/255, alpha: 0.5)
+    , NSToolTipAttributeName        : "Tab characters should be avoided in Haskell code"]
+
+/// Convert a theme to a dictionary to lookup text attributes by token type.
+///
+func themeToDictionary(theme: Theme) -> ThemeDictionary {
+  return [ .Constructor:  [NSForegroundColorAttributeName: theme.conword.foreground]
+         , .String:       [NSForegroundColorAttributeName: theme.string.foreground]
+         , .Number:       [NSForegroundColorAttributeName: theme.number.foreground]
+         , .Keyword:      [NSForegroundColorAttributeName: theme.keyword.foreground]
+         , .LineComment:  [NSForegroundColorAttributeName: theme.comment.foreground]
+         , .BlockComment: [NSForegroundColorAttributeName: theme.comment.foreground]
+         , .Other:        [NSForegroundColorAttributeName: theme.foreground]
+         ]
+}
 
 /// Tokens for syntax highlighting.
 ///
@@ -282,7 +285,6 @@ public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(H
 extension CodeView {
 
   func enableHighlighting(tokeniser: HighlightingTokeniser) {
-    backgroundColor = highlightBackgroundColour
     layoutManager?.enableHighlighting(tokeniser)
   }
 
@@ -340,7 +342,7 @@ extension NSLayoutManager {
 
       // Apply highlighting to all tokens in the affected range.
     for (token, span) in [].join(lineRange.map(tokensWithSpan(lineTokenMap))) {
-      if let attributes = theme[token.kind] {
+      if let attributes = (textStorage?.delegate as? CodeStorageDelegate)?.themeDict[token.kind] {
         addTemporaryAttributes(attributes, forCharacterRange: toNSRange(span))
       }
     }

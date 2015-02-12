@@ -24,14 +24,6 @@ class TextEditorController: NSViewController {
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
 
-  /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
-  ///
-  // FIXME: Unify with 'Playground.swift'
-  private let textAttributes: NSDictionary = { () in
-    let menlo13 = NSFont(name: "Menlo-Regular", size:13)!
-    return [NSFontAttributeName: menlo13]
-  }()
-
   // Execute once `awakeFromNib` is being called.
   //
   private var awakeAction: () -> Void = {()}
@@ -75,9 +67,6 @@ class TextEditorController: NSViewController {
     if let item = contextMenu?.itemWithTitle("Substitutions")        { contextMenu?.removeItem(item) }
     if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
     textView.menu = contextMenu
-
-      // Apply the default style.
-    textView.typingAttributes = textAttributes
 
       // Set up the gutter.
     scrollView.hasVerticalRuler = true

@@ -44,13 +44,6 @@ class PlaygroundController: NSViewController {
   ///     to capture `self`).
   private let haskellSession: HaskellSession!
 
-  /// The text attributes to be applied to all text in the code text views. (Currently, they are fixed.)
-  ///
-  private let codeTextAttributes: NSDictionary = {
-    let menlo13 = NSFont(name: "Menlo-Regular", size:13)!
-    return [NSFontAttributeName: menlo13]
-  }()
-
   private let fontHeight: CGFloat = {
     let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)!])
     return x.size.height
@@ -133,9 +126,6 @@ class PlaygroundController: NSViewController {
     if let item = contextMenu?.itemWithTitle("Substitutions")        { contextMenu?.removeItem(item) }
     if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
     codeTextView.menu = contextMenu
-
-      // Apply the default style.
-    codeTextView.typingAttributes = codeTextAttributes
 
       // Set up the delegate for the text storage.
     if let textStorage = codeTextView.layoutManager?.textStorage {

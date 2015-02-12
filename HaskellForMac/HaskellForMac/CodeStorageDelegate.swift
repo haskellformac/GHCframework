@@ -29,7 +29,7 @@ final class CodeStorageDelegate: NSObject {
 
   /// The currently used theme of the associated code view.
   ///
-  var theme: Theme?
+  var themeDict: ThemeDictionary = [:]
 
   /// Map from line numbers to pairs of character index (where the line starts) and tokens on that line.
   ///
@@ -40,7 +40,6 @@ final class CodeStorageDelegate: NSObject {
   init(textStorage: NSTextStorage) {
     self.textStorage = textStorage
     self.lineMap     = lineTokenMap(textStorage.string, { _string in [] })
-//    self.theme       =
     super.init()
   }
 
@@ -51,19 +50,37 @@ final class CodeStorageDelegate: NSObject {
   /// Set a new font in the associated text view.
   ///
   func newFontForTextView(font: NSFont) {
+
+      // Set the font on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       layoutManager.firstTextView?.font = font
+    }
+  }
+
+  /// Set a new theme in the associated text view.
+  ///
+  func newThemeForTextView(theme: Theme) {
+
+      // Convert the theme to a token dictionary for fast lookup.
+    themeDict = themeToDictionary(theme)
+
+      // Set the background colour on the associated text view.
+    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
+      layoutManager.firstTextView?.backgroundColor = theme.background
     }
   }
 
   /// Set a tokeniser for highlighting.
   ///
   func enableHighlighting(tokeniser: HighlightingTokeniser) {
-    // NB: We cannot register the code view itself for reporting as `NSTextViews` cannot have weak references.
+
+      // Register to receive font and theme setting information.
+      // NB: We cannot register the code view itself for reporting as `NSTextView`s cannot have weak references.
     ThemesController.sharedThemesController().reportThemeInformation(self,
       fontChangeNotification: curry{ $0.newFontForTextView($1) },
-      themeChangeNotification: curry{ obj, theme in return })
+      themeChangeNotification: curry{ $0.newThemeForTextView($1) })
 
+      // Set up highlighting.
     highlightingTokeniser = tokeniser
     lineMap               = lineTokenMap(textStorage.string, tokeniser)
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
