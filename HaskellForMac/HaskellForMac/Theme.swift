@@ -69,6 +69,49 @@ struct ThemeAttributes {
 //  init(foreground: NSColor, underline:  Bool) { self.foreground = foreground; self.underline = underline }
 }
 
+/// Derive a gutter colour from the background colour of a theme.
+///
+func gutterColour(theme: Theme) -> NSColor {
+  let backgroundColour = theme.background
+  if backgroundColour.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace())?.brightnessComponent >= 0.5 {
+    if let resultBackgroundColour = backgroundColour.shadowWithLevel(0.05) { return resultBackgroundColour }
+    else { return backgroundColour }
+  } else {
+    if let resultBackgroundColour = backgroundColour.highlightWithLevel(0.09) { return resultBackgroundColour }
+    else { return backgroundColour }
+  }
+}
+
+/// Derive a divider colour from the background colour of a theme.
+///
+func dividerColour(theme: Theme) -> NSColor {
+  let backgroundColour = theme.background
+  if backgroundColour.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace())?.brightnessComponent >= 0.5 {
+    if let resultBackgroundColour = backgroundColour.shadowWithLevel(0.12) { return resultBackgroundColour }
+    else { return backgroundColour }
+  } else {
+    if let resultBackgroundColour = backgroundColour.highlightWithLevel(0.20) { return resultBackgroundColour }
+    else { return backgroundColour }
+  }
+}
+
+/// Derive a disbaled variant of the foreground colour of a theme.
+///
+func disabledForegroundColour(theme: Theme) -> NSColor {
+  let foregroundColour = theme.foreground
+  if foregroundColour.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace())?.brightnessComponent >= 0.5 {
+    if let resultForegroundColour = foregroundColour.shadowWithLevel(0.35) { return resultForegroundColour }
+    else { return foregroundColour }
+  } else {
+    if let resultForegroundColour = foregroundColour.highlightWithLevel(0.4) { return resultForegroundColour }
+    else { return foregroundColour }
+  }
+}
+
+
+// MARK: -
+// MARK: Default themes
+
 /// Initial set of themes.
 ///
 let defaultThemes = [solarLight, monokai]
@@ -79,16 +122,16 @@ private let solarLight =
         foreground: NSColor.blackColor(),
         keyword:    solarLightKeyColour,
         keysymbol:  solarLightKeyColour,
-        varword: ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
-        varsymbol: ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
-        conword: solarLightConColour,
-        consymbol: solarLightConColour,
-        string: ThemeAttributes(foreground: NSColor(SRGBRed: 223/255, green:   7/255, blue:   0/255, alpha: 1),
-                                underline: false),
-        number: ThemeAttributes(foreground: NSColor(SRGBRed:  41/255, green:  66/255, blue: 119/255, alpha: 1),
-                                underline: false),
-        comment: solarLightComColour,
-        pragma: solarLightComColour)
+        varword:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        varsymbol:  ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        conword:    solarLightConColour,
+        consymbol:  solarLightConColour,
+        string:     ThemeAttributes(foreground: NSColor(SRGBRed: 223/255, green:   7/255, blue:   0/255, alpha: 1),
+                                    underline: false),
+        number:     ThemeAttributes(foreground: NSColor(SRGBRed:  41/255, green:  66/255, blue: 119/255, alpha: 1),
+                                    underline: false),
+        comment:    solarLightComColour,
+        pragma:     solarLightComColour)
 
 private let solarLightKeyColour =
   ThemeAttributes(foreground: NSColor(SRGBRed:  41/255, green:  66/255, blue: 119/255, alpha: 1), underline: false)

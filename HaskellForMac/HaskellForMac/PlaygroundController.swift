@@ -20,7 +20,7 @@ class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
-  @IBOutlet private weak var splitView:        NSSplitView!
+  @IBOutlet private weak var splitView:        StyledSplitView!
   @IBOutlet private weak var codeScrollView:   SynchroScrollView!
   @IBOutlet private weak var resultScrollView: SynchroScrollView!
   @IBOutlet private      var codeTextView:     CodeView!
@@ -147,9 +147,9 @@ class PlaygroundController: NSViewController {
       // Get the initial code view contents and enable highlighting.
     codeTextView.string = projectViewModelPlayground.string
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
-    if let backgroundColour = codeTextView.backgroundColor.shadowWithLevel(0.05) {
-      resultTableView.backgroundColor = backgroundColour
-    }
+    ThemesController.sharedThemesController().reportThemeInformation(self,
+      fontChangeNotification: curry{ obj, font in return },
+      themeChangeNotification: curry{ $0.setResultTableViewBackgroundAndDividerColour($1) })
   }
 
 
@@ -312,6 +312,13 @@ class PlaygroundController: NSViewController {
 // MARK: Syntax highlighting support
 
 extension PlaygroundController {
+
+  func setResultTableViewBackgroundAndDividerColour(theme: Theme) {
+    resultTableView.backgroundColor = gutterColour(theme)
+    splitView.customDividerColor    = dividerColour(theme)
+    splitView.needsDisplay          = true      // ...to redraw the divider
+    resultTableView.reloadData()
+  }
 
   func tokeniseHaskell(file: String) -> HighlightingTokeniser {
     return { (line, column, text) in
