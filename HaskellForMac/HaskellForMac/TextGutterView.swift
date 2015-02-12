@@ -25,10 +25,20 @@ class TextGutterView: NSRulerView {
   //
   private var markIssuesAsInvalid: Bool = false
   
-  // Text attributes for line numbers
+  // Text attributes for line numbers (dependent on the current font size determined by theme preferences)
   //
-  private let textAttributes = [NSFontAttributeName:            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                                NSForegroundColorAttributeName: NSColor(deviceWhite: 0.5, alpha: 1)]
+  // Font alternatives: Gill Sans, Century Gothic, Franklin Gothic, Futura (small, semibold) & Lucida Sans Typewriter
+  private let lineNumberFontName   = "Calibri"
+  private let lineNumberColour     = NSColor(deviceWhite: 0.5, alpha: 1)
+  private var lineNumberAttributes : [String: AnyObject] {
+    get {
+      let size = round(CGFloat(ThemesController.sharedThemesController().currentFontSize) * 0.9)
+      let font = NSFont(name: lineNumberFontName, size: size) ?? NSFont(name: "Menlo-Regular", size: 12)!
+      return [ NSFontAttributeName           : font
+             , NSForegroundColorAttributeName: lineNumberColour
+             ]
+    }
+  }
 
   // Background colours for issues
   //
@@ -44,13 +54,16 @@ class TextGutterView: NSRulerView {
   //
   private let margin: CGFloat = 3
 
-  /// The text attributes to be applied to all text in the code and result text views. (Currently, they are fixed.)
+  /// The text attributes for diagnostics in popups (dependent on the current font size determined by theme preferences)
   //
-  // FIXME: Unify with 'TextEditorController.swift'
-  private let diagnosticsTextAttributes: NSDictionary = { () in
-    let menlo12 = NSFont(name: "Menlo-Regular", size:12)!
-    return [NSFontAttributeName: menlo12]
-  }()
+  private let diagnosticsFontName       = "Menlo-Regular"
+  private var diagnosticsTextAttributes : [String: AnyObject] {
+    get {
+      let size = round(CGFloat(ThemesController.sharedThemesController().currentFontSize) * 0.9)
+      let font = NSFont(name: diagnosticsFontName, size: size) ?? NSFont(name: "Menlo-Regular", size: 12)!
+      return [NSFontAttributeName: font]
+    }
+  }
 
   // Objects from the diagnostics popover nib.
   //
@@ -220,12 +233,6 @@ class TextGutterView: NSRulerView {
           //        doesn't seem to work as exepcted.
           let scrollViewSize = CGSize(width: contentSize.width + 4, height: contentSize.height + 4)
 
-//          popoverTextView.textStorage!.insertAttributedString(msg, atIndex: 0)
-//          let textSize    = msg.size
-//          let insetSize   = NSSize(width: 0, height: 10)
-//          let height      = textSize.height + insetSize.height
-//          let contentSize = NSSize(width: textSize.width + insetSize.width + 14, height: height > 100 ? 100 : height)
-//          popoverTextView.textContainerInset = insetSize
           popover?.contentSize               = scrollViewSize
           popover?.behavior                  = .Semitransient
           popover?.showRelativeToRect(gutterRect, ofView:self, preferredEdge: NSMaxYEdge)
@@ -239,7 +246,7 @@ class TextGutterView: NSRulerView {
   // MARK: Custom drawing
 
   override func viewWillDraw() {
-    ruleThickness = ("9999" as NSString).sizeWithAttributes(textAttributes).width + margin * 2;
+    ruleThickness = ("9999" as NSString).sizeWithAttributes(lineNumberAttributes).width + margin * 2;
       // setting 'ruleThickness' in init leads to a loop
   }
 
@@ -251,9 +258,9 @@ class TextGutterView: NSRulerView {
     let visibleRect   = self.scrollView!.documentVisibleRect
 
       // All visible glyphs and all visible characters
-    let glyphRange    = layoutManager.glyphRangeForBoundingRectWithoutAdditionalLayout(visibleRect,
-                                                                                       inTextContainer: textContainer!)
-    let charRange     = layoutManager.characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
+    let glyphRange = layoutManager.glyphRangeForBoundingRectWithoutAdditionalLayout(visibleRect,
+                                                                                    inTextContainer: textContainer!)
+    let charRange  = layoutManager.characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
 
       // Line number of first visible line
     let firstLineNumber = string.lineNumber(textView.lineMap, atLocation: charRange.location)
@@ -344,10 +351,10 @@ class TextGutterView: NSRulerView {
 
       // Draw the number.
     let numberString = lineNumber.description as NSString
-    let size         = numberString.sizeWithAttributes(textAttributes)
+    let size         = numberString.sizeWithAttributes(lineNumberAttributes)
     numberString.drawAtPoint(NSPoint(x: NSMaxX(rect) - margin - size.width,
                                      y: rect.origin.y + middleline - size.height / 2),
-                             withAttributes: textAttributes)
+                             withAttributes: lineNumberAttributes)
 
       // Draw an issue symbol if any.
     if let severity = maxSeverity {
@@ -360,7 +367,7 @@ class TextGutterView: NSRulerView {
       }
       symbol.drawAtPoint(NSPoint(x: rect.origin.x,
                                  y: rect.origin.y + middleline - size.height / 2),
-                                 withAttributes: textAttributes)
+                                 withAttributes: lineNumberAttributes)
     }
   }
 }
