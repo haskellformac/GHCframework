@@ -328,6 +328,7 @@ class TextGutterView: NSRulerView {
   private func drawLineNumber(lineNumber: UInt, rect: NSRect, middleline: CGFloat) {
 
       // Draw the background.
+    gutterColour(ThemesController.sharedThemesController().currentTheme).setFill()
     let lineIssuesOpt = issues[lineNumber]
     let maxSeverity   = (lineIssuesOpt == nil) ? nil : maxSeverityOfIssues(lineIssuesOpt!)
     if let severity = maxSeverity {
@@ -335,11 +336,11 @@ class TextGutterView: NSRulerView {
       switch severity {
       case .Error:   (markIssuesAsInvalid ? disabledErrorBgColour   : errorBgColour  ).setFill()
       case .Warning: (markIssuesAsInvalid ? disabledWarningBgColour : warningBgColour).setFill()
-      case .Other:   return
+      case .Other:   ()
       }
-      NSBezierPath(rect: rect).fill()
 
     }
+    NSBezierPath(rect: rect).fill()
 
       // Draw the number.
     let numberString = lineNumber.description as NSString

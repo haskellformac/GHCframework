@@ -66,8 +66,11 @@ final class CodeStorageDelegate: NSObject {
 
       // Set the background colour and re-apply highlighting on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
-      layoutManager.firstTextView?.backgroundColor = theme.background
-      (layoutManager.firstTextView as? CodeView)?.highlight()
+      if let codeView = layoutManager.firstTextView as? CodeView {
+        codeView.backgroundColor                                      = theme.background
+        codeView.enclosingScrollView?.verticalRulerView?.needsDisplay = true
+        codeView.highlight()
+      }
     }
   }
 
