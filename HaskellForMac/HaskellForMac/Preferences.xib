@@ -264,6 +264,9 @@
                                                 <constraint firstAttribute="height" constant="24" id="Bjl-v2-re3"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="updateColour:" target="-2" id="9jH-F5-FeZ"/>
+                                            </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fCj-NO-IHu">
                                             <rect key="frame" x="415" y="56" width="62" height="17"/>
@@ -280,6 +283,9 @@
                                                 <constraint firstAttribute="width" constant="44" id="x0f-lw-FUZ"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="updateColour:" target="-2" id="oLN-uF-DKj"/>
+                                            </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RcY-or-WBx">
                                             <rect key="frame" x="195" y="24" width="46" height="17"/>
@@ -296,6 +302,9 @@
                                                 <constraint firstAttribute="width" constant="44" id="xNf-ze-pRG"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="updateColour:" target="-2" id="MoM-Ee-vmw"/>
+                                            </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VkI-rT-ObC">
                                             <rect key="frame" x="415" y="24" width="62" height="17"/>

@@ -29,7 +29,7 @@ class ThemesController: NSController {
   dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
     { didSet { notifyThemeChange(currentTheme) } }
 
-    // Definitive reference for the currently available themes.
+    // Definitive reference for the currently available themes — the model as far as themes are concerned.
   var themes: [String: Theme] = {
       var themes: [String: Theme] = [:]
       for theme in defaultThemes {themes.updateValue(theme, forKey: theme.name)}
@@ -37,20 +37,23 @@ class ThemesController: NSController {
     }()
     { didSet { notifyThemeChange(currentTheme) } }
 
-  // Computed values.
+    // Computed values.
   var currentFont: NSFont {
     get { return NSFont(name: currentFontName, size: CGFloat(currentFontSize))
                  ?? NSFont(name: "Menlo-Regular", size: 13)! }
   }
-  var currentTheme: Theme {
+  var currentThemeName: String {
     get {
       let currentThemeIndex = currentThemeIndexes.count == 1 ? currentThemeIndexes.firstIndex : 0
       if currentThemeIndex >= themeNames.startIndex && currentThemeIndex < themeNames.endIndex {
-        return themes[themeNames[currentThemeIndex]] ?? defaultThemes[0]
+        return themeNames[currentThemeIndex] ?? ""
       } else {
-        return defaultThemes[0]
+        return ""
       }
     }
+  }
+  var currentTheme: Theme {
+    get { return themes[currentThemeName] ?? defaultThemes[0] }
   }
 
     /// Registered notifications.
@@ -183,10 +186,12 @@ extension ThemesController {
   /// Action message from colour wells in the preferences pane.
   ///
   func updateColour(colorWell: NSColorWell) {
-    var currentTheme = self.currentTheme
-    if colorWell == preferencesController?.backgroundColorWell {
-//      currentTheme.background = colorWell.color
-    }
+    var theme = self.currentTheme
+    if colorWell == preferencesController?.backgroundColorWell { theme.background = colorWell.color }
+    if colorWell == preferencesController?.invisiblesColorWell { theme.invisibles = colorWell.color }
+    if colorWell == preferencesController?.cursorColorWell     { theme.cursor     = colorWell.color }
+    if colorWell == preferencesController?.selectionColorWell  { theme.selection  = colorWell.color }
+    themes.updateValue(theme, forKey: currentThemeName)
   }
 }
 

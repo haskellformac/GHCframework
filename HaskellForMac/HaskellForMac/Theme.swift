@@ -13,63 +13,63 @@ import Foundation
 ///
 /// NB: Needs to be a class inheriting from `NSObject` to be able to use the type in bindings to the preferences pane.
 ///
-class Theme: NSObject {
-  let name:       String
-  let foreground: NSColor    // Default foreground colour
-  let background: NSColor    // Background colour
-  let invisibles: NSColor
-  let cursor    : NSColor
-  let selection : NSColor
+struct Theme {
+  var name:       String
+  var foreground: NSColor    // Default foreground colour
+  var background: NSColor    // Background colour
+  var invisibles: NSColor
+  var cursor    : NSColor
+  var selection : NSColor
 
     // Syntactic elements that may deviate from the default foreground colour
-  let keyword:    ThemeAttributes    // Language-defined keyword
-  let keysymbol:  ThemeAttributes    // Language-defined symbol
-  let varword:    ThemeAttributes    // User-defined variable identifier
-  let varsymbol:  ThemeAttributes    // User-defined variable symbol
-  let conword:    ThemeAttributes    // User-defined constructor identifier
-  let consymbol:  ThemeAttributes    // User-defined constructor symbol
-  let string:     ThemeAttributes    // String constant
-  let char:       ThemeAttributes    // Character constant
-  let number:     ThemeAttributes    // Numeric constant
-  let comment:    ThemeAttributes    // Single line or block comment
-  let pragma:     ThemeAttributes    // Pragma specification
+  var keyword:    ThemeAttributes    // Language-defined keyword
+  var keysymbol:  ThemeAttributes    // Language-defined symbol
+  var varword:    ThemeAttributes    // User-defined variable identifier
+  var varsymbol:  ThemeAttributes    // User-defined variable symbol
+  var conword:    ThemeAttributes    // User-defined constructor identifier
+  var consymbol:  ThemeAttributes    // User-defined constructor symbol
+  var string:     ThemeAttributes    // String constant
+  var char:       ThemeAttributes    // Character constant
+  var number:     ThemeAttributes    // Numeric constant
+  var comment:    ThemeAttributes    // Single line or block comment
+  var pragma:     ThemeAttributes    // Pragma specification
 
-  init(name:       String,
-       foreground: NSColor,
-       background: NSColor,
-       invisibles: NSColor,
-       cursor:     NSColor,
-       selection:  NSColor,
-       keyword:    ThemeAttributes,
-       keysymbol:  ThemeAttributes,
-       varword:    ThemeAttributes,
-       varsymbol:  ThemeAttributes,
-       conword:    ThemeAttributes,
-       consymbol:  ThemeAttributes,
-       string:     ThemeAttributes,
-       char:       ThemeAttributes,
-       number:     ThemeAttributes,
-       comment:    ThemeAttributes,
-       pragma:     ThemeAttributes)
-  {
-    self.name = name
-    self.foreground = foreground
-    self.background = background
-    self.invisibles = invisibles
-    self.cursor     = cursor
-    self.selection  = selection
-    self.keyword = keyword
-    self.keysymbol = keysymbol
-    self.varword = varword
-    self.varsymbol = varsymbol
-    self.conword = conword
-    self.consymbol = consymbol
-    self.string = string
-    self.char = char
-    self.number = number
-    self.comment = comment
-    self.pragma = pragma
-  }
+//  init(name:       String,
+//       foreground: NSColor,
+//       background: NSColor,
+//       invisibles: NSColor,
+//       cursor:     NSColor,
+//       selection:  NSColor,
+//       keyword:    ThemeAttributes,
+//       keysymbol:  ThemeAttributes,
+//       varword:    ThemeAttributes,
+//       varsymbol:  ThemeAttributes,
+//       conword:    ThemeAttributes,
+//       consymbol:  ThemeAttributes,
+//       string:     ThemeAttributes,
+//       char:       ThemeAttributes,
+//       number:     ThemeAttributes,
+//       comment:    ThemeAttributes,
+//       pragma:     ThemeAttributes)
+//  {
+//    self.name = name
+//    self.foreground = foreground
+//    self.background = background
+//    self.invisibles = invisibles
+//    self.cursor     = cursor
+//    self.selection  = selection
+//    self.keyword = keyword
+//    self.keysymbol = keysymbol
+//    self.varword = varword
+//    self.varsymbol = varsymbol
+//    self.conword = conword
+//    self.consymbol = consymbol
+//    self.string = string
+//    self.char = char
+//    self.number = number
+//    self.comment = comment
+//    self.pragma = pragma
+//  }
 }
 
 /// The attributes that are determined by a theme for each syntactic element.
