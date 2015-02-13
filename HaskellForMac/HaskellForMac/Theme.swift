@@ -15,8 +15,11 @@ import Foundation
 ///
 class Theme: NSObject {
   let name:       String
-  let background: NSColor    // Background colour
   let foreground: NSColor    // Default foreground colour
+  let background: NSColor    // Background colour
+  let invisibles: NSColor
+  let cursor    : NSColor
+  let selection : NSColor
 
     // Syntactic elements that may deviate from the default foreground colour
   let keyword:    ThemeAttributes    // Language-defined keyword
@@ -25,14 +28,18 @@ class Theme: NSObject {
   let varsymbol:  ThemeAttributes    // User-defined variable symbol
   let conword:    ThemeAttributes    // User-defined constructor identifier
   let consymbol:  ThemeAttributes    // User-defined constructor symbol
-  let string:     ThemeAttributes    // String or character constant
+  let string:     ThemeAttributes    // String constant
+  let char:       ThemeAttributes    // Character constant
   let number:     ThemeAttributes    // Numeric constant
   let comment:    ThemeAttributes    // Single line or block comment
   let pragma:     ThemeAttributes    // Pragma specification
 
   init(name:       String,
-       background: NSColor,
        foreground: NSColor,
+       background: NSColor,
+       invisibles: NSColor,
+       cursor:     NSColor,
+       selection:  NSColor,
        keyword:    ThemeAttributes,
        keysymbol:  ThemeAttributes,
        varword:    ThemeAttributes,
@@ -40,6 +47,7 @@ class Theme: NSObject {
        conword:    ThemeAttributes,
        consymbol:  ThemeAttributes,
        string:     ThemeAttributes,
+       char:       ThemeAttributes,
        number:     ThemeAttributes,
        comment:    ThemeAttributes,
        pragma:     ThemeAttributes)
@@ -47,6 +55,9 @@ class Theme: NSObject {
     self.name = name
     self.foreground = foreground
     self.background = background
+    self.invisibles = invisibles
+    self.cursor     = cursor
+    self.selection  = selection
     self.keyword = keyword
     self.keysymbol = keysymbol
     self.varword = varword
@@ -54,6 +65,7 @@ class Theme: NSObject {
     self.conword = conword
     self.consymbol = consymbol
     self.string = string
+    self.char = char
     self.number = number
     self.comment = comment
     self.pragma = pragma
@@ -118,8 +130,11 @@ let defaultThemes = [solarLight, monokai]
 
 private let solarLight =
   Theme(name: "Solar Light",
-        background: NSColor(SRGBRed: 255/255, green: 252/255, blue: 235/255, alpha: 1),
         foreground: NSColor.blackColor(),
+        background: NSColor(SRGBRed: 255/255, green: 252/255, blue: 235/255, alpha: 1),
+        invisibles: NSColor(SRGBRed: 230/255, green: 227/255, blue: 212/255, alpha: 1),
+        cursor:     NSColor.blackColor(),
+        selection:  NSColor(SRGBRed: 250/255, green: 227/255, blue: 175/255, alpha: 1),
         keyword:    solarLightKeyColour,
         keysymbol:  solarLightKeyColour,
         varword:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
@@ -127,6 +142,8 @@ private let solarLight =
         conword:    solarLightConColour,
         consymbol:  solarLightConColour,
         string:     ThemeAttributes(foreground: NSColor(SRGBRed: 223/255, green:   7/255, blue:   0/255, alpha: 1),
+                                    underline: false),
+        char:       ThemeAttributes(foreground: NSColor(SRGBRed:  55/255, green:  87/255, blue: 136/255, alpha: 1),
                                     underline: false),
         number:     ThemeAttributes(foreground: NSColor(SRGBRed:  41/255, green:  66/255, blue: 119/255, alpha: 1),
                                     underline: false),
@@ -144,8 +161,11 @@ private let solarLightComColour =
 
 private let monokai =
   Theme(name: "Monokai",
-        background: NSColor(SRGBRed: 0x28/255, green: 0x28/255, blue: 0x28/255, alpha: 1),
         foreground: NSColor(SRGBRed: 0xf8/255, green: 0xf8/255, blue: 0xf2/255, alpha: 1),
+        background: NSColor(SRGBRed: 0x28/255, green: 0x28/255, blue: 0x28/255, alpha: 1),
+        invisibles: NSColor(SRGBRed:  197/255, green:  200/255, blue:  198/255, alpha: 0.2),
+        cursor:     NSColor(SRGBRed: 0xf8/255, green: 0xf8/255, blue: 0xf0/255, alpha: 1),
+        selection:  NSColor(SRGBRed: 0x49/255, green: 0x48/255, blue: 0x3e/255, alpha: 1),
         keyword:    monokaiKeyColour,
         keysymbol:  monokaiKeyColour,
         varword:    monokaiVarColour,
@@ -153,6 +173,8 @@ private let monokai =
         conword:    monokaiConColour,
         consymbol:  monokaiConColour,
         string:     ThemeAttributes(foreground: NSColor(SRGBRed: 0xe6/255, green: 0xdb/255, blue: 0x74/255, alpha: 1),
+                                    underline: false),
+        char:       ThemeAttributes(foreground: NSColor(SRGBRed: 0xae/255, green: 0x81/255, blue: 0xff/255, alpha: 1),
                                     underline: false),
         number:     ThemeAttributes(foreground: NSColor(SRGBRed: 0xae/255, green: 0x81/255, blue: 0xff/255, alpha: 1),
                                     underline: false),

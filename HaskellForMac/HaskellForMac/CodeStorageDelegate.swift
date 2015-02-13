@@ -71,6 +71,8 @@ final class CodeStorageDelegate: NSObject {
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       if let codeView = layoutManager.firstTextView as? CodeView {
         codeView.backgroundColor              = theme.background
+        codeView.insertionPointColor          = theme.cursor
+        codeView.selectedTextAttributes       = [NSBackgroundColorAttributeName: theme.selection]
         codeView.textGutterView?.needsDisplay = true
         codeView.highlight()
       }
