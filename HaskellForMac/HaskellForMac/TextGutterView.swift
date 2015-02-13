@@ -262,6 +262,8 @@ class TextGutterView: NSRulerView {
       // Draw the background and the divider line.
     gutterColour(ThemesController.sharedThemesController().currentTheme).setFill()
     NSBezierPath(rect: rect).fill()
+    dividerColour(ThemesController.sharedThemesController().currentTheme).setStroke()
+    NSBezierPath(rect: NSRect(x: CGRectGetMaxX(rect) - 0.5, y: CGRectGetMinY(rect), width: 1, height: rect.size.height)).stroke()
 
       // All visible glyphs and all visible characters
     let glyphRange = layoutManager.glyphRangeForBoundingRectWithoutAdditionalLayout(visibleRect,
