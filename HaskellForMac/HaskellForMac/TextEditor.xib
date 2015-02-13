@@ -19,14 +19,14 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-F3-fCH">
-                    <rect key="frame" x="-3" y="247" width="486" height="27"/>
+                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-F3-fCH">
+                    <rect key="frame" x="0.0" y="251" width="480" height="21"/>
                     <view key="contentView">
-                        <rect key="frame" x="1" y="1" width="484" height="25"/>
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="21"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Vn-Tc-P0R">
-                                <rect key="frame" x="2" y="4" width="480" height="20"/>
+                                <rect key="frame" x="0.0" y="1" width="480" height="20"/>
                                 <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" id="fqT-jn-wtS">
                                     <font key="font" metaFont="smallSystem"/>
                                     <url key="url" string="file:///Applications/Haskell"/>
@@ -34,7 +34,7 @@
                                 </pathCell>
                             </pathControl>
                             <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="TnI-sV-tMv">
-                                <rect key="frame" x="2" y="1" width="480" height="5"/>
+                                <rect key="frame" x="0.0" y="-2" width="480" height="5"/>
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <font key="titleFont" metaFont="system"/>
