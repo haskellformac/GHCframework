@@ -15,7 +15,7 @@ typealias ThemeChangeNotification = Theme -> ()
 class ThemesController: NSController {
 
     // Available once the preferences window has been loaded (for access to the views of the theme tab)
-  weak var preferencesController: PreferencesController!
+  weak var preferencesController: PreferencesController?
 
     // Bindings for the font selection: font popup button & combo box for the size
   dynamic var availableFonts:  [String] = ["Menlo-Regular"]
@@ -25,12 +25,19 @@ class ThemesController: NSController {
     { didSet { notifyFontChange(currentFont) } }
 
     // Bindings for the theme editor
-  dynamic var themes:              [Theme]    = defaultThemes  // Definitive reference for the currently available themes.
-    { didSet { notifyThemeChange(currentTheme) } }
+  dynamic var themeNames:          [String]   = defaultThemes.map{$0.name}
   dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
     { didSet { notifyThemeChange(currentTheme) } }
 
-    // Computed values.
+    // Definitive reference for the currently available themes.
+  var themes: [String: Theme] = {
+      var themes: [String: Theme] = [:]
+      for theme in defaultThemes {themes.updateValue(theme, forKey: theme.name)}
+      return themes
+    }()
+    { didSet { notifyThemeChange(currentTheme) } }
+
+  // Computed values.
   var currentFont: NSFont {
     get { return NSFont(name: currentFontName, size: CGFloat(currentFontSize))
                  ?? NSFont(name: "Menlo-Regular", size: 13)! }
@@ -38,8 +45,8 @@ class ThemesController: NSController {
   var currentTheme: Theme {
     get {
       let currentThemeIndex = currentThemeIndexes.count == 1 ? currentThemeIndexes.firstIndex : 0
-      if currentThemeIndex >= themes.startIndex && currentThemeIndex < themes.endIndex {
-        return themes[currentThemeIndex]
+      if currentThemeIndex >= themeNames.startIndex && currentThemeIndex < themeNames.endIndex {
+        return themes[themeNames[currentThemeIndex]] ?? defaultThemes[0]
       } else {
         return defaultThemes[0]
       }
@@ -57,11 +64,19 @@ class ThemesController: NSController {
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
 
+
+  // MARK: -
+  // MARK: Shared controller
+
   /// Get the themes controller from the main menu nib.
   ///
   class func sharedThemesController() -> ThemesController {
     return ((NSApp as NSApplication).delegate as AppDelegate).themesController
   }
+
+
+  // MARK: -
+  // MARK: Controller configuration
 
   /// Initialisation after the preferences window has been loaded.
   ///
@@ -96,6 +111,10 @@ class ThemesController: NSController {
     preferencesController.sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})  // We always produce the same tokens.
     preferencesController.sampleCodeView.string = sampleCode
     preferencesController.sampleCodeView.highlight()
+
+    reportThemeInformation(self,
+                           fontChangeNotification:  curry{obj, font in return},
+                           themeChangeNotification: curry{$0.updateThemesPane($1)})
   }
 
   /// Determine the list of available fixed pitch fonts and provide them by way of `availableFonts`.
@@ -105,6 +124,13 @@ class ThemesController: NSController {
       availableFonts = fonts as [String]
     }
   }
+}
+
+
+// MARK: -
+// MARK: Theme status updates
+
+extension ThemesController {
 
   /// Objects (e.g., code views) register to be notified of font and theme changes. The notification is automatically
   /// deregistered if the object gets deallocated. The callback will be executed right away with the initial value.
@@ -141,10 +167,32 @@ class ThemesController: NSController {
       if let callback = notification.unbox { callback(newTheme) }
     }
 
-    // Prune stale notification callbacks.
+      // Prune stale notification callbacks.
     themeChangeNotifications = themeChangeNotifications.filter{ $0.unbox != nil }
   }
+
+  /// Ensure that the colour wells in the themes pane show the colours of the given theme.
+  ///
+  func updateThemesPane(newTheme: Theme) {
+    preferencesController?.backgroundColorWell.color = newTheme.background
+    preferencesController?.invisiblesColorWell.color = newTheme.invisibles
+    preferencesController?.cursorColorWell.color     = newTheme.cursor
+    preferencesController?.selectionColorWell.color  = newTheme.selection
+  }
+
+  /// Action message from colour wells in the preferences pane.
+  ///
+  func updateColour(colorWell: NSColorWell) {
+    var currentTheme = self.currentTheme
+    if colorWell == preferencesController?.backgroundColorWell {
+//      currentTheme.background = colorWell.color
+    }
+  }
 }
+
+
+// MARK: -
+// MARK: Sample code for the preferences pane
 
 let sampleCode = "\n".join([ "-- Select any text to edit"
                            , "-- its highlighting."

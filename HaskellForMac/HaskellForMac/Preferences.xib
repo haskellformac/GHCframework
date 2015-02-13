@@ -8,10 +8,15 @@
         <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="Haskell" customModuleProvider="target">
             <connections>
                 <outlet property="accountToolbarItem" destination="MBn-lv-dJO" id="qJ0-jq-Mzi"/>
+                <outlet property="backgroundColorWell" destination="50R-fi-lsC" id="29W-wP-CWV"/>
+                <outlet property="categoryColorWell" destination="nN0-nT-bRS" id="hKr-EE-pJp"/>
+                <outlet property="cursorColorWell" destination="sdS-u5-NPJ" id="ae4-az-Otd"/>
                 <outlet property="fontSizeStepper" destination="gTL-B4-7OD" id="n1C-LD-OtN"/>
                 <outlet property="fontSizeTextField" destination="ldG-QS-Rlb" id="CJy-zB-M2d"/>
+                <outlet property="invisiblesColorWell" destination="oWN-u7-gGB" id="0tg-HO-TBe"/>
                 <outlet property="sampleCodeScrollView" destination="stv-kO-qap" id="dA5-nv-rzk"/>
                 <outlet property="sampleCodeView" destination="L5v-IN-HrF" id="Zwn-DA-u5T"/>
+                <outlet property="selectionColorWell" destination="ucX-lz-Qgs" id="GZP-rU-g2S"/>
                 <outlet property="toolbar" destination="Acm-L0-M8A" id="3pJ-mq-Dnl"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gGR-rs-ckq"/>
             </connections>
@@ -158,7 +163,7 @@
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
                                                                                 <connections>
-                                                                                    <binding destination="IwF-VV-ubZ" name="value" keyPath="objectValue.name" id="oeR-fq-ZVh"/>
+                                                                                    <binding destination="IwF-VV-ubZ" name="value" keyPath="objectValue" id="6ov-AZ-BsS"/>
                                                                                 </connections>
                                                                             </textField>
                                                                         </subviews>
@@ -218,7 +223,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="nN0-nT-bRS">
+                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="nN0-nT-bRS" userLabel="Color Well — Category">
                                             <rect key="frame" x="145" y="85" width="44" height="23"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="23" id="RBP-9c-9sX"/>
@@ -234,14 +239,14 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="50R-fi-lsC">
+                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="50R-fi-lsC" userLabel="Color Well — Background">
                                             <rect key="frame" x="145" y="54" width="44" height="23"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="23" id="yXD-zx-Fcb"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="zOS-Kt-ysP" name="value" keyPath="selection.background" id="ikk-4F-Byr"/>
+                                                <action selector="updateColour:" target="-2" id="QNv-Fk-1zi"/>
                                             </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rEK-xn-XfY">
@@ -252,35 +257,13 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RcY-or-WBx">
-                                            <rect key="frame" x="195" y="24" width="46" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Cursor" id="yZi-fQ-yV7">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="sdS-u5-NPJ">
-                                            <rect key="frame" x="145" y="21" width="44" height="23"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="23" id="v9h-IO-V4l"/>
-                                                <constraint firstAttribute="width" constant="44" id="x0f-lw-FUZ"/>
-                                            </constraints>
-                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <binding destination="zOS-Kt-ysP" name="value" keyPath="selection.cursor" id="LSW-ea-pDZ"/>
-                                            </connections>
-                                        </colorWell>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="oWN-u7-gGB">
+                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="oWN-u7-gGB" userLabel="Color Well — Invisibles">
                                             <rect key="frame" x="365" y="53" width="44" height="24"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="44" id="0b0-tN-KI6"/>
                                                 <constraint firstAttribute="height" constant="24" id="Bjl-v2-re3"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <binding destination="zOS-Kt-ysP" name="value" keyPath="selection.invisibles" id="Fm2-iC-Jps"/>
-                                            </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fCj-NO-IHu">
                                             <rect key="frame" x="415" y="56" width="62" height="17"/>
@@ -290,6 +273,30 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="sdS-u5-NPJ" userLabel="Color Well — Cursor">
+                                            <rect key="frame" x="145" y="21" width="44" height="23"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="23" id="v9h-IO-V4l"/>
+                                                <constraint firstAttribute="width" constant="44" id="x0f-lw-FUZ"/>
+                                            </constraints>
+                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </colorWell>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RcY-or-WBx">
+                                            <rect key="frame" x="195" y="24" width="46" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Cursor" id="yZi-fQ-yV7">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="ucX-lz-Qgs" userLabel="Color Well — Selection">
+                                            <rect key="frame" x="365" y="21" width="44" height="23"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="23" id="joJ-uq-7Zt"/>
+                                                <constraint firstAttribute="width" constant="44" id="xNf-ze-pRG"/>
+                                            </constraints>
+                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VkI-rT-ObC">
                                             <rect key="frame" x="415" y="24" width="62" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Selection" id="HpE-dC-nEg">
@@ -298,17 +305,6 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="ucX-lz-Qgs">
-                                            <rect key="frame" x="365" y="21" width="44" height="23"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="23" id="joJ-uq-7Zt"/>
-                                                <constraint firstAttribute="width" constant="44" id="xNf-ze-pRG"/>
-                                            </constraints>
-                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <binding destination="zOS-Kt-ysP" name="value" keyPath="selection.selection" id="X3K-5V-kIX"/>
-                                            </connections>
-                                        </colorWell>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" secondItem="XC7-r2-pGB" secondAttribute="bottom" constant="21" id="3gW-nm-O68"/>
@@ -527,8 +523,8 @@
         <userDefaultsController representsSharedInstance="YES" id="evc-ih-bm0"/>
         <arrayController id="zOS-Kt-ysP">
             <connections>
+                <binding destination="-2" name="contentArray" keyPath="themesController.themeNames" id="0Ru-rO-UrL"/>
                 <binding destination="-2" name="selectionIndexes" keyPath="themesController.currentThemeIndexes" id="9Kq-JY-5GZ"/>
-                <binding destination="-2" name="contentArray" keyPath="themesController.themes" id="Hh3-I8-luP"/>
             </connections>
         </arrayController>
     </objects>

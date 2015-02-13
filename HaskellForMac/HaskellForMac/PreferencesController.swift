@@ -24,11 +24,16 @@ class PreferencesController: NSWindowController {
   @IBOutlet private weak var toolbar:            NSToolbar!
   @IBOutlet private weak var accountToolbarItem: NSToolbarItem!
 
-    // Themes tab outlets (not private so that the themes controller can access them)
+    // Themes pane outlets (not private so that the themes controller can access them)
   @IBOutlet         weak var fontSizeTextField:    NSTextField!
   @IBOutlet         weak var fontSizeStepper:      NSStepper!
   @IBOutlet         weak var sampleCodeScrollView: NSScrollView!
   @IBOutlet              var sampleCodeView:       CodeView!
+  @IBOutlet         weak var categoryColorWell:    NSColorWell!
+  @IBOutlet         weak var backgroundColorWell:  NSColorWell!
+  @IBOutlet         weak var invisiblesColorWell:  NSColorWell!
+  @IBOutlet         weak var cursorColorWell:      NSColorWell!
+  @IBOutlet         weak var selectionColorWell:   NSColorWell!
 
   @IBOutlet dynamic var themesController: ThemesController!   // Must not be private as it is used in bindings.
 
@@ -90,13 +95,17 @@ class PreferencesController: NSWindowController {
 
     themesController.setup(self)
   }
+}
 
-  // MARK: -
-  // MARK: Window delegate
-  //
-  // NB: We set this controller as the window's delegate in IB.
 
-    // We do this to catch the case where the user enters a value into one of the text fields but closes the window
+// MARK: -
+// MARK: Window delegate
+//
+// NB: We set this controller as the window's delegate in IB.
+
+extension PreferencesController {
+
+  // We do this to catch the case where the user enters a value into one of the text fields but closes the window
     // without hitting enter or tab.
     //
   func windowShouldClose(window: NSWindow) -> Bool {
@@ -150,4 +159,15 @@ extension PreferencesController {
 
 extension PreferencesController: NSTabViewDelegate {
 
+}
+
+
+// MARK: -
+// MARK: Themes pane action forwarding
+
+extension PreferencesController {
+
+  @IBAction func updateColour(sender: NSColorWell) {
+    themesController.updateColour(sender)
+  }
 }
