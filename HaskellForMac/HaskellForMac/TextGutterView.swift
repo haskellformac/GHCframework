@@ -30,11 +30,13 @@ class TextGutterView: NSRulerView {
   // Font alternatives: Gill Sans, Century Gothic, Franklin Gothic, Futura (small, semibold) & Lucida Sans Typewriter
   private let lineNumberFontName   = "Calibri"
   private let lineNumberColour     = NSColor(deviceWhite: 0.5, alpha: 1)
+  private var lineNumberFont       : NSFont {
+    let size = round(CGFloat(ThemesController.sharedThemesController().currentFontSize) * 0.9)
+    return NSFont(name: lineNumberFontName, size: size) ?? NSFont(name: "Menlo-Regular", size: 12)!
+  }
   private var lineNumberAttributes : [String: AnyObject] {
     get {
-      let size = round(CGFloat(ThemesController.sharedThemesController().currentFontSize) * 0.9)
-      let font = NSFont(name: lineNumberFontName, size: size) ?? NSFont(name: "Menlo-Regular", size: 12)!
-      return [ NSFontAttributeName           : font
+      return [ NSFontAttributeName           : lineNumberFont
              , NSForegroundColorAttributeName: lineNumberColour
              ]
     }
@@ -328,7 +330,7 @@ class TextGutterView: NSRulerView {
             firstRect.size.height / 2)
   }
 
-  // Draws the given number in the gutter, such that the glyphs' is vertically centred around the given middle line.
+  // Draws the given number in the gutter, such that the glyphs are vertically centred around the given middle line.
   // The middle line is centred with the first row of the line and is relative to the rect, which specifies the extent
   // of the gutter area belonging to this line (for background drawing).
   //
@@ -350,10 +352,11 @@ class TextGutterView: NSRulerView {
     NSBezierPath(rect: rect).fill()
 
       // Draw the number.
+    let offset       = (lineNumberFont.ascender - lineNumberFont.capHeight) / 2   // Glyphs are not centered in b-box
     let numberString = lineNumber.description as NSString
     let size         = numberString.sizeWithAttributes(lineNumberAttributes)
     numberString.drawAtPoint(NSPoint(x: NSMaxX(rect) - margin - size.width,
-                                     y: rect.origin.y + middleline - size.height / 2),
+                                     y: rect.origin.y + middleline - size.height / 2 - offset),
                              withAttributes: lineNumberAttributes)
 
       // Draw an issue symbol if any.
