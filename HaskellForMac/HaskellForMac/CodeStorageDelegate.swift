@@ -54,8 +54,8 @@ final class CodeStorageDelegate: NSObject {
       // Set the font on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       if let codeView = layoutManager.firstTextView as? CodeView {
-        codeView.font                                                 = font
-        codeView.enclosingScrollView?.verticalRulerView?.needsDisplay = true    // dependent on font size
+        codeView.font                         = font
+        codeView.textGutterView?.needsDisplay = true    // dependent on font size
       }
     }
   }
@@ -70,8 +70,8 @@ final class CodeStorageDelegate: NSObject {
       // Set the background colour and re-apply highlighting on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       if let codeView = layoutManager.firstTextView as? CodeView {
-        codeView.backgroundColor                                      = theme.background
-        codeView.enclosingScrollView?.verticalRulerView?.needsDisplay = true
+        codeView.backgroundColor              = theme.background
+        codeView.textGutterView?.needsDisplay = true
         codeView.highlight()
       }
     }
@@ -157,7 +157,7 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       layoutManager.highlight(lineMap, lineRange:rehighlightLines)
       if didEditNewline {
-        layoutManager.firstTextView?.enclosingScrollView?.verticalRulerView!.needsDisplay = true    // update the line numbering in the gutter
+        (layoutManager.firstTextView as? CodeView)?.textGutterView?.needsDisplay = true    // update the line numbering in the gutter
       }
     }
   }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TextEditorController" customModule="Haskell" customModuleProvider="target">
@@ -19,16 +19,42 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Vn-Tc-P0R">
-                    <rect key="frame" x="0.0" y="252" width="480" height="20"/>
-                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" id="fqT-jn-wtS">
-                        <font key="font" metaFont="smallSystem"/>
-                        <url key="url" string="file://localhost/Applications/"/>
-                        <color key="backgroundColor" red="0.89803921568627454" green="0.92549019607843142" blue="0.97254901960784312" alpha="1" colorSpace="deviceRGB"/>
-                    </pathCell>
-                </pathControl>
+                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-F3-fCH">
+                    <rect key="frame" x="-3" y="247" width="486" height="27"/>
+                    <view key="contentView">
+                        <rect key="frame" x="1" y="1" width="484" height="25"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Vn-Tc-P0R">
+                                <rect key="frame" x="2" y="4" width="480" height="20"/>
+                                <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" id="fqT-jn-wtS">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <url key="url" string="file:///Applications/Haskell"/>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </pathCell>
+                            </pathControl>
+                            <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="TnI-sV-tMv">
+                                <rect key="frame" x="2" y="1" width="480" height="5"/>
+                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <font key="titleFont" metaFont="system"/>
+                            </box>
+                        </subviews>
+                    </view>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="6Vn-Tc-P0R" secondAttribute="trailing" id="EXV-eQ-sUG"/>
+                        <constraint firstItem="6Vn-Tc-P0R" firstAttribute="top" secondItem="kWT-F3-fCH" secondAttribute="top" id="Rze-GJ-6dg"/>
+                        <constraint firstItem="6Vn-Tc-P0R" firstAttribute="bottom" secondItem="TnI-sV-tMv" secondAttribute="top" id="bQT-Uz-OC7"/>
+                        <constraint firstItem="TnI-sV-tMv" firstAttribute="leading" secondItem="kWT-F3-fCH" secondAttribute="leading" id="hVX-rq-BIh"/>
+                        <constraint firstItem="6Vn-Tc-P0R" firstAttribute="leading" secondItem="kWT-F3-fCH" secondAttribute="leading" id="i7k-WP-DEO"/>
+                        <constraint firstAttribute="trailing" secondItem="TnI-sV-tMv" secondAttribute="trailing" id="iF2-LL-LdW"/>
+                        <constraint firstAttribute="bottom" secondItem="TnI-sV-tMv" secondAttribute="bottom" id="rfq-ro-a3R"/>
+                    </constraints>
+                    <color key="borderColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="z8k-aE-UVe">
-                    <rect key="frame" x="0.0" y="0.0" width="480" height="252"/>
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="251"/>
                     <clipView key="contentView" id="vp7-dV-dSx">
                         <rect key="frame" x="1" y="1" width="223" height="133"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -37,10 +63,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="223" height="252"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <size key="minSize" width="480" height="252"/>
+                                <size key="minSize" width="480" height="251"/>
                                 <size key="maxSize" width="480" height="10000000"/>
                                 <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                <size key="minSize" width="480" height="252"/>
+                                <size key="minSize" width="480" height="251"/>
                                 <size key="maxSize" width="480" height="10000000"/>
                                 <connections>
                                     <outlet property="delegate" destination="-2" id="eft-qi-Y23"/>
@@ -60,15 +86,16 @@
                 </scrollView>
             </subviews>
             <constraints>
-                <constraint firstItem="z8k-aE-UVe" firstAttribute="top" secondItem="6Vn-Tc-P0R" secondAttribute="bottom" id="7hi-pc-gyN"/>
                 <constraint firstItem="z8k-aE-UVe" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="7ng-hp-I5o"/>
                 <constraint firstAttribute="bottom" secondItem="z8k-aE-UVe" secondAttribute="bottom" id="B5O-aY-TZM"/>
-                <constraint firstItem="6Vn-Tc-P0R" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="CCh-kG-nt3"/>
                 <constraint firstItem="z8k-aE-UVe" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="J4x-bn-tSx"/>
-                <constraint firstItem="6Vn-Tc-P0R" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="MgY-a3-GmN"/>
-                <constraint firstAttribute="trailing" secondItem="6Vn-Tc-P0R" secondAttribute="trailing" id="Sqm-bR-q2P"/>
+                <constraint firstItem="z8k-aE-UVe" firstAttribute="top" secondItem="kWT-F3-fCH" secondAttribute="bottom" id="ZSk-Ot-iaa"/>
+                <constraint firstItem="kWT-F3-fCH" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="fZw-QN-8uR"/>
+                <constraint firstAttribute="trailing" secondItem="kWT-F3-fCH" secondAttribute="trailing" id="t2e-KY-Ltt"/>
+                <constraint firstItem="kWT-F3-fCH" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="xG8-sV-GsW"/>
                 <constraint firstAttribute="trailing" secondItem="z8k-aE-UVe" secondAttribute="trailing" id="zep-XP-Vgx"/>
             </constraints>
+            <point key="canvasLocation" x="444" y="351"/>
         </customView>
         <objectController id="Csf-UD-gao">
             <connections>

@@ -115,11 +115,11 @@ extension CodeView: NSUserInterfaceValidations {
   }
 
   func jumpToNextIssue(sender: AnyObject!) {
-    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToNextIssue()
+    textGutterView?.jumpToNextIssue()
   }
 
   func jumpToPreviousIssue(sender: AnyObject!) {
-    (enclosingScrollView?.verticalRulerView as? TextGutterView)?.jumpToPreviousIssue()
+    textGutterView?.jumpToPreviousIssue()
   }
 
 }

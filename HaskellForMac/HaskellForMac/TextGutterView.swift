@@ -259,6 +259,10 @@ class TextGutterView: NSRulerView {
     let string        = textView.textStorage!.string
     let visibleRect   = self.scrollView!.documentVisibleRect
 
+      // Draw the background and the divider line.
+    gutterColour(ThemesController.sharedThemesController().currentTheme).setFill()
+    NSBezierPath(rect: rect).fill()
+
       // All visible glyphs and all visible characters
     let glyphRange = layoutManager.glyphRangeForBoundingRectWithoutAdditionalLayout(visibleRect,
                                                                                     inTextContainer: textContainer!)
@@ -337,7 +341,6 @@ class TextGutterView: NSRulerView {
   private func drawLineNumber(lineNumber: UInt, rect: NSRect, middleline: CGFloat) {
 
       // Draw the background.
-    gutterColour(ThemesController.sharedThemesController().currentTheme).setFill()
     let lineIssuesOpt = issues[lineNumber]
     let maxSeverity   = (lineIssuesOpt == nil) ? nil : maxSeverityOfIssues(lineIssuesOpt!)
     if let severity = maxSeverity {
@@ -347,9 +350,8 @@ class TextGutterView: NSRulerView {
       case .Warning: (markIssuesAsInvalid ? disabledWarningBgColour : warningBgColour).setFill()
       case .Other:   ()
       }
-
+      NSBezierPath(rect: rect).fill()
     }
-    NSBezierPath(rect: rect).fill()
 
       // Draw the number.
     let offset       = (lineNumberFont.ascender - lineNumberFont.capHeight) / 2   // Glyphs are not centered in b-box
