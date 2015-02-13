@@ -213,5 +213,6 @@ let sampleCode = "\n".join([ "-- Select any text to edit"
                            , "theAnswer = Just 42"
                            , ""
                            , "main = putStrLn $"
-                           , "  \"The answer is\" ++ ' ' : show theAnswer"
+                           , "  \"The answer is\" ++"
+                           , "  ' ' : show theAnswer"
                            ])
