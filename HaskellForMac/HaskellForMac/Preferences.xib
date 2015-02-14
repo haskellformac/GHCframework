@@ -10,6 +10,7 @@
                 <outlet property="accountToolbarItem" destination="MBn-lv-dJO" id="qJ0-jq-Mzi"/>
                 <outlet property="backgroundColorWell" destination="50R-fi-lsC" id="29W-wP-CWV"/>
                 <outlet property="categoryColorWell" destination="nN0-nT-bRS" id="hKr-EE-pJp"/>
+                <outlet property="categoryTextField" destination="QNZ-8N-RhN" id="OiJ-iP-GF0"/>
                 <outlet property="cursorColorWell" destination="sdS-u5-NPJ" id="ae4-az-Otd"/>
                 <outlet property="fontSizeStepper" destination="gTL-B4-7OD" id="n1C-LD-OtN"/>
                 <outlet property="fontSizeTextField" destination="ldG-QS-Rlb" id="CJy-zB-M2d"/>
@@ -223,7 +224,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="nN0-nT-bRS" userLabel="Color Well — Category">
+                                        <colorWell enabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nN0-nT-bRS" userLabel="Color Well — Category">
                                             <rect key="frame" x="145" y="85" width="44" height="23"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="23" id="RBP-9c-9sX"/>
@@ -233,7 +234,7 @@
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QNZ-8N-RhN" userLabel="Category">
                                             <rect key="frame" x="197" y="85" width="278" height="22"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="Select text in above sample code" drawsBackground="YES" id="pUj-Bj-0o5">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="Select text in above sample code" drawsBackground="YES" id="pUj-Bj-0o5">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

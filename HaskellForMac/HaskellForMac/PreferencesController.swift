@@ -29,6 +29,7 @@ class PreferencesController: NSWindowController {
   @IBOutlet         weak var fontSizeStepper:      NSStepper!
   @IBOutlet         weak var sampleCodeScrollView: NSScrollView!
   @IBOutlet              var sampleCodeView:       CodeView!
+  @IBOutlet         weak var categoryTextField:    NSTextField!
   @IBOutlet         weak var categoryColorWell:    NSColorWell!
   @IBOutlet         weak var backgroundColorWell:  NSColorWell!
   @IBOutlet         weak var invisiblesColorWell:  NSColorWell!
@@ -84,7 +85,6 @@ class PreferencesController: NSWindowController {
     window?.identifier              = "Preferences"
     window?.restorationClass        = PreferencesController.self
 
-    toolbar.delegate               = self
     toolbar.selectedItemIdentifier = kGeneralPreferences   // FIXME: this should come from autosave, but it doesn't...
     window?.title                  = "General";            //        this, too, of course
 

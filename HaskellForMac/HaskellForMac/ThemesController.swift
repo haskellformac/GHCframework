@@ -12,6 +12,32 @@ import Cocoa
 typealias FontChangeNotification  = NSFont -> ()
 typealias ThemeChangeNotification = Theme -> ()
 
+private enum TokenSelection: Printable {
+  case NoSelection
+  case Selection(token: HighlightingTokenKind)
+  case AmbiguousSelection
+
+  var highlightingTokenKind: HighlightingTokenKind? {
+    get {
+      switch self {
+      case .Selection(let tokenKind): return tokenKind
+      default:                        return nil
+      }
+    }
+  }
+
+  var description: String {
+    get {
+      switch self {
+      case .NoSelection:                      return ""
+      case .Selection(token: let tokenKind0): let tokenKind = tokenKind0
+      return tokenKind.description
+      case .AmbiguousSelection:               return "«Ambiguous selection»"
+      }
+    }
+  }
+}
+
 class ThemesController: NSController {
 
     // Available once the preferences window has been loaded (for access to the views of the theme tab)
@@ -29,13 +55,16 @@ class ThemesController: NSController {
   dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
     { didSet { notifyThemeChange(currentTheme) } }
 
-    // Definitive reference for the currently available themes — the model as far as themes are concerned.
+    /// Definitive reference for the currently available themes — the model as far as themes are concerned.
   var themes: [String: Theme] = {
       var themes: [String: Theme] = [:]
       for theme in defaultThemes {themes.updateValue(theme, forKey: theme.name)}
       return themes
     }()
     { didSet { notifyThemeChange(currentTheme) } }
+
+    /// The token category currently selected for editing if any.
+  var selectedTokenKind: HighlightingTokenKind?
 
     // Computed values.
   var currentFont: NSFont {
@@ -111,6 +140,7 @@ class ThemesController: NSController {
     }
     preferencesController.sampleCodeScrollView.hasVerticalRuler = true        // Set up the gutter.
     preferencesController.sampleCodeScrollView.rulersVisible    = true
+    preferencesController.sampleCodeView.delegate               = self
     preferencesController.sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})  // We always produce the same tokens.
     preferencesController.sampleCodeView.string = sampleCode
     preferencesController.sampleCodeView.highlight()
@@ -192,6 +222,44 @@ extension ThemesController {
     if colorWell == preferencesController?.cursorColorWell     { theme.cursor     = colorWell.color }
     if colorWell == preferencesController?.selectionColorWell  { theme.selection  = colorWell.color }
     themes.updateValue(theme, forKey: currentThemeName)
+  }
+}
+
+extension ThemesController: NSTextViewDelegate {
+
+  /// Notification indicating a change in the selection in the sample code view.
+  ///
+  func textViewDidChangeSelection(notification: NSNotification) {
+
+      // Compute a selection choice from an array of selected tokens.
+    func determineSelection(tokens: [HighlightingToken]) -> TokenSelection {
+      switch tokens.count {
+      case 0: return .NoSelection
+      case 1: return .Selection(token: tokens[0].kind)
+      default:
+        let kind = tokens[0].kind
+        if (tokens.filter{$0.kind != kind}).count > 0 { return .AmbiguousSelection }
+        else { return .Selection(token: kind) }
+      }
+    }
+
+    if let lineMap = preferencesController?.sampleCodeView.lineMap {
+
+        // Determine the category selection and set its description.
+      let selectedRange = fromNSRange(preferencesController!.sampleCodeView.selectedRange())
+      let selection     = determineSelection(tokens(lineMap, inRange: selectedRange))
+      preferencesController?.categoryTextField.stringValue = selection.description
+      selectedTokenKind                                    = selection.highlightingTokenKind
+
+        // Update the category colour well.
+      if let tokenKind = selectedTokenKind {
+        let attributes = themeToDictionary(currentTheme)[tokenKind]!    // FIXME: this is not really nice
+        preferencesController?.categoryColorWell.color   = attributes[NSForegroundColorAttributeName]!
+        preferencesController?.categoryColorWell.enabled = true
+      } else {
+        preferencesController?.categoryColorWell.enabled = false
+      }
+    }
   }
 }
 

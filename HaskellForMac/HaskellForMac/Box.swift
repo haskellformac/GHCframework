@@ -37,8 +37,3 @@ public struct WeakApply<T> {
     self.fun = { fun($0 as S) }
   }
 }
-
-// FIXME: this should be in a general module
-func curry<R, S, T>(f: (R, S) -> T) -> (R -> S -> T) {
-  return { r in { s in f(r, s) } }
-}

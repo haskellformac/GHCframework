@@ -10,11 +10,26 @@
 import Foundation
 import GHCKit
 
-
 /// Token types distinguished during syntax highlighting.
 ///
 public enum HighlightingTokenKind {
-  case Constructor, String, Number, Keyword, LineComment, BlockComment, Other
+  case Constructor, StringLit, NumberLit, Keyword, LineComment, BlockComment, Other
+}
+
+extension HighlightingTokenKind: Printable {
+  public var description: String {
+    get {
+      switch self {
+      case .Constructor:  return "Constructor"
+      case .StringLit:    return "String constant"
+      case .NumberLit:    return "Numeric constant"
+      case .Keyword:      return "Keyword"
+      case .LineComment:  return "Comment"
+      case .BlockComment: return "Comment"
+      case .Other:        return "Other entity"
+      }
+    }
+  }
 }
 
 /// Map of kinds of highlighting tokens to the foreground colour for tokens of that kind.
@@ -32,8 +47,8 @@ let tabHighlightingAttributes
 ///
 func themeToDictionary(theme: Theme) -> ThemeDictionary {
   return [ .Constructor:  [NSForegroundColorAttributeName: theme.conword.foreground]
-         , .String:       [NSForegroundColorAttributeName: theme.string.foreground]
-         , .Number:       [NSForegroundColorAttributeName: theme.number.foreground]
+         , .StringLit:    [NSForegroundColorAttributeName: theme.string.foreground]
+         , .NumberLit:    [NSForegroundColorAttributeName: theme.number.foreground]
          , .Keyword:      [NSForegroundColorAttributeName: theme.keyword.foreground]
          , .LineComment:  [NSForegroundColorAttributeName: theme.comment.foreground]
          , .BlockComment: [NSForegroundColorAttributeName: theme.comment.foreground]
@@ -140,11 +155,11 @@ public struct HighlightingToken {
     case .Qvarid:             kind = .Other
     case .Qconid:             kind = .Constructor
 
-    case .Integer:            kind = .Number
-    case .Rational:           kind = .Number
+    case .Integer:            kind = .NumberLit
+    case .Rational:           kind = .NumberLit
 
-    case .Char:               kind = .String
-    case .String:             kind = .String
+    case .Char:               kind = .StringLit
+    case .String:             kind = .StringLit
     case .LineComment:        kind = .LineComment
     case .BlockComment:       kind = .BlockComment
     case .Other:              kind = .Other
@@ -262,9 +277,9 @@ public func rescanTokenLines(lineMap: LineTokenMap,
   } else { return lineMap }
 }
 
-/// Computes an array of tokens (and their source span) for a range of lines from a `LineTokenMap`.
+/// Computes an array of tokens (and their source span) for one line from a `LineTokenMap`.
 ///
-public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(HighlightingToken, Range<Int>)] {
+public func tokensAtLine(lineTokenMap: LineTokenMap)(line: Line) -> [(HighlightingToken, Range<Int>)] {
   if let index = lineTokenMap.startOfLine(line) {
     let tokens = lineTokenMap.infoOfLine(line)
     return map(tokens){ token in
@@ -280,6 +295,19 @@ public func tokensWithSpan(lineTokenMap: LineTokenMap)(atLine line: Line) -> [(H
   } else {
     return []
   }
+}
+
+/// Compute the tokens occuring in this character range at the underlying text storage. If even a single character of
+/// a token is in the range, we regard the token to be in the range.
+///
+public func tokens(lineTokenMap: LineTokenMap, inRange range: Range<Int>) -> [HighlightingToken] {
+
+  func tokenIsInRange(tokenWithRange: (HighlightingToken, Range<Int>)) -> Bool {
+    return tokenWithRange.1.startIndex < range.endIndex && tokenWithRange.1.endIndex > range.startIndex
+  }
+
+  let lineRange = lineTokenMap.lineRange(range)
+  return [].join(lineRange.map(tokensAtLine(lineTokenMap))).filter(tokenIsInRange).map{$0.0}
 }
 
 extension CodeView {
@@ -341,7 +369,7 @@ extension NSLayoutManager {
     }
 
       // Apply highlighting to all tokens in the affected range.
-    for (token, span) in [].join(lineRange.map(tokensWithSpan(lineTokenMap))) {
+    for (token, span) in [].join(lineRange.map(tokensAtLine(lineTokenMap))) {
       if let attributes = (textStorage?.delegate as? CodeStorageDelegate)?.themeDict[token.kind] {
         addTemporaryAttributes(attributes, forCharacterRange: toNSRange(span))
       }
