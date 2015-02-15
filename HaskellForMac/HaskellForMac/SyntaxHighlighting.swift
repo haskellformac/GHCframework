@@ -10,23 +10,31 @@
 import Foundation
 import GHCKit
 
+
 /// Token types distinguished during syntax highlighting.
 ///
 public enum HighlightingTokenKind {
-  case Constructor, StringLit, NumberLit, Keyword, LineComment, BlockComment, Other
+  case Keyword, Keysymbol, VariableWord, VariableSymbol, ConstructorWord, ConstructorSymbol,
+       StringLit, CharacterLit, NumberLit, LineComment, BlockComment, Pragma, Other
 }
 
 extension HighlightingTokenKind: Printable {
   public var description: String {
     get {
       switch self {
-      case .Constructor:  return "Constructor"
-      case .StringLit:    return "String constant"
-      case .NumberLit:    return "Numeric constant"
-      case .Keyword:      return "Keyword"
-      case .LineComment:  return "Comment"
-      case .BlockComment: return "Comment"
-      case .Other:        return "Other entity"
+      case .Keyword:           return "Keyword"
+      case .Keysymbol:         return "Reserved symbol"
+      case .VariableWord:      return "Alphanumeric variable or function"
+      case .VariableSymbol:    return "Function operator symbol"
+      case .ConstructorWord:   return "Alphanumeric data or type constructor"
+      case .ConstructorSymbol: return "Data or type constructor symbol"
+      case .StringLit:         return "String constant"
+      case .CharacterLit:      return "Character constant"
+      case .NumberLit:         return "Numeric constant"
+      case .LineComment:       return "Single line or block comment"
+      case .BlockComment:      return "Single line or block comment"
+      case .Pragma:            return "Compiler pragma"
+      case .Other:             return "Default foreground color"
       }
     }
   }
@@ -46,13 +54,19 @@ let tabHighlightingAttributes
 /// Convert a theme to a dictionary to lookup text attributes by token type.
 ///
 func themeToDictionary(theme: Theme) -> ThemeDictionary {
-  return [ .Constructor:  [NSForegroundColorAttributeName: theme.conword.foreground]
-         , .StringLit:    [NSForegroundColorAttributeName: theme.string.foreground]
-         , .NumberLit:    [NSForegroundColorAttributeName: theme.number.foreground]
-         , .Keyword:      [NSForegroundColorAttributeName: theme.keyword.foreground]
-         , .LineComment:  [NSForegroundColorAttributeName: theme.comment.foreground]
-         , .BlockComment: [NSForegroundColorAttributeName: theme.comment.foreground]
-         , .Other:        [NSForegroundColorAttributeName: theme.foreground]
+  return [ .Keyword:           [NSForegroundColorAttributeName: theme.keyword.foreground]
+         , .Keysymbol:         [NSForegroundColorAttributeName: theme.keysymbol.foreground]
+         , .VariableWord:      [NSForegroundColorAttributeName: theme.varword.foreground]
+         , .VariableSymbol:    [NSForegroundColorAttributeName: theme.varsymbol.foreground]
+         , .ConstructorWord:   [NSForegroundColorAttributeName: theme.conword.foreground]
+         , .ConstructorSymbol: [NSForegroundColorAttributeName: theme.consymbol.foreground]
+         , .StringLit:         [NSForegroundColorAttributeName: theme.string.foreground]
+         , .CharacterLit:      [NSForegroundColorAttributeName: theme.char.foreground]
+         , .NumberLit:         [NSForegroundColorAttributeName: theme.number.foreground]
+         , .LineComment:       [NSForegroundColorAttributeName: theme.comment.foreground]
+         , .BlockComment:      [NSForegroundColorAttributeName: theme.comment.foreground]
+         , .Pragma:            [NSForegroundColorAttributeName: theme.pragma.foreground]
+         , .Other:             [NSForegroundColorAttributeName: theme.foreground]
          ]
 }
 
@@ -62,13 +76,19 @@ extension Theme {
   ///
   mutating func setTokenKind(tokenKind: HighlightingTokenKind, colour: NSColor) {
     switch tokenKind {
-    case .Constructor:  self.conword.foreground = colour; self.consymbol.foreground = colour
-    case .StringLit:    self.string.foreground = colour; self.char.foreground = colour
-    case .NumberLit:    self.number.foreground = colour
-    case .Keyword:      self.keyword.foreground = colour; self.keysymbol.foreground = colour
-    case .LineComment:  self.comment.foreground = colour
-    case .BlockComment: self.comment.foreground = colour
-    case .Other:        self.varword.foreground = colour; self.varsymbol.foreground = colour
+    case .Keyword:            self.keyword.foreground   = colour
+    case .Keysymbol:          self.keysymbol.foreground = colour
+    case .VariableWord:       self.varword.foreground   = colour
+    case .VariableSymbol:     self.varsymbol.foreground = colour
+    case .ConstructorWord:    self.conword.foreground   = colour
+    case .ConstructorSymbol:  self.consymbol.foreground = colour
+    case .StringLit:          self.string.foreground    = colour
+    case .CharacterLit:       self.char.foreground      = colour
+    case .NumberLit:          self.number.foreground    = colour
+    case .LineComment:        self.comment.foreground   = colour
+    case .BlockComment:       self.comment.foreground   = colour
+    case .Pragma:             self.pragma.foreground    = colour
+    case .Other:              self.foreground           = colour
     }
   }
 }
@@ -128,55 +148,55 @@ public struct HighlightingToken {
     case .Pattern:            kind = .Keyword
     case .Ctype:              kind = .Keyword
 
-    case .Dotdot:             kind = .Keyword
-    case .Colon:              kind = .Keyword
-    case .Dcolon:             kind = .Keyword
-    case .Equal:              kind = .Keyword
-    case .Lam:                kind = .Keyword
-    case .Lcase:              kind = .Keyword
-    case .Vbar:               kind = .Keyword
-    case .Larrow:             kind = .Keyword
-    case .Rarrow:             kind = .Keyword
-    case .At:                 kind = .Keyword
-    case .Tilde:              kind = .Keyword
-    case .Tildehsh:           kind = .Keyword
-    case .Darrow:             kind = .Keyword
-    case .Minus:              kind = .Keyword
-    case .Bang:               kind = .Keyword
-    case .Star:               kind = .Keyword
-    case .Dot:                kind = .Keyword
-    case .Biglam:             kind = .Keyword
-    case .Ocurly:             kind = .Keyword
-    case .Ccurly:             kind = .Keyword
-    case .Vocurly:            kind = .Keyword
-    case .Vccurly:            kind = .Keyword
-    case .Obrack:             kind = .Keyword
-    case .Opabrack:           kind = .Keyword
-    case .Cpabrack:           kind = .Keyword
-    case .Cbrack:             kind = .Keyword
-    case .Oparen:             kind = .Keyword
-    case .Cparen:             kind = .Keyword
-    case .Oubxparen:          kind = .Keyword
-    case .Cubxparen:          kind = .Keyword
-    case .Semi:               kind = .Keyword
-    case .Comma:              kind = .Keyword
-    case .Underscore:         kind = .Keyword
-    case .Backquote:          kind = .Keyword
-    case .SimpleQuote:        kind = .Keyword
+    case .Dotdot:             kind = .Keysymbol
+    case .Colon:              kind = .Keysymbol
+    case .Dcolon:             kind = .Keysymbol
+    case .Equal:              kind = .Keysymbol
+    case .Lam:                kind = .Keysymbol
+    case .Lcase:              kind = .Keysymbol
+    case .Vbar:               kind = .Keysymbol
+    case .Larrow:             kind = .Keysymbol
+    case .Rarrow:             kind = .Keysymbol
+    case .At:                 kind = .Keysymbol
+    case .Tilde:              kind = .Keysymbol
+    case .Tildehsh:           kind = .Keysymbol
+    case .Darrow:             kind = .Keysymbol
+    case .Minus:              kind = .Keysymbol
+    case .Bang:               kind = .Keysymbol
+    case .Star:               kind = .Keysymbol
+    case .Dot:                kind = .Keysymbol
+    case .Biglam:             kind = .Keysymbol
+    case .Ocurly:             kind = .Keysymbol
+    case .Ccurly:             kind = .Keysymbol
+    case .Vocurly:            kind = .Keysymbol
+    case .Vccurly:            kind = .Keysymbol
+    case .Obrack:             kind = .Keysymbol
+    case .Opabrack:           kind = .Keysymbol
+    case .Cpabrack:           kind = .Keysymbol
+    case .Cbrack:             kind = .Keysymbol
+    case .Oparen:             kind = .Keysymbol
+    case .Cparen:             kind = .Keysymbol
+    case .Oubxparen:          kind = .Keysymbol
+    case .Cubxparen:          kind = .Keysymbol
+    case .Semi:               kind = .Keysymbol
+    case .Comma:              kind = .Keysymbol
+    case .Underscore:         kind = .Keysymbol
+    case .Backquote:          kind = .Keysymbol
+    case .SimpleQuote:        kind = .Keysymbol
 
-    case .Varsym:             kind = .Other
-    case .Consym:             kind = .Constructor
-    case .Varid:              kind = .Other
-    case .Conid:              kind = .Constructor
-    case .Qvarsym:            kind = .Other
-    case .Qconsym:            kind = .Constructor
-    case .Qvarid:             kind = .Other
-    case .Qconid:             kind = .Constructor
+    case .Varsym:             kind = .VariableSymbol
+    case .Consym:             kind = .ConstructorSymbol
+    case .Varid:              kind = .VariableWord
+    case .Conid:              kind = .ConstructorWord
+    case .Qvarsym:            kind = .VariableSymbol
+    case .Qconsym:            kind = .ConstructorSymbol
+    case .Qvarid:             kind = .VariableWord
+    case .Qconid:             kind = .ConstructorWord
 
     case .Integer:            kind = .NumberLit
     case .Rational:           kind = .NumberLit
 
-    case .Char:               kind = .StringLit
+    case .Char:               kind = .CharacterLit
     case .String:             kind = .StringLit
     case .LineComment:        kind = .LineComment
     case .BlockComment:       kind = .BlockComment
