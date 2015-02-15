@@ -270,20 +270,16 @@ extension ThemesController: NSTextViewDelegate {
 // MARK: -
 // MARK: Sample code for the preferences pane
 
-let sampleCode = "\n".join([ "-- Select any text to edit"
-                           , "-- its highlighting."
+let sampleCode = "\n".join([ "-- Select text to edit highlighting."
+                           , ""
+                           , "import Data.Complex"
                            , ""
                            , "data Maybe a = Nothing | Just a"
-//                           , ""
-//                           , "map :: (a -> b) -> [a] -> [b]"
-//                           , "map f []     = []"
-//                           , "map f (x:xs) = f x : map f xs"
                            , ""
-                           , "theAnswer :: Maybe Integer"
                            , "{-# INLINE theAnswer #-}"
-                           , "theAnswer = Just 42"
+                           , "theAnswer = Just $ magnitude c ^ 2"
+                           , "  where c = 6 :+ sqrt 6"
                            , ""
-                           , "main = putStrLn $"
-                           , "  \"The answer is\" ++"
+                           , "message = \"The answer is\" ++"
                            , "  ' ' : show theAnswer"
                            ])

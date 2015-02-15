@@ -26,7 +26,7 @@ extension HighlightingTokenKind: Printable {
       case .Keysymbol:         return "Reserved symbol"
       case .VariableWord:      return "Alphanumeric variable or function"
       case .VariableSymbol:    return "Function operator symbol"
-      case .ConstructorWord:   return "Alphanumeric data or type constructor"
+      case .ConstructorWord:   return "Alphanumeric constructor or module name"
       case .ConstructorSymbol: return "Data or type constructor symbol"
       case .StringLit:         return "String constant"
       case .CharacterLit:      return "Character constant"

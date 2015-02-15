@@ -192,7 +192,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stv-kO-qap">
+                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="stv-kO-qap">
                                             <rect key="frame" x="145" y="116" width="330" height="185"/>
                                             <clipView key="contentView" id="Lyu-8I-g83">
                                                 <rect key="frame" x="1" y="1" width="223" height="133"/>
