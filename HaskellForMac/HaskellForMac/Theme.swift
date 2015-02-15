@@ -126,6 +126,8 @@ func disabledForegroundColour(theme: Theme) -> NSColor {
 
 /// Initial set of themes.
 ///
+/// The first theme in this array is the default template for creating new themes.
+///
 let defaultThemes = [plain, inverse, solarLight, monokai]
 
 private let plain =

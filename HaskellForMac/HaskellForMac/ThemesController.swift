@@ -12,6 +12,10 @@ import Cocoa
 typealias FontChangeNotification  = NSFont -> ()
 typealias ThemeChangeNotification = Theme -> ()
 
+// Identifiers for buttons in the preferences pane
+private let kThemeListAdd    = "ThemeListAdd"
+private let kThemeListAction = "ThemeListAction"
+
 private enum TokenSelection: Printable {
   case NoSelection
   case Selection(token: HighlightingTokenKind)
@@ -226,6 +230,42 @@ extension ThemesController {
     if colorWell == preferencesController?.cursorColorWell     { theme.cursor     = colorWell.color }
     if colorWell == preferencesController?.selectionColorWell  { theme.selection  = colorWell.color }
     themes.updateValue(theme, forKey: currentThemeName)
+  }
+
+  func buttonPush(button: NSButton) {
+    if (button.identifier == kThemeListAdd) {             // Add a duplicate of the plain theme
+
+      addDuplicate(defaultThemes[0], newName: "New Theme")
+
+    } else if (button.identifier == kThemeListAction) {   // Pop up the action menu
+
+      preferencesController?.deleteThemeMenuItem.enabled = themes.count > 1
+      let loc = NSPoint(x: 0, y: CGRectGetMaxY(button.bounds))
+      preferencesController?.actionThemeMenu.popUpMenuPositioningItem(nil, atLocation: loc, inView: button)
+
+    }
+  }
+
+  func actionMenuSelect(menuItem: NSMenuItem) {
+    if menuItem == preferencesController?.duplicateThemeMenuItem {        // Duplicate the selected theme
+
+      addDuplicate(currentTheme, newName: currentTheme.name + " Copy")
+
+    } else if menuItem == preferencesController?.deleteThemeMenuItem {    // Delete the selected theme
+
+      if themes.count == 1 { return }     // There needs to be at least one theme.
+      let name = currentTheme.name
+      themeNames = themeNames.filter{$0 != name}
+      themes.removeValueForKey(name)
+
+    }
+  }
+
+  func addDuplicate(var templateTheme: Theme, newName: String) {
+    let name = nextName(newName, themeNames)
+    templateTheme.name = name
+    themes.updateValue(templateTheme, forKey: name)
+    themeNames = Array(themes.keys).sorted(<=)
   }
 }
 

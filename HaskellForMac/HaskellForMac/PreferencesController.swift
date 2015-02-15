@@ -25,16 +25,19 @@ class PreferencesController: NSWindowController {
   @IBOutlet private weak var accountToolbarItem: NSToolbarItem!
 
     // Themes pane outlets (not private so that the themes controller can access them)
-  @IBOutlet         weak var fontSizeTextField:    NSTextField!
-  @IBOutlet         weak var fontSizeStepper:      NSStepper!
-  @IBOutlet         weak var sampleCodeScrollView: NSScrollView!
-  @IBOutlet              var sampleCodeView:       CodeView!
-  @IBOutlet         weak var categoryTextField:    NSTextField!
-  @IBOutlet         weak var categoryColorWell:    NSColorWell!
-  @IBOutlet         weak var backgroundColorWell:  NSColorWell!
-  @IBOutlet         weak var invisiblesColorWell:  NSColorWell!
-  @IBOutlet         weak var cursorColorWell:      NSColorWell!
-  @IBOutlet         weak var selectionColorWell:   NSColorWell!
+  @IBOutlet         weak var fontSizeTextField:      NSTextField!
+  @IBOutlet         weak var fontSizeStepper:        NSStepper!
+  @IBOutlet         weak var sampleCodeScrollView:   NSScrollView!
+  @IBOutlet              var sampleCodeView:         CodeView!
+  @IBOutlet         weak var categoryTextField:      NSTextField!
+  @IBOutlet         weak var categoryColorWell:      NSColorWell!
+  @IBOutlet         weak var backgroundColorWell:    NSColorWell!
+  @IBOutlet         weak var invisiblesColorWell:    NSColorWell!
+  @IBOutlet         weak var cursorColorWell:        NSColorWell!
+  @IBOutlet         weak var selectionColorWell:     NSColorWell!
+  @IBOutlet              var actionThemeMenu:        NSMenu!
+  @IBOutlet         weak var duplicateThemeMenuItem: NSMenuItem!
+  @IBOutlet         weak var deleteThemeMenuItem:    NSMenuItem!
 
   @IBOutlet dynamic var themesController: ThemesController!   // Must not be private as it is used in bindings.
 
@@ -169,5 +172,13 @@ extension PreferencesController {
 
   @IBAction func updateColour(sender: NSColorWell) {
     themesController.updateColour(sender)
+  }
+
+  @IBAction func buttonPush(sender: NSButton) {
+    themesController.buttonPush(sender)
+  }
+
+  @IBAction func themeActionMenuSelect(sender: NSMenuItem) {
+    themesController.actionMenuSelect(sender)
   }
 }
