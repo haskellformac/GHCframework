@@ -126,7 +126,45 @@ func disabledForegroundColour(theme: Theme) -> NSColor {
 
 /// Initial set of themes.
 ///
-let defaultThemes = [solarLight, monokai]
+let defaultThemes = [plain, inverse, solarLight, monokai]
+
+private let plain =
+  Theme(name: "Plain",
+        foreground: NSColor.blackColor(),
+        background: NSColor.whiteColor(),
+        invisibles: NSColor.lightGrayColor(),
+        cursor:     NSColor.blackColor(),
+        selection:  NSColor.highlightColor(),
+        keyword:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        keysymbol:  ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        varword:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        varsymbol:  ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        conword:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        consymbol:  ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        string:     ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        char:       ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        number:     ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        comment:    ThemeAttributes(foreground: NSColor.blackColor(), underline: false),
+        pragma:     ThemeAttributes(foreground: NSColor.blackColor(), underline: false))
+
+private let inverse =
+  Theme(name: "Inverse",
+        foreground: NSColor.whiteColor(),
+        background: NSColor.blackColor(),
+        invisibles: NSColor.darkGrayColor(),
+        cursor:     NSColor.whiteColor(),
+        selection:  NSColor.highlightColor(),
+        keyword:    ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        keysymbol:  ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        varword:    ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        varsymbol:  ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        conword:    ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        consymbol:  ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        string:     ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        char:       ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        number:     ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        comment:    ThemeAttributes(foreground: NSColor.whiteColor(), underline: false),
+        pragma:     ThemeAttributes(foreground: NSColor.whiteColor(), underline: false))
 
 private let solarLight =
   Theme(name: "Solar Light",

@@ -51,9 +51,10 @@ class ThemesController: NSController {
     { didSet { notifyFontChange(currentFont) } }
 
     // Bindings for the theme editor
-  dynamic var themeNames:          [String]   = defaultThemes.map{$0.name}
+  dynamic var themeNames:          [String]   = defaultThemes.map{$0.name}.sorted(<=)
   dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
     { didSet { notifyThemeChange(currentTheme) } }
+//  dynamic var themeSortDescriptor: NSSortDescriptor = NSSortDescriptor(key: "self", ascending: true)
 
     /// Definitive reference for the currently available themes — the model as far as themes are concerned.
   var themes: [String: Theme] = {
@@ -260,6 +261,7 @@ extension ThemesController: NSTextViewDelegate {
         preferencesController?.categoryColorWell.color   = attributes[NSForegroundColorAttributeName]!
         preferencesController?.categoryColorWell.enabled = true
       } else {
+        preferencesController?.categoryColorWell.color   = NSColor.whiteColor()
         preferencesController?.categoryColorWell.enabled = false
       }
     }
