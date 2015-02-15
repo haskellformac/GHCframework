@@ -27,10 +27,10 @@
         <window identifier="Preferences" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="495" height="385"/>
+            <rect key="contentRect" x="196" y="240" width="495" height="383"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="495" height="385"/>
+                <rect key="frame" x="0.0" y="0.0" width="495" height="383"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="Cv5-17-gJd">
@@ -42,11 +42,11 @@
                         <tabViewItems>
                             <tabViewItem label="General" identifier="GeneralPreferences" id="6Ke-6O-Fcr">
                                 <view key="view" id="aZ1-h6-Bpw">
-                                    <rect key="frame" x="0.0" y="0.0" width="495" height="385"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="495" height="383"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r3e-fQ-VX9">
-                                            <rect key="frame" x="179" y="185" width="137" height="17"/>
+                                            <rect key="frame" x="179" y="183" width="137" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="General options TBD" id="rYa-A3-4g1">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -230,7 +230,7 @@
                                                 <constraint firstAttribute="height" constant="23" id="RBP-9c-9sX"/>
                                                 <constraint firstAttribute="width" constant="44" id="RXt-vG-IJE"/>
                                             </constraints>
-                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <action selector="updateColour:" target="-2" id="BSn-1C-F43"/>
                                             </connections>
@@ -486,7 +486,7 @@
                     </tabView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="Cv5-17-gJd" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="Bc9-Ur-YpX"/>
+                    <constraint firstItem="Cv5-17-gJd" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="-2" id="Bc9-Ur-YpX"/>
                     <constraint firstAttribute="bottom" secondItem="Cv5-17-gJd" secondAttribute="bottom" id="Sbe-iN-9D1"/>
                     <constraint firstItem="Cv5-17-gJd" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="UVn-4d-Caj"/>
                     <constraint firstAttribute="trailing" secondItem="Cv5-17-gJd" secondAttribute="trailing" id="sFw-be-l9G"/>
@@ -536,8 +536,8 @@
         <userDefaultsController representsSharedInstance="YES" id="evc-ih-bm0"/>
         <arrayController id="zOS-Kt-ysP">
             <connections>
-                <binding destination="-2" name="contentArray" keyPath="themesController.themeNames" id="0Ru-rO-UrL"/>
                 <binding destination="-2" name="selectionIndexes" keyPath="themesController.currentThemeIndexes" id="9Kq-JY-5GZ"/>
+                <binding destination="-2" name="contentArray" keyPath="themesController.themeNames" id="0Ru-rO-UrL"/>
             </connections>
         </arrayController>
     </objects>
