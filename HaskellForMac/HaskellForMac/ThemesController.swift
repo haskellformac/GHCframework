@@ -217,6 +217,9 @@ extension ThemesController {
   ///
   func updateColour(colorWell: NSColorWell) {
     var theme = self.currentTheme
+    if colorWell == preferencesController?.categoryColorWell   {
+      if let tokenKind = selectedTokenKind { theme.setTokenKind(tokenKind, colour: colorWell.color) }
+    }
     if colorWell == preferencesController?.backgroundColorWell { theme.background = colorWell.color }
     if colorWell == preferencesController?.invisiblesColorWell { theme.invisibles = colorWell.color }
     if colorWell == preferencesController?.cursorColorWell     { theme.cursor     = colorWell.color }

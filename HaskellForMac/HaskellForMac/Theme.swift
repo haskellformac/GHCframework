@@ -76,8 +76,8 @@ struct Theme {
 ///
 struct ThemeAttributes {
 //class ThemeAttributes {
-  let foreground: NSColor
-  let underline:  Bool
+  var foreground: NSColor
+  var underline:  Bool
 //  init(foreground: NSColor, underline:  Bool) { self.foreground = foreground; self.underline = underline }
 }
 

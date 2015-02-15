@@ -231,6 +231,9 @@
                                                 <constraint firstAttribute="width" constant="44" id="RXt-vG-IJE"/>
                                             </constraints>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="updateColour:" target="-2" id="BSn-1C-F43"/>
+                                            </connections>
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QNZ-8N-RhN" userLabel="Category">
                                             <rect key="frame" x="197" y="85" width="278" height="22"/>

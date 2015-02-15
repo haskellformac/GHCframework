@@ -56,6 +56,24 @@ func themeToDictionary(theme: Theme) -> ThemeDictionary {
          ]
 }
 
+extension Theme {
+
+  /// Update the theme component that corresponds to the given token kind.
+  ///
+  mutating func setTokenKind(tokenKind: HighlightingTokenKind, colour: NSColor) {
+    switch tokenKind {
+    case .Constructor:  self.conword.foreground = colour; self.consymbol.foreground = colour
+    case .StringLit:    self.string.foreground = colour; self.char.foreground = colour
+    case .NumberLit:    self.number.foreground = colour
+    case .Keyword:      self.keyword.foreground = colour; self.keysymbol.foreground = colour
+    case .LineComment:  self.comment.foreground = colour
+    case .BlockComment: self.comment.foreground = colour
+    case .Other:        self.varword.foreground = colour; self.varsymbol.foreground = colour
+    }
+  }
+}
+
+
 /// Tokens for syntax highlighting.
 ///
 public struct HighlightingToken {
