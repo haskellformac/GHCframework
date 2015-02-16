@@ -9,10 +9,13 @@
 import Cocoa
 
 
+let defaultFontName: String = "Menlo-Regular"
+let defaultFontSize: Int    = 13
+
 typealias FontChangeNotification  = NSFont -> ()
 typealias ThemeChangeNotification = Theme -> ()
 
-// Identifiers for buttons in the preferences pane
+  // Identifiers for buttons in the preferences pane
 private let kThemeListAdd    = "ThemeListAdd"
 private let kThemeListAction = "ThemeListAction"
 
@@ -47,12 +50,25 @@ class ThemesController: NSController {
     // Available once the preferences window has been loaded (for access to the views of the theme tab)
   weak var preferencesController: PreferencesController?
 
-    // Bindings for the font selection: font popup button & combo box for the size
-  dynamic var availableFonts:  [String] = ["Menlo-Regular"]
-  dynamic var currentFontName: String   = "Menlo-Regular"
-    { didSet { notifyFontChange(currentFont) } }
-  dynamic var currentFontSize: Int      = 13
-    { didSet { notifyFontChange(currentFont) } }
+    // Bindings for the font selection: font popup button & combo box for the size.
+    //
+    // NB: We need to persist to defaults here as we only want to set the name or size depending on what changed; 
+    //     otherwise, we'll get excessive change notifications.
+  dynamic var availableFonts:  [String] = [defaultFontName]
+  dynamic var currentFontName: String   = defaultFontName
+    { didSet {
+      if oldValue != currentFontName {
+        notifyFontChange(currentFont)
+        NSUserDefaults.standardUserDefaults().setObject(currentFontName, forKey: kPreferenceFontName)
+      }
+    } }
+  dynamic var currentFontSize: Int      = defaultFontSize
+    { didSet {
+      if oldValue != currentFontSize {
+        notifyFontChange(currentFont)
+        NSUserDefaults.standardUserDefaults().setObject(currentFontSize, forKey: kPreferenceFontSize)
+      }
+    } }
 
     // Bindings for the theme editor. (Initial values will be overridden when themes preferences are read.)
   dynamic var themeNames:          [String]   = []
@@ -78,7 +94,7 @@ class ThemesController: NSController {
     // Computed values.
   var currentFont: NSFont {
     get { return NSFont(name: currentFontName, size: CGFloat(currentFontSize))
-                 ?? NSFont(name: "Menlo-Regular", size: 13)! }
+                 ?? NSFont(name: defaultFontName, size: CGFloat(defaultFontSize))! }
   }
   var currentThemeName: String {
     get {
@@ -139,6 +155,12 @@ class ThemesController: NSController {
       if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
       else { currentThemeIndexes = NSIndexSet(index: 0) }
     } else { currentThemeIndexes = NSIndexSet(index: 0) }
+
+      // Register for changes in user defaults.
+    NSNotificationCenter.defaultCenter().addObserver(self,
+                                                     selector: "userDefaultsDidChange:",
+                                                     name: NSUserDefaultsDidChangeNotification,
+                                                     object: NSUserDefaults.standardUserDefaults())
   }
 
   /// Initialisation after the preferences window has been loaded.
@@ -194,6 +216,16 @@ class ThemesController: NSController {
       availableFonts = fonts as [String]
     }
   }
+
+  deinit {
+    NSNotificationCenter.defaultCenter().removeObserver(self)
+  }
+
+  func userDefaultsDidChange(notification: NSNotification) {
+    currentFontName = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceFontName) ?? defaultFontName
+    currentFontSize = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceFontSize)
+  }
+
 }
 
 
@@ -227,7 +259,7 @@ extension ThemesController {
 
       // Prune stale notification callbacks.
     fontChangeNotifications = fontChangeNotifications.filter{ $0.unbox != nil }
-  }
+}
 
   /// Invoke all register callbacks waiting for theme changes.
   ///

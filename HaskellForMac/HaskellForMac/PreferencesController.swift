@@ -52,6 +52,9 @@ class PreferencesController: NSWindowController {
   override class func initialize() {
     let defaultValues = [ kPreferenceIndentationWidth:   2
                         , kPreferenceExternalTextEditor: ""    // use the default application by file extension
+                        , kPreferenceFontName:           defaultFontName
+                        , kPreferenceFontSize:           defaultFontSize
+//                        , kPreferenceThemeName:              // initialsed in ThemesController
 //                        , kPreferenceThemes:                 // initialsed in ThemesController
                         , kPreferenceEnableCloud:        false
                         , kPreferenceGHCLogLevel:        0

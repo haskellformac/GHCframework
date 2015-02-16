@@ -13,6 +13,8 @@ import Foundation
 
 let kPreferenceIndentationWidth   = "IndentationWidth"
 let kPreferenceExternalTextEditor = "ExternalTextEditor"
+let kPreferenceFontName           = "FontName"
+let kPreferenceFontSize           = "FontSize"
 let kPreferenceThemes             = "Themes"
 let kPreferenceThemeName          = "ThemeName"
 let kPreferenceEnableCloud        = "EnableCloud"
@@ -24,7 +26,10 @@ let kPreferenceCloudLogLevel      = "CloudLogLevel"           // Must match the 
 extension Swift {
   class var swift_kPreferenceIndentationWidth:   String { get { return kPreferenceIndentationWidth } }
   class var swift_kPreferenceExternalTextEditor: String { get { return kPreferenceExternalTextEditor } }
+  class var swift_kPreferenceFontName:           String { get { return kPreferenceFontName } }
+  class var swift_kPreferenceFontSize:           String { get { return kPreferenceFontSize } }
   class var swift_kPreferenceThemes:             String { get { return kPreferenceThemes } }
+  class var swift_kPreferenceThemeName:          String { get { return kPreferenceThemeName } }
   class var swift_kPreferenceEnableCloud:        String { get { return kPreferenceEnableCloud } }
   class var swift_kPreferenceUsername:           String { get { return kPreferenceUsername } }
   class var swift_kPreferenceGHCLogLevel:        String { get { return kPreferenceGHCLogLevel } }

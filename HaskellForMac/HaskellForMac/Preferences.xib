@@ -90,8 +90,12 @@
                                                 </menu>
                                             </popUpButtonCell>
                                             <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="themesController.currentFontName" previousBinding="JtI-e4-5QA" id="Sfy-jq-ObA">
+                                                    <dictionary key="options">
+                                                        <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                                    </dictionary>
+                                                </binding>
                                                 <binding destination="-2" name="contentValues" keyPath="themesController.availableFonts" id="JtI-e4-5QA"/>
-                                                <binding destination="-2" name="selectedValue" keyPath="themesController.currentFontName" previousBinding="JtI-e4-5QA" id="gpb-nG-vcM"/>
                                             </connections>
                                         </popUpButton>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ldG-QS-Rlb" userLabel="Font Size">
