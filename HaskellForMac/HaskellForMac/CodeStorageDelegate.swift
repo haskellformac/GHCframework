@@ -65,7 +65,7 @@ final class CodeStorageDelegate: NSObject {
   func newThemeForTextView(theme: Theme) {
 
       // Convert the theme to a token dictionary for fast lookup.
-    themeDict = themeToDictionary(theme)
+    themeDict = themeToThemeDictionary(theme)
 
       // Set the background colour and re-apply highlighting on the associated text view.
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {

@@ -50,7 +50,7 @@ class HighlightingTests: XCTestCase {
     }
 
     // Initialisation tests
-    XCTAssertEqual(tokenMap.lastLine, 1)
+    XCTAssertEqual(tokenMap.lastLine, Line(1))
     let line1Info = tokenMap.infoOfLine(1)
     XCTAssertEqual(line1Info.count, 3)
     XCTAssertEqual(line1Info[0], answerToken)
@@ -58,7 +58,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(line1Info[2], n42Token)
 
     // Tokenisation tests
-    let generateTokens = tokensWithSpan(tokenMap)
+    let generateTokens = tokensAtLine(tokenMap)
     let allTokens      = [].join((1...1).map(generateTokens))
     XCTAssertTrue(map(allTokens){ t in let (a, _b) = t; return a } == [answerToken, equalToken, n42Token])
     func snd<S, T>(pair: (S, snd: T)) -> T { return pair.snd }
@@ -84,7 +84,7 @@ class HighlightingTests: XCTestCase {
       [answerToken, equalToken, n42Token, commentToken]
     }
 
-    XCTAssertEqual(tokenMap.lastLine, 2)
+    XCTAssertEqual(tokenMap.lastLine, Line(2))
     let line1Info = tokenMap.infoOfLine(1)
     XCTAssertEqual(line1Info.count, 2)
     XCTAssertEqual(line1Info[0], answerToken)
@@ -95,7 +95,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(line2Info[1], commentToken)
 
     // Tokenisation tests
-    let generateTokens = tokensWithSpan(tokenMap)
+    let generateTokens = tokensAtLine(tokenMap)
     let allTokens      = [].join((1...2).map(generateTokens))
     XCTAssertTrue(map(allTokens){ t in let (a, _b) = t; return a } == [answerToken, equalToken, n42Token, commentToken])
     func snd<S, T>(pair: (S, snd: T)) -> T { return pair.snd }
@@ -123,7 +123,7 @@ class HighlightingTests: XCTestCase {
       [answerToken, equalToken, n42Token, commentToken]
     }
 
-    XCTAssertEqual(tokenMap.lastLine, 3)
+    XCTAssertEqual(tokenMap.lastLine, Line(3))
     let line1Info = tokenMap.infoOfLine(1)
     XCTAssertEqual(line1Info.count, 2)
     XCTAssertEqual(line1Info[0], answerToken)
@@ -137,7 +137,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(line3Info[0], commentToken)
 
     // Tokenisation tests
-    let generateTokens = tokensWithSpan(tokenMap)
+    let generateTokens = tokensAtLine(tokenMap)
     XCTAssertEqual([].join((1...1).map(generateTokens)).count, 2)
     XCTAssertEqual([].join((2...2).map(generateTokens)).count, 2)
     XCTAssertEqual([].join((3...3).map(generateTokens)).count, 1)
@@ -154,13 +154,44 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(t3, "{- Yo!\n")
     let t4 = program[snd(allTokens[4])]
     XCTAssertEqual(t4, "cool -}")
+  }
 }
 
-//    func testPerformanceExample() {
-//        // This is an example of a performance test case.
-//        self.measureBlock() {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
+class ThemeTests: XCTestCase {
 
+  override func setUp() {
+    super.setUp()
+    // Put setup code here. This method is called before the invocation of each test method in the class.
+  }
+
+  override func tearDown() {
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    super.tearDown()
+  }
+
+  func test_themeAttributeSerialisation() {
+
+    func themeAttributeRoundTrip(theme: ThemeAttributes) -> ThemeAttributes {
+      return dictionaryToThemeAttributes(themeAttributesToDictionary(theme))
+    }
+
+    let solarLightKeyColour =
+      ThemeAttributes(foreground: NSColor(SRGBRed:  41/255, green:  66/255, blue: 119/255, alpha: 1), underline: false)
+    XCTAssertEqual(solarLightKeyColour, themeAttributeRoundTrip(solarLightKeyColour))
+  }
+
+  func test_themeSerialisation() {
+
+    func themeRoundTrip(theme: Theme) -> Theme {
+      return dictionaryToTheme(themeToDictionary(theme))
+    }
+
+    XCTAssertEqual(defaultThemes[0], themeRoundTrip(defaultThemes[0]))
+    XCTAssertEqual(defaultThemes[1], themeRoundTrip(defaultThemes[1]))
+    XCTAssertEqual(defaultThemes[2], themeRoundTrip(defaultThemes[2]))
+    XCTAssertEqual(defaultThemes[3], themeRoundTrip(defaultThemes[3]))
+    XCTAssertEqual(defaultThemes, defaultThemes.map(themeRoundTrip))
+  }
 }
+
+

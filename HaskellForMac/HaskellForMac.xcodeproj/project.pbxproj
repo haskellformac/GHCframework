@@ -91,6 +91,7 @@
 		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
 		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
 		E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CFFEA119F729B600356065 /* ResultPopover.xib */; };
+		E7E16B801A917192001BFA13 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */; };
 		E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E5DE9B19E4FD30008A101B /* MACAddress.m */; };
 		E7EC45831A776BA0004AFA98 /* ValidatingToolbarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */; };
 		E7ED6896198FAF4100A1E8FE /* TextEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7ED6895198FAF4100A1E8FE /* TextEditor.xib */; };
@@ -407,6 +408,7 @@
 				E7258C4B1983CB72004789CF /* CabalKit.framework in Frameworks */,
 				E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */,
 				E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */,
+				E7E16B801A917192001BFA13 /* Crashlytics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1147,7 +1149,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Crashlytics.framework/run 149e2f1c071531ba90e5d1baef11804ef2d0f2e9 ede29a60dbb0fb982f7150eaba8d906091f92d232c47a32de4e4a62901b363fb";
+			shellScript = "if [ \"Release\" = \"${CONFIGURATION}\"]; then\n  echo \"Running Crashlytics to upload symbols\"\n  ./Crashlytics.framework/run 149e2f1c071531ba90e5d1baef11804ef2d0f2e9 ede29a60dbb0fb982f7150eaba8d906091f92d232c47a32de4e4a62901b363fb\nfi";
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1922,9 +1924,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(PROJECT_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1951,9 +1952,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(PROJECT_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "HaskellForMac/HaskellForMac-Prefix.pch";
 				INFOPLIST_FILE = "HaskellForMacTests/HaskellForMacTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";

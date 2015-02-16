@@ -52,10 +52,11 @@ class PreferencesController: NSWindowController {
   override class func initialize() {
     let defaultValues = [ kPreferenceIndentationWidth:   2
                         , kPreferenceExternalTextEditor: ""    // use the default application by file extension
-                        , kPreferenceEnableCloud: false
-                        , kPreferenceGHCLogLevel: 0
-                        , kPreferenceSpriteKitLogLevel: 0
-                        , kPreferenceCloudLogLevel: 0
+//                        , kPreferenceThemes:                 // initialsed in ThemesController
+                        , kPreferenceEnableCloud:        false
+                        , kPreferenceGHCLogLevel:        0
+                        , kPreferenceSpriteKitLogLevel:  0
+                        , kPreferenceCloudLogLevel:      0
                         ]
     NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
     NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
@@ -74,9 +75,12 @@ class PreferencesController: NSWindowController {
   override func awakeFromNib() {
     super.awakeFromNib()
 
-      // Get rid of the Cloud menu if the cloud is disabled.
+      // We need to initialise some state from preferences right away, as `windowDidLoad()` is too late for that. The
+      // Preferences window is not in the main nib and the user will usually encounter these settings earlier during
+      // use.
       //
-      // NB: `windowDidLoad()` is too late for that as the Preferences window is not in the main nib.
+
+      // Get rid of the Cloud menu if the cloud is disabled.
     cloudMenu.hidden = !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud)
   }
 

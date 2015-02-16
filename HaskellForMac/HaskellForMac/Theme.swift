@@ -9,11 +9,36 @@
 import Foundation
 
 
+extension NSUserDefaults {
+
+  func setColor(color: NSColor, forKey key: String) {
+    setObject(NSArchiver.archivedDataWithRootObject(color), forKey:key)
+  }
+
+  func setThemes(themes: [Theme], forKey key: String) {
+    let themeArray = themes.map{themeToDictionary($0)}
+    setObject(themeArray, forKey: key)
+  }
+
+  func colorForKey(key: NSString) -> NSColor? {
+    if let data = dataForKey(key) {
+      return NSUnarchiver.unarchiveObjectWithData(data) as? NSColor
+    } else { return nil }
+  }
+
+  func themesForKey(key: NSString) -> [Theme] {
+    if let dicts = objectForKey(key) as? [[String: AnyObject]] {
+      return dicts.map{dictionaryToTheme($0)}
+    } else { return defaultThemes }
+  }
+}
+
+
 /// Text properties varying by theme.
 ///
 /// NB: Needs to be a class inheriting from `NSObject` to be able to use the type in bindings to the preferences pane.
 ///
-struct Theme {
+public struct Theme {
   var name:       String
   var foreground: NSColor    // Default foreground colour
   var background: NSColor    // Background colour
@@ -72,13 +97,116 @@ struct Theme {
 //  }
 }
 
+extension Theme: Equatable {}
+
+public func ==(lhs: Theme, rhs: Theme) -> Bool {
+
+  // FIXME: Broken up for swiftc's type checker's benefit *sigh* (Xcode 6.1.1)
+  let firstPart = lhs.name == rhs.name && lhs.foreground <==> rhs.foreground && lhs.background <==> rhs.background &&
+    lhs.invisibles <==> rhs.invisibles && lhs.cursor <==> rhs.cursor && lhs.selection <==> rhs.selection
+  let secondPart = lhs.keyword == rhs.keyword && lhs.keysymbol == rhs.keysymbol && lhs.varword == rhs.varword &&
+    lhs.varsymbol == rhs.varsymbol && lhs.conword == rhs.conword && lhs.consymbol == rhs.consymbol
+  return  firstPart && secondPart &&
+    lhs.string == rhs.string && lhs.char == rhs.char && lhs.number == rhs.number && lhs.comment == rhs.comment &&
+    lhs.pragma == rhs.pragma
+}
+
+public func themeToDictionary(theme: Theme) -> [String: AnyObject] {
+  return Dictionary(dictionaryLiteral: ("name",       theme.name)
+                                     , ("foreground", NSArchiver.archivedDataWithRootObject(theme.foreground))
+                                     , ("background", NSArchiver.archivedDataWithRootObject(theme.background))
+                                     , ("invisibles", NSArchiver.archivedDataWithRootObject(theme.invisibles))
+                                     , ("cursor",     NSArchiver.archivedDataWithRootObject(theme.cursor))
+                                     , ("selection",  NSArchiver.archivedDataWithRootObject(theme.selection))
+                                     , ("keyword",    themeAttributesToDictionary(theme.keyword))
+                                     , ("keysymbol",  themeAttributesToDictionary(theme.keysymbol))
+                                     , ("varword",    themeAttributesToDictionary(theme.varword))
+                                     , ("varsymbol",  themeAttributesToDictionary(theme.varsymbol))
+                                     , ("conword",    themeAttributesToDictionary(theme.conword))
+                                     , ("consymbol",  themeAttributesToDictionary(theme.consymbol))
+                                     , ("string",     themeAttributesToDictionary(theme.string))
+                                     , ("char",       themeAttributesToDictionary(theme.char))
+                                     , ("number",     themeAttributesToDictionary(theme.number))
+                                     , ("comment",    themeAttributesToDictionary(theme.comment))
+                                     , ("pragma",     themeAttributesToDictionary(theme.pragma))
+                                     )
+}
+
+public func dictionaryToTheme(dict: [String: AnyObject]) -> Theme {
+  let name       = (dict["name"] as? String) ?? "No Name"
+  let foreground = unarchiveNSColor(dict["foreground"])
+  let background = unarchiveNSColor(dict["background"])
+  let invisibles = unarchiveNSColor(dict["invisibles"])
+  let cursor     = unarchiveNSColor(dict["cursor"])
+  let selection  = unarchiveNSColor(dict["selection"])
+  let keyword    = dictionaryToThemeAttributes((dict["keyword"] as? [String: AnyObject]) ?? [:])
+  let keysymbol  = dictionaryToThemeAttributes((dict["keysymbol"] as? [String: AnyObject]) ?? [:])
+  let varword    = dictionaryToThemeAttributes((dict["varword"] as? [String: AnyObject]) ?? [:])
+  let varsymbol  = dictionaryToThemeAttributes((dict["varsymbol"] as? [String: AnyObject]) ?? [:])
+  let conword    = dictionaryToThemeAttributes((dict["conword"] as? [String: AnyObject]) ?? [:])
+  let consymbol  = dictionaryToThemeAttributes((dict["consymbol"] as? [String: AnyObject]) ?? [:])
+  let string     = dictionaryToThemeAttributes((dict["string"] as? [String: AnyObject]) ?? [:])
+  let char       = dictionaryToThemeAttributes((dict["char"] as? [String: AnyObject]) ?? [:])
+  let number     = dictionaryToThemeAttributes((dict["number"] as? [String: AnyObject]) ?? [:])
+  let comment    = dictionaryToThemeAttributes((dict["comment"] as? [String: AnyObject]) ?? [:])
+  let pragma     = dictionaryToThemeAttributes((dict["pragma"] as? [String: AnyObject]) ?? [:])
+  return Theme( name: name
+              , foreground: foreground
+              , background: background
+              , invisibles: invisibles
+              , cursor: cursor
+              , selection: selection
+              , keyword: keyword
+              , keysymbol: keysymbol
+              , varword: varword
+              , varsymbol: varsymbol
+              , conword: conword
+              , consymbol: consymbol
+              , string: string
+              , char: char
+              , number: number
+              , comment: comment
+              , pragma: pragma
+              )
+}
+
 /// The attributes that are determined by a theme for each syntactic element.
 ///
-struct ThemeAttributes {
-//class ThemeAttributes {
+public struct ThemeAttributes {
   var foreground: NSColor
   var underline:  Bool
-//  init(foreground: NSColor, underline:  Bool) { self.foreground = foreground; self.underline = underline }
+
+  // Explicit as we otherwise cannot use it in another module...
+  public init(foreground: NSColor, underline: Bool) {self.foreground = foreground; self.underline = underline}
+}
+
+extension ThemeAttributes: Equatable {}
+
+public func ==(lhs: ThemeAttributes, rhs: ThemeAttributes) -> Bool {
+  return lhs.foreground <==> rhs.foreground && lhs.underline == rhs.underline
+}
+
+infix operator <==> { precedence 130 }
+
+func <==>(lhs: NSColor, rhs: NSColor) -> Bool {
+  return lhs.colorUsingColorSpace(NSColorSpace.genericRGBColorSpace()) == rhs.colorUsingColorSpace(NSColorSpace.genericRGBColorSpace())
+}
+
+public func themeAttributesToDictionary(attributes: ThemeAttributes) -> [String: AnyObject] {
+  return Dictionary(dictionaryLiteral: ("foreground", NSArchiver.archivedDataWithRootObject(attributes.foreground))
+                                     , ("underline",  attributes.underline))
+}
+
+public func dictionaryToThemeAttributes(dict: [String: AnyObject]) -> ThemeAttributes {
+  let foreground = unarchiveNSColor(dict["foreground"])
+  let underline  = (dict["underline"] as? Bool) ?? false
+  return ThemeAttributes(foreground: foreground, underline: underline)
+}
+
+func unarchiveNSColor(obj: AnyObject?) -> NSColor {
+  if let data = obj as? NSData {
+    return (NSUnarchiver.unarchiveObjectWithData(data) as? NSColor) ?? NSColor.whiteColor()
+  } else { return NSColor.whiteColor() }
 }
 
 /// Derive a gutter colour from the background colour of a theme.
@@ -128,7 +256,7 @@ func disabledForegroundColour(theme: Theme) -> NSColor {
 ///
 /// The first theme in this array is the default template for creating new themes.
 ///
-let defaultThemes = [plain, inverse, solarLight, monokai]
+public let defaultThemes = [plain, inverse, solarLight, monokai]
 
 private let plain =
   Theme(name: "Plain",

@@ -53,7 +53,7 @@ let tabHighlightingAttributes
 
 /// Convert a theme to a dictionary to lookup text attributes by token type.
 ///
-func themeToDictionary(theme: Theme) -> ThemeDictionary {
+func themeToThemeDictionary(theme: Theme) -> ThemeDictionary {
   return [ .Keyword:           [NSForegroundColorAttributeName: theme.keyword.foreground]
          , .Keysymbol:         [NSForegroundColorAttributeName: theme.keysymbol.foreground]
          , .VariableWord:      [NSForegroundColorAttributeName: theme.varword.foreground]

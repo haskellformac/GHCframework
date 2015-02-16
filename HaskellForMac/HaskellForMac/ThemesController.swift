@@ -54,19 +54,23 @@ class ThemesController: NSController {
   dynamic var currentFontSize: Int      = 13
     { didSet { notifyFontChange(currentFont) } }
 
-    // Bindings for the theme editor
-  dynamic var themeNames:          [String]   = defaultThemes.map{$0.name}.sorted(<=)
-  dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet(index: 0)
-    { didSet { notifyThemeChange(currentTheme) } }
-//  dynamic var themeSortDescriptor: NSSortDescriptor = NSSortDescriptor(key: "self", ascending: true)
+    // Bindings for the theme editor. (Initial values will be overridden when themes preferences are read.)
+  dynamic var themeNames:          [String]   = []
+  dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet()
+    { didSet {
+      if currentThemeIndexes.count > 0 { notifyThemeChange(currentTheme) }
+    } }
 
     /// Definitive reference for the currently available themes — the model as far as themes are concerned.
-  var themes: [String: Theme] = {
-      var themes: [String: Theme] = [:]
-      for theme in defaultThemes {themes.updateValue(theme, forKey: theme.name)}
-      return themes
-    }()
-    { didSet { notifyThemeChange(currentTheme) } }
+    /// NB: Initialised by the `PreferencesController`.
+  var themes: [String: Theme] = [:]
+    { didSet {
+      if themes.count > 0 && currentThemeIndexes.count > 0 {  // Only after initialisation is finished!
+        notifyThemeChange(currentTheme)                                             // Update UI
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        userDefaults.setThemes(Array(themes.values), forKey: kPreferenceThemes)     // Archive to NSUserDefaults
+      }
+    } }
 
     /// The token category currently selected for editing if any.
   var selectedTokenKind: HighlightingTokenKind?
@@ -90,16 +94,19 @@ class ThemesController: NSController {
     get { return themes[currentThemeName] ?? defaultThemes[0] }
   }
 
-    /// Registered notifications.
-    ///
-    /// NB: The call back functions are weak references, they may go at any time, which implicitly unregisters them.
-    ///
+  /// Registered notifications.
+  ///
+  /// NB: The call back functions are weak references, they may go at any time, which implicitly unregisters them.
+  ///
   private var fontChangeNotifications:  [WeakApply<FontChangeNotification>]  = []
   private var themeChangeNotifications: [WeakApply<ThemeChangeNotification>] = []
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
+
+  /// Ugly hack — see `setup()`.
+  private var initialThemeName: String = ""
 
 
   // MARK: -
@@ -114,6 +121,25 @@ class ThemesController: NSController {
 
   // MARK: -
   // MARK: Controller configuration
+
+  override func awakeFromNib() {
+    super.awakeFromNib()
+
+      // Load themes — we need them independent of whether or not the preferences window is going to be used.
+    let initialThemes              = NSUserDefaults.standardUserDefaults().themesForKey(kPreferenceThemes)
+    var theThemes: [String: Theme] = [:]
+    for theme in initialThemes {theThemes.updateValue(theme, forKey: theme.name)}
+    themes = theThemes
+
+      // Initialise themes data for the table view with theme names.
+    themeNames = Array(themes.keys).sorted(<=)
+    if let let themeName = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceThemeName) {
+      initialThemeName = themeName
+      let themeIndex = (themeNames as NSArray).indexOfObject(themeName)
+      if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+      else { currentThemeIndexes = NSIndexSet(index: 0) }
+    } else { currentThemeIndexes = NSIndexSet(index: 0) }
+  }
 
   /// Initialisation after the preferences window has been loaded.
   ///
@@ -130,6 +156,12 @@ class ThemesController: NSController {
 
       // Get the initial list of available fonts.
     updateAvailableFonts()
+
+      // This is ugly! We do set `currentThemeIndexes` in `awakeFromNib()`, but the `NSArrayController` hooked up to the
+      // table view in the themes preferences pane does reset `currentThemeIndexes` during its initialisation. Hence,
+      // we need to set `currentThemeIndexes` here again.
+    let themeIndex = (themeNames as NSArray).indexOfObject(initialThemeName)
+    if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
 
       // Tokenise the sample code by running a temporary Haskell session.
     let handler: DiagnosticsHandler = { unusedArg in return }
@@ -207,6 +239,9 @@ extension ThemesController {
 
       // Prune stale notification callbacks.
     themeChangeNotifications = themeChangeNotifications.filter{ $0.unbox != nil }
+
+      // Persist current theme name in preferences.
+    NSUserDefaults.standardUserDefaults().setObject(currentThemeName, forKey: kPreferenceThemeName)
   }
 
   /// Ensure that the colour wells in the themes pane show the colours of the given theme.
@@ -297,7 +332,7 @@ extension ThemesController: NSTextViewDelegate {
 
         // Update the category colour well.
       if let tokenKind = selectedTokenKind {
-        let attributes = themeToDictionary(currentTheme)[tokenKind]!    // FIXME: this is not really nice
+        let attributes = themeToThemeDictionary(currentTheme)[tokenKind]!    // FIXME: this is not really nice
         preferencesController?.categoryColorWell.color   = attributes[NSForegroundColorAttributeName]!
         preferencesController?.categoryColorWell.enabled = true
       } else {

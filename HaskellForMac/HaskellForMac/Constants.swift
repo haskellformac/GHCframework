@@ -13,6 +13,8 @@ import Foundation
 
 let kPreferenceIndentationWidth   = "IndentationWidth"
 let kPreferenceExternalTextEditor = "ExternalTextEditor"
+let kPreferenceThemes             = "Themes"
+let kPreferenceThemeName          = "ThemeName"
 let kPreferenceEnableCloud        = "EnableCloud"
 let kPreferenceUsername           = "Username"
 let kPreferenceGHCLogLevel        = "GHCLogLevel"             // Must match the key used by 'GHCKit'.
@@ -22,6 +24,7 @@ let kPreferenceCloudLogLevel      = "CloudLogLevel"           // Must match the 
 extension Swift {
   class var swift_kPreferenceIndentationWidth:   String { get { return kPreferenceIndentationWidth } }
   class var swift_kPreferenceExternalTextEditor: String { get { return kPreferenceExternalTextEditor } }
+  class var swift_kPreferenceThemes:             String { get { return kPreferenceThemes } }
   class var swift_kPreferenceEnableCloud:        String { get { return kPreferenceEnableCloud } }
   class var swift_kPreferenceUsername:           String { get { return kPreferenceUsername } }
   class var swift_kPreferenceGHCLogLevel:        String { get { return kPreferenceGHCLogLevel } }
