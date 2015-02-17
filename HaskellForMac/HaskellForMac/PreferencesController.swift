@@ -189,3 +189,12 @@ extension PreferencesController {
     themesController.actionMenuSelect(sender)
   }
 }
+
+extension PreferencesController: NSTableViewDelegate {
+    
+  // NB: This action is only called if the *table view*'s delegate is set to be the present object!
+  @IBAction func themeNameEdited(sender: NSTextField) {
+    themesController.nameEdited(sender)
+  }
+
+}

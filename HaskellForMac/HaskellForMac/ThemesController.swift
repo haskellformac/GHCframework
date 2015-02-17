@@ -70,7 +70,8 @@ class ThemesController: NSController {
       }
     } }
 
-    // Bindings for the theme editor. (Initial values will be overridden when themes preferences are read.)
+    // Bindings for the theme editor. (`themeNames` is updated by `themes`' property observer as well as a binding from
+    // the `NSArrayController` from the theme preferences NIB.)
   dynamic var themeNames:          [String]   = []
   dynamic var currentThemeIndexes: NSIndexSet = NSIndexSet()
     { didSet {
@@ -81,10 +82,13 @@ class ThemesController: NSController {
     /// NB: Initialised by the `PreferencesController`.
   var themes: [String: Theme] = [:]
     { didSet {
-      if themes.count > 0 && currentThemeIndexes.count > 0 {  // Only after initialisation is finished!
+      themeNames = Array(themes.keys).sorted(<=)                      // Derived view model
+      if themes.count > 0 && currentThemeIndexes.count > 0 {          // Only after initialisation is finished!
+
         notifyThemeChange(currentTheme)                                             // Update UI
         let userDefaults = NSUserDefaults.standardUserDefaults()
         userDefaults.setThemes(Array(themes.values), forKey: kPreferenceThemes)     // Archive to NSUserDefaults
+
       }
     } }
 
@@ -148,7 +152,6 @@ class ThemesController: NSController {
     themes = theThemes
 
       // Initialise themes data for the table view with theme names.
-    themeNames = Array(themes.keys).sorted(<=)
     if let let themeName = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceThemeName) {
       initialThemeName = themeName
       let themeIndex = (themeNames as NSArray).indexOfObject(themeName)
@@ -322,7 +325,6 @@ extension ThemesController {
 
       if themes.count == 1 { return }     // There needs to be at least one theme.
       let name = currentTheme.name
-      themeNames = themeNames.filter{$0 != name}
       themes.removeValueForKey(name)
 
     }
@@ -332,7 +334,25 @@ extension ThemesController {
     let name = nextName(newName, themeNames)
     templateTheme.name = name
     themes.updateValue(templateTheme, forKey: name)
-    themeNames = Array(themes.keys).sorted(<=)
+  }
+
+  func nameEdited(textField: NSTextField) {
+    var theme   = currentTheme
+    let oldName = theme.name
+    let newName = textField.stringValue
+    if oldName != newName {
+
+      let disambiguatedNewName = nextName(newName, themeNames)
+      theme.name               = disambiguatedNewName
+      themes.removeValueForKey(oldName)
+      themes.updateValue(theme, forKey: disambiguatedNewName)
+
+        // `themes`' property observer will have set `themeNames`, but with the index of the theme may have changed due
+        // to sorting with the new name.
+      let themeIndex = (themeNames as NSArray).indexOfObject(disambiguatedNewName)
+      if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+
+    }
   }
 }
 
