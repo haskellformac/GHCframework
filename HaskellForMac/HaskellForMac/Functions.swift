@@ -8,6 +8,9 @@
 
 import Foundation
 
+
+public func const<S, T>(s: S)(t: T) -> S { return s }
+
 infix operator .. { associativity right }
 
 public func ..<R, S, T>(f: S -> T, g: R -> S) -> (R -> T) {

@@ -85,12 +85,13 @@
 		E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */; };
 		E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */; };
 		E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C9F0201A6FD9B900913B76 /* Geometry.swift */; };
-		E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */; };
 		E7CC640119999C3E00D8E1CD /* GHCSeverity.h in Headers */ = {isa = PBXBuildFile; fileRef = E7CC640019999C3E00D8E1CD /* GHCSeverity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CC64021999B4DD00D8E1CD /* ContextController.swift */; };
 		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
 		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
 		E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CFFEA119F729B600356065 /* ResultPopover.xib */; };
+		E7D53CED1A92DE2E0000A3C5 /* ProjectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */; };
+		E7D53CF11A93132D0000A3C5 /* ProjectItemGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */; };
 		E7E16B801A917192001BFA13 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */; };
 		E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E5DE9B19E4FD30008A101B /* MACAddress.m */; };
 		E7EC45831A776BA0004AFA98 /* ValidatingToolbarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */; };
@@ -345,6 +346,8 @@
 		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
 		E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundResultStorage.swift; sourceTree = "<group>"; };
 		E7CFFEA119F729B600356065 /* ResultPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultPopover.xib; sourceTree = "<group>"; };
+		E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectItem.swift; sourceTree = "<group>"; };
+		E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectItemGroups.swift; sourceTree = "<group>"; };
 		E7E5DE9B19E4FD30008A101B /* MACAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MACAddress.m; sourceTree = "<group>"; };
 		E7E5DE9D19E4FD63008A101B /* MACAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MACAddress.h; sourceTree = "<group>"; };
 		E7EC45821A776BA0004AFA98 /* ValidatingToolbarItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatingToolbarItem.swift; sourceTree = "<group>"; };
@@ -740,6 +743,8 @@
 				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
 				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
 				E75240931A107A6A00EF1023 /* ProjectViewModelPlayground.swift */,
+				E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */,
+				E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */,
 			);
 			name = Projects;
 			sourceTree = "<group>";
@@ -1285,6 +1290,7 @@
 				E7A548041A8EFCB600ECF437 /* Functions.swift in Sources */,
 				E742321C1A4EB18C0098DF7E /* OS.swift in Sources */,
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
+				E7D53CF11A93132D0000A3C5 /* ProjectItemGroups.swift in Sources */,
 				E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */,
 				E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */,
 				E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */,
@@ -1298,7 +1304,6 @@
 				E76CD89219CD6C5700369A80 /* NameUtilities.swift in Sources */,
 				E72E4A9A1A5CCABD0034DF0F /* ResultCellView.swift in Sources */,
 				E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */,
-				E7CBF5AE194A894000EF60F1 /* HFMProjectViewModelItem.m in Sources */,
 				E7F7988E198A610F0063294F /* PlaygroundController.swift in Sources */,
 				E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */,
 				E75240941A107A6A00EF1023 /* ProjectViewModelPlayground.swift in Sources */,
@@ -1313,6 +1318,7 @@
 				E74058061A899E1E004B3846 /* ThemesController.swift in Sources */,
 				E74058081A89BB91004B3846 /* Theme.swift in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
+				E7D53CED1A92DE2E0000A3C5 /* ProjectItem.swift in Sources */,
 				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
 				E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,

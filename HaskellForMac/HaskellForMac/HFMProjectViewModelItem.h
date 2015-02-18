@@ -42,14 +42,17 @@ extern NSString *const kDataGroupID;
 ///
 /// Weak reference as this item is owned by the model.
 ///
+// FIXME: covered
 @property (weak, readonly) HFMProjectViewModel *model;
 
 /// Determines which flavour of project view model item this is.
 ///
+// FIXME: covered
 @property (readonly) PVMItemTag tag;
 
 /// Identifier that is used to display the item.
 ///
+// FIXME: covered
 @property (nonatomic) NSString *identifier;
 
 /// Points to the parent item; 'nil' for group items.
@@ -57,10 +60,12 @@ extern NSString *const kDataGroupID;
 /// At the moment, the parent relation is immutable. This MAY CHANGE if we implement dragging of items in the
 /// outline view.
 ///
+// FIXME: covered
 @property (weak, readonly) HFMProjectViewModelItem *parent;
 
 /// Help text.
 ///
+// FIXME: covered
 @property (nonatomic) NSString *tip;
 
 /// *Optional* file wrapper of the file object backing the item.
@@ -74,10 +79,12 @@ extern NSString *const kDataGroupID;
 ///
 /// FIXME: This property should never be 'nil' for file-related items. Leaving it as `nil`, while eg a new empty file
 ///        has not been written out yet has only caused problems.
+// FIXME: covered
 @property (nonatomic, readonly) NSFileWrapper *fileWrapper;     // maybe nil
 
 /// Does this item have unsaved changes?
 ///
+// FIXME: covered
 @property (readonly, getter=isDirty) BOOL dirty;
 
 /// The text contained in 'fileWrapper', if not 'dirty'; otherwise, the updated text. When this property is set, the
@@ -86,10 +93,12 @@ extern NSString *const kDataGroupID;
 ///
 /// The property is KVO compliant.
 ///
+// FIXME: covered
 @property NSString *string;                 // 'nil' unless 'fileWrapper' is wrapping a regular file
 
 /// If this item represents a Haskell module, it may have an associated playground.
 ///
+// FIXME: covered
 @property (readonly) ProjectViewModelPlayground *playground;
 
 

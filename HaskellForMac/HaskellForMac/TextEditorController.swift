@@ -18,7 +18,7 @@ class TextEditorController: NSViewController {
 
   /// Project view model item representing the edited file.
   ///
-  dynamic let viewModelItem: HFMProjectViewModelItem
+  dynamic let viewModelItem: ProjectItem
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
@@ -34,12 +34,10 @@ class TextEditorController: NSViewController {
 
   /// Initialise the view controller by loading its NIB file and also set the associated file URL.
   ///
-  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!) {
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: ProjectItem) {
     viewModelItem = projectViewModelItem
 
     super.init(nibName: nibName, bundle: bundle)
-
-    if viewModelItem.string == nil { return nil }   // Bail out if file contents cannot be regarded as a string
 
       // We use our gutter class as a ruler for the text view.
     NSScrollView.setRulerViewClass(TextGutterView)
@@ -47,7 +45,7 @@ class TextEditorController: NSViewController {
 
   required init?(coder: NSCoder) {
     NSLog("%s: WARNING: allocating empty project view model item", __FUNCTION__)
-    viewModelItem = HFMProjectViewModelItem()
+    viewModelItem = ProjectItem()
     super.init(coder: coder)
   }
 
@@ -79,10 +77,10 @@ class TextEditorController: NSViewController {
     }
 
       // Get the intial edited code.
-    textView.string = viewModelItem.string;
+    textView.string = viewModelItem.fileContents;
 
       // Set the item's path on the path control.
-    self.pathControl.URL = NSURL(string: viewModelItem.filePath())
+    self.pathControl.URL = NSURL(string: viewModelItem.filePath ?? "")
 
     // Execute the awake action. (We do that last to ensure all connections are already set up.)
     awakeAction()
@@ -117,7 +115,7 @@ extension TextEditorController {
 extension TextEditorController: NSTextDelegate {
 
   func textDidChange(notification: NSNotification) {
-    viewModelItem.string = textView.string ?? ""
+    viewModelItem.fileContents = textView.string ?? ""
   }
 }
 

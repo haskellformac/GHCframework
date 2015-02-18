@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "Haskell-Swift.h"
 #import "HFMProject.h"
 #import "HFMWindowController.h"
 
@@ -169,20 +170,20 @@
 #pragma mark -
 #pragma mark NSOutlineViewDataSource protocol methods
 
-- (HFMProjectViewModelItem *)outlineView:(NSOutlineView *)outlineView
-                                   child:(NSInteger)index
-                                  ofItem:(HFMProjectViewModelItem *)item
+- (ProjectItem *)outlineView:(NSOutlineView *)outlineView
+                       child:(NSInteger)index
+                      ofItem:(ProjectItem *)item
 {
 #pragma unused(outlineView)
 
 
   if (!item) {            // If this is a group item, get the static group item from the model
 
-    if ((NSUInteger)index >= self.projectModel.groupItems.count) {
+    if (index >= self.projectModel.groupItems.count) {
       NSLog(@"%s: out of bounds access to group item: index = %ld", __func__, (long)index);
       return nil;
     }
-    return self.projectModel.groupItems[(NSUInteger)index];
+    return [self.projectModel.groupItems groupItemByIndex:index];
 
   } else {                // All non-group items are accessed via their parent
 
@@ -196,14 +197,14 @@
   }
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(HFMProjectViewModelItem *)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(ProjectItem *)item
 {
 #pragma unused(outlineView)
   
   return item.children.count > 0;
 }
 
-- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(HFMProjectViewModelItem *)item
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(ProjectItem *)item
 {
 #pragma unused(outlineView)
 
@@ -213,7 +214,7 @@
     return 0;
 
   if (!item)
-    return (NSInteger)[self.projectModel.groupItems count];
+    return (NSInteger)self.projectModel.groupItems.count;
   else
     return (NSInteger)item.children.count;
 }

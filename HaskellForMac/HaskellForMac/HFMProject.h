@@ -14,7 +14,6 @@
 //  outline view.
 
 #import <Cocoa/Cocoa.h>
-#import "HFMProjectViewModelItem.h"
 #import "HFMProjectViewModel.h"
 
 

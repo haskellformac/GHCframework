@@ -4,7 +4,6 @@
 
 #import "MACAddress.h"
 #import "HFMProject.h"
-#import "HFMProjectViewModel.h"
-#import "HFMProjectViewModelItem.h"
 #import "HFMHeaderEditorController.h"
+#import "HFMProjectViewModel.h"
 #import "HFMWindowController.h"

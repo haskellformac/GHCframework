@@ -28,7 +28,7 @@ private func stripPlaygroundMagic(contents: String) -> String {
 }
 
    // FIXME: subclass of NSObject, so we can '-alloc' it from ObjC, for the time being...
-class ProjectViewModelPlayground: NSObject {
+public class ProjectViewModelPlayground: NSObject {
 
   /// The project view model that this playground belongs to.
   ///

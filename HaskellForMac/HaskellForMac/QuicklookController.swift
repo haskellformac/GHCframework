@@ -9,8 +9,8 @@
 import Cocoa
 import Quartz
 
-class QuicklookController: NSViewController {
 
+class QuicklookController: NSViewController {
 
   // The views of the quicklook view hierarchy.
   //
@@ -19,7 +19,7 @@ class QuicklookController: NSViewController {
 
   /// Project view model item representing the previewed file.
   ///
-  private let viewModelItem: HFMProjectViewModelItem
+  private let viewModelItem: ProjectItem
 
 
   //MARK: -
@@ -27,22 +27,20 @@ class QuicklookController: NSViewController {
 
   /// Initialise the view controller by loading its NIB file and also set the associated file URL.
   ///
-  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: HFMProjectViewModelItem!) {
-    viewModelItem = projectViewModelItem
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: ProjectItem) {
 
+    viewModelItem = projectViewModelItem
     super.init(nibName: nibName, bundle: bundle)
   }
 
   required init?(coder: NSCoder) {
-    NSLog("%s: WARNING: allocating empty project view model item", __FUNCTION__)
-    viewModelItem = HFMProjectViewModelItem()
+    NSLog("%s: WARNING: allocating empty Quicklook controller", __FUNCTION__)
+    viewModelItem = ProjectItem()
     super.init(coder: coder)
   }
   
   override func awakeFromNib() {
-
-      // Set up the path control.
-    self.pathControl.URL = NSURL(string: viewModelItem.filePath())
+    if let path = viewModelItem.filePath { self.pathControl.URL = NSURL(string: path) }
   }
 
   override func viewDidLayout() {

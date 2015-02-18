@@ -58,7 +58,7 @@ final class ContextController : NSObject {
 
   /// The item that determines the context.
   ///
-  private var item: HFMProjectViewModelItem?
+  private var item: ProjectItem?
 
   /// The current context configuration.
   ///
@@ -84,7 +84,7 @@ final class ContextController : NSObject {
   ///
   /// NB: The awkward signature is to return two values to Objective-C. We expect 'editor.memory' and 'playground.memory'
   ///     to be 'nil' on entry to this function.
-  func selectItem(item:           HFMProjectViewModelItem,
+  func selectItem(item:           ProjectItem,
                   returningEditor
                   editor:         AutoreleasingUnsafeMutablePointer<NSViewController>,
                   playground:     AutoreleasingUnsafeMutablePointer<PlaygroundController>)
@@ -92,29 +92,26 @@ final class ContextController : NSObject {
     self.item   = item
     self.config = .NoEditor
 
-      // Get the filename associated with the new item.
-    let filePath = item.filePath()
-    if filePath == nil { return }
-    if item.fileWrapper == nil {
-      item.touchFileWrapper()
-    } else if !item.fileWrapper.regularFile { return }
+      // Get the filename associated with the new item — this also guarantees that `item` represents a regular file.
+    if let filePath = item.filePath {
+      if let fileURL = item.URL {
 
-    if let fileURL = project.fileURL?.URLByAppendingPathComponent(filePath) {
+        let fileExtension = filePath.pathExtension
 
-      let fileExtension = filePath.pathExtension
+          // Check that the file is still there and force reading its contents unless the item is dirty.
+          // (We'll need it in a sec.)
+        if let wrapper = item.fileWrapper? {
 
-        // Check that the file is still there and force reading its contents unless the item is dirty. (We'll need it in a sec.)
-      var error: NSError?
-      if !item.dirty && !item.fileWrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
-        NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
-          error == nil ? "unknown reason" : error!)
-        return
-      }
+          var error: NSError?
+          if !item.isDirty && !wrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
+            NSLog("%s: re-reading file wrapper from %@ failed: %@", __FUNCTION__, fileURL,
+                  error == nil ? "unknown reason" : error!)
+            return
+          }
+        }
 
-      // Select a suitable editor, and try to load the editor and maybe also playground.
-      let nibName = editors[fileExtension] ?? kQuicklook
-//      if let nibName = nibName {
-      if true {
+          // Select a suitable editor, and try to load the editor and maybe also playground.
+        let nibName = editors[fileExtension] ?? kQuicklook
 
         switch nibName {
 
@@ -154,7 +151,7 @@ final class ContextController : NSObject {
                                               projectViewModelPlayground: viewModelPlayground,
                                                       diagnosticsHandler: processIssue,
                                              interactiveWorkingDirectory:
-                                               project.fileURL!.path!.stringByAppendingPathComponent(item.model?.dataDir ?? ""))
+                                               project.fileURL!.path!.stringByAppendingPathComponent(item.viewModel?.dataDir ?? ""))
               {
                 config            = .HaskellEditor(editorController, playgroundController)
                 playground.memory = playgroundController
@@ -207,13 +204,13 @@ final class ContextController : NSObject {
       if let item = self.item {
         // FIXME: We need to add getting the file path as a method
         if let projectPath          = project.fileURL?.path? {
-          let fullFilename          = projectPath.stringByAppendingPathComponent(item.filePath())
+          let fullFilename          = projectPath.stringByAppendingPathComponent(item.filePath!)
           let importPaths: [String] = 
             { switch self.project.projectModel.sourceDir {
               case .None:                return [projectPath]
               case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
             }}()
-          if playground.loadContextModuleIntoPlayground(item.string,
+          if playground.loadContextModuleIntoPlayground(item.fileContents,
                                                         file: fullFilename,
                                                         importPaths: importPaths) {
             playground.execute()

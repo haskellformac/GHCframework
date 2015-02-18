@@ -11,20 +11,23 @@
 //
 //  The various data elements stored in a cabal file are available through project properties defined below. All
 //  file-related properties are also represented in the forest rooted in the property `groupItems`. More specifically,
-//  the forest rooted in `groupItems` is lazily initialised from those file-related project properties after a project
-//  has been loaded. When saving, all dirty items of the forest of `HFMProjectViewModelItem`s update the corresponding
-//  project properties before generating a new Cabal file that is being made persistent.
+//  the forest rooted in `groupItems` is initialised from those file-related project properties after a project has
+//  been loaded. When saving, all dirty items of the forest of `ProjectItem`s update the corresponding project
+//  properties before generating a new Cabal file that is being made persistent.
 //
 //  NB: This view model owns all the objects representing items for the outline view. The outline view by itself will
 //      *not* keep them alive.
 
 #import <Foundation/Foundation.h>
 
+// Forward declaration to avoid cycles through the bridging header.
+@class ProjectItemGroups;
 
 /// The indices of the various fixed toplevel group items.
 //
 //  IMPORTANT: The order here must match that of the initialisation of 'groupItems'.
 //
+// FIXME: can we get rid of this already??
 typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
   PVMItemGroupIndexPackage = 0,         // Package group (this must be the *first* index)
   PVMItemGroupIndexExecutable,          // Executable group
@@ -71,9 +74,7 @@ typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
 ///
 /// The groups are fixed; hence, the 'readonly'. However, the contents of the group items is mutable.
 ///
-/// The first one is always 'kPackageGroupID'
-//
-@property (readonly) NSArray/*<HFMProjectViewModelItem>*/ *groupItems;
+@property (readonly) ProjectItemGroups *groupItems;
 
 
 #pragma mark -

@@ -122,6 +122,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 #pragma mark -
 #pragma mark Setters and getters
 
+  // FIXME: converted
 - (NSFileWrapper *)fileWrapper
 {
   if (!_fileWrapper) {
@@ -178,11 +179,13 @@ NSString *const kDataGroupID        = @"Supporting files";
   return _fileWrapper;
 }
 
+  // FIXME: converted
 - (BOOL)isDirty;
 {
   return self.dirtyFileWrapper != nil;
 }
 
+  // FIXME: converted
 - (BOOL)isEmptyFolder
 {
   if (self.tag != PVMItemTagFolder && self.tag != PVMItemTagFileGroup) return NO;
@@ -192,6 +195,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return YES;
 }
 
+  // FIXME: covered
 - (NSUInteger)index
 {
   if (!self.parent)
@@ -200,6 +204,7 @@ NSString *const kDataGroupID        = @"Supporting files";
     return [self.parent.children indexOfObject:self];
 }
 
+  // FIXME: covered
 - (NSArray/*<HFMProjectModelItem>*/ *)children
 {
   if (!_theChildren) {
@@ -323,6 +328,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return [NSArray arrayWithArray:_theChildren];     // freeze
 }
 
+  // FIXME: converted
 - (NSString *)filePath
 {
   NSMutableArray          *path    = [NSMutableArray array];
@@ -364,6 +370,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 ///          underlying file; otherwise, always use the data from the file wrapper instead. Before accessing the file
 ///          system representation, ensure the project was saved (i.e., isn't dirty)!
 ///
+// FIXME: converted
 - (NSURL *)URL
 {
   return [self.model.documentURL URLByAppendingPathComponent:self.filePath];
@@ -383,6 +390,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return updatedFileWrapper;
 }
 
+  // FIXME: unnecessary
 - (NSString *)string
 {
   NSData *data;
@@ -398,6 +406,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
+  // FIXME: unnecessary
 - (void)setString:(NSString *)string
 {
   NSData        *data              = [string dataUsingEncoding:NSUTF8StringEncoding];
@@ -419,6 +428,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 #pragma mark -
 #pragma mark Edits
 
+  // FIXME: converted
 - (void)touchFileWrapper
 {
   if (!self.fileWrapper) {
@@ -427,6 +437,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   }
 }
 
+  // FIXME: converted
 - (BOOL)copyFileAtURL:(NSURL *)url toIndex:(NSUInteger)index error:(NSError *__autoreleasing *)error
 {
   if ((self.tag != PVMItemTagGroup)
@@ -443,7 +454,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   if ([fileManager fileExistsAtPath:[destination path]] &&
       ![fileManager trashItemAtURL:destination resultingItemURL:nil error:error])
     return NO;
-  if (![fileManager copyItemAtURL:url toURL:destination error:error])
+  if (![fileManager copyItemAtURL:url toURL:destination error:error])  // FIXME: make sure none of these is nil!
     return NO;
 
     // Update the current item's file wrapper (to pick up the new file).
@@ -469,6 +480,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return [self.model writeCabalFileWithError:error];
 }
 
+  // FIXME: converted
 - (BOOL)newHaskellSourceAtIndex:(NSUInteger)index
 {
   if ((self.tag != PVMItemTagGroup || ![self.identifier isEqualToString:kExtraSourceGroupID])
@@ -516,6 +528,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 }
  */
 
+  // FIXME: converted
 - (BOOL)remove
 {
   if (self.tag == PVMItemTagMainFile) return NO;      // We cannot delete the Main file
@@ -535,6 +548,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return [self.parent removeChild:self];
 }
 
+  // FIXME: converted
 - (BOOL)removeChild:(HFMProjectViewModelItem *)childItem
 {
     // Remove the model view item.
@@ -554,6 +568,7 @@ NSString *const kDataGroupID        = @"Supporting files";
   return YES;
 }
 
+  // FIXME: converted
 - (NSString*)renameTo:(NSString *)newIdentifier
 {
   NSFileWrapper *parentFileWrapper = (self.parent.fileWrapper) ? self.parent.fileWrapper : self.model.fileWrapper;
@@ -722,6 +737,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
 // Compute the identifier dictionary containing the current item's children.
 //
+// FIXME: no longer necessary
 - (NSDictionary *)lookupDictionaryMightBeSources:(BOOL *)asSourceModules
 {
   NSMutableArray          *path    = [NSMutableArray array];
@@ -757,6 +773,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
 // Return the item of the main module if it is directly or indirectly contained in the children.
 //
+// FIXME: converted
 - (HFMProjectViewModelItem *)containedMainFile
 {
   for (HFMProjectViewModelItem *child in self.children) {

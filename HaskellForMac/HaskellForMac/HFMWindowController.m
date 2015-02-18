@@ -41,7 +41,7 @@
 // NB: This property only get set to the edited item iff `-rename:` was invoked via a menu action. If editing is
 //     invoked by clicking a selected item, the edited item is the selected item instead.
 //
-@property (weak, nonatomic) HFMProjectViewModelItem *editedItem;       // maybe nil
+@property (weak, nonatomic) ProjectItem    *editedItem;                // maybe nil
 
 @end
 
@@ -135,26 +135,26 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma mark -
 #pragma mark NSOutlineViewDelegate protocol methods
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(HFMProjectViewModelItem *)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(ProjectItem *)item
 {
 #pragma unused(outlineView)
 
-  return (item) ? item.tag == PVMItemTagGroup : NO;
+  return (item) ? item.isGroup : NO;
 }
 
 - (NSTableCellView *)outlineView:(NSOutlineView *)outlineView
               viewForTableColumn:(NSTableColumn *)tableColumn
-                            item:(HFMProjectViewModelItem *)item
+                            item:(ProjectItem *)item
 {
 #pragma unused(tableColumn)     // there is only one column
 
     // Do we need a group cell or a cabal cell item?
-  if (item.tag == PVMItemTagGroup) {
+  if (item.isGroup) {
 
     NSTableCellView *cell      = [outlineView makeViewWithIdentifier:kGroupCellID owner:self];
     cell.textField.stringValue = [item.identifier uppercaseString];
-    cell.textField.toolTip     = item.tip;
-    cell.imageView.toolTip     = item.tip;
+    cell.textField.toolTip     = [item helpTip];
+    cell.imageView.toolTip     = [item helpTip];
     return cell;
 
 
@@ -162,36 +162,26 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     NSTableCellView *cell      = [outlineView makeViewWithIdentifier:kCabalCellID owner:self];
     cell.textField.stringValue = item.identifier;
-    cell.textField.toolTip     = item.tip;
-    cell.imageView.toolTip     = item.tip;
-    switch (item.tag) {
-      case PVMItemTagPackage:
+    cell.textField.toolTip     = [item helpTip];
+    cell.imageView.toolTip     = [item helpTip];
+    if (item.isPackage)
           // FIXME: use the .hsproj icon once we have one
-//        cell.imageView.image = ???;
-        break;
-      case PVMItemTagExecutable:
-        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:@"public.unix-executable"];
-        break;
-      case PVMItemTagFile:
-      case PVMItemTagMainFile:
-        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:[item.identifier pathExtension]];
-        break;
-      case PVMItemTagFolder:
-      case PVMItemTagFileGroup:
-        cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:(__bridge NSString *)kUTTypeFolder];
-        break;
-      default:
-        break;
-    }
+      ;//        cell.imageView.image = ???;
+    else if (item.isExecutable)
+      cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:@"public.unix-executable"];
+    else if (item.isFile)
+      cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:[item.identifier pathExtension]];
+    else if (item.isFileGroup || item.isFolder)
+      cell.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:(__bridge NSString *)kUTTypeFolder];
     return cell;
   }
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(HFMProjectViewModelItem *)item
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(ProjectItem *)item
 {
 #pragma unused(outlineView)
 
-  return item.tag != PVMItemTagGroup;
+  return !item.isGroup;
 }
 
 - (void)outlineViewSelectionIsChanging:(NSNotification *)notification
@@ -248,8 +238,8 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
 
-  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
-  HFMProject              *project     = (HFMProject*)self.document;
+  ProjectItem *clickedItem = [self.outlineView itemAtRow:row];
+  HFMProject  *project     = (HFMProject*)self.document;
 
   NSString *externalTextEditor = [[NSUserDefaults standardUserDefaults] stringForKey:Swift.swift_kPreferenceExternalTextEditor];
   if (!externalTextEditor || externalTextEditor.length == 0)
@@ -266,8 +256,8 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
 
-  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
-  HFMProject              *project     = (HFMProject*)self.document;
+  ProjectItem *clickedItem = [self.outlineView itemAtRow:row];
+  HFMProject  *project     = (HFMProject*)self.document;
 
   [[NSWorkspace sharedWorkspace]
    activateFileViewerSelectingURLs:@[[project.fileURL URLByAppendingPathComponent:clickedItem.filePath]]];
@@ -277,21 +267,19 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
   NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                       : [self.outlineView clickedRow];
-  HFMProject              *project    = (HFMProject*)self.document;
-  HFMProjectViewModelItem *parentItem;
-  NSInteger                itemIndex;
+  HFMProject  *project    = (HFMProject*)self.document;
+  ProjectItem *parentItem;
+  NSInteger    itemIndex;
   if (row < 0) {    // no item clicked or selected
 
-    parentItem = project.projectModel.groupItems[PVMItemGroupIndexData];
+    parentItem = project.projectModel.groupItems.dataGroupItem;
     itemIndex  = 0;
 
   } else {
 
-    HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
-    parentItem                           = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
-                                           ? [self.outlineView parentForItem:clickedItem]
-                                           : clickedItem;
-    itemIndex                            = (parentItem == clickedItem) ? 0 : (NSInteger)[clickedItem index] + 1;
+    ProjectItem *clickedItem = [self.outlineView itemAtRow:row];
+    parentItem               = (clickedItem.isFile) ? [self.outlineView parentForItem:clickedItem] : clickedItem;
+    itemIndex                = (parentItem == clickedItem) ? 0 : clickedItem.index + 1;
   }
   if (!parentItem.fileWrapper.isDirectory) return;      // We can only add files to directories.
 
@@ -313,7 +301,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     NSString *fname        = [url lastPathComponent];
     BOOL      skipThisFile = NO;
-    for (HFMProjectViewModelItem *child in parentItem.children) {
+    for (ProjectItem *child in parentItem.children) {
 
         // Name clash => ask user for resolution
       if ([fname isEqualToString:child.identifier]) {
@@ -336,7 +324,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
       // Add the given file to the project model.
     NSError *error;
-    if (![parentItem copyFileAtURL:url toIndex:(NSUInteger)itemIndex error:&error]) {
+    if (![parentItem copyFileAtURL:url toIndex:itemIndex error:&error]) {
 
       NSAlert *alert = [NSAlert alertWithError:error];
       [alert runModal];
@@ -367,19 +355,17 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
 
-  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
-  HFMProjectViewModelItem *parentItem  = (clickedItem.tag == PVMItemTagFile || clickedItem.tag == PVMItemTagMainFile)
-                                         ? [self.outlineView parentForItem:clickedItem]
-                                         : clickedItem;
-  NSUInteger               itemIndex   = (parentItem == clickedItem) ? 0 : [clickedItem index] + 1;
-  HFMProject              *project     = (HFMProject*)self.document;
+  ProjectItem *clickedItem = [self.outlineView itemAtRow:row];
+  ProjectItem *parentItem  = (clickedItem.isFile) ? [self.outlineView parentForItem:clickedItem] : clickedItem;
+  NSInteger    itemIndex   = (parentItem == clickedItem) ? 0 : [clickedItem index] + 1;
+  HFMProject  *project     = (HFMProject*)self.document;
 
     // Add a new source file to the view model and if successful...
   if ([parentItem newHaskellSourceAtIndex:itemIndex]) {
 
       // Update the outline view.
     [self.outlineView beginUpdates];
-    [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:itemIndex]
+    [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)itemIndex]
                                   inParent:parentItem
                              withAnimation:NSTableViewAnimationSlideDown];
     [self.outlineView endUpdates];
@@ -390,14 +376,14 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 
       // Select and enter editing mode for the newly added item.
-    HFMProjectViewModelItem *newItem = [project outlineView:self.outlineView child:(NSInteger)itemIndex ofItem:parentItem];
+    ProjectItem *newItem = [project outlineView:self.outlineView child:itemIndex ofItem:parentItem];
     [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.3];
       // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
       //     delay editing. It does seem like a hack, though. Is there a better way to achieve this?
   }
 }
 
-- (void)fileEdit:(HFMProjectViewModelItem*)editedItem
+- (void)fileEdit:(ProjectItem *)editedItem
 {
   self.editedItem = editedItem;
   [self.outlineView editColumn:0 row:[self.outlineView rowForItem:editedItem] withEvent:nil select:YES];
@@ -410,7 +396,7 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
 
-  HFMProjectViewModelItem *clickedItem = [self.outlineView itemAtRow:row];
+  ProjectItem *clickedItem = [self.outlineView itemAtRow:row];
   [self.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)row] byExtendingSelection:NO];
   [self fileEdit:clickedItem];
 }
@@ -423,14 +409,14 @@ NSString *const kCabalCellID = @"cabalCellID";
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
 
-  HFMProjectViewModelItem *item      = [self.outlineView itemAtRow:row];
-  NSUInteger               itemIndex = [item index];
+  ProjectItem *item      = [self.outlineView itemAtRow:row];
+  NSUInteger   itemIndex = (NSUInteger)[item index];
 
     // Set up confirmation alert.
   NSAlert *alert = [[NSAlert alloc] init];
 //  alert.messageText = [NSString stringWithFormat:@"Do you really want to move the %@ '%@' to the Trash?",
   alert.messageText = [NSString stringWithFormat:@"Do you really want to remove the %@ '%@'?",
-                       (item.tag == PVMItemTagFile) ? @"file" : @"folder",
+                       (item.isFile) ? @"file" : @"folder",
                        item.identifier];
 //  [alert addButtonWithTitle:@"Move to Trash"];
   [alert addButtonWithTitle:@"Remove"];
@@ -630,35 +616,29 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (action == @selector(openInEditor:) || action == @selector(showInFinder:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
-    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile
-           || item.tag == PVMItemTagMainFile;
+    ProjectItem *item = [self.outlineView itemAtRow:row];
+    return item.isFile || item.isFolder;
 
   } else if (action == @selector(addExistingFiles:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
+    ProjectItem *item = [self.outlineView itemAtRow:row];
     return (row == -1
-            || (item.tag == PVMItemTagGroup && ([item.identifier isEqualToString:kExtraSourceGroupID]
-                                                || [item.identifier isEqualToString:kDataGroupID])));
-      // FIXME: The above should also return YES for files and folders within those two groups. To determine that the
-      //         view model item class needs to export a method that returns the group to which an item belongs.
+            || item.isInExtraSourceCategory || item.isInDataCategory);
 
   } else if (action == @selector(newFile:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
-    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagExecutable
-           || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile
-           || (item.tag == PVMItemTagGroup && [item.identifier isEqualToString:kExtraSourceGroupID]);
+    ProjectItem *item = [self.outlineView itemAtRow:row];
+    return item.isDirectory || item.isFile;
 
   } else if (action == @selector(rename:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
-    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
+    ProjectItem *item = [self.outlineView itemAtRow:row];
+    return item.isFolder || item.isFileGroup || item.isFile;
 
   } else if (action == @selector(delete:)) {
 
-    HFMProjectViewModelItem *item = [self.outlineView itemAtRow:row];
-    return item.tag == PVMItemTagFolder || item.tag == PVMItemTagFileGroup || item.tag == PVMItemTagFile;
+    ProjectItem *item = [self.outlineView itemAtRow:row];
+    return item.isFolder || item.isFileGroup || item.isFile;
 
   } else if (action == @selector(toggleNavigatorView:)) {
 
@@ -743,23 +723,21 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 #pragma unused(control)
 
     // Either we initiated editing through a menu action or the edited item must be the selected.
-  HFMProjectViewModelItem *item = self.editedItem ? self.editedItem
-                                                  : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
-  PVMItemTag               tag  = item.tag;
+  ProjectItem *item = self.editedItem ? self.editedItem
+                                      : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
 
     // Accept Haskell module names with a '.hs' suffix (for modules) and plain Haskell module names for folders.
   NSString *extension = [string pathExtension];
   NSString *name      = [string stringByDeletingPathExtension];
 
-    // FIXME: We need to look up higher up the parent chain and always get the group. We also need some constraints on the names of non-Haskell files. The same fix needs to be applied in `-controlTextDidEndEditing:`.
-  if (tag == PVMItemTagFile && ([item.parent.identifier isEqualToString:kDataGroupID]
-                                || [item.parent.identifier isEqualToString:kExtraSourceGroupID]))
+    // FIXME: We need some constraints on the names of non-Haskell files. The same fix needs to be applied in `-controlTextDidEndEditing:`.
+  if (item.isInDataCategory || item.isInExtraSourceCategory)
       return YES;
 
-  if (tag == PVMItemTagFile || tag == PVMItemTagMainFile)
+  if (item.isFile)
     return ([Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]]);
 
-  if (tag == PVMItemTagFolder)
+  if (item.isFolder)
     return [Swift swift_isValidModuleName:string];
 
   return NO;
@@ -771,21 +749,20 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
   // This is used when the editing of a text field of the source view ends.
 - (void)controlTextDidEndEditing:(NSNotification *)notification
 {
-  NSText                  *text      = notification.userInfo[@"NSFieldEditor"];
-  NSTextField             *textField = notification.object;
+  NSText      *text      = notification.userInfo[@"NSFieldEditor"];
+  NSTextField *textField = notification.object;
     // Either we initiated editing through a menu action or the edited item must be the selected.
-  HFMProjectViewModelItem *item      = self.editedItem ? self.editedItem
-                                                       : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
-  NSString                *oldName   = item.identifier;
-  NSString                *newName   = text.string;
+  ProjectItem *item      = self.editedItem ? self.editedItem
+                                           : [self.outlineView itemAtRow:[self.outlineView selectedRow]];
+  NSString    *oldName   = item.identifier;
+  NSString    *newName   = text.string;
 
   self.editedItem = nil;
 
     // Add a Haskell file extension to file names if not present yet and not in the support files or extra sources groups.
-  if ((item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)
+  if (item.isFile
       && ![[newName pathExtension] isEqualToString:[HFMProjectViewModel haskellFileExtension]]
-      && !([item.parent.identifier isEqualToString:kDataGroupID]
-           || [item.parent.identifier isEqualToString:kExtraSourceGroupID])) {
+      && !(item.isInDataCategory || item.isInExtraSourceCategory)) {
     newName = [newName stringByAppendingPathExtension:[HFMProjectViewModel haskellFileExtension]];
     textField.stringValue = newName;
   }
@@ -825,9 +802,9 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 
   if (row != -1) {   // If a row is selected...
 
-    HFMProjectViewModelItem *item = [outlineView itemAtRow:row];
+    ProjectItem *item = [outlineView itemAtRow:row];
 
-    if (item && (item.tag == PVMItemTagPackage || item.tag == PVMItemTagFile || item.tag == PVMItemTagMainFile)) {
+    if (item && (item.isPackage || item.isFile)) {
 
       NSViewController     *editorController     = nil;
       PlaygroundController *playgroundController = nil;

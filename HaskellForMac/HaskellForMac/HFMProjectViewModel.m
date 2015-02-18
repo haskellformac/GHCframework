@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 
+#import "Haskell-Swift.h"
 #import "CabalKit/CabalKit.h"
 #import "HFMProjectViewModel.h"
-#import "HFMProjectViewModelItem.h"
 
 
 @interface HFMProjectViewModel ()
@@ -26,7 +26,7 @@
 // Function prototypes
 
 void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSArray *items);
-void updateFileWrapper(NSFileWrapper *projectFileWrapper, HFMProjectViewModelItem *item);
+void updateFileWrapper(NSFileWrapper *projectFileWrapper, ProjectItem *item);
 void replaceFileWrapper(NSFileWrapper *projectFileWrapper,
                              NSString *fname,
                         NSFileWrapper *oldFileWrapper,
@@ -119,38 +119,9 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
     _documentURL   = documentURL;
 
       // Set up the group items
-    [self initGroupItems];
+    _groupItems = [[ProjectItemGroups alloc] initWithViewModel:self];
   }
   return self;
-}
-
-- (void)initGroupItems
-{
-    // We initialise the immutable project groups (which forms the root set of the project view model items). Child
-    // items are created on demand.
-    //
-    // IMPORTANT: The order here must match that in 'PVMGroupIndex'.
-  _groupItems = @[[HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kPackageGroupID
-                                                              playground:nil
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kExecutableGroupID
-                                                              playground:nil
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kExtraSourceGroupID
-                                                              playground:nil
-                                                                  parent:nil
-                                                                   model:self],
-                  [HFMProjectViewModelItem projectViewModelItemWithGroup:PVMItemTagGroup
-                                                              identifier:kDataGroupID
-                                                              playground:nil
-                                                                  parent:nil
-                                                                   model:self],
-                  ];
 }
 
 - (void)createProjectForURL:(NSURL *)url
@@ -189,7 +160,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
                 originalContentsURL:nil
                               error:&error])
     NSLog(@"%s: couldn't create project files: %@", __func__, error);
-  [self initGroupItems];
+  _groupItems = [[ProjectItemGroups alloc] initWithViewModel:self];
 }
 
 
@@ -411,9 +382,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 #pragma unused(outError)
 
     // First, we must flush all file wrapper (except the Cabal file one) — i.e., leave out the package group item.
-  NSArray *otherGroupItems  = [self.groupItems subarrayWithRange:(NSRange){PVMItemGroupIndexPackage + 1,
-                                                                           PVM_ITEM_GROUP_INDEX_LAST}];
-  updateFileWrappers(self.fileWrapper, otherGroupItems);
+  updateFileWrappers(self.fileWrapper, self.groupItems.allExceptPackageItem);
 
     // Then, we flush the Cabal one.
   [self flushCabalFile];
@@ -423,20 +392,20 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 
 - (void)flushCabalFile
 {
-  HFMProjectViewModelItem *packageGroupItem = self.groupItems[PVMItemGroupIndexPackage];
+  ProjectItem *packageGroupItem = self.groupItems.packageGroupItem;
 
     // Then, we recreate the file-dependent project properties from the model view items — this will change data in the
     // Cabal file if any files were added, deleted, or their names edited
-  [self updateDataGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexData]).children];
-  [self updateExecutableGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexExecutable]).children];
-  [self updateExtraSourceGroup:((HFMProjectViewModelItem*)self.groupItems[PVMItemGroupIndexExtraSource]).children];
+  [self updateDataGroup:self.groupItems.packageGroupItem.children];
+  [self updateExecutableGroup:self.groupItems.executableGroupItem.children];
+  [self updateExtraSourceGroup:self.groupItems.extraSourceGroupItem.children];
 
     // Next, we flush any changes to the Cabal file into its string representation and write that through the file
     // wrapper.
-  HFMProjectViewModelItem *cabalFileItem  = packageGroupItem.children[0];
-  NSString                *newCabalString = [self.package string];
-  if (![cabalFileItem.string isEqualToString:newCabalString])        // Better than updating in vain, but a dirty...
-    cabalFileItem.string = newCabalString;                          // ...flag on the cabal fields would be even better.
+  ProjectItem *cabalFileItem  = packageGroupItem.children[0];
+  NSString    *newCabalString = [self.package string];
+  if (![cabalFileItem.fileContents isEqualToString:newCabalString])        // Better than updating in vain, but a dirty...
+    cabalFileItem.fileContents = newCabalString;                          // ...flag on the cabal fields would be even better.
   updateFileWrapper(self.fileWrapper, packageGroupItem);
 }
 
@@ -471,11 +440,11 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   return [fileManager removeItemAtURL:cabalFileTempURL error:error];
 }
 
-- (void)updateDataGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
+- (void)updateDataGroup:(NSArray/*<ProjectItem>*/*)items
 {
-  if (items.count == 1 & ((HFMProjectViewModelItem*)[items firstObject]).tag == PVMItemTagFileGroup) {     // we have got a dataDir
+  if (items.count == 1 && ((ProjectItem*)[items firstObject]).isFileGroup) {     // we have got a dataDir
 
-    HFMProjectViewModelItem *dataDirItem = (HFMProjectViewModelItem*)[items firstObject];
+    ProjectItem *dataDirItem = (ProjectItem*)[items firstObject];
     self.dataDir = dataDirItem.identifier;
     items        = dataDirItem.children;
 
@@ -484,17 +453,17 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   self.dataFiles = itemsToDictTree(items, NO);
 }
 
-- (void)updateExecutableGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
+- (void)updateExecutableGroup:(NSArray/*<ProjectItem>*/*)items
 {
     // For the moment, we have got a single executable.
-  if (items.count != 1 || ((HFMProjectViewModelItem*)[items firstObject]).tag != PVMItemTagExecutable)
+  if (items.count != 1 || ((ProjectItem*)[items firstObject]).isExecutable)
     return;
   else
-    items = ((HFMProjectViewModelItem*)[items firstObject]).children;
+    items = ((ProjectItem*)[items firstObject]).children;
 
-  if (items.count == 1 & ((HFMProjectViewModelItem*)[items firstObject]).tag == PVMItemTagFileGroup) {     // we have got a sourceDir
+  if (items.count == 1 && ((ProjectItem*)[items firstObject]).isFileGroup) {     // we have got a sourceDir
 
-    HFMProjectViewModelItem *sourceDirItem = (HFMProjectViewModelItem*)[items firstObject];
+    ProjectItem *sourceDirItem = (ProjectItem*)[items firstObject];
     self.sourceDir = sourceDirItem.identifier;
     items          = sourceDirItem.children;
 
@@ -503,7 +472,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   self.modules = itemsToDictTree(items, YES);
 }
 
-- (void)updateExtraSourceGroup:(NSArray/*<HFMProjectViewModelItem>*/*)items
+- (void)updateExtraSourceGroup:(NSArray/*<ProjectItem>*/*)items
 {
   self.extraSrcFiles = itemsToDictTree(items, NO);
 }
@@ -553,10 +522,10 @@ NSDictionary *itemsToDictTree(NSArray *items, BOOL asSourceModules)
 {
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
-  for (HFMProjectViewModelItem *item in items)
+  for (ProjectItem *item in items)
   {
     NSDictionary *children = itemsToDictTree(item.children, asSourceModules);
-    NSString     *name     = (asSourceModules && item.tag != PVMItemTagMainFile)
+    NSString     *name     = (asSourceModules && item.isMainFile)
                              ? [item.identifier stringByDeletingPathExtension]      // remove ".hs" for sources
                              : item.identifier;
 
