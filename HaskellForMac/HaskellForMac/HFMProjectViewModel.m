@@ -24,14 +24,7 @@
 
 
 // Function prototypes
-
-void updateFileWrappers(NSFileWrapper *projectFileWrapper, NSArray *items);
-void updateFileWrapper(NSFileWrapper *projectFileWrapper, ProjectItem *item);
-void replaceFileWrapper(NSFileWrapper *projectFileWrapper,
-                             NSString *fname,
-                        NSFileWrapper *oldFileWrapper,
-                        NSFileWrapper *updatedFileWrapper);
-
+//
 NSDictionary *stringsToDictTree(NSArray      *strings);
 NSArray      *dictTreeToStrings(NSDictionary *dicts);
 NSDictionary *itemsToDictTree(NSArray *items, BOOL asSourceModules);
@@ -382,7 +375,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 #pragma unused(outError)
 
     // First, we must flush all file wrapper (except the Cabal file one) — i.e., leave out the package group item.
-  updateFileWrappers(self.fileWrapper, self.groupItems.allExceptPackageItem);
+  [self.groupItems flushAllExceptPackageGoup];
 
     // Then, we flush the Cabal one.
   [self flushCabalFile];
@@ -406,7 +399,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   NSString    *newCabalString = [self.package string];
   if (![cabalFileItem.fileContents isEqualToString:newCabalString])        // Better than updating in vain, but a dirty...
     cabalFileItem.fileContents = newCabalString;                          // ...flag on the cabal fields would be even better.
-  updateFileWrapper(self.fileWrapper, packageGroupItem);
+  [self.groupItems flushPackageGroup];
 }
 
 - (BOOL)writeCabalFileWithError:(NSError *__autoreleasing *)error

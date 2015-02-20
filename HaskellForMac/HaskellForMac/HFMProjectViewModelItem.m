@@ -606,6 +606,7 @@ NSString *const kDataGroupID        = @"Supporting files";
 #pragma mark -
 #pragma mark File wrapper update
 
+  // FIXME: converted
 void updateFileWrappers(NSFileWrapper *parentFileWrapper, NSArray *items)
 {
   for (HFMProjectViewModelItem *item in items)
@@ -699,6 +700,7 @@ void updateFileWrapper(NSFileWrapper *parentFileWrapper, HFMProjectViewModelItem
 
 // Given the identifiers of the current item's children, compute its child items.
 //
+// FIXME: converted
 - (NSMutableArray/*<HFMProjectViewModelItem>*/ *)childrenFromDictionary:(NSDictionary *)dict
                                                         asSourceModules:(BOOL)processingSourceModules
 {

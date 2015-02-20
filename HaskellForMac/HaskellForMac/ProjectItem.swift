@@ -17,6 +17,9 @@ import Quartz
 ///
 public enum ProjectGroupCategory: Int {
   case Package = 0, Executable, ExtraSource, Data
+}
+
+extension ProjectGroupCategory: Printable {
 
   /// Corresponding outline view group ID.
   ///
@@ -28,6 +31,8 @@ public enum ProjectGroupCategory: Int {
     case .Data:        return "Supporting files"
     }
   }
+
+  public var description: String { get { return self.groupID() } }
 }
 
 /// Information for the various forms of files that can be part of a project
@@ -101,7 +106,8 @@ public final class ProjectItem: NSObject {
 
   weak var parent:      ProjectItem?      // Current parent item unless `catagory` is `.Group`
        var children:    [ProjectItem]     // All items that comprise the content of the current one
-       var fileWrapper: NSFileWrapper?    // Associated file wrapper for items represented in the file system
+       var fileWrapper: NSFileWrapper?    // Associated file wrapper containing the contents as represented on the file
+                                          // system. It is `nil` iff item not yet in project file wrapper structure.
 
   private var dirtyFileContents: String?  // Non-nil if the associated file has been changed and still needs to be saved.
   dynamic var fileContents:      String { // KVO complaint access to the file contents associated with this item
@@ -380,7 +386,8 @@ extension ProjectItem {
     default:                          return false
     } } }
 
-  /// Returns the item's file path *relative* to the document root *if* the item is associated with a regular file.
+  /// Returns the item's file path *relative* to the document root *if* the item is associated with a regular file or
+  /// directory.
   ///
   var filePath: String? { get {
     if !regularFile { return nil }
@@ -464,88 +471,138 @@ extension ProjectItem {
 
   /// Whether the item is located in the data group.
   ///
-  var isInDataCategory: Bool { get {
+  var isInDataCategory: Bool {
     switch groupCategory {
     case .Some(.Data): return true
     default:           return false
-    }
     } }
 
-  var isPackageGroup: Bool { get {
+  var isPackageGroup: Bool {
     switch category {
     case .Group(category: .Package): return true
     default:                         return false
-    } } }
+    } }
 
-  var isExtraSourceGroup: Bool { get {
+  var isExtraSourceGroup: Bool {
     switch category {
     case .Group(category: .ExtraSource): return true
     default:                             return false
-    } } }
+    } }
 
-  var isDataGroup: Bool { get {
+  var isDataGroup: Bool {
     switch category {
     case .Group(category: .Data): return true
     default:                      return false
-    } } }
+    } }
 
-  var isPackage: Bool { get {
+  var isPackage: Bool {
     switch category {
     case .Package: return true
     default:       return false
-    } } }
+    } }
 
-  var isExecutable: Bool { get {
+  var isExecutable: Bool {
     switch category {
     case .Executable: return true
     default:          return false
-    } } }
+    } }
 
-  var isFileGroup: Bool { get {
+  var isFileGroup: Bool {
     switch category {
     case .FileGroup: return true
     default:         return false
-    } } }
+    } }
 
-  var isFolder: Bool { get {
+  var isFolder: Bool {
     switch category {
     case .Folder: return true
     default:      return false
-    } } }
+    } }
 
-  var isFile: Bool { get {
+  var isFile: Bool {
     switch category {
     case .File(details: _): return true
     default:                return false
-    } } }
+    } }
 
-  var isMainFile: Bool { get {
+  var isMainFile: Bool {
     switch category {
     case .File(details: .Haskell(isMainFile: let isMainFile, playground: _)) where isMainFile: return true
     default:                                                                                   return false
-    } } }
+    } }
 
-  var playground: ProjectViewModelPlayground? { get {
+  var playground: ProjectViewModelPlayground? {
     switch category {
     case .File(details: .Haskell(isMainFile: let _, playground: let playground)): return playground
     default:                                                                      return nil
-    } } }
+    } }
 
-  var isEmptyFolder: Bool { get {
+  var isEmptyFolder: Bool {
     switch category {
     case .Folder, .FileGroup: return children.map{$0.isEmptyFolder}.reduce(true){$0 && $1}
     default: return false
-    } } }
-
-  var isDirectory: Bool { get {               // I.e., may have files as children
-    return isExtraSourceGroup || isDataGroup || isExecutable || isFolder || isFileGroup
     } }
+
+  var isDirectory: Bool {                   // I.e., may have files as children
+    return isExtraSourceGroup || isDataGroup || isExecutable || isFolder || isFileGroup
+    }
 
   /// Is the main file among the current item's subitems.
   ///
-  var containsMainFile: Bool { get {
+  var containsMainFile: Bool {
     return children.map{ $0.isMainFile || $0.containsMainFile }.reduce(false){$0 || $1}
-    } }
+    }
+}
+
+
+// MARK: -
+// MARK: Flushing changes
+
+extension ProjectItem {
+
+  /// Produce a file wrapper for the item that (a) has all pending changes applied and (b) is properly referenced by
+  /// the given parent file wrapper.
+  ///
+  func cleanFileWrapperWithParent(parentFileWrapper: NSFileWrapper) -> NSFileWrapper? {
+    if !parentFileWrapper.directory { return nil }
+
+    switch category {
+
+    case .Group(_), .Executable:                                // Virtual container items
+      return fileWrapper
+
+    case .FileGroup, .Folder:                                   // Items representing directories
+      if let wrapper = fileWrapper { return wrapper }
+
+        // Directory represented by `item` is not yet in the file wrapper tree => insert a new empty directory wrapper
+      let wrapper               = NSFileWrapper(directoryWithFileWrappers: [:])
+      wrapper.preferredFilename = identifier
+      fileWrapper               = wrapper
+      parentFileWrapper.addFileWrapper(wrapper)
+      return wrapper
+      
+    case .Package, .File(_):                                    // Items representing files
+      if fileWrapper == nil && dirtyFileContents == nil { dirtyFileContents = "" }
+
+        // File has changed => replace the old file wrapper by a new one with the new contents
+      if let newFileContents = dirtyFileContents {
+
+        dirtyFileContents = nil
+        if let data = newFileContents.dataUsingEncoding(NSUTF8StringEncoding) {
+
+          if let oldFileWrapper = fileWrapper { parentFileWrapper.removeFileWrapper(oldFileWrapper) }
+          let name = parentFileWrapper.addRegularFileWithContents(data, preferredFilename: identifier)
+          fileWrapper = (parentFileWrapper.fileWrappers[name] as? NSFileWrapper)!
+
+        } else { NSLog("%s: can't encode file '$@'", __FUNCTION__, identifier) }
+
+      return fileWrapper
+      }
+    }
+
+    NSLog("%s: fell through switch — should never get here", __FUNCTION__)
+    return nil
+  }
 }
 
 
@@ -560,7 +617,7 @@ extension ProjectItem {
   func touch() {
     if !regularFile { return }
 
-      // Be careful to no overwrite any existing file contents.
+      // Be careful to not overwrite any existing file contents.
     if fileWrapper == nil && dirtyFileContents == nil { dirtyFileContents = fileContents }
   }
 
@@ -585,6 +642,8 @@ extension ProjectItem {
 
       } else { return false }
 
+
+      // FIXME: Could we instead use FileWrapper(url:options:error:) on the new child and addFileWrapper that to the dir?
         // Update the current item's file wrapper (to pick up the new file).
       if !(fileWrapper!.readFromURL(URL!, options: NSFileWrapperReadingOptions(0), error: error)) { return false }
 

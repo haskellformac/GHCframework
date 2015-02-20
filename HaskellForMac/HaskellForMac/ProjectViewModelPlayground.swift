@@ -72,6 +72,7 @@ public class ProjectViewModelPlayground: NSObject {
     } else { return nil }
   }
 
+
   // MARK: -
   // MARK: Initialisers
 
@@ -98,7 +99,29 @@ public class ProjectViewModelPlayground: NSObject {
 
 
   // MARK: -
-  // MARK: File operations
+  // MARK: Flushing changes
+
+  /// Ensure that the parent file wrapper contains the latest version of the playground file wrapper.
+  ///
+  func cleanFileWrapperWithParent(parentFileWrapper: NSFileWrapper) {
+
+    if let oldFileWrapper = parentFileWrapper.fileWrappers[fileWrapper.preferredFilename] as? NSFileWrapper {
+
+        // Swap file wrappers if different; otherwise, just leave the old one in there.
+      if oldFileWrapper !== fileWrapper {
+        parentFileWrapper.removeFileWrapper(oldFileWrapper)
+        parentFileWrapper.addFileWrapper(fileWrapper)
+      }
+
+    } else { parentFileWrapper.addFileWrapper(fileWrapper) }
+  }
+}
+
+
+// MARK: -
+// MARK: File operations
+
+extension ProjectViewModelPlayground {
 
   /// Remove the associated file wrapper.
   ///
