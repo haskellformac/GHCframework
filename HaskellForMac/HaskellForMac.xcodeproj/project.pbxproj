@@ -339,8 +339,6 @@
 		E7C5DB3C1A0E00E1002F6469 /* PreferencesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesController.swift; sourceTree = "<group>"; };
 		E7C5DB401A0E1CDF002F6469 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E7C9F0201A6FD9B900913B76 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModelItem.h; sourceTree = "<group>"; };
-		E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModelItem.m; sourceTree = "<group>"; };
 		E7CC640019999C3E00D8E1CD /* GHCSeverity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHCSeverity.h; path = GHCKit/GHCSeverity.h; sourceTree = SOURCE_ROOT; };
 		E7CC64021999B4DD00D8E1CD /* ContextController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextController.swift; sourceTree = "<group>"; };
 		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
@@ -740,8 +738,6 @@
 				E7A13B391888D1C000D79087 /* HFMProject.m */,
 				E713E3D818A491FF00504164 /* HFMProjectViewModel.h */,
 				E713E3D918A491FF00504164 /* HFMProjectViewModel.m */,
-				E7CBF5AC194A894000EF60F1 /* HFMProjectViewModelItem.h */,
-				E7CBF5AD194A894000EF60F1 /* HFMProjectViewModelItem.m */,
 				E75240931A107A6A00EF1023 /* ProjectViewModelPlayground.swift */,
 				E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */,
 				E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */,
