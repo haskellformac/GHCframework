@@ -11,10 +11,10 @@ import Foundation
 
 
 // FIXME: Needs to be a class and subtype of NSObject for now — at least until HFMProjectViewModel is in Swift.
-class ProjectItemGroups: NSObject {
+public final class ProjectItemGroups: NSObject {
 
-  let groups: [ProjectGroupCategory: ProjectItem]
-  var count:  Int {
+  public let groups: [ProjectGroupCategory: ProjectItem]
+  public var count:  Int {
     get { return groups.count }
   }
 
@@ -59,10 +59,10 @@ extension ProjectItemGroups {
 
 extension ProjectItemGroups {
 
-  var packageGroupItem:     ProjectItem { return groups[.Package]! }
-  var executableGroupItem:  ProjectItem { return groups[.Executable]! }
-  var extraSourceGroupItem: ProjectItem { return groups[.ExtraSource]! }
-  var dataGroupItem:        ProjectItem { return groups[.Data]! }
+  public var packageGroupItem:     ProjectItem { return groups[.Package]! }
+  public var executableGroupItem:  ProjectItem { return groups[.Executable]! }
+  public var extraSourceGroupItem: ProjectItem { return groups[.ExtraSource]! }
+  public var dataGroupItem:        ProjectItem { return groups[.Data]! }
 
   var allExceptPackageItem: [ProjectItem] { return [executableGroupItem, extraSourceGroupItem, dataGroupItem] }
 

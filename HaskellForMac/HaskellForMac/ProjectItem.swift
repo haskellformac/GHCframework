@@ -97,20 +97,20 @@ public enum ProjectItemCategory {
 ///
 public final class ProjectItem: NSObject {
 
-  let category:   ProjectItemCategory     // The flavour of the item and flavour-specific information
-  var identifier: String                  // Identifier that is used to display the item — mutable to rename
+  public let category:   ProjectItemCategory   // The flavour of the item and flavour-specific information
+  public var identifier: String                // Identifier that is used to display the item — mutable to rename
 
   /// The project view model that this item belongs to. (Weak reference as this item is owned by the model.)
   ///
-  weak var viewModel: HFMProjectViewModel!
+  public weak var viewModel: HFMProjectViewModel!
 
-  weak var parent:      ProjectItem?      // Current parent item unless `catagory` is `.Group`
-       var children:    [ProjectItem]     // All items that comprise the content of the current one
-       var fileWrapper: NSFileWrapper?    // Associated file wrapper containing the contents as represented on the file
-                                          // system. It is `nil` iff item not yet in project file wrapper structure.
+  public weak var parent:      ProjectItem?    // Current parent item unless `catagory` is `.Group`
+  public      var children:    [ProjectItem]   // All items that comprise the content of the current one
+  public      var fileWrapper: NSFileWrapper?  // Associated file wrapper containing the contents represented on the file
+                                               // system. It is `nil` iff item not yet in project file wrapper structure.
 
-  private var dirtyFileContents: String?  // Non-nil if the associated file has been changed and still needs to be saved.
-  dynamic var fileContents:      String { // KVO complaint access to the file contents associated with this item
+  private         var dirtyFileContents: String?  // Non-nil if associated file was changed & still needs to be saved.
+  public  dynamic var fileContents:      String { // KVO complaint access to the file contents associated with the item
     get {
       if let fileContents = dirtyFileContents { return fileContents }
       if let wrapper = fileWrapper {
@@ -288,29 +288,29 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
   let haskellFileExtension    = HFMProjectViewModel.haskellFileExtension()
   var children: [ProjectItem] = []
 
-  for (fname, subdict) in pathDict {
+  for (name, subdict) in pathDict {
 
-    let fnameDict = subdict as [String: AnyObject]
+    let nameDict = subdict as [String: AnyObject]
 
-    var identifier = fname
-    let isFolder   = fnameDict.count > 0
-    let isMainFile = !isFolder && fname.pathExtension == haskellFileExtension
+    var identifier = name
+    let isFolder   = nameDict.count > 0
+    let isMainFile = !isFolder && name.pathExtension == haskellFileExtension
     var playground: ProjectViewModelPlayground?
 
     if (asSourceModules && !isFolder) {     // We have got a Haskell source file
 
         // Only the main file has an extension in the model => add it to all other sources
-      if !isMainFile { identifier = fname.stringByAppendingPathExtension(haskellFileExtension)! }
+      if !isMainFile { identifier = name.stringByAppendingPathExtension(haskellFileExtension)! }
 
         // Get the associated playground
-      if let playgroundFilename = ProjectViewModelPlayground.implicitPlaygroundFilename(fname) {
+      if let playgroundFilename = ProjectViewModelPlayground.implicitPlaygroundFilename(identifier) {
         if let playgroundFileWrapper = rootFileWrapper.fileWrappers[playgroundFilename] as? NSFileWrapper {
 
           playground = ProjectViewModelPlayground(fileWrapper: playgroundFileWrapper, model: viewModel)
 
         } else {
 
-          playground = ProjectViewModelPlayground(identifier: fname, model: viewModel)
+          playground = ProjectViewModelPlayground(identifier: identifier, model: viewModel)
 
         }
       }
@@ -319,12 +319,12 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
                                                : .Other
       let category: ProjectItemCategory    = isFolder ? .Folder
                                                       : .File(details: fileDetails)
-      if let fileWrapper = rootFileWrapper.fileWrappers[fname] as? NSFileWrapper {
+      if let fileWrapper = rootFileWrapper.fileWrappers[identifier] as? NSFileWrapper {
 
         let makeChildren = { newParent in
-                               childrenFromDictionary(fileWrapper, fnameDict, asSourceModules, viewModel, newParent)}
+                               childrenFromDictionary(fileWrapper, nameDict, asSourceModules, viewModel, newParent)}
         children.append(ProjectItem(itemCategory: category,
-                                    identifier: fname,
+                                    identifier: identifier,
                                     viewModel: viewModel,
                                     parent: parent,
                                     fileWrapper: fileWrapper,
@@ -334,7 +334,7 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
 
           // This shouldn't happen...
         children.append(ProjectItem(itemCategory: category,
-                                    identifier: fname,
+                                    identifier: identifier,
                                     viewModel: viewModel,
                                     parent: parent,
                                     fileWrapper: nil,
@@ -441,115 +441,117 @@ extension ProjectItem {
 //
 extension ProjectItem {
 
-  var isGroup: Bool { get { return groupCategory != nil } }
+  public var isGroup: Bool {
+    switch category {
+    case .Group(_): return true
+    default:        return false
+    } }
 
   /// Determine the group category in which the item is located in the view model.
   ///
-  var groupCategory: ProjectGroupCategory? { get {
+  public var groupCategory: ProjectGroupCategory? {
     switch category {
     case .Group(category: let category): return category
     default:                             if let parent = parent { return parent.groupCategory } else { return nil }
-    } } }
+    } }
 
   /// Whether the item is located in the executable group.
   ///
-  var isInExecutableCategory: Bool { get {
+  public var isInExecutableCategory: Bool {
     switch groupCategory {
     case .Some(.Executable): return true
     default:                 return false
-    }
     } }
 
   /// Whether the item is located in the extra source group.
   ///
-  var isInExtraSourceCategory: Bool { get {
+  public var isInExtraSourceCategory: Bool {
     switch groupCategory {
     case .Some(.ExtraSource): return true
     default:                  return false
-    }
     } }
 
   /// Whether the item is located in the data group.
   ///
-  var isInDataCategory: Bool {
+  public var isInDataCategory: Bool {
     switch groupCategory {
     case .Some(.Data): return true
     default:           return false
     } }
 
-  var isPackageGroup: Bool {
+  public var isPackageGroup: Bool {
     switch category {
     case .Group(category: .Package): return true
     default:                         return false
     } }
 
-  var isExtraSourceGroup: Bool {
+  public var isExtraSourceGroup: Bool {
     switch category {
     case .Group(category: .ExtraSource): return true
     default:                             return false
     } }
 
-  var isDataGroup: Bool {
+  public var isDataGroup: Bool {
     switch category {
     case .Group(category: .Data): return true
     default:                      return false
     } }
 
-  var isPackage: Bool {
+  public var isPackage: Bool {
     switch category {
     case .Package: return true
     default:       return false
     } }
 
-  var isExecutable: Bool {
+  public var isExecutable: Bool {
     switch category {
     case .Executable: return true
     default:          return false
     } }
 
-  var isFileGroup: Bool {
+  public var isFileGroup: Bool {
     switch category {
     case .FileGroup: return true
     default:         return false
     } }
 
-  var isFolder: Bool {
+  public var isFolder: Bool {
     switch category {
     case .Folder: return true
     default:      return false
     } }
 
-  var isFile: Bool {
+  public var isFile: Bool {
     switch category {
     case .File(details: _): return true
     default:                return false
     } }
 
-  var isMainFile: Bool {
+  public var isMainFile: Bool {
     switch category {
     case .File(details: .Haskell(isMainFile: let isMainFile, playground: _)) where isMainFile: return true
     default:                                                                                   return false
     } }
 
-  var playground: ProjectViewModelPlayground? {
+  public var playground: ProjectViewModelPlayground? {
     switch category {
     case .File(details: .Haskell(isMainFile: let _, playground: let playground)): return playground
     default:                                                                      return nil
     } }
 
-  var isEmptyFolder: Bool {
+  public var isEmptyFolder: Bool {
     switch category {
     case .Folder, .FileGroup: return children.map{$0.isEmptyFolder}.reduce(true){$0 && $1}
     default: return false
     } }
 
-  var isDirectory: Bool {                   // I.e., may have files as children
+  public var isDirectory: Bool {                   // I.e., may have files as children
     return isExtraSourceGroup || isDataGroup || isExecutable || isFolder || isFileGroup
     }
 
   /// Is the main file among the current item's subitems.
   ///
-  var containsMainFile: Bool {
+  public var containsMainFile: Bool {
     return children.map{ $0.isMainFile || $0.containsMainFile }.reduce(false){$0 || $1}
     }
 }

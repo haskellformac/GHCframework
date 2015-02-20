@@ -44,6 +44,7 @@
 		E739EF871A05F44C00236051 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; };
 		E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E739EF841A05F40200236051 /* GHC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E739EF921A07200C00236051 /* StyledSplitView.swift */; };
+		E73E01C81A9702D70031AF75 /* ViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73E01C71A9702D70031AF75 /* ViewModelTests.swift */; };
 		E74058061A899E1E004B3846 /* ThemesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74058051A899E1E004B3846 /* ThemesController.swift */; };
 		E74058081A89BB91004B3846 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74058071A89BB91004B3846 /* Theme.swift */; };
 		E742321C1A4EB18C0098DF7E /* OS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E742321B1A4EB18C0098DF7E /* OS.swift */; };
@@ -284,6 +285,7 @@
 		E73178161A01A58F00D8FDC0 /* ResultViewPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewPopover.xib; sourceTree = "<group>"; };
 		E739EF7F1A05F40100236051 /* GHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GHC.xcodeproj; path = ../GHC/GHC.xcodeproj; sourceTree = "<group>"; };
 		E739EF921A07200C00236051 /* StyledSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledSplitView.swift; sourceTree = "<group>"; };
+		E73E01C71A9702D70031AF75 /* ViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModelTests.swift; sourceTree = "<group>"; };
 		E74058051A899E1E004B3846 /* ThemesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemesController.swift; sourceTree = "<group>"; };
 		E74058071A89BB91004B3846 /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E742321B1A4EB18C0098DF7E /* OS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OS.swift; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 				E7258C491983CA85004789CF /* Experiments.playground */,
 				E76CD89619D1207700369A80 /* UtilitiesTests.swift */,
 				E76CD89819D4207E00369A80 /* HighlightingTests.swift */,
+				E73E01C71A9702D70031AF75 /* ViewModelTests.swift */,
 			);
 			path = HaskellForMacTests;
 			sourceTree = "<group>";
@@ -1331,6 +1334,7 @@
 			files = (
 				E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */,
 				E70D409719409AB700CA3455 /* CabalTest.swift in Sources */,
+				E73E01C81A9702D70031AF75 /* ViewModelTests.swift in Sources */,
 				E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */,
 				E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */,
 			);
