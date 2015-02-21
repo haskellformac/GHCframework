@@ -390,7 +390,7 @@ extension ProjectItem {
   /// directory.
   ///
   var filePath: String? { get {
-    if !regularFile { return nil }
+    if !(regularFile || isPackage) { return nil }
 
     var path:    [String]     = []
     var current: ProjectItem? = self
