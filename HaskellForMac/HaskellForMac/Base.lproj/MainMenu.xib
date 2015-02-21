@@ -125,6 +125,7 @@
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Sv8-rb-LU7"/>
                             <menuItem title="Open in External Editor" keyEquivalent="e" id="Vac-ev-Jna">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="openInEditor:" target="-1" id="Iu8-S8-8Lg"/>
                                 </connections>
