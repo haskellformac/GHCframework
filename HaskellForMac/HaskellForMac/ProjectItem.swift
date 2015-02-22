@@ -277,7 +277,8 @@ private func executableChildren(parent: ProjectItem) -> [ProjectItem] {
 // MARK: -
 // MARK: Auxiliary functions traversing file wrapper trees
 
-/// Compute an array of child items from their path dictionary and file wrapper structure.
+/// Compute an array of child items from their path dictionary and file wrapper structure. The children in the returned
+/// array are sorted by name.
 ///
 func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
                             pathDict:        [String: AnyObject],
@@ -342,13 +343,13 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
       }
     }
   }
-  return children
+  return children.sorted{ l, r in l.identifier <= r.identifier}
 }
 
 /// Given a wildcard pattern for a file group and the file wrapper at which it is rooted, return the file wrapper that
-/// contains the files in the file group.
+/// contains the files in the file group. (If the path doesn't exit in the file wrapper structure, return the first
+/// argument.)
 ///
-// FIXME: add tests for this function
 public func fileWrapperForFileGroup(rootFileWrapper: NSFileWrapper, wildcardPath: String) -> NSFileWrapper {
 
   let wildcardChars               = NSCharacterSet(charactersInString: "*")
@@ -362,7 +363,7 @@ public func fileWrapperForFileGroup(rootFileWrapper: NSFileWrapper, wildcardPath
         // File groups that include wildcards are always filenames (not just directory names) and must disregard the
         // filename wildcard component to determine their directory wrapper.
       let wildcardRange = component.rangeOfCharacterFromSet(wildcardChars)
-      if wildcardRange == nil { break }
+      if wildcardRange != nil { break }
 
       fileWrapper = wrapper.fileWrappers[component] as? NSFileWrapper
 
