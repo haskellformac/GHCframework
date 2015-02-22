@@ -23,19 +23,6 @@
 // Forward declaration to avoid cycles through the bridging header.
 @class ProjectItemGroups;
 
-/// The indices of the various fixed toplevel group items.
-//
-//  IMPORTANT: The order here must match that of the initialisation of 'groupItems'.
-//
-// FIXME: can we get rid of this already??
-typedef NS_ENUM(NSUInteger, PVMGroupIndex) {
-  PVMItemGroupIndexPackage = 0,         // Package group (this must be the *first* index)
-  PVMItemGroupIndexExecutable,          // Executable group
-  PVMItemGroupIndexExtraSource,         // Extra source group
-  PVMItemGroupIndexData                 // Data group
-};
-#define PVM_ITEM_GROUP_INDEX_LAST   PVMItemGroupIndexData
-
 
 @interface HFMProjectViewModel : NSObject
 

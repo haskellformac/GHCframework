@@ -594,17 +594,15 @@ extension ProjectItem {
         if let data = newFileContents.dataUsingEncoding(NSUTF8StringEncoding) {
 
           if let oldFileWrapper = fileWrapper { parentFileWrapper.removeFileWrapper(oldFileWrapper) }
-          let name = parentFileWrapper.addRegularFileWithContents(data, preferredFilename: identifier)
+          let filename = isPackage ? viewModel.cabalFileName : identifier
+          let name     = parentFileWrapper.addRegularFileWithContents(data, preferredFilename: filename)
           fileWrapper = (parentFileWrapper.fileWrappers[name] as? NSFileWrapper)!
 
-        } else { NSLog("%s: can't encode file '$@'", __FUNCTION__, identifier) }
+        } else { NSLog("%@: can't encode file '$@'", __FUNCTION__, identifier) }
 
-      return fileWrapper
       }
+      return fileWrapper
     }
-
-    NSLog("%s: fell through switch — should never get here", __FUNCTION__)
-    return nil
   }
 }
 
@@ -676,7 +674,7 @@ extension ProjectItem {
   /// Create a new item for a Haskell source file as a child of the current item at the given child index.
   ///
   func newHaskellSourceAtIndex(index: Int) -> Bool {
-    if !isDirectory || fileWrapper != nil || (isGroup && !isExtraSourceGroup) { return false }
+    if !isDirectory || fileWrapper == nil || (isGroup && !isExtraSourceGroup) { return false }
     if children.count < index { return false }
 
     let hsExtension = HFMProjectViewModel.haskellFileExtension()
@@ -723,7 +721,7 @@ extension ProjectItem {
 
       // Remove the model view item.
     if !(children as NSArray).containsObject(childItem) { return false }
-    children.filter{ $0 !== childItem }
+    children = children.filter{ $0 !== childItem }
 
     // Remove the associated file wrapper.
     if let wrapper = fileWrapper {

@@ -47,9 +47,9 @@ extension ProjectItemGroups {
     if let item = groups[category] {
 
       if let fileWrapper = item.viewModel.fileWrapper { updateFileWrapper(fileWrapper, item) }
-      else { NSLog("%s: missing toplevel file wrapper for  %@", __FUNCTION__, category.description) }
+      else { NSLog("%@: missing toplevel file wrapper for  %@", __FUNCTION__, category.description) }
 
-    } else { NSLog("%s: missing group item: %@", __FUNCTION__, category.description) }
+    } else { NSLog("%@: missing group item: %@", __FUNCTION__, category.description) }
   }
 }
 
@@ -99,6 +99,6 @@ private func updateFileWrapper(parentFileWrapper: NSFileWrapper, item: ProjectIt
     item.cleanFileWrapperWithParent(parentFileWrapper)
     if let playground = item.playground { playground.cleanFileWrapperWithParent(parentFileWrapper) }
 
-    if item.children.count > 0 { NSLog("%s: file item has got %@ children", __FUNCTION__, item.children.count) }
+    if item.children.count > 0 { NSLog("%@: file item has got %@ children", __FUNCTION__, item.children.count) }
   }
 }

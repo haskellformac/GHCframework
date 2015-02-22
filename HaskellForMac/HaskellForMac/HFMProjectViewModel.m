@@ -449,7 +449,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 - (void)updateExecutableGroup:(NSArray/*<ProjectItem>*/*)items
 {
     // For the moment, we have got a single executable.
-  if (items.count != 1 || ((ProjectItem*)[items firstObject]).isExecutable)
+  if (items.count != 1 || !((ProjectItem*)[items firstObject]).isExecutable)
     return;
   else
     items = ((ProjectItem*)[items firstObject]).children;
@@ -518,7 +518,7 @@ NSDictionary *itemsToDictTree(NSArray *items, BOOL asSourceModules)
   for (ProjectItem *item in items)
   {
     NSDictionary *children = itemsToDictTree(item.children, asSourceModules);
-    NSString     *name     = (asSourceModules && item.isMainFile)
+    NSString     *name     = (asSourceModules && !item.isMainFile)
                              ? [item.identifier stringByDeletingPathExtension]      // remove ".hs" for sources
                              : item.identifier;
 
