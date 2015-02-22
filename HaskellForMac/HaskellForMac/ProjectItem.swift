@@ -315,32 +315,32 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
 
         }
       }
-      let fileDetails: ProjectFileCategory = (asSourceModules && playground != nil)
-                                               ? .Haskell(isMainFile: isMainFile, playground: playground!)
-                                               : .Other
-      let category: ProjectItemCategory    = isFolder ? .Folder
-                                                      : .File(details: fileDetails)
-      if let fileWrapper = rootFileWrapper.fileWrappers[identifier] as? NSFileWrapper {
+    }
+    let fileDetails: ProjectFileCategory = (asSourceModules && playground != nil)
+                                           ? .Haskell(isMainFile: isMainFile, playground: playground!)
+                                           : .Other
+    let category: ProjectItemCategory    = isFolder ? .Folder
+                                                    : .File(details: fileDetails)
+    if let fileWrapper = rootFileWrapper.fileWrappers[identifier] as? NSFileWrapper {
 
-        let makeChildren = { newParent in
-                               childrenFromDictionary(fileWrapper, nameDict, asSourceModules, viewModel, newParent)}
-        children.append(ProjectItem(itemCategory: category,
-                                    identifier: identifier,
-                                    viewModel: viewModel,
-                                    parent: parent,
-                                    fileWrapper: fileWrapper,
-                                    children: makeChildren))
+      let makeChildren = { newParent in
+                             childrenFromDictionary(fileWrapper, nameDict, asSourceModules, viewModel, newParent)}
+      children.append(ProjectItem(itemCategory: category,
+                                  identifier: identifier,
+                                  viewModel: viewModel,
+                                  parent: parent,
+                                  fileWrapper: fileWrapper,
+                                  children: makeChildren))
 
-      } else {
+    } else {
 
-          // This shouldn't happen...
-        children.append(ProjectItem(itemCategory: category,
-                                    identifier: identifier,
-                                    viewModel: viewModel,
-                                    parent: parent,
-                                    fileWrapper: nil,
-                                    children: const([])))
-      }
+        // This shouldn't happen...
+      children.append(ProjectItem(itemCategory: category,
+                                  identifier: identifier,
+                                  viewModel: viewModel,
+                                  parent: parent,
+                                  fileWrapper: nil,
+                                  children: const([])))
     }
   }
   return children.sorted{ l, r in l.identifier <= r.identifier}

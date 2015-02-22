@@ -57,6 +57,24 @@ let srcWrapper                  = NSFileWrapper(directoryWithFileWrappers: [ "Te
 let sourceDirHSProjWrapper      = NSFileWrapper(directoryWithFileWrappers: [ "Test.cabal":     sourceDirCabalFileWrapper
                                                                            , "src":            srcWrapper])
 
+let otherDirCabalFile =
+  "name: Test\n" +
+  "version: 1.0\n" +
+  "cabal-version: 1.6\n" +
+  "build-type: Simple\n" +
+  "Executable FileTest\n" +
+  "  main-is: Test.hs\n" +
+  "  other-modules: Other.OtherSource\n" +
+  "  hs-source-dirs: src\n"
+
+let otherDirCabalFileWrapper   =
+  NSFileWrapper(regularFileWithContents: otherDirCabalFile.dataUsingEncoding(NSUTF8StringEncoding)!)
+let otherWrapper               = NSFileWrapper(directoryWithFileWrappers: [ "OtherSource.hs": otherSourceHSWrapper ])
+let srcOtherWrapper            = NSFileWrapper(directoryWithFileWrappers: [ "Test.hs": testHSWrapper
+                                                                          , "Other":   otherWrapper])
+let otherDirHSProjWrapper      = NSFileWrapper(directoryWithFileWrappers: [ "Test.cabal":     otherDirCabalFileWrapper
+                                                                          , "src":            srcOtherWrapper])
+
 
 class ViewModelTests: XCTestCase {
 
@@ -170,7 +188,6 @@ class ViewModelTests: XCTestCase {
     XCTAssertEqual(viewModel.groupItems.extraSourceGroupItem.children.count, 0)
     XCTAssertEqual(viewModel.groupItems.dataGroupItem.children.count, 0)
 
-    let cabalFileItem: ProjectItem = viewModel.groupItems.packageGroupItem.children[0]
     let executableItem: ProjectItem = viewModel.groupItems.executableGroupItem.children[0]
     XCTAssert(executableItem.isExecutable, "Executable Group?")
     XCTAssertEqual(executableItem.children.count, 1)
@@ -191,5 +208,39 @@ class ViewModelTests: XCTestCase {
     XCTAssertEqual(mainFileItem.children.count, 0)
     XCTAssertEqual(mainFileItem.identifier, "Test.hs")
     XCTAssertEqual(mainFileItem.fileWrapper!.preferredFilename, "Test.hs")
+  }
+
+  func testOtherDirStructure() {
+    let viewModel = HFMProjectViewModel(projectFileWrapper: otherDirHSProjWrapper,
+      cabalFileWrapper: otherDirCabalFileWrapper,
+      documentURL: NSURL(fileURLWithPath: "/tmp/Test.hsproj"))  // this is fake/not used
+    let groupItems: ProjectItemGroups = viewModel.groupItems
+
+    XCTAssertEqual(viewModel.groupItems.packageGroupItem.children.count, 1)
+    XCTAssertEqual(viewModel.groupItems.executableGroupItem.children.count, 1)
+    XCTAssertEqual(viewModel.groupItems.extraSourceGroupItem.children.count, 0)
+    XCTAssertEqual(viewModel.groupItems.dataGroupItem.children.count, 0)
+
+    let executableItem: ProjectItem = viewModel.groupItems.executableGroupItem.children[0]
+
+    let srcDirItem: ProjectItem = executableItem.children[0]
+    XCTAssertEqual(srcDirItem.children.count, 2)
+    XCTAssertEqual(srcDirItem.identifier, "src")
+    XCTAssertEqual(srcDirItem.fileWrapper!.preferredFilename, "src")
+
+    let otherItem: ProjectItem = srcDirItem.children[0]            // children are sorted by identifiers
+    XCTAssertEqual(otherItem.children.count, 1)
+    XCTAssertEqual(otherItem.identifier, "Other")
+    XCTAssertEqual(otherItem.fileWrapper!.preferredFilename, "Other")
+
+    let mainFileItem: ProjectItem = srcDirItem.children[1]
+    XCTAssertEqual(mainFileItem.children.count, 0)
+    XCTAssertEqual(mainFileItem.identifier, "Test.hs")
+    XCTAssertEqual(mainFileItem.fileWrapper!.preferredFilename, "Test.hs")
+
+    let otherSourceItem: ProjectItem = otherItem.children[0]   // children are sorted by identifiers
+    XCTAssertEqual(otherSourceItem.children.count, 0)
+    XCTAssertEqual(otherSourceItem.identifier, "OtherSource.hs")
+    XCTAssertEqual(otherSourceItem.fileWrapper!.preferredFilename, "OtherSource.hs")
   }
 }
