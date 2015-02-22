@@ -389,7 +389,7 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
 
     // Then, we recreate the file-dependent project properties from the model view items — this will change data in the
     // Cabal file if any files were added, deleted, or their names edited
-  [self updateDataGroup:self.groupItems.packageGroupItem.children];
+  [self updateDataGroup:self.groupItems.dataGroupItem.children];
   [self updateExecutableGroup:self.groupItems.executableGroupItem.children];
   [self updateExtraSourceGroup:self.groupItems.extraSourceGroupItem.children];
 

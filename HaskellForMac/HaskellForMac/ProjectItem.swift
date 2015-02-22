@@ -681,16 +681,20 @@ extension ProjectItem {
     let usedNames   = children.map{$0.identifier.stringByDeletingPathExtension}
     let identifier  = nextName("NewSource", usedNames).stringByAppendingPathExtension(hsExtension)!
 
-    let newPlayground = ProjectViewModelPlayground(identifier: identifier, model: viewModel)
-    let newChild      = ProjectItem(itemCategory: .File(details: .Other),
-                                    identifier: identifier,
-                                    viewModel: viewModel,
-                                    parent: self,
-                                    fileWrapper: nil,
-                                    children: const([]))
-    children.insert(newChild, atIndex: index)
-    newChild.fileContents = ""                     // This marks the items as dirty.
-    return true
+    if let newPlayground = ProjectViewModelPlayground(identifier: identifier, model: viewModel) {
+
+      let details       = ProjectFileCategory.Haskell(isMainFile: false, playground: newPlayground)
+      let newChild      = ProjectItem(itemCategory: .File(details: details),
+                                      identifier: identifier,
+                                      viewModel: viewModel,
+                                      parent: self,
+                                      fileWrapper: nil,
+                                      children: const([]))
+      children.insert(newChild, atIndex: index)
+      newChild.fileContents = ""                     // This marks the items as dirty.
+      return true
+
+    } else { return false}
   }
 
   /// Move the current item from the view model and the file wrapper structure.
