@@ -11,12 +11,19 @@
 #import "HFMWindowController.h"
 
 
+  // Identifiers for buttons associated with the source view.
+NSString *kOutlineViewButtonAdd    = @"NavigatorAdd";
+NSString *kOutlineViewButtonAction = @"NavigatorAction";
+
 @interface HFMWindowController ()
 
 // Views in 'ProjectWindow.xib'
 //
-@property (weak) IBOutlet NSScrollView    *outlineScrollView;
-@property (weak) IBOutlet NSOutlineView   *outlineView;
+@property (weak)   IBOutlet NSScrollView    *outlineScrollView;
+@property (weak)   IBOutlet NSOutlineView   *outlineView;
+@property (strong) IBOutlet NSMenu          *outlineViewAddMenu;
+@property (strong) IBOutlet NSMenu          *outlineViewActionMenu;
+
 @property (weak) IBOutlet StyledSplitView *splitView;
 @property (weak) IBOutlet NSView          *editorView;
 @property (weak) IBOutlet NSTextField     *noEditorLabel;
@@ -468,6 +475,23 @@ NSString *const kCabalCellID = @"cabalCellID";
         // Mark document as edited.
       [self.document updateChangeCount:NSChangeDone];
     }
+  }
+}
+
+#pragma mark NSOutlineView button and button menu target-action methods
+
+- (IBAction)buttonPush:(NSButton *)button
+{
+  NSPoint loc = (NSPoint){5, CGRectGetMinY(button.bounds) - 20};   // FIXME: dodgy constant: whats the height of a menu item?
+  if ([button.identifier isEqualToString:kOutlineViewButtonAdd]) {               // Pop up the add menu
+
+    NSMenuItem *lastItem = [self.outlineViewAddMenu itemAtIndex:[self.outlineViewAddMenu numberOfItems] - 1];
+    [self.outlineViewAddMenu popUpMenuPositioningItem:lastItem atLocation:loc inView:button];
+
+  } else if ([button.identifier isEqualToString:kOutlineViewButtonAction]) {     // Pop up the action menu
+
+    NSMenuItem *lastItem = [self.outlineViewActionMenu itemAtIndex:[self.outlineViewActionMenu numberOfItems] - 1];
+    [self.outlineViewActionMenu popUpMenuPositioningItem:lastItem atLocation:loc inView:button];
   }
 }
 
