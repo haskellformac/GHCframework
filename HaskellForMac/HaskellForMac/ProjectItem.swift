@@ -677,30 +677,43 @@ extension ProjectItem {
     } else { return false }
   }
 
-  /// Create a new item for a Haskell source file as a child of the current item at the given child index.
+  /// Create a new item of the current item at the given child index.
   ///
-  func newHaskellSourceAtIndex(index: Int) -> Bool {
-    if !isDirectory || fileWrapper == nil || (isGroup && !isExtraSourceGroup) { return false }
+  /// `folderWanted` indicates whether the item should represent a file or folder. Depending on the group into which the
+  /// the item is inserted, files will be created as Haskell files or plain text files.
+  ///
+  func newItemAtIndex(index: Int, folder folderWanted: Bool) -> Bool {
+    if !isDirectory || fileWrapper == nil || (isGroup && isExecutableGroup) { return false }
     if children.count < index { return false }
 
-    let hsExtension = HFMProjectViewModel.haskellFileExtension()
-    let usedNames   = children.map{$0.identifier.stringByDeletingPathExtension}
-    let identifier  = nextName("NewSource", usedNames).stringByAppendingPathExtension(hsExtension)!
+    let createModule   = !folderWanted && isInExecutableCategory
+    let baseName       = createModule ? "NewModule" : (folderWanted ? "NewFolder" : "NewText")
+    let fileExtension  = createModule ? HFMProjectViewModel.haskellFileExtension()
+                                      : (folderWanted ? nil : HFMProjectViewModel.textFileExtension())
 
-    if let newPlayground = ProjectViewModelPlayground(identifier: identifier, model: viewModel) {
+      // Determine the name of the new item.
+    let usedNames      = children.map{$0.identifier.stringByDeletingPathExtension}
+    let baseIdentifier = nextName(baseName, usedNames)
+    let identifier     = (fileExtension == nil) ? baseIdentifier
+                                                : baseIdentifier.stringByAppendingPathExtension(fileExtension)!
 
-      let details       = ProjectFileCategory.Haskell(isMainFile: false, playground: newPlayground)
-      let newChild      = ProjectItem(itemCategory: .File(details: details),
-                                      identifier: identifier,
-                                      viewModel: viewModel,
-                                      parent: self,
-                                      fileWrapper: nil,
-                                      children: const([]))
-      children.insert(newChild, atIndex: index)
-      newChild.fileContents = ""                     // This marks the items as dirty.
-      return true
+      // Determine the item category.
+    let newPlayground = createModule ? ProjectViewModelPlayground(identifier: identifier, model: viewModel) : nil
+    let details       = (newPlayground == nil) ? ProjectFileCategory.Other
+                                               : ProjectFileCategory.Haskell(isMainFile: false, playground: newPlayground!)
+    let category      = folderWanted ? ProjectItemCategory.Folder
+                                     : ProjectItemCategory.File(details: details)
 
-    } else { return false}
+      // Create the item.
+    let newChild      = ProjectItem(itemCategory: category,
+                                    identifier: identifier,
+                                    viewModel: viewModel,
+                                    parent: self,
+                                    fileWrapper: nil,
+                                    children: const([]))
+    children.insert(newChild, atIndex: index)
+    if !folderWanted { newChild.fileContents = "" }                     // This marks file items as dirty.
+    return true
   }
 
   /// Create a new item for folder as a child of the current item at the given child index.

@@ -70,12 +70,12 @@
                 <menuItem title="File" id="83">
                     <menu key="submenu" title="File" id="81">
                         <items>
-                            <menuItem title="New Haskell File…" keyEquivalent="n" id="ltb-YK-l0u">
+                            <menuItem title="New File" keyEquivalent="n" id="ltb-YK-l0u">
                                 <connections>
                                     <action selector="newFile:" target="-1" id="jLq-3h-igy"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Folder…" keyEquivalent="n" id="cf3-Kd-HZF">
+                            <menuItem title="New Folder" keyEquivalent="n" id="cf3-Kd-HZF">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newFolder:" target="-1" id="QBf-3P-QrX"/>

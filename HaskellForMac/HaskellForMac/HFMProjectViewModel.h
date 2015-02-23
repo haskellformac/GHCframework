@@ -79,6 +79,11 @@
 ///
 + (NSString *)haskellPlaygroundFileExtension;
 
+/// The file extension of plain text files.
+///
++ (NSString *)textFileExtension;
+
+
 
 #pragma mark -
 #pragma mark Initialisation

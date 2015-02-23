@@ -56,6 +56,11 @@ static NSString *haskellPlaygroundFileExtension = @"hsplay";
   return haskellPlaygroundFileExtension;
 }
 
+static NSString *textFileExtension = @"txt";
++ (NSString *)textFileExtension
+{
+  return textFileExtension;
+}
 
 
 #pragma mark -

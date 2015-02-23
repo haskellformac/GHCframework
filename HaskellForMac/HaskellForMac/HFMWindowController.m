@@ -351,15 +351,15 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (IBAction)newFile:(NSMenuItem *)sender
 {
-  [self newFileOrFolder:sender file:YES];
+  [self newFileOrFolder:sender folder:NO];
 }
 
 - (IBAction)newFolder:(NSMenuItem *)sender
 {
-  [self newFileOrFolder:sender file:NO];
+  [self newFileOrFolder:sender folder:YES];
 }
 
-- (void)newFileOrFolder:(NSMenuItem *)sender file:(BOOL)fileWanted
+- (void)newFileOrFolder:(NSMenuItem *)sender folder:(BOOL)folderWanted
 {
   NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                       : [self.outlineView clickedRow];
@@ -371,7 +371,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   HFMProject  *project     = (HFMProject*)self.document;
 
     // Add a new source file or folder to the view model and if successful...
-  if (fileWanted ? [parentItem newHaskellSourceAtIndex:itemIndex] : [parentItem newFolderAtIndex:itemIndex]) {
+  if ([parentItem newItemAtIndex:itemIndex folder:folderWanted]) {
 
       // Update the outline view.
     [self.outlineView beginUpdates];
@@ -394,7 +394,7 @@ NSString *const kCabalCellID = @"cabalCellID";
     ProjectItem *newItem    = [project outlineView:self.outlineView child:itemIndex ofItem:parentItem];
     NSInteger    newItemRow = [self.outlineView rowForItem:newItem];
     [self.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)newItemRow] byExtendingSelection:NO];
-    [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.3];
+    [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.4];
       // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
       //     delay editing. It does seem like a hack, though. Is there a better way to achieve this?
   }

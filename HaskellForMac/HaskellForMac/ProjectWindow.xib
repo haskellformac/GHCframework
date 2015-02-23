@@ -199,12 +199,12 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="52K-Yi-JKR"/>
-                <menuItem title="New Haskell File…" keyEquivalent="n" id="riO-uK-qYK">
+                <menuItem title="New File" keyEquivalent="n" id="riO-uK-qYK">
                     <connections>
                         <action selector="newFile:" target="-1" id="9FO-v6-Y3H"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Folder…" keyEquivalent="n" id="sEp-9w-qIj">
+                <menuItem title="New Folder" keyEquivalent="n" id="sEp-9w-qIj">
                     <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                     <connections>
                         <action selector="newFolder:" target="-1" id="mg1-0s-SAf"/>
