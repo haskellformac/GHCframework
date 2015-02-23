@@ -486,6 +486,12 @@ extension ProjectItem {
     default:                         return false
     } }
 
+  public var isExecutableGroup: Bool {
+    switch category {
+    case .Group(category: .Executable): return true
+    default:                            return false
+    } }
+
   public var isExtraSourceGroup: Bool {
     switch category {
     case .Group(category: .ExtraSource): return true
@@ -696,6 +702,25 @@ extension ProjectItem {
 
     } else { return false}
   }
+
+  /// Create a new item for folder as a child of the current item at the given child index.
+  ///
+  func newFolderAtIndex(index: Int) -> Bool {
+    if !isDirectory || fileWrapper == nil || (isGroup && isExecutableGroup) { return false }
+    if children.count < index { return false }
+
+    let usedNames   = children.map{$0.identifier.stringByDeletingPathExtension}
+    let identifier  = nextName("NewFolder", usedNames)
+
+    let newChild      = ProjectItem(itemCategory: .Folder,
+                                    identifier: identifier,
+                                    viewModel: viewModel,
+                                    parent: self,
+                                    fileWrapper: nil,
+                                    children: const([]))
+    children.insert(newChild, atIndex: index)
+    return true
+}
 
   /// Move the current item from the view model and the file wrapper structure.
   ///

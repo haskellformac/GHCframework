@@ -201,7 +201,7 @@
 {
 #pragma unused(outlineView)
   
-  return item.children.count > 0;
+  return item.isDirectory || item.isPackageGroup || item.isExecutableGroup;
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(ProjectItem *)item

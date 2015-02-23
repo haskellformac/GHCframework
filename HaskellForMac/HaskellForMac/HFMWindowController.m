@@ -38,7 +38,7 @@
 
 // If we are currently editing the name of an item in the outline view, this property will refer to that item.
 //
-// NB: This property only get set to the edited item iff `-rename:` was invoked via a menu action. If editing is
+// NB: This property only gets set to the edited item iff `-rename:` was invoked via a menu action. If editing is
 //     invoked by clicking a selected item, the edited item is the selected item instead.
 //
 @property (weak, nonatomic) ProjectItem    *editedItem;                // maybe nil
@@ -351,6 +351,16 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 - (IBAction)newFile:(NSMenuItem *)sender
 {
+  [self newFileOrFolder:sender file:YES];
+}
+
+- (IBAction)newFolder:(NSMenuItem *)sender
+{
+  [self newFileOrFolder:sender file:NO];
+}
+
+- (void)newFileOrFolder:(NSMenuItem *)sender file:(BOOL)fileWanted
+{
   NSInteger row = [self.outlineView clickedRow] == -1 ? [self.outlineView selectedRow]
                                                       : [self.outlineView clickedRow];
   if (row < 0) return;    // no item clicked or selected
@@ -360,8 +370,8 @@ NSString *const kCabalCellID = @"cabalCellID";
   NSInteger    itemIndex   = (parentItem == clickedItem) ? 0 : [clickedItem index] + 1;
   HFMProject  *project     = (HFMProject*)self.document;
 
-    // Add a new source file to the view model and if successful...
-  if ([parentItem newHaskellSourceAtIndex:itemIndex]) {
+    // Add a new source file or folder to the view model and if successful...
+  if (fileWanted ? [parentItem newHaskellSourceAtIndex:itemIndex] : [parentItem newFolderAtIndex:itemIndex]) {
 
       // Update the outline view.
     [self.outlineView beginUpdates];
@@ -370,23 +380,34 @@ NSString *const kCabalCellID = @"cabalCellID";
                              withAnimation:NSTableViewAnimationSlideDown];
     [self.outlineView endUpdates];
 
+      // Make sure the parent is expanded.
+      // NB: Testing suggests that it seems to be necessary to do this *after* updating the outline view above...
+    if (![self.outlineView isItemExpanded:parentItem])
+      [self.outlineView expandItem:parentItem];
+
       // Mark document as edited and save it to create the new file on external storage.
     [self.document updateChangeCount:NSChangeDone];
     [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
 
 
       // Select and enter editing mode for the newly added item.
-    ProjectItem *newItem = [project outlineView:self.outlineView child:itemIndex ofItem:parentItem];
+    ProjectItem *newItem    = [project outlineView:self.outlineView child:itemIndex ofItem:parentItem];
+    NSInteger    newItemRow = [self.outlineView rowForItem:newItem];
+    [self.outlineView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)newItemRow] byExtendingSelection:NO];
     [self performSelector:@selector(fileEdit:) withObject:newItem afterDelay:0.3];
       // NB: After returning from the current method, the selected row gets deselected, interrupting editing. So, we
       //     delay editing. It does seem like a hack, though. Is there a better way to achieve this?
   }
 }
 
+
 - (void)fileEdit:(ProjectItem *)editedItem
 {
+  NSInteger row = [self.outlineView rowForItem:editedItem];
+  if (row == -1) return;
+
   self.editedItem = editedItem;
-  [self.outlineView editColumn:0 row:[self.outlineView rowForItem:editedItem] withEvent:nil select:YES];
+  [self.outlineView editColumn:0 row:row withEvent:nil select:YES];
 }
 
 - (IBAction)rename:(NSMenuItem *)sender {
@@ -630,6 +651,11 @@ NSString *const kCabalCellID = @"cabalCellID";
     ProjectItem *item = [self.outlineView itemAtRow:row];
     return item.isDirectory || item.isFile;
 
+  } else if (action == @selector(newFolder:)) {
+
+    ProjectItem *item = [self.outlineView itemAtRow:row];
+    return item.isDirectory || item.isFile;
+    
   } else if (action == @selector(rename:)) {
 
     ProjectItem *item = [self.outlineView itemAtRow:row];

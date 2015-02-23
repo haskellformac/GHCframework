@@ -199,25 +199,31 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="52K-Yi-JKR"/>
-                <menuItem title="New Haskell File..." keyEquivalent="n" id="riO-uK-qYK">
+                <menuItem title="New Haskell File…" keyEquivalent="n" id="riO-uK-qYK">
                     <connections>
                         <action selector="newFile:" target="-1" id="9FO-v6-Y3H"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Add Existing Files..." keyEquivalent="a" id="Hm8-a0-oei">
+                <menuItem title="New Folder…" keyEquivalent="n" id="sEp-9w-qIj">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                    <connections>
+                        <action selector="newFolder:" target="-1" id="mg1-0s-SAf"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Existing Files…" keyEquivalent="a" id="Hm8-a0-oei">
                     <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                     <connections>
                         <action selector="addExistingFiles:" target="-1" id="AaG-AU-LoH"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Irr-x1-XlJ"/>
-                <menuItem title="Rename..." id="ix9-yX-tfJ" userLabel="Rename...">
+                <menuItem title="Rename…" id="ix9-yX-tfJ" userLabel="Rename...">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="rename:" target="-1" id="yx8-rr-OUo"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Delete..." id="qj1-TR-MYG">
+                <menuItem title="Delete…" id="qj1-TR-MYG">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>

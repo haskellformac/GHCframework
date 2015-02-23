@@ -75,6 +75,12 @@
                                     <action selector="newFile:" target="-1" id="jLq-3h-igy"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="New Folder…" keyEquivalent="n" id="cf3-Kd-HZF">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="newFolder:" target="-1" id="QBf-3P-QrX"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="New Project…" keyEquivalent="N" id="82">
                                 <connections>
                                     <action selector="newDocument:" target="-1" id="373"/>
