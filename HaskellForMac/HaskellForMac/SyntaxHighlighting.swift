@@ -350,7 +350,7 @@ public func tokens(lineTokenMap: LineTokenMap, inRange range: Range<Int>) -> [Hi
 
 extension CodeView {
 
-  func enableHighlighting(tokeniser: HighlightingTokeniser) {
+  func enableHighlighting(tokeniser: HighlightingTokeniser?) {
     layoutManager?.enableHighlighting(tokeniser)
   }
 
@@ -369,7 +369,7 @@ extension CodeView {
 
 extension NSLayoutManager {
 
-  func enableHighlighting(tokeniser: HighlightingTokeniser) {
+  func enableHighlighting(tokeniser: HighlightingTokeniser?) {
     (textStorage?.delegate as? CodeStorageDelegate)?.enableHighlighting(tokeniser)
   }
 

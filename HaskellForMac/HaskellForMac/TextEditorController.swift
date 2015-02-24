@@ -93,7 +93,7 @@ class TextEditorController: NSViewController {
 
 extension TextEditorController {
 
-  func enableHighlighting(tokeniser: HighlightingTokeniser) {
+  func enableHighlighting(tokeniser: HighlightingTokeniser?) {
 
       // If the text view isn't initialised yet, defer the set up until we awake from NIB loading.
     if let textView = self.textView {

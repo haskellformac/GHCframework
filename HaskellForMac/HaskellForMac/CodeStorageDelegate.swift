@@ -71,17 +71,18 @@ final class CodeStorageDelegate: NSObject {
     for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
       if let codeView = layoutManager.firstTextView as? CodeView {
         codeView.backgroundColor              = theme.background
+        codeView.textColor                    = theme.foreground
         codeView.insertionPointColor          = theme.cursor
         codeView.selectedTextAttributes       = [NSBackgroundColorAttributeName: theme.selection]
         codeView.textGutterView?.needsDisplay = true
-        codeView.highlight()
+        if highlightingTokeniser != nil { codeView.highlight() }
       }
     }
   }
 
   /// Set a tokeniser for highlighting.
   ///
-  func enableHighlighting(tokeniser: HighlightingTokeniser) {
+  func enableHighlighting(tokeniser: HighlightingTokeniser?) {
 
       // Register to receive font and theme setting information.
       // NB: We cannot register the code view itself for reporting as `NSTextView`s cannot have weak references.
@@ -90,10 +91,12 @@ final class CodeStorageDelegate: NSObject {
       themeChangeNotification: curry{ $0.newThemeForTextView($1) })
 
       // Set up highlighting.
-    highlightingTokeniser = tokeniser
-    lineMap               = lineTokenMap(textStorage.string, tokeniser)
-    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
-      layoutManager.highlight(lineMap)
+    if let tokeniser = tokeniser {
+      highlightingTokeniser = tokeniser
+      lineMap               = lineTokenMap(textStorage.string, tokeniser)
+      for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
+        layoutManager.highlight(lineMap)
+      }
     }
   }
 }

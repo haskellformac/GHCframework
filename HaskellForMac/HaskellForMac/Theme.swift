@@ -58,43 +58,6 @@ public struct Theme {
   var number:     ThemeAttributes    // Numeric constant
   var comment:    ThemeAttributes    // Single line or block comment
   var pragma:     ThemeAttributes    // Pragma specification
-
-//  init(name:       String,
-//       foreground: NSColor,
-//       background: NSColor,
-//       invisibles: NSColor,
-//       cursor:     NSColor,
-//       selection:  NSColor,
-//       keyword:    ThemeAttributes,
-//       keysymbol:  ThemeAttributes,
-//       varword:    ThemeAttributes,
-//       varsymbol:  ThemeAttributes,
-//       conword:    ThemeAttributes,
-//       consymbol:  ThemeAttributes,
-//       string:     ThemeAttributes,
-//       char:       ThemeAttributes,
-//       number:     ThemeAttributes,
-//       comment:    ThemeAttributes,
-//       pragma:     ThemeAttributes)
-//  {
-//    self.name = name
-//    self.foreground = foreground
-//    self.background = background
-//    self.invisibles = invisibles
-//    self.cursor     = cursor
-//    self.selection  = selection
-//    self.keyword = keyword
-//    self.keysymbol = keysymbol
-//    self.varword = varword
-//    self.varsymbol = varsymbol
-//    self.conword = conword
-//    self.consymbol = consymbol
-//    self.string = string
-//    self.char = char
-//    self.number = number
-//    self.comment = comment
-//    self.pragma = pragma
-//  }
 }
 
 extension Theme: Equatable {}

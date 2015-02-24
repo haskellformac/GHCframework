@@ -153,6 +153,7 @@ final class ContextController : NSObject {
                                              interactiveWorkingDirectory:
                                                project.fileURL!.path!.stringByAppendingPathComponent(item.viewModel?.dataDir ?? ""))
               {
+
                 config            = .HaskellEditor(editorController, playgroundController)
                 playground.memory = playgroundController
 
@@ -161,11 +162,14 @@ final class ContextController : NSObject {
 
                   // Register the tokeniser for syntax highlighting. (The editor depends on the playground for that.)
                 editorController.enableHighlighting(playgroundController.tokeniseHaskell(fileURL.path!))
+
               } else {
                 config = .TextEditor(editorController)
+                editorController.enableHighlighting(nil)      // Gentle theming
               }
             } else {
               config = .TextEditor(editorController)
+              editorController.enableHighlighting(nil)      // Gentle theming
             }
           } else {
             config = .NoEditor
