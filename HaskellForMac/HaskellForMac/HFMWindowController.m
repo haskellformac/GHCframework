@@ -323,7 +323,7 @@ NSString *const kCabalCellID = @"cabalCellID";
         NSAlert *alert        = [[NSAlert alloc] init];
         alert.messageText     = [NSString stringWithFormat:@"There already is a file called '%@' at this location.",
                                  fname];
-        alert.informativeText = @"If you add the new file, the contents of the existing file will be overwritten. (You can recover the old file from the trash.)";
+        alert.informativeText = @"If you add the new file, the contents of the existing file will be overwritten.";
         [alert addButtonWithTitle:@"Overwrite existing file"];
         [alert addButtonWithTitle:@"Keep the existing file"];
 

@@ -665,11 +665,6 @@ extension ProjectItem {
 
         if let overwrittenItem = children.filter({ $0.identifier == newIdentifier }).first {
 
-            // If a file with the same name already exists in the project, just update its data. (The caller will have made
-            // sure that overwriting the original file is ok and we put the original in the Trash, just in case.)
-//          if let destination = overwrittenItem.URL {
-//            NSFileManager.defaultManager().trashItemAtURL(destination, resultingItemURL: nil, error: nil)
-//          }
           overwrittenItem.replaceFileWrapper(newFileWrapper)
 
         } else {
