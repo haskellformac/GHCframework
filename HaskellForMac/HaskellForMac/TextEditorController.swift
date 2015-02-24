@@ -76,8 +76,8 @@ class TextEditorController: NSViewController {
       textStorage.delegate = codeStorageDelegate
     }
 
-      // Get the intial edited code.
-    textView.string = viewModelItem.fileContents;
+      // Get the intial edited code and updates on file wrapper changes.
+    viewModelItem.reportItemChanges(self, wrapperChangeNotification: curry{ $0.newContentsForCodeView($1) })
 
       // Set the item's path on the path control.
     self.pathControl.URL = NSURL(string: viewModelItem.filePath ?? "")
@@ -124,6 +124,13 @@ extension TextEditorController: NSTextDelegate {
 // MARK: Notifications
 
 extension TextEditorController {
+
+  /// NB: This is not for small incremental changes, but updates to the entire file, such as a change of the underlying
+  ///     file in the file system.
+  ///
+  func newContentsForCodeView(newContents: String) {
+    textView.string = newContents
+  }
 
   /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
   ///

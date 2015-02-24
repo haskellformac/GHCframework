@@ -262,7 +262,7 @@ extension ThemesController {
 
       // Prune stale notification callbacks.
     fontChangeNotifications = fontChangeNotifications.filter{ $0.unbox != nil }
-}
+  }
 
   /// Invoke all register callbacks waiting for theme changes.
   ///

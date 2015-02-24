@@ -86,6 +86,11 @@ public enum ProjectItemCategory {
   }
 }
 
+/// Notification for when the entire file contents changes due to update to the file wrapper, such as an underlying
+/// file system change.
+///
+typealias WrapperChangeNotification = String -> ()
+
 /// Each instance of this class represents one entity within the project.
 ///
 /// Invariants not captured in the type structure:
@@ -123,6 +128,12 @@ public final class ProjectItem: NSObject {
     }
     set { dirtyFileContents = newValue }
   }
+
+  /// Registered notifications.
+  ///
+  /// NB: The call back functions are weak references, they may go at any time, which implicitly unregisters them.
+  ///
+  private var wrapperChangeNotifications: [WeakApply<WrapperChangeNotification>]  = []
 
 
   // MARK: -
@@ -565,6 +576,37 @@ extension ProjectItem {
 
 
 // MARK: -
+// MARK: Item status changes
+
+extension ProjectItem {
+
+  /// Objects (e.g., editors) register to be notified of item changes. The notification is automatically
+  /// deregistered when the object gets deallocated. The callback will be executed right away with the initial value.
+  ///
+  /// We keep a strong reference to the callback functions, but *not* to the object.
+  ///
+  func reportItemChanges<S: AnyObject>(object:                    S,
+                                       wrapperChangeNotification: S -> WrapperChangeNotification)
+  {
+    wrapperChangeNotifications.append(WeakApply(wrapperChangeNotification, object))
+    wrapperChangeNotification(object)(fileContents)
+  }
+
+  /// Invoke all register callbacks waiting for font changes.
+  ///
+  private func notifyWrapperChange(newContents: String)
+  {
+    for notification in wrapperChangeNotifications {
+      if let callback = notification.unbox { callback(newContents) }
+    }
+
+    // Prune stale notification callbacks.
+    wrapperChangeNotifications = wrapperChangeNotifications.filter{ $0.unbox != nil }
+  }
+}
+
+
+// MARK: -
 // MARK: Flushing changes
 
 extension ProjectItem {
@@ -582,6 +624,8 @@ extension ProjectItem {
       if let oldFileWrapper = oldFileWrapper { parent.fileWrapper?.removeFileWrapper(oldFileWrapper) }
       parent.fileWrapper?.addFileWrapper(newFileWrapper)
     }
+
+    notifyWrapperChange(fileContents)
   }
 
   /// Produce a file wrapper for the item that (a) has all pending changes applied and (b) is properly referenced by
