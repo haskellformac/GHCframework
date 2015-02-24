@@ -93,7 +93,7 @@ public enum ProjectItemCategory {
 ///   * An item has *either* `children` *or* a `fileContent`. (We return "" as the file content for items with children
 ///     and ignore any updates.)
 ///   * If an item with `children` is associated with a file wrapper, it is always a directory file wrapper.
-///   * If an item with a `fileContent` is associated with a file wrapper, it is always a regular file wrapper.
+///   * If an item with a `fileContents` is associated with a file wrapper, it is always a regular file wrapper.
 ///
 public final class ProjectItem: NSObject {
 
@@ -569,6 +569,21 @@ extension ProjectItem {
 
 extension ProjectItem {
 
+  /// Replace this item's file wrapper with a new one and discard any uncommitted changes.
+  ///
+  /// This includes relacing the file wrapper in the file wrapper structure; i.e.; the item is clean afterwards.
+  ///
+  func replaceFileWrapper(newFileWrapper: NSFileWrapper) {
+    let oldFileWrapper = fileWrapper
+    dirtyFileContents  = nil
+    fileWrapper        = newFileWrapper
+
+    if let parent = parent {
+      if let oldFileWrapper = oldFileWrapper { parent.fileWrapper?.removeFileWrapper(oldFileWrapper) }
+      parent.fileWrapper?.addFileWrapper(newFileWrapper)
+    }
+  }
+
   /// Produce a file wrapper for the item that (a) has all pending changes applied and (b) is properly referenced by
   /// the given parent file wrapper.
   ///
@@ -632,49 +647,59 @@ extension ProjectItem {
   ///
   /// NB: Overwrites any existing file at the destination without further checking.
   ///
-  func copyFileAtURL(url: NSURL, toIndex: Int, error: NSErrorPointer) -> Bool {
-    if !isDirectory || fileWrapper != nil { return false }
-    if children.count < index { return false }
+  func copyFileAtURL(url: NSURL, toIndex index: Int, error: NSErrorPointer) -> Bool {
+    if !isDirectory || fileWrapper == nil { NSLog("%@: bad parent item", __FUNCTION__); return false }
+    if children.count < index { NSLog("%@: bad index: %@", __FUNCTION__, index); return false }
+    if url.filePathURL == nil { NSLog("%@: not a filepath URL: %@", __FUNCTION__, url); return false }
+    if let ext = url.pathExtension {
+      if isInExecutableCategory && ext != HFMProjectViewModel.haskellFileExtension() {
+        error.memory = NSError(domain: "Only Haskell files can be part of an executable", code: -1, userInfo: nil)
+        return false
+      }
+    }
 
+    if let newIdentifier = url.lastPathComponent {
 
-      // Attempt to copy the file. (We attempt to remove any file at the target's name first; if there is a name clash,
-      // the caller will have made sure that overwritting the original file is ok.)
-    let fileManager = NSFileManager.defaultManager()
-    if let identifier  = url.lastPathComponent {
-      if let destination = URL?.URLByAppendingPathComponent(identifier) {
+      let newFileWrapper = NSFileWrapper(URL: url, options: NSFileWrapperReadingOptions.Immediate, error: error)
+      if let newFileWrapper = newFileWrapper {
 
-        if fileManager.fileExistsAtPath(destination.path!) &&
-          !fileManager.trashItemAtURL(destination, resultingItemURL: nil, error: error) { return false }
-        if !fileManager.copyItemAtURL(url, toURL: destination, error: error) { return false }
+        if let overwrittenItem = children.filter({ $0.identifier == newIdentifier }).first {
+
+            // If a file with the same name already exists in the project, just update its data. (The caller will have made
+            // sure that overwriting the original file is ok and we put the original in the Trash, just in case.)
+//          if let destination = overwrittenItem.URL {
+//            NSFileManager.defaultManager().trashItemAtURL(destination, resultingItemURL: nil, error: nil)
+//          }
+          overwrittenItem.replaceFileWrapper(newFileWrapper)
+
+        } else {
+
+            // Create a new item of the appropriate type for this file wrapper and add it into the item and file wrapper
+            // structures.
+          var details: ProjectFileCategory
+          if isInExecutableCategory {
+
+            let newPlayground = ProjectViewModelPlayground(identifier: newIdentifier, model: viewModel)
+            details           = .Haskell(isMainFile: false, playground: newPlayground!)
+
+          } else {
+            details = .Other
+          }
+          let newChild = ProjectItem(itemCategory: .File(details: details),
+                                     identifier: newIdentifier,
+                                     viewModel: viewModel,
+                                     parent: self,
+                                     fileWrapper: newFileWrapper,
+                                     children: const([]))
+          children.insert(newChild, atIndex: index)
+          fileWrapper?.addFileWrapper(newFileWrapper)
+
+        }
+        return true
 
       } else { return false }
 
-
-      // FIXME: Could we instead use FileWrapper(url:options:error:) on the new child and addFileWrapper that to the dir?
-        // Update the current item's file wrapper (to pick up the new file).
-      if !(fileWrapper!.readFromURL(URL!, options: NSFileWrapperReadingOptions(0), error: error)) { return false }
-
-        // Grab the file wrapper of the new item, create the item, and write the updated Cabal file.
-      if let newItemFileWrapper = fileWrapper!.fileWrappers[identifier] as? NSFileWrapper {
-
-          // FIXME: generalise to also cover Haskell files
-        let newChild = ProjectItem(itemCategory: .File(details: .Other),
-                                   identifier: identifier,
-                                   viewModel: viewModel,
-                                   parent: self,
-                                   fileWrapper: newItemFileWrapper,
-                                   children: const([]))
-        children.insert(newChild, atIndex:index)
-
-        return viewModel.writeCabalFileWithError(error)
-
-      } else {
-
-        error.memory = NSError(domain: "HFM Internal Error", code: -1, userInfo: nil)
-        return false
-        
-      }
-    } else { return false }
+    } else { NSLog("%@: invalid source URL: %@", __FUNCTION__, url); return false }
   }
 
   /// Create a new item of the current item at the given child index.
@@ -716,25 +741,6 @@ extension ProjectItem {
     return true
   }
 
-  /// Create a new item for folder as a child of the current item at the given child index.
-  ///
-  func newFolderAtIndex(index: Int) -> Bool {
-    if !isDirectory || fileWrapper == nil || (isGroup && isExecutableGroup) { return false }
-    if children.count < index { return false }
-
-    let usedNames   = children.map{$0.identifier.stringByDeletingPathExtension}
-    let identifier  = nextName("NewFolder", usedNames)
-
-    let newChild      = ProjectItem(itemCategory: .Folder,
-                                    identifier: identifier,
-                                    viewModel: viewModel,
-                                    parent: self,
-                                    fileWrapper: nil,
-                                    children: const([]))
-    children.insert(newChild, atIndex: index)
-    return true
-}
-
   /// Move the current item from the view model and the file wrapper structure.
   ///
   /// NB: Force a save right away to update the file system!
@@ -765,9 +771,9 @@ extension ProjectItem {
     if !(children as NSArray).containsObject(childItem) { return false }
     children = children.filter{ $0 !== childItem }
 
-    // Remove the associated file wrapper.
+      // Remove the associated file wrapper.
     if let wrapper = fileWrapper {
-      wrapper.removeFileWrapper(childItem.fileWrapper!)
+      if let childWrapper = childItem.fileWrapper { wrapper.removeFileWrapper(childWrapper) }
     }
     return true
   }

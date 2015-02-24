@@ -39,8 +39,9 @@
                                     <rect key="frame" x="0.0" y="0.0" width="171" height="622"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiD-Li-Mgi">
-                                            <clipView key="contentView" misplaced="YES" drawsBackground="NO" id="oc1-de-xrA">
+                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiD-Li-Mgi">
+                                            <rect key="frame" x="0.0" y="21" width="171" height="601"/>
+                                            <clipView key="contentView" drawsBackground="NO" id="oc1-de-xrA">
                                                 <rect key="frame" x="1" y="1" width="148" height="505"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
@@ -50,7 +51,7 @@
                                                         <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn editable="NO" width="16" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
+                                                            <tableColumn editable="NO" width="168" minWidth="16" maxWidth="1000" id="VTn-Vj-yUe">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -64,7 +65,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="groupCellID" id="I7u-Bd-71O">
-                                                                        <rect key="frame" x="1" y="0.0" width="16" height="17"/>
+                                                                        <rect key="frame" x="1" y="0.0" width="168" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctX-vG-lXf">
@@ -81,7 +82,7 @@
                                                                         </connections>
                                                                     </tableCellView>
                                                                     <tableCellView identifier="cabalCellID" id="4gO-1G-Tms">
-                                                                        <rect key="frame" x="1" y="17" width="16" height="17"/>
+                                                                        <rect key="frame" x="1" y="17" width="168" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eg-Fr-H0x">
@@ -119,11 +120,11 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="CUP-aP-EjY"/>
                                             </constraints>
-                                            <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
                                                 <rect key="frame" x="1" y="490" width="18.5" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="0a6-6b-o8t">
+                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="0a6-6b-o8t">
                                                 <rect key="frame" x="-15" y="1" width="16" height="1"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>

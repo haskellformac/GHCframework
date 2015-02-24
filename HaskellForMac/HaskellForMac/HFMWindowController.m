@@ -290,7 +290,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   }
   if (!parentItem.fileWrapper.isDirectory) return;      // We can only add files to directories.
 
-    // Ensure that the document representation memory and on disk are in sync.
+    // Ensure that the document representation in memory and on disk are in sync.
     // NB: Do this before the open panel as it needs a run loop iteration to take effect.
   [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
 
@@ -299,7 +299,11 @@ NSString *const kCabalCellID = @"cabalCellID";
   NSOpenPanel *openPanel = [NSOpenPanel openPanel];
   openPanel.canChooseDirectories    = NO;
   openPanel.allowsMultipleSelection = YES;
-  openPanel.title                   = @"Add files";
+  if (parentItem.isInExecutableCategory) {
+    openPanel.allowedFileTypes      = @[[HFMProjectViewModel haskellFileExtension]];
+    openPanel.title                 = @"Add Haskell files";
+  } else
+    openPanel.title                 = @"Add files";
   openPanel.prompt                  = @"Add";
   if ([openPanel runModal] == NSFileHandlingPanelCancelButton) return;
 
@@ -308,14 +312,16 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     NSString *fname        = [url lastPathComponent];
     BOOL      skipThisFile = NO;
+    BOOL      nameClash    = NO;
     for (ProjectItem *child in parentItem.children) {
 
         // Name clash => ask user for resolution
-      if ([fname isEqualToString:child.identifier]) {
+      nameClash = [fname isEqualToString:child.identifier];
+      if (nameClash) {
 
           // Set up overwrite conformation alert.
         NSAlert *alert        = [[NSAlert alloc] init];
-        alert.messageText     = [NSString stringWithFormat:@"There is already a file called '%@' at this location.",
+        alert.messageText     = [NSString stringWithFormat:@"There already is a file called '%@' at this location.",
                                  fname];
         alert.informativeText = @"If you add the new file, the contents of the existing file will be overwritten. (You can recover the old file from the trash.)";
         [alert addButtonWithTitle:@"Overwrite existing file"];
@@ -338,22 +344,22 @@ NSString *const kCabalCellID = @"cabalCellID";
       return;
     }
 
-      // Update the outline view.
-      // FIXME: The animation is not visible as we revert the document a bit further down. We should also preserve the
-      //        selection, which is also messed up by reverting.
-    [self.outlineView beginUpdates];
-    [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)itemIndex]
-                                  inParent:parentItem
-                             withAnimation:NSTableViewAnimationSlideDown];
-    [self.outlineView endUpdates];
+      // Update the outline view if a new item was added.
+    if (!nameClash) {
 
+      [self.outlineView beginUpdates];
+      [self.outlineView insertItemsAtIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)itemIndex]
+                                    inParent:parentItem
+                               withAnimation:NSTableViewAnimationSlideDown];
+      [self.outlineView endUpdates];
+
+    }
+
+      // Mark document as edited.
+    [self.document updateChangeCount:NSChangeDone];
   }
-    // Re-read the project to ensure it is not regarded as changed by another app on the next save.
-  NSError *error;
-  if (![project revertToContentsOfURL:project.fileURL ofType:project.fileType error:&error])
-    NSLog(@"%s: problem reverting: %@", __func__, error);
-
-  // NB: Our model just changed, don't touch view model objects anymore, as they are all invalid now.
+    // Save the document to create the new files on external storage.
+  [project saveDocument:sender];    // FIXME: Is this really the right way to save the document programmatically?
 }
 
 - (IBAction)newFile:(NSMenuItem *)sender
@@ -668,7 +674,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
     ProjectItem *item = [self.outlineView itemAtRow:row];
     return (row == -1
-            || item.isInExtraSourceCategory || item.isInDataCategory);
+            || item.isDirectory || item.isFile);
 
   } else if (action == @selector(newFile:)) {
 
