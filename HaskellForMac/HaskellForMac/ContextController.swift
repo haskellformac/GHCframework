@@ -206,18 +206,16 @@ final class ContextController : NSObject {
 
         // Load the module.
       if let item = self.item {
-        // FIXME: We need to add getting the file path as a method
-        if let projectPath          = project.fileURL?.path? {
-          let fullFilename          = projectPath.stringByAppendingPathComponent(item.filePath!)
-          let importPaths: [String] = 
-            { switch self.project.projectModel.sourceDir {
-              case .None:                return [projectPath]
-              case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
-            }}()
-          if playground.loadContextModuleIntoPlayground(item.fileContents,
-                                                        file: fullFilename,
-                                                        importPaths: importPaths) {
-            playground.execute()
+        if let projectPath            = project.fileURL?.path? {
+          if let fullFilename         = item.URL?.path {
+            let importPaths: [String] =
+                  { switch self.project.projectModel.sourceDir {
+                    case .None:                return [projectPath]
+                    case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
+                    }}()
+            if playground.loadContextModuleIntoPlayground(item.fileContents,
+                                                          file: fullFilename,
+                                                          importPaths: importPaths) { playground.execute() }
           }
         }
       }

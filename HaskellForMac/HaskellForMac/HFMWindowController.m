@@ -339,8 +339,7 @@ NSString *const kCabalCellID = @"cabalCellID";
     NSError *error;
     if (![parentItem copyFileAtURL:url toIndex:itemIndex error:&error]) {
 
-      NSAlert *alert = [NSAlert alertWithError:error];
-      [alert runModal];
+      [(HFMProject *)self.document presentError:error];
       return;
     }
 
