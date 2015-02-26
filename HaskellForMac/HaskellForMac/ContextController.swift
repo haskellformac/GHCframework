@@ -49,6 +49,20 @@ private enum Configuration {
   }
 }
 
+/// Context changes that other system components need to react to.
+///
+enum ContextChange {
+
+    /// The view model item and, hence configuration, determining the context changed.
+  case ConfigurationChanged
+
+    /// The Haskell module of the context was successfully loaded into GHC.
+  case ModuleLoaded
+
+    /// Loading of the Haskell module of the context failed.
+  case ModuleLoadingFailed
+}
+
 // FIXME: We could get rid of the 'NSObject' superclass if we rewrite 'HFMWindowController' in Swift. Or we could make this a proper subclass of 'NSController'.
 final class ContextController : NSObject {
 
@@ -62,18 +76,28 @@ final class ContextController : NSObject {
 
   /// The current context configuration.
   ///
-  private var config = Configuration.NoEditor
+  private var config: Configuration = .NoEditor
+    { didSet { contextChanges.announce(.ConfigurationChanged) } }
 
-  /// Bin to collext issues for the context module.
+  /// Bin to collect issues for the context module.
   ///
   private var issues = IssuesForFile(file: "", issues: [:])
+
+  /// Stream of context changes over the lifetime of this context.
+  ///
+  let contextChanges: Changes<ContextChange> = Changes()
 
 
   // MARK: -
   // MARK: Initialisation
 
   init(project: HFMProject) {
+
     self.project = project
+    super.init()
+
+      // Observe asynchronous context changes on the main queue.
+    contextChanges.asyncObserveWithContext(self, observer: { context in context.contextChange })
   }
 
 
@@ -189,6 +213,33 @@ final class ContextController : NSObject {
     self.config = .NoEditor
   }
 
+  /// React to asynchronous context changes.
+  ///
+  func contextChange(change: ContextChange)
+  {
+    switch change {
+    case .ConfigurationChanged: ()
+
+    case .ModuleLoaded:         // Report any issues (warnings) and run the playground
+      switch self.config {
+
+      case .HaskellEditor(let editor, let playground):
+        if issues.issues.isEmpty { editor.updateIssues(.NoIssues) } else { editor.updateIssues(.Issues(issues)) }
+        playground.execute()
+
+      default: ()
+      }
+
+    case .ModuleLoadingFailed:  // Report the issues
+      switch self.config {
+
+      case .HaskellEditor(let editor, _):
+        if issues.issues.isEmpty { editor.updateIssues(.NoIssues) } else { editor.updateIssues(.Issues(issues)) }
+
+      default: ()
+      }
+    }
+  }
 
   // MARK: -
   // MARK: Module management
@@ -213,18 +264,12 @@ final class ContextController : NSObject {
                     case .None:                return [projectPath]
                     case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
                     }}()
-            if playground.loadContextModuleIntoPlayground(item.fileContents,
-                                                          file: fullFilename,
-                                                          importPaths: importPaths) { playground.execute() }
+            playground.asyncLoadModule(item.fileContents, file: fullFilename, importPaths: importPaths){ success in
+              if success { self.contextChanges.announce(.ModuleLoaded) }
+              else { self.contextChanges.announce(.ModuleLoadingFailed) }
+            }
           }
         }
-      }
-
-        // Notify the editor of any issues.
-      if issues.issues.isEmpty {
-        editor.updateIssues(.NoIssues)
-      } else {
-        editor.updateIssues(.Issues(issues))
       }
 
     default:
@@ -254,7 +299,7 @@ final class ContextController : NSObject {
 
 extension ContextController {
 
-  // Make sure that all context is being committed, and load the context in case we are editing a Haskell module.
+  // Make sure that all context is being committed.
   //
   override func commitEditing() -> Bool {
     switch config {
@@ -273,7 +318,6 @@ extension ContextController {
 
     case .HaskellEditor(let textEditor, let playground):
       let committed = textEditor.commitEditing() && playground.commitEditing()
-      loadContextModule()
       return committed
     }
     return true

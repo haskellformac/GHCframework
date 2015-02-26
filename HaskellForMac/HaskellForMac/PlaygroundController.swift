@@ -154,14 +154,22 @@ class PlaygroundController: NSViewController {
 
 
   //MARK: -
-  //MARK: Context module management
+  //MARK: Module management
 
-  /// Load a new version of the context module.
+  /// Load a new version of the context module asynchronously. The completion handler is being invoked after loading
+  /// has finished and it indicates whether loading was successful.
   ///
-  func loadContextModuleIntoPlayground(moduleText: String!, file: String, importPaths: [String]) -> Bool {
-
-      // Load the module text into GHC.
-    return haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
+  /// Diagnostics are delivered asynchronously.
+  ///
+  func asyncLoadModule(moduleText: String!,
+                       file: String,
+                       importPaths: [String],
+                       completionHandler handler: Bool -> Void)
+  {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)){
+      let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
+      handler(success)
+    }
   }
 
 

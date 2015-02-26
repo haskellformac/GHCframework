@@ -106,9 +106,15 @@ final class CodeStorageDelegate: NSObject {
 // MARK: NSTextStorageDelegate protocol
 
 extension CodeStorageDelegate: NSTextStorageDelegate {
+
   func textStorageDidProcessEditing(notification: NSNotification) {
     let editedRange    = textStorage.editedRange
     let changeInLength = textStorage.changeInLength
+
+      // Highlighting needs to be activated and we are only interested in character changes.
+      // NB: The first test also culls superflous traversals during set up for a file that will eventually be highlighted.
+    if highlightingTokeniser == nil { return }
+    if NSTextStorageEditedOptions(UInt(textStorage.editedMask)) & NSTextStorageEditedOptions.Characters == nil { return }
 
     // We need to delay fixing the temporary attributes until after the text storage is done processing the current
     // change.
