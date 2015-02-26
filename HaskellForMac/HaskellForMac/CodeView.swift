@@ -1,5 +1,5 @@
 //
-//  TextNavigation.swift
+//  CodeView.swift
 //  HaskellForMac
 //
 //  Created by Manuel M T Chakravarty on 16/10/2014.

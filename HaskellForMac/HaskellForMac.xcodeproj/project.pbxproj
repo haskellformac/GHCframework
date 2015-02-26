@@ -23,7 +23,7 @@
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
 		E7196C361A8A173200521BD0 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7196C351A8A173200521BD0 /* Box.swift */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
-		E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */; };
+		E71A6A2019EFD0E500F3C48F /* CodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* CodeView.swift */; };
 		E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */; };
 		E71D508519A7065400BD4141 /* Cloudcelerate.hs in Sources */ = {isa = PBXBuildFile; fileRef = E71D508419A7065400BD4141 /* Cloudcelerate.hs */; };
 		E71D5AE61A1AF6AE0040045D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71D5AE51A1AF6AE0040045D /* Constants.swift */; };
@@ -267,7 +267,7 @@
 		E7196C351A8A173200521BD0 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
-		E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextNavigation.swift; sourceTree = "<group>"; };
+		E71A6A1F19EFD0E500F3C48F /* CodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeView.swift; sourceTree = "<group>"; };
 		E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeStorageDelegate.swift; sourceTree = "<group>"; };
 		E71D508419A7065400BD4141 /* Cloudcelerate.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cloudcelerate.hs; sourceTree = "<group>"; };
 		E71D5AE51A1AF6AE0040045D /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -478,7 +478,7 @@
 				E721D8F719B354F600DCBF68 /* SyntaxHighlighting.swift */,
 				E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */,
 				E7B0AB001990B4890057FAD5 /* TextGutterView.swift */,
-				E71A6A1F19EFD0E500F3C48F /* TextNavigation.swift */,
+				E71A6A1F19EFD0E500F3C48F /* CodeView.swift */,
 				E7AD6223198F28FD00AFF324 /* TextEditorController.swift */,
 			);
 			name = TextEditor;
@@ -1312,7 +1312,7 @@
 				E72AF5FC19E395F800753077 /* Error.swift in Sources */,
 				E7C5DB411A0E1CDF002F6469 /* AppDelegate.swift in Sources */,
 				E7C5DB3D1A0E00E1002F6469 /* PreferencesController.swift in Sources */,
-				E71A6A2019EFD0E500F3C48F /* TextNavigation.swift in Sources */,
+				E71A6A2019EFD0E500F3C48F /* CodeView.swift in Sources */,
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7590EDA1A75DB3200A74041 /* DocumentationController.swift in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
