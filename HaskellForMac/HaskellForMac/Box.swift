@@ -15,6 +15,13 @@ final public class Box<T> {
   public init(_ value: T) { self.unbox = value }
 }
 
+/// Mutable reference to values of any type.
+///
+final public class Ref<T> {
+  public var value: T
+  public init(_ value: T) { self.value = value }
+}
+
 /// Wrap an object reference such that is only weakly referenced. (This is, e.g., useful to have an array of object
 /// references that doesn't keep the referenced objects alive.)
 ///

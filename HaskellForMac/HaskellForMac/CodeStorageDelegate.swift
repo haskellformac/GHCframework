@@ -14,6 +14,13 @@
 import Cocoa
 
 
+/// The current status of the associated code storage.
+///
+enum CodeStorageStatus {
+  case LastEdited(NSDate)
+  case LastLoaded(NSDate)
+}
+
 final class CodeStorageDelegate: NSObject {
 
   /// The associated text storage. (Can be strong as the text storage doesn't own the delegate. The lifetime of the two
@@ -23,9 +30,13 @@ final class CodeStorageDelegate: NSObject {
 
   /// Tokeniser to be used for syntax highlighting if a tokeniser is available for the edited file type.
   ///
-  /// This variable is set by the context controller.
+  /// This variable is set by the context controller when it enables highlighting.
   ///
   private var highlightingTokeniser: HighlightingTokeniser?
+
+  /// Stream of storage status values.
+  ///
+  var status: Variable<CodeStorageStatus> = Variable(initialValue: .LastEdited(NSDate()))
 
   /// The currently used theme of the associated code view.
   ///
@@ -110,6 +121,9 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
   func textStorageDidProcessEditing(notification: NSNotification) {
     let editedRange    = textStorage.editedRange
     let changeInLength = textStorage.changeInLength
+
+      // Update the current status.
+    status.value = .LastEdited(NSDate())
 
       // Highlighting needs to be activated and we are only interested in character changes.
       // NB: The first test also culls superflous traversals during set up for a file that will eventually be highlighted.
