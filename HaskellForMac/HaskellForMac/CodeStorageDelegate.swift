@@ -21,6 +21,14 @@ enum CodeStorageStatus {
   case LastLoaded(NSDate)
 }
 
+enum LoadAdvise {
+  case Wait, LoadCode
+}
+
+/// How long to wait since the last editing action until we try to load the edited module.
+///
+let loadDelay: NSTimeInterval = 0.5
+
 final class CodeStorageDelegate: NSObject {
 
   /// The associated text storage. (Can be strong as the text storage doesn't own the delegate. The lifetime of the two
@@ -36,7 +44,15 @@ final class CodeStorageDelegate: NSObject {
 
   /// Stream of storage status values.
   ///
-  var status: Variable<CodeStorageStatus> = Variable(initialValue: .LastEdited(NSDate()))
+  let status: Variable<CodeStorageStatus> = Variable(initialValue: .LastEdited(NSDate()))
+
+  /// Time ticks.
+  ///
+  private let ticks: TimerChanges = TimerChanges(every: 0.5, tolerance: 0.15)
+
+  /// Triggers that indicate to check/load the code.
+  ///
+  let loadTriggers: Triggers
 
   /// The currently used theme of the associated code view.
   ///
@@ -49,8 +65,29 @@ final class CodeStorageDelegate: NSObject {
   var lineMap: LineTokenMap
 
   init(textStorage: NSTextStorage) {
-    self.textStorage = textStorage
-    self.lineMap     = lineTokenMap(textStorage.string, { _string in [] })
+
+    func codeLoadTriggerStateMachine(lastStatus: CodeStorageStatus, change: Either<CodeStorageStatus, NSDate>)
+      -> (CodeStorageStatus, LoadAdvise)
+    {
+      switch (lastStatus, change) {
+
+      case (_, .Left(let newStatus)):
+        return (newStatus.unbox, .Wait)
+
+      case (.LastEdited(let lastCodeChange), .Right(let timestamp))
+        where timestamp.unbox.timeIntervalSinceDate(lastCodeChange) > loadDelay:
+        return (lastStatus, .LoadCode)
+
+      default:
+        return (lastStatus, .Wait)
+      }
+    }
+
+    self.textStorage  = textStorage
+    self.loadTriggers = merge(status, ticks)
+                        >- { transduce($0, .LastEdited(NSDate()), codeLoadTriggerStateMachine) }
+                        >- { trigger($0){ $0 == .LoadCode } }
+    self.lineMap      = lineTokenMap(textStorage.string, { _string in [] })
     super.init()
   }
 

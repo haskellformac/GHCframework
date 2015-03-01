@@ -165,7 +165,8 @@ final class ContextController : NSObject {
         case kTextEditor:
           if let editorController = TextEditorController(nibName: nibName,
                                                           bundle: nil,
-                                            projectViewModelItem: item)
+                                            projectViewModelItem: item,
+                                                      loadModule: { [unowned self] in self.loadContextModule() })
           {
             editor.memory = editorController
             if let viewModelPlayground = item.playground {
@@ -220,12 +221,12 @@ final class ContextController : NSObject {
     switch change {
     case .ConfigurationChanged: ()
 
-    case .ModuleLoaded:         // Report any issues (warnings) and run the playground
+    case .ModuleLoaded:         // Report any issues (warnings) and notify the editor of the successful loading.
       switch self.config {
 
       case .HaskellEditor(let editor, let playground):
         if issues.issues.isEmpty { editor.updateIssues(.NoIssues) } else { editor.updateIssues(.Issues(issues)) }
-        playground.execute()
+        editor.moduleLoaded()
 
       default: ()
       }
@@ -244,7 +245,8 @@ final class ContextController : NSObject {
   // MARK: -
   // MARK: Module management
 
-  /// Load the module determined by the current playground, along with its playground.
+  /// Load the module represented by the current item asynchronously. If loading is successful, the `.ModuleLoaded`
+  /// change announcement will also trigger the loading of the associated playground.
   ///
   func loadContextModule() {
 
@@ -272,8 +274,7 @@ final class ContextController : NSObject {
         }
       }
 
-    default:
-      break
+    default: ()
     }
   }
 
@@ -296,6 +297,10 @@ final class ContextController : NSObject {
     }
   }
 }
+
+
+// MARK: -
+// MARK: NSEditor informal protocol
 
 extension ContextController {
 

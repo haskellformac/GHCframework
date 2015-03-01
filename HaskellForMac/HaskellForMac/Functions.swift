@@ -24,3 +24,9 @@ public func curry<R, S, T>(f: (R, S) -> T) -> (R -> S -> T) {
 public func flip<R, S, T>(f: (R, S) -> T) -> (S -> R -> T) {
   return { s in { r in f(r, s) } }
 }
+
+infix operator >- { associativity left }
+
+public func >- <S, T>(x: S, f: S -> T) -> T {
+  return f(x)
+}

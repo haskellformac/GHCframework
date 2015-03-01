@@ -153,11 +153,14 @@ class PlaygroundController: NSViewController {
   }
 
 
-  //MARK: -
-  //MARK: Module management
+  // MARK: -
+  // MARK: Module management
 
   /// Load a new version of the context module asynchronously. The completion handler is being invoked after loading
-  /// has finished and it indicates whether loading was successful.
+  /// has finished and it indicates whether loading was successful. If loading was successful, the associated playground
+  /// is also executed asynchronously. 
+  ///
+  /// NB: The completion handler runs right after module loading; it is independent of playground loading.
   ///
   /// Diagnostics are delivered asynchronously.
   ///
@@ -167,16 +170,19 @@ class PlaygroundController: NSViewController {
                        completionHandler handler: Bool -> Void)
   {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)){
+
       let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
       handler(success)
+
+      if success { dispatch_async(dispatch_get_main_queue()){ self.execute() } }
     }
   }
 
 
-  //MARK: -
-  //MARK: Processing diagnostics
+  // MARK: -
+  // MARK: Processing diagnostics
 
-  /// Load a new version of the context module.
+  /// Process an asynchronously delivered diagnostics message.
   ///
   private func processIssue(contextDiagnosticsHandler: Issue -> Void) -> DiagnosticsHandler {
     return {[weak self] severity, filename, line, column, lines, endColumn, message

@@ -67,10 +67,18 @@ public class Changes<Change>: Observable {
   ///
   private var observers: [WeakApply<Observer>]  = []
 
+  private let creatorInfo: String
+
+  init(info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
+    creatorInfo = info
+  }
+
   /// Announce a change to all observers.
   ///
-  public func announce(change: Change)
+  public func announce(change: Change, info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
   {
+    NSLog("CHANGE: \(info) announces on \(creatorInfo)")
+
     for observer in observers { if let callback = observer.unbox { callback(change) } }
 
       // Prune stale observers.
@@ -102,6 +110,10 @@ public class Changes<Change>: Observable {
   }
 }
 
+/// Triggers are changes that only convey a point in time.
+///
+public typealias Triggers = Changes<()>
+
 /// A stream of timer ticks.
 ///
 public class TimerChanges: Observable {
@@ -132,7 +144,9 @@ public class TimerChanges: Observable {
 
   deinit { timer?.invalidate() }
 
-  private func timerFired(timer: NSTimer) { changes.announce(NSDate()) }
+  /// Selector invoked by the `NSTimer` object.
+  ///
+  @objc func timerFired(timer: NSTimer) { changes.announce(NSDate()) }
 
   /// Register an observer together with a context object whose lifetime determines the duration of the observation.
   ///
@@ -224,7 +238,7 @@ public enum Either<S, T> {
   case Right(Box<T>)
 }
 
-/// Merge to observation streams into one.
+/// Merge two observation streams into one.
 ///
 /// The derived stream will cease to announce changes if the last reference to it has been dropped. (That does not
 /// mean that it hasn't got any observers anymore, but that no other object keeps a strong reference to the stream
@@ -254,16 +268,16 @@ public func merge<ObservedLeft: Observable, ObservedRight: Observable>(left: Obs
 /// mean that it hasn't got any observers anymore, but that no other object keeps a strong reference to the stream
 /// of changes itself.)
 ///
-public func transduce<Observed: Observable, Change, State>(source: Observed,
+public func transduce<Observed: Observable, State, Change>(source: Observed,
                                                            state: State,
-                                                           f: (State, Observed.Value) -> (State, Change))
+                                                           automata: (State, Observed.Value) -> (State, Change))
                                                            -> Changes<Change>
 {
   let changes  = Changes<Change>()
   let stateRef = Ref(state)   // the mutable transducer state
 
   func observer(changesContext: Changes<Change>, value: Observed.Value) {
-    let (newState, change) = f(stateRef.value, value)
+    let (newState, change) = automata(stateRef.value, value)
     stateRef.value = newState
     changesContext.announce(change)
   }
@@ -271,3 +285,18 @@ public func transduce<Observed: Observable, Change, State>(source: Observed,
   source.observeWithContext(changes, observer: curry(observer))
   return changes
 }
+
+/// Produce a trigger stream from a stream of changes and a function identifying triggering changes.
+///
+/// The trigger stream will cease to announce triggers if the last reference to it has been dropped. (That does not
+/// mean that it hasn't got any observers anymore, but that no other object keeps a strong reference to the stream
+/// of trigegrs itself.)
+///
+public func trigger<Observed: Observable>(source: Observed, predicate: Observed.Value -> Bool) -> Triggers {
+
+  let triggers = Changes<()>()
+  source.observeWithContext(triggers,
+                            observer: curry{ changesContext, change in if predicate(change) { changesContext.announce(()) } })
+  return triggers
+}
+

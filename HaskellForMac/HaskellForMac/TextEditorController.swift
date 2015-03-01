@@ -20,6 +20,10 @@ class TextEditorController: NSViewController {
   ///
   dynamic let viewModelItem: ProjectItem
 
+  /// Callback to load the module contained in the view model item being edited.
+  ///
+  private var loadModule: () -> ()
+
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
@@ -34,8 +38,9 @@ class TextEditorController: NSViewController {
 
   /// Initialise the view controller by loading its NIB file and also set the associated file URL.
   ///
-  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: ProjectItem) {
-    viewModelItem = projectViewModelItem
+  init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: ProjectItem, loadModule: () -> ()) {
+    self.viewModelItem = projectViewModelItem
+    self.loadModule    = loadModule
 
     super.init(nibName: nibName, bundle: bundle)
 
@@ -45,7 +50,8 @@ class TextEditorController: NSViewController {
 
   required init?(coder: NSCoder) {
     NSLog("%s: WARNING: allocating empty project view model item", __FUNCTION__)
-    viewModelItem = ProjectItem()
+    self.viewModelItem = ProjectItem()
+    self.loadModule    = { }
     super.init(coder: coder)
   }
 
@@ -74,6 +80,7 @@ class TextEditorController: NSViewController {
     if let textStorage = textView.layoutManager?.textStorage {
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
+      codeStorageDelegate.loadTriggers.observeWithContext(self, observer: curry{ controller, _ in controller.loadModule() })
     }
 
       // Get the intial edited code and updates on file wrapper changes.
@@ -139,6 +146,10 @@ extension TextEditorController {
       gutter.updateIssues(notification)
     }
   }
+
+  /// Notify the code storage that the module was successfully loaded.
+  ///
+  func moduleLoaded() { codeStorageDelegate.status.value = .LastLoaded(NSDate()) }
 }
 
 
