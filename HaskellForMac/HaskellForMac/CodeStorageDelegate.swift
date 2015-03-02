@@ -14,11 +14,11 @@
 import Cocoa
 
 
-/// The current status of the associated code storage.
+/// The current modification status of the associated code storage.
 ///
 enum CodeStorageStatus {
-  case LastEdited(NSDate)
-  case LastLoaded(NSDate)
+  case LastEdited(NSDate)    // Time the last edit completed
+  case LastLoading(NSDate)   // Time the last loading attempt was initiated
 }
 
 enum LoadAdvise {

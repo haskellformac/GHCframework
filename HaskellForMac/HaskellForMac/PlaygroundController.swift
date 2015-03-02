@@ -131,6 +131,7 @@ class PlaygroundController: NSViewController {
     if let textStorage = codeTextView.layoutManager?.textStorage {
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
+      codeStorageDelegate.loadTriggers.observeWithContext(self, observer: curry{ controller, _ in controller.execute() })
     }
 
       // Set up the delegate and data source for the result view.
@@ -213,8 +214,9 @@ class PlaygroundController: NSViewController {
   func execute() {
     let gutter = codeScrollView.verticalRulerView as TextGutterView
 
-      // Invalidate old issues.
+      // Invalidate old issues and anounce that the playground gets loaded.
     gutter.updateIssues(.IssuesPending)
+    codeStorageDelegate.status.value = .LastLoading(NSDate())
 
       // Mark all current results as being stale.
     resultStorage.invalidate()

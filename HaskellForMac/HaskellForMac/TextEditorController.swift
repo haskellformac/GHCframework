@@ -149,7 +149,7 @@ extension TextEditorController {
 
   /// Notify the code storage that the module was successfully loaded.
   ///
-  func moduleLoaded() { codeStorageDelegate.status.value = .LastLoaded(NSDate()) }
+  func moduleLoading() { codeStorageDelegate.status.value = .LastLoading(NSDate()) }
 }
 
 

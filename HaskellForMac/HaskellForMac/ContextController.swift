@@ -226,7 +226,6 @@ final class ContextController : NSObject {
 
       case .HaskellEditor(let editor, let playground):
         if issues.issues.isEmpty { editor.updateIssues(.NoIssues) } else { editor.updateIssues(.Issues(issues)) }
-        editor.moduleLoaded()
 
       default: ()
       }
@@ -253,9 +252,10 @@ final class ContextController : NSObject {
     switch config {
     case .HaskellEditor(let editor, let playground):
 
-        // Invalidate old issues
+        // Invalidate old issues and announce that the module gets loaded.
       editor.updateIssues(.IssuesPending)
       issues = IssuesForFile(file: issues.file, issues: [:])
+      editor.moduleLoading()
 
         // Load the module.
       if let item = self.item {
