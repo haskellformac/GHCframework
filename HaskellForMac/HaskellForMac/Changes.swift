@@ -6,13 +6,25 @@
 //  Copyright (c) 2015 Manuel M T Chakravarty. All rights reserved.
 //
 //  Generic support to keep track of changes and values changing over time.
+//
+//  A note regarding ownership
+//  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+//  Changes (and derived strutures) are careful not to retain the context of an observation. In fact, the lifetime of
+//  the context determines the lifetime of the registration of any associated observation. This is crucial as the
+//  context of a stream of changes is often the object owning that stream. By not owning the context, we avoid a retain
+//  cycle.
+//
+//  Streams of changes are not automatically owned by observers. Hence, we need to independently ensure that streams of
+//  changes are kept alive as long as necessary. In particular in a pipelines of streams with transformers, we need to
+//  ensure that all intermediate streams of changes are being kept alive. Hence, all transforming observations register
+//  the observed stream as an object to be retained with the derived stream.
 
 import Foundation
 
 
 /// Abstract interface to an observable stream of changes over time.
 ///
-public protocol Observable {
+public protocol Observable: class {
 
   /// The changing value.
   ///
@@ -67,17 +79,38 @@ public class Changes<Change>: Observable {
   ///
   private var observers: [WeakApply<Observer>]  = []
 
-  private let creatorInfo: String
+  /// In changes pipelines, we need to keep earlier stages of the pipeline alive.
+  ///
+  private let retainedObservedObject: AnyObject?
+
+  // Log info
+  //
+  private let logLevel:    Int    = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceChangesLogLevel)
+  private let creatorInfo: String   // Information about where an instance was created
+
+  private class func makeInfo(info: String, _ file: String, _ line: Int) -> String {
+    let filename = file.lastPathComponent.stringByDeletingPathExtension
+    return "\(info) [\(filename):\(line)]"
+  }
 
   init(info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
-    creatorInfo = info
+    self.retainedObservedObject = nil
+    self.creatorInfo            = Changes.makeInfo(info, file, line)
+  }
+
+  init(retainObservedObject: AnyObject, info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
+    self.retainedObservedObject = retainObservedObject
+    self.creatorInfo            = Changes.makeInfo(info, file, line)
   }
 
   /// Announce a change to all observers.
   ///
   public func announce(change: Change, info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
   {
-    NSLog("CHANGE: \(info) announces on \(creatorInfo)")
+    if logLevel > 0 {
+      let announceInfo = Changes.makeInfo(info, file, line)
+      NSLog("CHANGE: \(announceInfo) announces on \(creatorInfo)")
+    }
 
     for observer in observers { if let callback = observer.unbox { callback(change) } }
 
@@ -128,8 +161,10 @@ public class TimerChanges: Observable {
 
   /// Create a time stream with a given tick interval and tolerance.
   ///
-  init(every: NSTimeInterval, tolerance: NSTimeInterval) {
-    self.changes = Changes()
+  init(every: NSTimeInterval, tolerance: NSTimeInterval,
+       info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
+  {
+    self.changes = Changes(info: info, file: file, line: line)
     self.timer   = NSTimer.scheduledTimerWithTimeInterval(every,
                                                           target: self,
                                                           selector: "timerFired:",
@@ -184,9 +219,14 @@ public class Variable<T>: Observable {
   var value: T
     { didSet { valueChanges.announce(value) } }
 
-  private var valueChanges: Changes<T> = Changes()
+  private var valueChanges: Changes<T>
 
-  init(initialValue: T) { self.value = initialValue }
+  init(initialValue: T,
+       info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
+  {
+    self.value        = initialValue
+    self.valueChanges = Changes(info: info, file: file, line: line)
+  }
 
   /// Register a value observer, which is immediately called with the current value of the variable.
   ///
@@ -226,7 +266,7 @@ public class Variable<T>: Observable {
 ///
 public func map<Observed: Observable, Change>(source: Observed, f: Observed.Value -> Change) -> Changes<Change> {
 
-  let changes = Changes<Change>()
+  let changes = Changes<Change>(retainObservedObject: source)
   source.observeWithContext(changes,
                             observer: curry{ changesContext, change in changesContext.announce(f(change)) })
   return changes
@@ -236,6 +276,13 @@ public func map<Observed: Observable, Change>(source: Observed, f: Observed.Valu
 public enum Either<S, T> {
   case Left(Box<S>)
   case Right(Box<T>)
+}
+
+// FIXME: This should go into a general module.
+private class LeftRight {
+  let left:  AnyObject
+  let right: AnyObject
+  init(left: AnyObject, right: AnyObject) { self.left = left; self.right = right }
 }
 
 /// Merge two observation streams into one.
@@ -249,7 +296,7 @@ public func merge<ObservedLeft: Observable, ObservedRight: Observable>(left: Obs
 {
   typealias Change = Either<ObservedLeft.Value, ObservedRight.Value>
 
-  let changes = Changes<Change>()
+  let changes = Changes<Change>(retainObservedObject: LeftRight(left: left, right: right))
   left.observeWithContext(changes,
                           observer: curry{ changesContext, change in
                                              let leftChange: Change = .Left(Box(change))
@@ -273,7 +320,7 @@ public func transduce<Observed: Observable, State, Change>(source: Observed,
                                                            automata: (State, Observed.Value) -> (State, Change))
                                                            -> Changes<Change>
 {
-  let changes  = Changes<Change>()
+  let changes  = Changes<Change>(retainObservedObject: source)
   let stateRef = Ref(state)   // the mutable transducer state
 
   func observer(changesContext: Changes<Change>, value: Observed.Value) {
@@ -294,9 +341,8 @@ public func transduce<Observed: Observable, State, Change>(source: Observed,
 ///
 public func trigger<Observed: Observable>(source: Observed, predicate: Observed.Value -> Bool) -> Triggers {
 
-  let triggers = Changes<()>()
+  let triggers = Changes<()>(retainObservedObject: source)
   source.observeWithContext(triggers,
                             observer: curry{ changesContext, change in if predicate(change) { changesContext.announce(()) } })
   return triggers
 }
-

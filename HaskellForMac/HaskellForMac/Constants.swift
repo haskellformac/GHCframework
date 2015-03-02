@@ -19,6 +19,9 @@ let kPreferenceThemes             = "Themes"
 let kPreferenceThemeName          = "ThemeName"
 let kPreferenceEnableCloud        = "EnableCloud"
 let kPreferenceUsername           = "Username"
+
+// Debug preferences
+let kPreferenceChangesLogLevel    = "ChangesLogLevel"
 let kPreferenceGHCLogLevel        = "GHCLogLevel"             // Must match the key used by 'GHCKit'.
 let kPreferenceSpriteKitLogLevel  = "SpriteKitLogLevel"
 let kPreferenceCloudLogLevel      = "CloudLogLevel"           // Must match the key used by 'CloudcelerateKit'.
@@ -32,6 +35,8 @@ extension Swift {
   class var swift_kPreferenceThemeName:          String { get { return kPreferenceThemeName } }
   class var swift_kPreferenceEnableCloud:        String { get { return kPreferenceEnableCloud } }
   class var swift_kPreferenceUsername:           String { get { return kPreferenceUsername } }
+
+  class var swift_kPreferenceChangesLogLevel:    String { get { return kPreferenceChangesLogLevel } }
   class var swift_kPreferenceGHCLogLevel:        String { get { return kPreferenceGHCLogLevel } }
   class var swift_kPreferenceSpriteKitLogLevel:  String { get { return kPreferenceSpriteKitLogLevel } }
   class var swift_kPreferenceCloudLogLevel:      String { get { return kPreferenceCloudLogLevel } }

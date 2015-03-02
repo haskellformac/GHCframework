@@ -54,9 +54,8 @@ class PreferencesController: NSWindowController {
                         , kPreferenceExternalTextEditor: ""    // use the default application by file extension
                         , kPreferenceFontName:           defaultFontName
                         , kPreferenceFontSize:           defaultFontSize
-//                        , kPreferenceThemeName:              // initialsed in ThemesController
-//                        , kPreferenceThemes:                 // initialsed in ThemesController
                         , kPreferenceEnableCloud:        false
+                        , kPreferenceChangesLogLevel:    0
                         , kPreferenceGHCLogLevel:        0
                         , kPreferenceSpriteKitLogLevel:  0
                         , kPreferenceCloudLogLevel:      0
