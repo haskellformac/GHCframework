@@ -10,4 +10,3 @@
 import Foundation
 
 println(Process.arguments[1].stringByResolvingSymlinksInPath)
-

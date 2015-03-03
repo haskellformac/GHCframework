@@ -21,13 +21,13 @@ extension NSUserDefaults {
   }
 
   func colorForKey(key: NSString) -> NSColor? {
-    if let data = dataForKey(key) {
+    if let data = dataForKey(key as String) {
       return NSUnarchiver.unarchiveObjectWithData(data) as? NSColor
     } else { return nil }
   }
 
   func themesForKey(key: NSString) -> [Theme] {
-    if let dicts = objectForKey(key) as? [[String: AnyObject]] {
+    if let dicts = objectForKey(key as String) as? [[String: AnyObject]] {
       return dicts.map{dictionaryToTheme($0)}
     } else { return defaultThemes }
   }

@@ -21,7 +21,12 @@ import Foundation
 /// The `startOfLine(0)` is the `endIndex` of the associated string.
 ///
 public struct StringLineMap<LineInfo> {
-  private typealias MapElement = (index: String.UTF16View.Index, info: [LineInfo])
+
+  // NB: We store indices as `Int` as we need to work with positions in GHC tokens. Moreover, we would need to retain
+  //     the underlying string (which is changing as a document gets edited) to do conversions on the fly.
+  //
+  private typealias MapElement = (index: Int, info: [LineInfo])
+
   private var map: [MapElement]
 
   /// The last line that has got any characters.
@@ -33,20 +38,20 @@ public struct StringLineMap<LineInfo> {
   }
 
   public init(string: String) {
-    map = [(string.utf16Count, [])]
+    map = [(count(string.utf16), [])]
 
       // Iterate through the lines.
-    var idx = string.utf16.startIndex
+    var idx = string.startIndex
     do {
-      let newIndex: MapElement = (index: idx, info: [])
+      let newIndex: MapElement = (index: string.stringIndexToInt(idx), info: [])
       map.append(newIndex)
-      idx = NSMaxRange((string as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
-    } while idx < string.utf16.endIndex
+      idx = string.lineRangeForRange(idx..<idx).endIndex
+    } while idx < string.endIndex
 
       // Make sure to add an extra line if the last character is a newline (hence, additional empty last line).
     let newlines = NSCharacterSet.newlineCharacterSet()
     if !string.isEmpty && newlines.characterIsMember(string.utf16[string.utf16.endIndex - 1]) {
-      let newIndex: MapElement = (index: string.utf16.endIndex, info: [])
+      let newIndex: MapElement = (index: count(string.utf16), info: [])
       map.append(newIndex)
     }
   }
@@ -163,14 +168,23 @@ extension NSString {
   }
 }
 
+
 // MARK: -
 // MARK: Extensions to Swift Strings
 
 extension String {
 
+  /// Convert a string index into a plain `Int` index.
+  ///
+  /// In the precense of `Foundation`, this should be O(1) as `UTF16Index` is a `RandomAccessIndexType`.
+  ///
+  func stringIndexToInt(idx: String.Index) -> Int {
+    return distance(self.utf16.startIndex, idx.samePositionIn(self.utf16))
+  }
+
   /// Compute the line number of a character location, using a line map if available.
   ///
   func lineNumber<LineInfo>(lineMap: StringLineMap<LineInfo>?, atLocation loc: String.Index) -> UInt {
-    return lineNumber(lineMap, atLocation: self[self.startIndex..<loc].utf16.endIndex)
+    return lineNumber(lineMap, atLocation: self.stringIndexToInt(loc))
   }
 }

@@ -57,7 +57,7 @@ class StyledSplitView: NSSplitView {
           context.duration               = 0.0
           constraint.animator().constant = constraint.constant
         },
-        {    // Retry after cancellation
+        completionHandler: {    // Retry after cancellation
           self.animationConstraint = nil    // Don't do this earlier as it serves as a lock to starting an animation.
           self.animateSetSubview(subview, toCollapsed: collapsed, completionHandler: completion)
       })
@@ -81,7 +81,7 @@ class StyledSplitView: NSSplitView {
 
       // Remove all potentially conflicting width constraints while animating.
     let widthConstraints = subview.constraints.filter{ arrayElement in
-      let thisConstraint = arrayElement as NSLayoutConstraint
+      let thisConstraint = arrayElement as! NSLayoutConstraint
       return thisConstraint.firstAttribute == .Width && thisConstraint.firstItem === subview
              && thisConstraint.secondAttribute == .NotAnAttribute
     }
@@ -99,7 +99,7 @@ class StyledSplitView: NSSplitView {
         context.duration               = self.animationDuration
         constraint.animator().constant = endWidth;
       },
-      {
+      completionHandler: {
         self.animationConstraint = nil
 
           // Whatever happened, we need to set the final hidden state and restore the view's width and constraints.
@@ -123,7 +123,7 @@ extension StyledSplitView {
 
   func legacyToggleCollapsedState(subview: NSView) {
 
-    let subviewIndex = (subviews as NSArray).indexOfObject(subview)
+    let subviewIndex = find(subviews as! [NSView], subview)!
     let isCollapsed  = isSubviewCollapsed(subview)
     let isRightmost  = subviewIndex == subviews.endIndex - 1
     if subviewIndex == NSNotFound { return } // PANIC
@@ -132,15 +132,15 @@ extension StyledSplitView {
       // then we move the divider to the left over to the right.
     if isCollapsed {
       if !isRightmost {
-        setPosition(CGRectGetMaxX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex)
+        setPosition(CGRectGetMaxX((subviews[subviewIndex] as! NSView).frame), ofDividerAtIndex: subviewIndex)
       } else {
-        setPosition(CGRectGetMinX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex - 1)
+        setPosition(CGRectGetMinX((subviews[subviewIndex] as! NSView).frame), ofDividerAtIndex: subviewIndex - 1)
       }
     } else {
       if !isRightmost {
-        setPosition(CGRectGetMinX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex)
+        setPosition(CGRectGetMinX((subviews[subviewIndex] as! NSView).frame), ofDividerAtIndex: subviewIndex)
       } else {
-        setPosition(CGRectGetMaxX((subviews[subviewIndex] as NSView).frame), ofDividerAtIndex: subviewIndex - 1)
+        setPosition(CGRectGetMaxX((subviews[subviewIndex] as! NSView).frame), ofDividerAtIndex: subviewIndex - 1)
       }
     }
   }

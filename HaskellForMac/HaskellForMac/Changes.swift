@@ -55,7 +55,7 @@ public protocol Observable: class {
   /// The observer will be called on the specified execution queue or, by the default, the main dispatch queue.
   ///
   func asyncObserveWithContext<Context: AnyObject>(context: Context,
-                                                   onQueue queue: dispatch_queue_t?,
+                                                   onQueue queue: dispatch_queue_t,
                                                    observer: Context -> Value -> ())
   //                                                   observer: Context -> Observer)
   // FIXME: See explanation above.
@@ -135,7 +135,7 @@ public class Changes<Change>: Observable {
   /// The observer will be called on the specified execution queue or, by the default, the main dispatch queue.
   ///
   public func asyncObserveWithContext<Context: AnyObject>(context: Context,
-                                                          onQueue queue: dispatch_queue_t? = dispatch_get_main_queue(),
+                                                          onQueue queue: dispatch_queue_t = dispatch_get_main_queue(),
                                                           observer: Context -> Observer)
   {
     let dispatchedObserver = curry{ context, change in dispatch_async(queue){ observer(context)(change) } }
@@ -201,8 +201,8 @@ public class TimerChanges: Observable {
   /// on the chosen queue, or the main queue if no other queue specified.
   ///
   public func asyncObserveWithContext<Context: AnyObject>(context: Context,
-    onQueue queue: dispatch_queue_t? = dispatch_get_main_queue(),
-    observer: Context -> Observer)
+                                                          onQueue queue: dispatch_queue_t = dispatch_get_main_queue(),
+                                                          observer: Context -> Observer)
   {
     changes.asyncObserveWithContext(context, onQueue: queue, observer: observer)
   }
@@ -246,7 +246,7 @@ public class Variable<T>: Observable {
   /// The observer will be called on the specified execution queue or, by the default, the main dispatch queue.
   ///
   public func asyncObserveWithContext<Context: AnyObject>(context: Context,
-                                                          onQueue queue: dispatch_queue_t? = dispatch_get_main_queue(),
+                                                          onQueue queue: dispatch_queue_t = dispatch_get_main_queue(),
                                                           observer: Context -> Observer)
   {
     valueChanges.asyncObserveWithContext(context, onQueue: queue, observer: observer)

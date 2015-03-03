@@ -124,7 +124,7 @@ final class ContextController : NSObject {
 
           // Check that the file is still there and force reading its contents unless the item is dirty.
           // (We'll need it in a sec.)
-        if let wrapper = item.fileWrapper? {
+        if let wrapper = item.fileWrapper {
 
           var error: NSError?
           if !item.isDirty && !wrapper.readFromURL(fileURL, options: .Immediate, error: &error) {
@@ -259,7 +259,7 @@ final class ContextController : NSObject {
 
         // Load the module.
       if let item = self.item {
-        if let projectPath            = project.fileURL?.path? {
+        if let projectPath            = project.fileURL?.path {
           if let fullFilename         = item.URL?.path {
             let importPaths: [String] =
                   { switch self.project.projectModel.sourceDir {

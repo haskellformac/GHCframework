@@ -45,9 +45,9 @@ class CloudSession {
           if let apiKey = NSString(bytes: apiKeyPtr, length: Int(apiKeyLen), encoding: NSUTF8StringEncoding) {
             SecKeychainItemFreeContent(nil, apiKeyPtr)
 
-            let valid = Cloudcelerate.validateUsername(username, apiKey: apiKey)
+            let valid = Cloudcelerate.validateUsername(username, apiKey: apiKey as String)
             if valid {
-              return result(CloudSession(username: username, apiKey: apiKey))
+              return result(CloudSession(username: username, apiKey: apiKey as String))
             } else {
               return error("Can't validate username")
             }

@@ -42,7 +42,7 @@ class PlaygroundController: NSViewController {
   ///
   /// NB: We need to use an implicit optional as we can only initialise after calling `super.init` in `init` (as we need
   ///     to capture `self`).
-  private let haskellSession: HaskellSession!
+  private var haskellSession: HaskellSession!
 
   private let fontHeight: CGFloat = {
     let x = NSAttributedString(string: "X", attributes: [NSFontAttributeName: NSFont(name: "Menlo-Regular", size:13)!])
@@ -102,8 +102,8 @@ class PlaygroundController: NSViewController {
     if resultStorage != nil { return }
 
       // Synchronise the scroll views.
-    codeScrollView.setSynchronisedScrollView(resultScrollView)
-    resultScrollView.setSynchronisedScrollView(codeScrollView)
+    codeScrollView.startSynchronisedScrollView(resultScrollView)
+    resultScrollView.startSynchronisedScrollView(codeScrollView)
 
       // Set up the gutter.
     codeScrollView.hasVerticalRuler = true
@@ -142,11 +142,11 @@ class PlaygroundController: NSViewController {
       self.resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
     }
     resultTableView.setDelegate(self)
-    resultStorage = PlaygroundResultStorage(resultTableView.reloadData, reloadDataForRow)
+    resultStorage = PlaygroundResultStorage(redisplay: resultTableView.reloadData, redisplayRow: reloadDataForRow)
     resultTableView.setDataSource(resultStorage)
 
       // Get the initial code view contents and enable highlighting.
-    codeTextView.string = projectViewModelPlayground.string
+    codeTextView.string = projectViewModelPlayground.string as String
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
     ThemesController.sharedThemesController().reportThemeInformation(self,
       fontChangeNotification: curry{ obj, font in return },
@@ -212,7 +212,7 @@ class PlaygroundController: NSViewController {
   /// first character is a whitespace (emulating Haskell's off-side rule).
   ///
   func execute() {
-    let gutter = codeScrollView.verticalRulerView as TextGutterView
+    let gutter = codeScrollView.verticalRulerView as! TextGutterView
 
       // Invalidate old issues and anounce that the playground gets loaded.
     gutter.updateIssues(.IssuesPending)
@@ -236,7 +236,7 @@ class PlaygroundController: NSViewController {
     let textContainer = codeTextView.textContainer
     let string        = codeTextView.textStorage!.string
     let lineMap       = codeTextView.lineMap
-    let gutter        = codeScrollView.verticalRulerView as TextGutterView
+    let gutter        = codeScrollView.verticalRulerView as! TextGutterView
 
       // Discard all old issues.
     issues = IssuesForFile(file: issues.file, issues: [:])
@@ -257,8 +257,8 @@ class PlaygroundController: NSViewController {
         charIndex     = lineRange.endIndex
       }
       let span         = string.startIndex..<initialCharIndex
-      let firstIndex   = string[span].utf16Count
-      let indexLength  = string[initialCharIndex..<charIndex].utf16Count
+      let firstIndex   = count(string[span].utf16)
+      let indexLength  = count(string[initialCharIndex..<charIndex].utf16)
       let glyphRange   = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
                                                                     actualCharacterRange: nil)
       let rect         = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
@@ -399,7 +399,7 @@ extension PlaygroundController {
 
 extension PlaygroundController: NSTableViewDelegate {
 
-  func tableView(tableView: NSTableView, viewForTableColumn column: NSTableColumn, row: Int) -> NSTableCellView? {
+  func tableView(tableView: NSTableView, viewForTableColumn _column: NSTableColumn?, row: Int) -> NSView? {
 
     if let result = resultStorage.queryResult(row) {
       if let cell = tableView.makeViewWithIdentifier(kResultCell, owner: self) as? ResultCellView {
@@ -418,7 +418,7 @@ extension PlaygroundController: NSTableViewDelegate {
   }
 
   func tableViewSelectionDidChange(notification: NSNotification) {
-    let tableView = notification.object as NSTableView
+    let tableView = notification.object as! NSTableView
     let row       = tableView.selectedRow
     if row == -1 { return }  // no row selected
 

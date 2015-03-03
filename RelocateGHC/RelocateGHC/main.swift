@@ -66,7 +66,7 @@ for executable in
   replaceStringWithString(executable, string: oldLocation, withString: location)
 }
 
-let packagesDir = defaultFileManager.contentsOfDirectoryAtPath(package_db, error: nil) as [String]?
+let packagesDir = defaultFileManager.contentsOfDirectoryAtPath(package_db, error: nil) as! [String]?
 let packages    = packagesDir?.filter{ $0.hasSuffix("conf") }.map{ package_db.stringByAppendingPathComponent($0) }
   ?! ("RelocateGHC: fatal error: could not load GHC package database")
 

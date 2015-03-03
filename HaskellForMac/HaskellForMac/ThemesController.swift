@@ -135,7 +135,7 @@ class ThemesController: NSController {
   /// Get the themes controller from the main menu nib.
   ///
   class func sharedThemesController() -> ThemesController {
-    return ((NSApp as NSApplication).delegate as AppDelegate).themesController
+    return ((NSApp as! NSApplication).delegate as! AppDelegate).themesController
   }
 
 
@@ -154,8 +154,7 @@ class ThemesController: NSController {
       // Initialise themes data for the table view with theme names.
     if let let themeName = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceThemeName) {
       initialThemeName = themeName
-      let themeIndex = (themeNames as NSArray).indexOfObject(themeName)
-      if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+      if let themeIndex = find(themeNames, themeName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
       else { currentThemeIndexes = NSIndexSet(index: 0) }
     } else { currentThemeIndexes = NSIndexSet(index: 0) }
 
@@ -185,8 +184,7 @@ class ThemesController: NSController {
       // This is ugly! We do set `currentThemeIndexes` in `awakeFromNib()`, but the `NSArrayController` hooked up to the
       // table view in the themes preferences pane does reset `currentThemeIndexes` during its initialisation. Hence,
       // we need to set `currentThemeIndexes` here again.
-    let themeIndex = (themeNames as NSArray).indexOfObject(initialThemeName)
-    if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+    if let themeIndex = find(themeNames, initialThemeName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
 
       // Tokenise the sample code by running a temporary Haskell session.
     let handler: DiagnosticsHandler = { unusedArg in return }
@@ -216,7 +214,7 @@ class ThemesController: NSController {
   ///
   func updateAvailableFonts() {
     if let fonts = NSFontManager.sharedFontManager().availableFontNamesWithTraits(NSFontTraitMask.FixedPitchFontMask) {
-      availableFonts = fonts as [String]
+      availableFonts = fonts as! [String]
     }
   }
 
@@ -349,8 +347,7 @@ extension ThemesController {
 
         // `themes`' property observer will have set `themeNames`, but with the index of the theme may have changed due
         // to sorting with the new name.
-      let themeIndex = (themeNames as NSArray).indexOfObject(disambiguatedNewName)
-      if themeIndex != NSNotFound { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+      if let themeIndex = find(themeNames, disambiguatedNewName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
 
     }
   }

@@ -46,10 +46,10 @@ public class ProjectViewModelPlayground: NSObject {
 
   /// The view model data of the playground.
   ///
-  var string: NSString {
+  var string: String {
     get {
       if let data = theFileWrapper.regularFileContents {
-        return stripPlaygroundMagic(NSString(data: data, encoding: NSUTF8StringEncoding) ?? "")
+        return stripPlaygroundMagic((NSString(data: data, encoding: NSUTF8StringEncoding) ?? "") as String)
       } else { return "" }
     }
 

@@ -60,8 +60,8 @@ class PreferencesController: NSWindowController {
                         , kPreferenceSpriteKitLogLevel:  0
                         , kPreferenceCloudLogLevel:      0
                         ]
-    NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues)
-    NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues
+    NSUserDefaults.standardUserDefaults().registerDefaults(defaultValues as [NSObject : AnyObject])
+    NSUserDefaultsController.sharedUserDefaultsController().initialValues = defaultValues as [NSObject : AnyObject]
   }
 
   // Reopen the preferences window when the app's persistent state is restored.
@@ -70,7 +70,7 @@ class PreferencesController: NSWindowController {
     state: NSCoder,
     completionHandler: (NSWindow, NSError!) -> Void) -> Bool
   {
-    completionHandler(((NSApp as NSApplication).delegate as AppDelegate).preferencesController.window!, nil)
+    completionHandler(((NSApp as! NSApplication).delegate as! AppDelegate).preferencesController.window!, nil)
     return true
   }
 
@@ -99,7 +99,7 @@ class PreferencesController: NSWindowController {
 
       // Currently, we don't dynamically enable and disable the account preferences tab. Its status is determined once.
     if !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud) {
-      toolbar.removeItemAtIndex((toolbar.items as NSArray).indexOfObject(accountToolbarItem))
+      if let index = find(toolbar.items as! [NSToolbarItem], accountToolbarItem) { toolbar.removeItemAtIndex(index) }
     }
 
     themesController.setup(self)
@@ -136,7 +136,7 @@ extension PreferencesController: NSToolbarDelegate {
 //    return [kGeneralPreferences, kTextEditingPreferences, kAccountPreferences]
 //  }
 
-  func toolbarSelectableItemIdentifiers(toolbar: NSToolbar) -> [String] {
+  func toolbarSelectableItemIdentifiers(toolbar: NSToolbar) -> [AnyObject] {
     return [kGeneralPreferences, kThemesPreferences, kTextEditingPreferences, kAccountPreferences]
   }
 }

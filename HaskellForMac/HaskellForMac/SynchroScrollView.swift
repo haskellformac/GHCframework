@@ -16,7 +16,7 @@ class SynchroScrollView: NSScrollView {
   /// Associate a second scroll view with the current one, such that changes in the vertical position of the associated
   /// scroll view are reflected in the current one.
   //
-  func setSynchronisedScrollView(scrollView: NSScrollView) {
+  func startSynchronisedScrollView(scrollView: NSScrollView) {
 
       // In case we are already synchronising, drop that connection.
     stopSynchronising()

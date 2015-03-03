@@ -81,13 +81,12 @@ class ResultCellView: NSTableCellView {
 
       // Changes the selection of the enclosing table view to select this result. We use this in the mouseDown event
       // handler of the `SKView`.
-    func selectThisResult() {
-      if let rowView = superview as? NSTableRowView {
+    let selectThisResult: () -> () = { [unowned self] in
+      if let rowView = self.superview as? NSTableRowView {
         if let tableView = rowView.superview as? NSTableView {
           tableView.selectRowIndexes(NSIndexSet(index: tableView.rowForView(rowView)), byExtendingSelection: false)
         }
-      }
-    }
+      } }
 
       // Scene result views need to be layer-baked as they embed `SKView`s; otherwise, the interaction with the scroll
       // view leads to graphical artifacts.

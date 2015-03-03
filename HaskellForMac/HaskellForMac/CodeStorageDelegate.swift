@@ -100,7 +100,7 @@ final class CodeStorageDelegate: NSObject {
   func newFontForTextView(font: NSFont) {
 
       // Set the font on the associated text view.
-    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
+    for layoutManager in textStorage.layoutManagers {
       if let codeView = layoutManager.firstTextView as? CodeView {
         codeView.font                         = font
         codeView.textGutterView?.needsDisplay = true    // dependent on font size
@@ -116,7 +116,7 @@ final class CodeStorageDelegate: NSObject {
     themeDict = themeToThemeDictionary(theme)
 
       // Set the background colour and re-apply highlighting on the associated text view.
-    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
+    for layoutManager in textStorage.layoutManagers {
       if let codeView = layoutManager.firstTextView as? CodeView {
         codeView.backgroundColor              = theme.background
         codeView.textColor                    = theme.foreground
@@ -142,8 +142,8 @@ final class CodeStorageDelegate: NSObject {
     if let tokeniser = tokeniser {
       highlightingTokeniser = tokeniser
       lineMap               = lineTokenMap(textStorage.string, tokeniser)
-      for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
-        layoutManager.highlight(lineMap)
+      for layoutManager in textStorage.layoutManagers {
+        (layoutManager as? NSLayoutManager)?.highlight(lineMap)
       }
     }
   }
@@ -189,7 +189,7 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
     let rescanOffsets  = lineRangeRescanOffsets(lineMap, lines)  // NB: need to use old range, because of old lines map
     let newlineChars   = NSCharacterSet.newlineCharacterSet()
     let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
-                         || lines.endIndex - lines.startIndex > 1
+                         || (Int(lines.endIndex) - Int(lines.startIndex)) > 1
                 // FIXME: The above predicate is too coarse. Even if `lines.endIndex - lines.startIndex > 1`, that is ok in that
                 //        the number of lines didn't *change*, iff the number of newline characters in the edited string is equal
                 //        to `lines.endIndex - lines.startIndex`.
@@ -216,10 +216,12 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
       // For highlighting, we are interested in the new set of lines.
     let editedLines      = lineMap.lineRange(fromNSRange(editedRange))
     let rehighlightLines = clampRange(extendRange(editedLines, rescanOffsets), 1...lineMap.lastLine)
-    for layoutManager in textStorage.layoutManagers as [NSLayoutManager] {
-      layoutManager.highlight(lineMap, lineRange:rehighlightLines)
-      if didEditNewline {
-        (layoutManager.firstTextView as? CodeView)?.textGutterView?.needsDisplay = true    // update the line numbering in the gutter
+    for layoutManager in textStorage.layoutManagers {
+      if let layoutManager = layoutManager as? NSLayoutManager {
+        layoutManager.highlight(lineMap, lineRange:rehighlightLines)
+        if didEditNewline {
+          (layoutManager.firstTextView as? CodeView)?.textGutterView?.needsDisplay = true    // update the line numbering in the gutter
+        }
       }
     }
   }
