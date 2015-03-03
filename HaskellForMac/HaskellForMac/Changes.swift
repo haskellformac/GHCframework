@@ -20,6 +20,7 @@
 //  the observed stream as an object to be retained with the derived stream.
 
 import Foundation
+import TacticalBase
 
 
 /// Abstract interface to an observable stream of changes over time.

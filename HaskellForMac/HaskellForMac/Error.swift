@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import TacticalBase
 
 
 /// A value that we might fail to obtain, in which case we get an error object instead.

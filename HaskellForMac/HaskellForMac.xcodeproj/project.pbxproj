@@ -21,7 +21,6 @@
 		E70D409719409AB700CA3455 /* CabalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70D409619409AB700CA3455 /* CabalTest.swift */; };
 		E713E3D7189FCCEC00504164 /* PackageHeaderEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */; };
 		E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E713E3D918A491FF00504164 /* HFMProjectViewModel.m */; };
-		E7196C361A8A173200521BD0 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7196C351A8A173200521BD0 /* Box.swift */; };
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
 		E71A6A2019EFD0E500F3C48F /* CodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* CodeView.swift */; };
 		E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */; };
@@ -92,6 +91,12 @@
 		E7CC6405199DACA900D8E1CD /* DiagnosticsPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */; };
 		E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */; };
 		E7CFFEA219F729B600356065 /* ResultPopover.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7CFFEA119F729B600356065 /* ResultPopover.xib */; };
+		E7D12B631AA5E48A00980FE7 /* TacticalBase.h in Headers */ = {isa = PBXBuildFile; fileRef = E7D12B621AA5E48A00980FE7 /* TacticalBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E7D12B691AA5E48A00980FE7 /* TacticalBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */; };
+		E7D12B721AA5E48B00980FE7 /* TacticalBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D12B711AA5E48B00980FE7 /* TacticalBaseTests.swift */; };
+		E7D12B751AA5E48B00980FE7 /* TacticalBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */; };
+		E7D12B761AA5E48B00980FE7 /* TacticalBase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E7D12B7D1AA5E5B100980FE7 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7196C351A8A173200521BD0 /* Box.swift */; };
 		E7D53CED1A92DE2E0000A3C5 /* ProjectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */; };
 		E7D53CF11A93132D0000A3C5 /* ProjectItemGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */; };
 		E7E16B801A917192001BFA13 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72E4A971A5B67DA0034DF0F /* Crashlytics.framework */; };
@@ -217,6 +222,27 @@
 			remoteGlobalIDString = E7A13B001888006C00D79087;
 			remoteInfo = HaskellForMac;
 		};
+		E7D12B6A1AA5E48A00980FE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7D12B5D1AA5E48A00980FE7;
+			remoteInfo = TacticalBase;
+		};
+		E7D12B6C1AA5E48B00980FE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7A13B001888006C00D79087;
+			remoteInfo = HaskellForMac;
+		};
+		E7D12B731AA5E48B00980FE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7A13AF91888006C00D79087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7D12B5D1AA5E48A00980FE7;
+			remoteInfo = TacticalBase;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -228,6 +254,7 @@
 			files = (
 				E739EF881A05F45D00236051 /* GHC.framework in Embed Frameworks */,
 				E743141219A46F70003A3934 /* CloudcelerateKit.framework in Embed Frameworks */,
+				E7D12B761AA5E48B00980FE7 /* TacticalBase.framework in Embed Frameworks */,
 				E70A66C5197CC341006D3514 /* GHCKit.framework in Embed Frameworks */,
 				E70A6706197E272E006D3514 /* CabalKit.framework in Embed Frameworks */,
 				E731781119FF853600D8FDC0 /* HaskellSpriteKit.framework in Embed Frameworks */,
@@ -264,7 +291,7 @@
 		E713E3D6189FCCEC00504164 /* PackageHeaderEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PackageHeaderEditor.xib; sourceTree = "<group>"; };
 		E713E3D818A491FF00504164 /* HFMProjectViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMProjectViewModel.h; sourceTree = "<group>"; };
 		E713E3D918A491FF00504164 /* HFMProjectViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMProjectViewModel.m; sourceTree = "<group>"; };
-		E7196C351A8A173200521BD0 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
+		E7196C351A8A173200521BD0 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Box.swift; path = ../HaskellForMac/Box.swift; sourceTree = "<group>"; };
 		E719C7B418E91F5000586434 /* HFMHeaderEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFMHeaderEditorController.h; path = HaskellForMac/HFMHeaderEditorController.h; sourceTree = "<group>"; };
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
 		E71A6A1F19EFD0E500F3C48F /* CodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeView.swift; sourceTree = "<group>"; };
@@ -348,6 +375,12 @@
 		E7CC6404199DACA900D8E1CD /* DiagnosticsPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiagnosticsPopover.xib; sourceTree = "<group>"; };
 		E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundResultStorage.swift; sourceTree = "<group>"; };
 		E7CFFEA119F729B600356065 /* ResultPopover.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultPopover.xib; sourceTree = "<group>"; };
+		E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TacticalBase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7D12B611AA5E48A00980FE7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7D12B621AA5E48A00980FE7 /* TacticalBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TacticalBase.h; sourceTree = "<group>"; };
+		E7D12B681AA5E48A00980FE7 /* TacticalBaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TacticalBaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7D12B701AA5E48B00980FE7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7D12B711AA5E48B00980FE7 /* TacticalBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticalBaseTests.swift; sourceTree = "<group>"; };
 		E7D53CEC1A92DE2E0000A3C5 /* ProjectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectItem.swift; sourceTree = "<group>"; };
 		E7D53CF01A93132D0000A3C5 /* ProjectItemGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectItemGroups.swift; sourceTree = "<group>"; };
 		E7E5DE9B19E4FD30008A101B /* MACAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MACAddress.m; sourceTree = "<group>"; };
@@ -398,6 +431,7 @@
 			files = (
 				E7A13B051888006C00D79087 /* Cocoa.framework in Frameworks */,
 				E73120CF1A158CBC00E9535A /* SpriteKit.framework in Frameworks */,
+				E7D12B751AA5E48B00980FE7 /* TacticalBase.framework in Frameworks */,
 				E70A6705197E272E006D3514 /* CabalKit.framework in Frameworks */,
 				E70A66C4197CC341006D3514 /* GHCKit.framework in Frameworks */,
 				E743141119A46F70003A3934 /* CloudcelerateKit.framework in Frameworks */,
@@ -414,6 +448,21 @@
 				E7258C4A1983CB6D004789CF /* GHCKit.framework in Frameworks */,
 				E7A13B251888006C00D79087 /* Cocoa.framework in Frameworks */,
 				E7E16B801A917192001BFA13 /* Crashlytics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B5A1AA5E48A00980FE7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B651AA5E48A00980FE7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7D12B691AA5E48A00980FE7 /* TacticalBase.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,7 +624,6 @@
 				E75DD13719A07E0300CDC18F /* StringExtensions.swift */,
 				E78E73F519D52DCE0046BA51 /* Range.swift */,
 				E7C9F0201A6FD9B900913B76 /* Geometry.swift */,
-				E7196C351A8A173200521BD0 /* Box.swift */,
 				E7A548031A8EFCB600ECF437 /* Functions.swift */,
 				E7A817051A9D6EE900F3EF64 /* Changes.swift */,
 			);
@@ -605,11 +653,13 @@
 				E791CF4219F8B48100DECDC4 /* GHC.framework */,
 				E791CF3E19F8B35800DECDC4 /* ToolWrapper */,
 				E7A13B0A1888006C00D79087 /* HaskellForMac */,
+				E7D12B5F1AA5E48A00980FE7 /* TacticalBase */,
 				E70A66B0197CC341006D3514 /* GHCKit */,
 				E70A66F1197E272E006D3514 /* CabalKit */,
 				E74313FE19A46F70003A3934 /* CloudcelerateKit */,
 				E7A13B281888006C00D79087 /* HaskellForMacTests */,
 				E743140A19A46F70003A3934 /* CloudcelerateKitTests */,
+				E7D12B6E1AA5E48B00980FE7 /* TacticalBaseTests */,
 				E7A13B031888006C00D79087 /* Frameworks */,
 				E7A13B021888006C00D79087 /* Products */,
 				E739EF7F1A05F40100236051 /* GHC.xcodeproj */,
@@ -626,6 +676,8 @@
 				E70A66F0197E272E006D3514 /* CabalKit.framework */,
 				E74313FD19A46F70003A3934 /* CloudcelerateKit.framework */,
 				E743140719A46F70003A3934 /* CloudcelerateKitTests.xctest */,
+				E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */,
+				E7D12B681AA5E48A00980FE7 /* TacticalBaseTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -760,6 +812,41 @@
 			name = Processor;
 			sourceTree = "<group>";
 		};
+		E7D12B5F1AA5E48A00980FE7 /* TacticalBase */ = {
+			isa = PBXGroup;
+			children = (
+				E7196C351A8A173200521BD0 /* Box.swift */,
+				E7D12B621AA5E48A00980FE7 /* TacticalBase.h */,
+				E7D12B601AA5E48A00980FE7 /* Supporting Files */,
+			);
+			path = TacticalBase;
+			sourceTree = "<group>";
+		};
+		E7D12B601AA5E48A00980FE7 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E7D12B611AA5E48A00980FE7 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E7D12B6E1AA5E48B00980FE7 /* TacticalBaseTests */ = {
+			isa = PBXGroup;
+			children = (
+				E7D12B711AA5E48B00980FE7 /* TacticalBaseTests.swift */,
+				E7D12B6F1AA5E48B00980FE7 /* Supporting Files */,
+			);
+			path = TacticalBaseTests;
+			sourceTree = "<group>";
+		};
+		E7D12B6F1AA5E48B00980FE7 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E7D12B701AA5E48B00980FE7 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		E7EC457F1A776B5D004AFA98 /* CustomisedCocoaObjects */ = {
 			isa = PBXGroup;
 			children = (
@@ -805,6 +892,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E743140219A46F70003A3934 /* CloudcelerateKit.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B5B1AA5E48A00980FE7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7D12B631AA5E48A00980FE7 /* TacticalBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -912,6 +1007,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E7D12B741AA5E48B00980FE7 /* PBXTargetDependency */,
 			);
 			name = HaskellForMac;
 			productName = HaskellForMac;
@@ -937,6 +1033,43 @@
 			name = HaskellForMacTests;
 			productName = HaskellForMacTests;
 			productReference = E7A13B221888006C00D79087 /* HaskellForMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E7D12B5D1AA5E48A00980FE7 /* TacticalBase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7D12B771AA5E48B00980FE7 /* Build configuration list for PBXNativeTarget "TacticalBase" */;
+			buildPhases = (
+				E7D12B591AA5E48A00980FE7 /* Sources */,
+				E7D12B5A1AA5E48A00980FE7 /* Frameworks */,
+				E7D12B5B1AA5E48A00980FE7 /* Headers */,
+				E7D12B5C1AA5E48A00980FE7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TacticalBase;
+			productName = TacticalBase;
+			productReference = E7D12B5E1AA5E48A00980FE7 /* TacticalBase.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E7D12B671AA5E48A00980FE7 /* TacticalBaseTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7D12B7A1AA5E48B00980FE7 /* Build configuration list for PBXNativeTarget "TacticalBaseTests" */;
+			buildPhases = (
+				E7D12B641AA5E48A00980FE7 /* Sources */,
+				E7D12B651AA5E48A00980FE7 /* Frameworks */,
+				E7D12B661AA5E48A00980FE7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E7D12B6B1AA5E48A00980FE7 /* PBXTargetDependency */,
+				E7D12B6D1AA5E48B00980FE7 /* PBXTargetDependency */,
+			);
+			name = TacticalBaseTests;
+			productName = TacticalBaseTests;
+			productReference = E7D12B681AA5E48A00980FE7 /* TacticalBaseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -972,6 +1105,14 @@
 						DevelopmentTeam = Z3JA6XMHD3;
 						TestTargetID = E7A13B001888006C00D79087;
 					};
+					E7D12B5D1AA5E48A00980FE7 = {
+						CreatedOnToolsVersion = 6.3;
+						DevelopmentTeam = Z3JA6XMHD3;
+					};
+					E7D12B671AA5E48A00980FE7 = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = E7A13B001888006C00D79087;
+					};
 				};
 			};
 			buildConfigurationList = E7A13AFC1888006C00D79087 /* Build configuration list for PBXProject "HaskellForMac" */;
@@ -998,11 +1139,13 @@
 			projectRoot = "";
 			targets = (
 				E7A13B001888006C00D79087 /* HaskellForMac */,
+				E7D12B5D1AA5E48A00980FE7 /* TacticalBase */,
 				E70A66AE197CC340006D3514 /* GHCKit */,
 				E70A66EF197E272E006D3514 /* CabalKit */,
 				E74313FC19A46F70003A3934 /* CloudcelerateKit */,
 				E7A13B211888006C00D79087 /* HaskellForMacTests */,
 				E743140619A46F70003A3934 /* CloudcelerateKitTests */,
+				E7D12B671AA5E48A00980FE7 /* TacticalBaseTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1087,6 +1230,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7A13B2D1888006C00D79087 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B5C1AA5E48A00980FE7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B661AA5E48A00980FE7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1316,7 +1473,6 @@
 				E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */,
 				E7590EDA1A75DB3200A74041 /* DocumentationController.swift in Sources */,
 				E7A13B111888006C00D79087 /* main.m in Sources */,
-				E7196C361A8A173200521BD0 /* Box.swift in Sources */,
 				E74058061A899E1E004B3846 /* ThemesController.swift in Sources */,
 				E74058081A89BB91004B3846 /* Theme.swift in Sources */,
 				E72AF5F719E37B5400753077 /* CloudController.swift in Sources */,
@@ -1341,6 +1497,22 @@
 				E73E01C81A9702D70031AF75 /* ViewModelTests.swift in Sources */,
 				E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */,
 				E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B591AA5E48A00980FE7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7D12B7D1AA5E5B100980FE7 /* Box.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7D12B641AA5E48A00980FE7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7D12B721AA5E48B00980FE7 /* TacticalBaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1386,6 +1558,21 @@
 			isa = PBXTargetDependency;
 			target = E7A13B001888006C00D79087 /* HaskellForMac */;
 			targetProxy = E7A13B261888006C00D79087 /* PBXContainerItemProxy */;
+		};
+		E7D12B6B1AA5E48A00980FE7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7D12B5D1AA5E48A00980FE7 /* TacticalBase */;
+			targetProxy = E7D12B6A1AA5E48A00980FE7 /* PBXContainerItemProxy */;
+		};
+		E7D12B6D1AA5E48B00980FE7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7A13B001888006C00D79087 /* HaskellForMac */;
+			targetProxy = E7D12B6C1AA5E48B00980FE7 /* PBXContainerItemProxy */;
+		};
+		E7D12B741AA5E48B00980FE7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7D12B5D1AA5E48A00980FE7 /* TacticalBase */;
+			targetProxy = E7D12B731AA5E48B00980FE7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1974,6 +2161,114 @@
 			};
 			name = Release;
 		};
+		E7D12B781AA5E48B00980FE7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = TacticalBase/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E7D12B791AA5E48B00980FE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = TacticalBase/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E7D12B7B1AA5E48B00980FE7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = TacticalBaseTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
+			};
+			name = Debug;
+		};
+		E7D12B7C1AA5E48B00980FE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = TacticalBaseTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Haskell.app/Contents/MacOS/Haskell";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2036,6 +2331,24 @@
 			buildConfigurations = (
 				E7A13B361888006C00D79087 /* Debug */,
 				E7A13B371888006C00D79087 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E7D12B771AA5E48B00980FE7 /* Build configuration list for PBXNativeTarget "TacticalBase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E7D12B781AA5E48B00980FE7 /* Debug */,
+				E7D12B791AA5E48B00980FE7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E7D12B7A1AA5E48B00980FE7 /* Build configuration list for PBXNativeTarget "TacticalBaseTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E7D12B7B1AA5E48B00980FE7 /* Debug */,
+				E7D12B7C1AA5E48B00980FE7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

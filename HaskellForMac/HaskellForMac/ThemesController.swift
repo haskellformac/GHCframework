@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import TacticalBase
 
 
 let defaultFontName: String = "Menlo-Regular"

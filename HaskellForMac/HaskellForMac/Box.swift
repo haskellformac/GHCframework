@@ -1,6 +1,6 @@
 //
 //  Box.swift
-//  HaskellForMac
+//  TacticalBase
 //
 //  Created by Manuel M T Chakravarty on 10/02/2015.
 //  Copyright (c) 2015 Manuel M T Chakravarty. All rights reserved.
@@ -26,9 +26,14 @@ final public class Ref<T> {
 /// references that doesn't keep the referenced objects alive.)
 ///
 /// WARNING: Trying to use a struct, rather than a class here leads swiftc to generate crashing code (XCode 6.1.1)!
-public class WeakBox<T: AnyObject> {     // aka Schrödinger Box
-  private weak var box: T?
-  public var unbox: T? { get { return box } }
+final public class WeakBox<T: AnyObject> {     // aka Schrödinger's Box
+    private weak var box: T?  // RADAR #20020634
+//  private weak var box: AnyObject?
+//  public var unbox: T? { get { if let v: AnyObject = box { if let w = v as? T { return w } else { NSLog("1"); return nil } } else { NSLog("2"); return nil } } }
+//  public var unbox: T? { get { if let v: AnyObject = box { if let w = box as? T { return w } else { return nil } } else { return nil } } }
+  //  public var unbox: T? { get { return box as! T? } }  // leads to a runtime errors when performing the cast in some cases
+    public var unbox: T? { get { return box } }
+//  public init(_ value: T) { self.box = value as AnyObject }
   public init(_ value: T) { self.box = value }
 }
 
