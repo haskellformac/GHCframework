@@ -132,6 +132,7 @@ static NSString *textFileExtension = @"txt";
   NSString *newCabalName = [name stringByAppendingPathExtension:[HFMProjectViewModel cabalFileExtension]];
 
     // The URL is where we want to save the project and we need to change the cached Cabal filename, too.
+  _documentURL                       = url;
   self.fileWrapper.preferredFilename = projname;
   _cabalFileName                     = newCabalName;
 

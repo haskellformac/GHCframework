@@ -40,6 +40,7 @@
     _projectModel = [HFMProjectViewModel projectViewModelWithProjectFileWrapper:projectFileWrapper
                                                                cabalFileWrapper:nil
                                                                     documentURL:self.fileURL];
+                                                                      // NB: This will be `nil`; so must be updated in `-[HFMViewModel createProject:]`!
     if (!_projectModel) {
 
       NSLog(@"%s: failed to create a new project",__func__);
