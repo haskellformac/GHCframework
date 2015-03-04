@@ -300,7 +300,8 @@ public func rescanTokenLines(lineMap: LineTokenMap,
     let newEndIndex    = idx
     let changeInLength = newEndIndex - oldEndIndex
 
-    newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
+// Swift 1.2:   newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
+    newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
 
     for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
       newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))

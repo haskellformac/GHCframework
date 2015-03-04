@@ -32,7 +32,7 @@ class DocumentationController: NSWindowController {
     state: NSCoder,
     completionHandler: (NSWindow, NSError!) -> Void) -> Bool
   {
-    completionHandler(((NSApp as! NSApplication).delegate as! AppDelegate).documentationController.window!, nil)
+    completionHandler(((NSApp as? NSApplication)!.delegate as? AppDelegate)!.documentationController.window!, nil)
     return true
   }
 

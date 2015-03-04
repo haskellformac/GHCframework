@@ -46,6 +46,6 @@ public struct WeakApply<T> {
   public var unbox: T? { get { return arg.unbox.map(fun) } }
   public init<S: AnyObject>(_ fun: S -> T, _ value: S) {
     self.arg = WeakBox(value)
-    self.fun = { fun($0 as! S) }
+    self.fun = { fun(($0 as? S)!) }
   }
 }

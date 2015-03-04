@@ -212,7 +212,7 @@ class PlaygroundController: NSViewController {
   /// first character is a whitespace (emulating Haskell's off-side rule).
   ///
   func execute() {
-    let gutter = codeScrollView.verticalRulerView as! TextGutterView
+    let gutter = (codeScrollView.verticalRulerView as? TextGutterView)!
 
       // Invalidate old issues and anounce that the playground gets loaded.
     gutter.updateIssues(.IssuesPending)
@@ -236,7 +236,7 @@ class PlaygroundController: NSViewController {
     let textContainer = codeTextView.textContainer
     let string        = codeTextView.textStorage!.string
     let lineMap       = codeTextView.lineMap
-    let gutter        = codeScrollView.verticalRulerView as! TextGutterView
+    let gutter        = (codeScrollView.verticalRulerView as? TextGutterView)!
 
       // Discard all old issues.
     issues = IssuesForFile(file: issues.file, issues: [:])
@@ -257,8 +257,10 @@ class PlaygroundController: NSViewController {
         charIndex     = lineRange.endIndex
       }
       let span         = string.startIndex..<initialCharIndex
-      let firstIndex   = count(string[span].utf16)
-      let indexLength  = count(string[initialCharIndex..<charIndex].utf16)
+// Swift 1.2:      let firstIndex   = count(string[span].utf16)
+      let firstIndex   = string[span].utf16Count
+// Swift 1.2:      let indexLength  = count(string[initialCharIndex..<charIndex].utf16)
+      let indexLength  = string[initialCharIndex..<charIndex].utf16Count
       let glyphRange   = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
                                                                     actualCharacterRange: nil)
       let rect         = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
@@ -418,7 +420,7 @@ extension PlaygroundController: NSTableViewDelegate {
   }
 
   func tableViewSelectionDidChange(notification: NSNotification) {
-    let tableView = notification.object as! NSTableView
+    let tableView = (notification.object as? NSTableView)!
     let row       = tableView.selectedRow
     if row == -1 { return }  // no row selected
 

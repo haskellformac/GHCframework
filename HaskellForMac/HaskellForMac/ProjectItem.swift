@@ -219,7 +219,7 @@ private func groupItemChildren(groupCategory: ProjectGroupCategory, parent: Proj
     // Extra source group: multiple files in a folder hierarchy
   case .ExtraSource:
     return childrenFromDictionary(parent.viewModel.fileWrapper,
-                                  parent.viewModel.extraSrcFiles as! [String: AnyObject],
+                                  (parent.viewModel.extraSrcFiles as? [String: AnyObject])!,
                                   false,
                                   parent.viewModel,
                                   parent)
@@ -231,7 +231,7 @@ private func groupItemChildren(groupCategory: ProjectGroupCategory, parent: Proj
       // File group: 1 child: 'data-dir:'
       let dataDirFileWrapper = fileWrapperForFileGroup(parent.viewModel.fileWrapper, dataDir)
       let makeChildren       = { newParent in childrenFromDictionary(dataDirFileWrapper,
-                                                                     parent.viewModel.dataFiles as! [String: AnyObject],
+                                                                     (parent.viewModel.dataFiles as? [String: AnyObject])!,
                                                                      false,
                                                                      parent.viewModel,
                                                                      newParent) }
@@ -246,7 +246,7 @@ private func groupItemChildren(groupCategory: ProjectGroupCategory, parent: Proj
 
       // Data files group: multiple files in a folder hierarchy
       return childrenFromDictionary(parent.viewModel.fileWrapper,
-                                    parent.viewModel.dataFiles as! [String: AnyObject],
+                                    (parent.viewModel.dataFiles as? [String: AnyObject])!,
                                     false,
                                     parent.viewModel,
                                     parent)
@@ -264,7 +264,7 @@ private func executableChildren(parent: ProjectItem) -> [ProjectItem] {
     // File group: 1 child: 'source-dir:'
     let sourceDirFileWrapper = fileWrapperForFileGroup(parent.viewModel.fileWrapper, sourceDir)
     let makeChildren         = { newParent in childrenFromDictionary(sourceDirFileWrapper,
-                                                                     parent.viewModel.modules as! [String: AnyObject],
+                                                                     (parent.viewModel.modules as? [String: AnyObject])!,
                                                                      true,
                                                                      parent.viewModel,
                                                                      newParent) }
@@ -278,7 +278,7 @@ private func executableChildren(parent: ProjectItem) -> [ProjectItem] {
   } else {                                   // ...directly display the main module and other modules.
 
     return childrenFromDictionary(parent.viewModel.fileWrapper,
-                                  parent.viewModel.modules as! [String: AnyObject],
+                                  (parent.viewModel.modules as? [String: AnyObject])!,
                                   true,
                                   parent.viewModel,
                                   parent)
@@ -303,7 +303,7 @@ func childrenFromDictionary(rootFileWrapper: NSFileWrapper,
 
   for (name, subdict) in pathDict {
 
-    let nameDict = subdict as! [String: AnyObject]
+    let nameDict = (subdict as? [String: AnyObject])!
 
     var identifier = name
     let isFolder   = nameDict.count > 0

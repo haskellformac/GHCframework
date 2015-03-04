@@ -63,7 +63,7 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
   ///
   func tokeniseHaskell(text: String, file: String, line: Line, column: Column) -> [Token] {
     return ghcInstance.tokeniseHaskell(text, file: file, line: line, column: column).map{ locatedToken in
-      let tok = locatedToken as! GHCLocatedToken
+      let tok = (locatedToken as? GHCLocatedToken)!
       return Token(kind: locatedToken.token,
                    filename: file,
                    line: tok.line,

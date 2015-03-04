@@ -70,7 +70,7 @@ class PreferencesController: NSWindowController {
     state: NSCoder,
     completionHandler: (NSWindow, NSError!) -> Void) -> Bool
   {
-    completionHandler(((NSApp as! NSApplication).delegate as! AppDelegate).preferencesController.window!, nil)
+    completionHandler(((NSApp as? NSApplication)!.delegate as? AppDelegate)!.preferencesController.window!, nil)
     return true
   }
 
@@ -99,7 +99,7 @@ class PreferencesController: NSWindowController {
 
       // Currently, we don't dynamically enable and disable the account preferences tab. Its status is determined once.
     if !NSUserDefaults.standardUserDefaults().boolForKey(kPreferenceEnableCloud) {
-      if let index = find(toolbar.items as! [NSToolbarItem], accountToolbarItem) { toolbar.removeItemAtIndex(index) }
+      if let index = find((toolbar.items as? [NSToolbarItem])!, accountToolbarItem) { toolbar.removeItemAtIndex(index) }
     }
 
     themesController.setup(self)

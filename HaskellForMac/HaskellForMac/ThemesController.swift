@@ -136,7 +136,7 @@ class ThemesController: NSController {
   /// Get the themes controller from the main menu nib.
   ///
   class func sharedThemesController() -> ThemesController {
-    return ((NSApp as! NSApplication).delegate as! AppDelegate).themesController
+    return ((NSApp as? NSApplication)!.delegate as? AppDelegate)!.themesController
   }
 
 
@@ -153,11 +153,10 @@ class ThemesController: NSController {
     themes = theThemes
 
       // Initialise themes data for the table view with theme names.
-    if let let themeName = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceThemeName) {
-      initialThemeName = themeName
-      if let themeIndex = find(themeNames, themeName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
-      else { currentThemeIndexes = NSIndexSet(index: 0) }
-    } else { currentThemeIndexes = NSIndexSet(index: 0) }
+    let themeName    = NSUserDefaults.standardUserDefaults().stringForKey(kPreferenceThemeName) ?? "Solar Light"
+    initialThemeName = themeName  // This is awkward — see `setup()`.
+    if let themeIndex = find(themeNames, themeName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
+    else { currentThemeIndexes = NSIndexSet(index: 0) }
 
       // Register for changes in user defaults.
     NSNotificationCenter.defaultCenter().addObserver(self,
@@ -215,7 +214,7 @@ class ThemesController: NSController {
   ///
   func updateAvailableFonts() {
     if let fonts = NSFontManager.sharedFontManager().availableFontNamesWithTraits(NSFontTraitMask.FixedPitchFontMask) {
-      availableFonts = fonts as! [String]
+      availableFonts = (fonts as? [String])!
     }
   }
 

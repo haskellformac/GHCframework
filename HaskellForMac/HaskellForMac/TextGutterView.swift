@@ -253,7 +253,7 @@ class TextGutterView: NSRulerView {
   }
 
   override func drawHashMarksAndLabelsInRect(rect: NSRect) {
-    let textView      = self.clientView as! CodeView
+    let textView      = (self.clientView as? CodeView)!
     let layoutManager = textView.layoutManager!
     let textContainer = textView.textContainer
     let string        = textView.textStorage!.string
@@ -315,7 +315,7 @@ class TextGutterView: NSRulerView {
   // first text line) — the overall range may span multiple text lines due to line wrapping.
   //
   private func gutterRectForCharRange(charRange: NSRange) -> (NSRect, CGFloat) {
-    let textView      = self.clientView as! NSTextView
+    let textView      = (self.clientView as? NSTextView)!
     let layoutManager = textView.layoutManager!
     let textContainer = textView.textContainer
     let string        = textView.textStorage!.string
@@ -385,7 +385,7 @@ class TextGutterView: NSRulerView {
 
 extension TextGutterView {
   override func mouseDown(event: NSEvent) {
-    let textView      = self.clientView as! CodeView
+    let textView      = (self.clientView as? CodeView)!
     let layoutManager = textView.layoutManager
     let textContainer = textView.textContainer!
     let string        = textView.textStorage!.string

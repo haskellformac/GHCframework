@@ -38,7 +38,8 @@ public struct StringLineMap<LineInfo> {
   }
 
   public init(string: String) {
-    map = [(count(string.utf16), [])]
+// Swift 1.2:    map = [(count(string.utf16), [])]
+    map = [(string.utf16Count, [])]
 
       // Iterate through the lines.
     var idx = string.startIndex
@@ -51,7 +52,8 @@ public struct StringLineMap<LineInfo> {
       // Make sure to add an extra line if the last character is a newline (hence, additional empty last line).
     let newlines = NSCharacterSet.newlineCharacterSet()
     if !string.isEmpty && newlines.characterIsMember(string.utf16[string.utf16.endIndex - 1]) {
-      let newIndex: MapElement = (index: count(string.utf16), info: [])
+// Swift 1.2:      let newIndex: MapElement = (index: count(string.utf16), info: [])
+      let newIndex: MapElement = (index: string.utf16Count, info: [])
       map.append(newIndex)
     }
   }
@@ -179,7 +181,8 @@ extension String {
   /// In the precense of `Foundation`, this should be O(1) as `UTF16Index` is a `RandomAccessIndexType`.
   ///
   func stringIndexToInt(idx: String.Index) -> Int {
-    return distance(self.utf16.startIndex, idx.samePositionIn(self.utf16))
+// Swift 1.2:    return distance(self.utf16.startIndex, idx.samePositionIn(self.utf16))
+    return self[self.startIndex..<idx].utf16Count
   }
 
   /// Compute the line number of a character location, using a line map if available.
