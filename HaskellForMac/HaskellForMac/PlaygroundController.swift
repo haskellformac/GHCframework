@@ -170,7 +170,7 @@ class PlaygroundController: NSViewController {
                        importPaths: [String],
                        completionHandler handler: Bool -> Void)
   {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)){
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
 
       let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
       handler(success)
@@ -212,17 +212,18 @@ class PlaygroundController: NSViewController {
   /// first character is a whitespace (emulating Haskell's off-side rule).
   ///
   func execute() {
-    let gutter = (codeScrollView.verticalRulerView as? TextGutterView)!
+    let gutter = codeScrollView.verticalRulerView as? TextGutterView
 
       // Invalidate old issues and anounce that the playground gets loaded.
-    gutter.updateIssues(.IssuesPending)
+    gutter?.updateIssues(.IssuesPending)
     codeStorageDelegate.status.value = .LastLoading(NSDate())
 
       // Mark all current results as being stale.
     resultStorage.invalidate()
 
       // Do not actually execute the playground if it is hidden.
-    if view.superview!.hidden { return }
+    if let superview = view.superview { if superview.hidden { return } }
+    else { return }
 
       // To give AppKit an opportunity to update the gutter and results table (render as stale), we schedule the
       // remainder of this function as a continuation.

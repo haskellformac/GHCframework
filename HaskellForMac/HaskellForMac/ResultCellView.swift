@@ -23,7 +23,7 @@ class ResultCellView: NSTableCellView {
   //
   @IBOutlet private weak var stackView:       NSStackView!
   @IBOutlet private weak var resultString:    NSTextField!
-  @IBOutlet private weak var resultSceneView: NSView!
+  @IBOutlet private      var resultSceneView: NSView!
   @IBOutlet private weak var resultImage:     NSImageView!
   @IBOutlet private weak var resultType:      NSTextField!
 
@@ -81,8 +81,8 @@ class ResultCellView: NSTableCellView {
 
       // Changes the selection of the enclosing table view to select this result. We use this in the mouseDown event
       // handler of the `SKView`.
-    let selectThisResult: () -> () = { [unowned self] in
-      if let rowView = self.superview as? NSTableRowView {
+    let selectThisResult: () -> () = { [weak self] in
+      if let rowView = self?.superview as? NSTableRowView {
         if let tableView = rowView.superview as? NSTableView {
           tableView.selectRowIndexes(NSIndexSet(index: tableView.rowForView(rowView)), byExtendingSelection: false)
         }
@@ -99,7 +99,8 @@ class ResultCellView: NSTableCellView {
     scene.size = sceneSize
 
     scene.scaleMode = .AspectFit
-    var resultSKView = MiniSceneView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)), doSelectThisScene: selectThisResult)
+    var resultSKView = MiniSceneView(frame: CGRect(origin: CGPointZero, size: CGSize(width: 30, height: 15)),
+                                     doSelectThisScene: selectThisResult)
     resultSKView.translatesAutoresizingMaskIntoConstraints = false
     for view in resultSceneView.subviews { view.removeFromSuperview() }
     resultSceneView.addSubview(resultSKView)
