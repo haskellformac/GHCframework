@@ -394,8 +394,11 @@ extension NSLayoutManager {
         // Mark all tab characters.
       let tabCharacterSet: NSCharacterSet = NSCharacterSet(charactersInString: "\t")
       let string:          NSString       = textStorage!.string
+      let len                             = string.length
       var charIndex:       Int            = start
       while (charIndex != NSNotFound && charIndex < end) {
+
+        if (charIndex < 0 || charIndex >= len || end > len) { break }
         let searchRange = NSRange(location: charIndex, length: end - charIndex)
         let foundRange  = string.rangeOfCharacterFromSet(tabCharacterSet, options: nil, range: searchRange)
         if foundRange.location != NSNotFound {
