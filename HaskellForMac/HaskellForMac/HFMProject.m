@@ -148,6 +148,7 @@
     NSString *fname    = [self.projectModel.fileWrapper preferredFilename];
     NSSavePanel* panel = [NSSavePanel savePanel];
     [panel setNameFieldStringValue:fname];
+    panel.allowedFileTypes = @[@"hsproj"];    // FIXME: do this with `-fileNameExtensionForType:saveOperation:`
     [panel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
 
       switch (result) {
