@@ -18,7 +18,9 @@ typedef NS_ENUM(NSInteger, AuthenticationFlavour) {
 };
 
 
-@interface HFMWindowController : NSWindowController <NSOutlineViewDelegate,
+                                                     // FIXME: This thing ought to be split up...
+@interface HFMWindowController : NSWindowController <NSWindowDelegate,
+                                                     NSOutlineViewDelegate,
                                                      NSSplitViewDelegate,
                                                      NSUserInterfaceValidations,
                                                      NSTextFieldDelegate>

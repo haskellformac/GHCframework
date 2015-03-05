@@ -140,6 +140,17 @@ NSString *const kCabalCellID = @"cabalCellID";
 
 
 #pragma mark -
+#pragma mark NSWindowDelegate protocol methods
+
+- (void)windowDidBecomeMain:(NSNotification *)notification
+{
+#pragma unused(notification)
+
+  [self.contextController loadContextModule:NO];
+}
+
+
+#pragma mark -
 #pragma mark NSOutlineViewDelegate protocol methods
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(ProjectItem *)item
@@ -868,7 +879,7 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
       [self configureEditor:editorController playground:playgroundController];
 
         // Load the newly selected module right away.
-      [self.contextController loadContextModule];
+      [self.contextController loadContextModule:YES];
     }
 
   } else {          // If there is no selection...

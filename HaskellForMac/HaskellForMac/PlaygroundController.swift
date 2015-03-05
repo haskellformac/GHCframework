@@ -168,6 +168,7 @@ class PlaygroundController: NSViewController {
   func asyncLoadModule(moduleText: String!,
                        file: String,
                        importPaths: [String],
+                       alsoLoadPlayground: Bool,
                        completionHandler handler: Bool -> Void)
   {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
@@ -175,7 +176,7 @@ class PlaygroundController: NSViewController {
       let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
       handler(success)
 
-      if success { dispatch_async(dispatch_get_main_queue()){ self.execute() } }
+      if alsoLoadPlayground && success { dispatch_async(dispatch_get_main_queue()){ self.execute() } }
     }
   }
 

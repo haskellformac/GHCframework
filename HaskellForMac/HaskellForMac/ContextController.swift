@@ -166,7 +166,7 @@ final class ContextController : NSObject {
           if let editorController = TextEditorController(nibName: nibName,
                                                           bundle: nil,
                                             projectViewModelItem: item,
-                                                      loadModule: { [unowned self] in self.loadContextModule() })
+                                                      loadModule: { [unowned self] in self.loadContextModule(true) })
           {
             editor.memory = editorController
             if let viewModelPlayground = item.playground {
@@ -247,7 +247,7 @@ final class ContextController : NSObject {
   /// Load the module represented by the current item asynchronously. If loading is successful, the `.ModuleLoaded`
   /// change announcement will also trigger the loading of the associated playground.
   ///
-  func loadContextModule() {
+  func loadContextModule(alsoLoadPlayground: Bool) {
 
     switch config {
     case .HaskellEditor(let editor, let playground):
@@ -266,9 +266,13 @@ final class ContextController : NSObject {
                     case .None:                return [projectPath]
                     case .Some(let sourceDir): return [projectPath, projectPath.stringByAppendingPathComponent(sourceDir)]
                     }}()
-            playground.asyncLoadModule(item.fileContents, file: fullFilename, importPaths: importPaths){ success in
-              if success { self.contextChanges.announce(.ModuleLoaded) }
-              else { self.contextChanges.announce(.ModuleLoadingFailed) }
+            playground.asyncLoadModule(item.fileContents,
+                                       file: fullFilename,
+                                       importPaths: importPaths,
+                                       alsoLoadPlayground: alsoLoadPlayground)
+              { success in
+                if success { self.contextChanges.announce(.ModuleLoaded) }
+                else { self.contextChanges.announce(.ModuleLoadingFailed) }
             }
           }
         }
