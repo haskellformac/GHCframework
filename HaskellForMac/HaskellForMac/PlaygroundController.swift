@@ -365,22 +365,8 @@ extension PlaygroundController: NSTextDelegate {
 // MARK: NSTextViewDelegate protocol methods (for the code view)
 
 extension PlaygroundController: NSTextViewDelegate {
-  //FIXME: This is provisionally the delegate for the REPL view while it is so simple.
 
-  func textView(textView: NSTextView, doCommandBySelector selector: Selector) -> Bool {
-    if textView != codeTextView {
-      NSLog("%s: textView:doCommandBySelector from unexpected text view", __FUNCTION__)
-      return false
-    }
-
-    if (selector == "insertNewline:") {
-
-      self.execute()
-      return false
-
-    }
-    return false
-  }
+  // Currently, none of the delegate methods are needed.
 }
 
 // MARK: -
@@ -417,7 +403,7 @@ extension PlaygroundController: NSTableViewDelegate {
 
   func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
     if let result = resultStorage.queryResult(row) {
-      return result.height
+      return fontHeight //result.height
     } else { return 0 }
   }
 

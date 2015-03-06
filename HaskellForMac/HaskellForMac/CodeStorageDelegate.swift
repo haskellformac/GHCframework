@@ -29,7 +29,7 @@ enum LoadAdvise {
 ///
 let loadDelay: NSTimeInterval = 0.5
 
-final class CodeStorageDelegate: NSObject {
+public final class CodeStorageDelegate: NSObject {
 
   /// The associated text storage. (Can be strong as the text storage doesn't own the delegate. The lifetime of the two
   /// is the same.)
@@ -64,7 +64,7 @@ final class CodeStorageDelegate: NSObject {
   ///
   var lineMap: LineTokenMap
 
-  init(textStorage: NSTextStorage) {
+  public init(textStorage: NSTextStorage) {
 
     func codeLoadTriggerStateMachine(lastStatus: CodeStorageStatus, change: Either<CodeStorageStatus, NSDate>)
       -> (CodeStorageStatus, LoadAdvise)
@@ -151,11 +151,31 @@ final class CodeStorageDelegate: NSObject {
 
 
 // MARK: -
+// MARK: Line map supported utitlity functions
+
+extension CodeStorageDelegate {
+
+  /// Get the character range for a given line from the associated line map. A safe range will be returned — i.e.,
+  /// indexing the string with it will not crash. If the range in the line map doesn't fit the string, an empty range
+  /// is returned.
+  ///
+  func charRangeOfLine(line: Line) -> Range<Int> {
+    if let startChar = lineMap.startOfLine(line) {
+
+      let endChar = lineMap.endOfLine(line)
+      if endChar <= textStorage.string.utf16Count { return startChar..<endChar }
+    }
+    return 0..<0
+  }
+}
+
+
+// MARK: -
 // MARK: NSTextStorageDelegate protocol
 
 extension CodeStorageDelegate: NSTextStorageDelegate {
 
-  func textStorageDidProcessEditing(notification: NSNotification) {
+  public func textStorageDidProcessEditing(notification: NSNotification) {
     let editedRange    = textStorage.editedRange
     let changeInLength = textStorage.changeInLength
 

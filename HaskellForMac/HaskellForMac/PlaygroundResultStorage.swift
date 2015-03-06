@@ -35,10 +35,10 @@ enum ResultValue {
 
 class PlaygroundResultStorage: NSObject {
 
-  // The results for all commands in the playground if successfully computed.
-  //
-  // NB: The length of the array always equals the number of commands in the playground.
-  //
+  /// The results for all commands in the playground if successfully computed.
+  ///
+  /// NB: The length of the array always equals the number of commands in the playground.
+  ///
   private var results: [Result?] = []
 
   /// Type of callback to advise results view that all rows need to be redisplayed.

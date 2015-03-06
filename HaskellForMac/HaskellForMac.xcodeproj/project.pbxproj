@@ -24,6 +24,7 @@
 		E719C7B618E91F5000586434 /* HFMHeaderEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */; };
 		E71A6A2019EFD0E500F3C48F /* CodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A1F19EFD0E500F3C48F /* CodeView.swift */; };
 		E71A6A2219F0987100F3C48F /* CodeStorageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */; };
+		E71A774F1AA92D44000BF2F7 /* PlaygroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71A774E1AA92D44000BF2F7 /* PlaygroundTests.swift */; };
 		E71D508519A7065400BD4141 /* Cloudcelerate.hs in Sources */ = {isa = PBXBuildFile; fileRef = E71D508419A7065400BD4141 /* Cloudcelerate.hs */; };
 		E71D5AE61A1AF6AE0040045D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71D5AE51A1AF6AE0040045D /* Constants.swift */; };
 		E721D8F419ACB3C500DCBF68 /* GHCToken.h in Headers */ = {isa = PBXBuildFile; fileRef = E721D8F319ACA9D100DCBF68 /* GHCToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -60,6 +61,7 @@
 		E76CD89519CFC6EE00369A80 /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */; };
 		E76CD89719D1207700369A80 /* UtilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89619D1207700369A80 /* UtilitiesTests.swift */; };
 		E76CD89919D4207E00369A80 /* HighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CD89819D4207E00369A80 /* HighlightingTests.swift */; };
+		E781E2A81AA8819A00015D15 /* PlaygroundCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = E781E2A71AA8819A00015D15 /* PlaygroundCommands.swift */; };
 		E785311B1A3C016000B6A6B0 /* QuicklookController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78531191A3C016000B6A6B0 /* QuicklookController.swift */; };
 		E785311C1A3C016000B6A6B0 /* Quicklook.xib in Resources */ = {isa = PBXBuildFile; fileRef = E785311A1A3C016000B6A6B0 /* Quicklook.xib */; };
 		E78E73F619D52DCE0046BA51 /* Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78E73F519D52DCE0046BA51 /* Range.swift */; };
@@ -296,6 +298,7 @@
 		E719C7B518E91F5000586434 /* HFMHeaderEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HFMHeaderEditorController.m; path = HaskellForMac/HFMHeaderEditorController.m; sourceTree = "<group>"; };
 		E71A6A1F19EFD0E500F3C48F /* CodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeView.swift; sourceTree = "<group>"; };
 		E71A6A2119F0987100F3C48F /* CodeStorageDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeStorageDelegate.swift; sourceTree = "<group>"; };
+		E71A774E1AA92D44000BF2F7 /* PlaygroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundTests.swift; sourceTree = "<group>"; };
 		E71D508419A7065400BD4141 /* Cloudcelerate.hs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cloudcelerate.hs; sourceTree = "<group>"; };
 		E71D5AE51A1AF6AE0040045D /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		E721D8F319ACA9D100DCBF68 /* GHCToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GHCToken.h; path = GHCKit/GHCToken.h; sourceTree = SOURCE_ROOT; };
@@ -334,6 +337,7 @@
 		E76CD89419CFC6EE00369A80 /* SequenceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		E76CD89619D1207700369A80 /* UtilitiesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilitiesTests.swift; sourceTree = "<group>"; };
 		E76CD89819D4207E00369A80 /* HighlightingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightingTests.swift; sourceTree = "<group>"; };
+		E781E2A71AA8819A00015D15 /* PlaygroundCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaygroundCommands.swift; sourceTree = "<group>"; };
 		E78531191A3C016000B6A6B0 /* QuicklookController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuicklookController.swift; sourceTree = "<group>"; };
 		E785311A1A3C016000B6A6B0 /* Quicklook.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Quicklook.xib; sourceTree = "<group>"; };
 		E78E73F519D52DCE0046BA51 /* Range.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Range.swift; sourceTree = "<group>"; };
@@ -758,6 +762,7 @@
 				E76CD89619D1207700369A80 /* UtilitiesTests.swift */,
 				E76CD89819D4207E00369A80 /* HighlightingTests.swift */,
 				E73E01C71A9702D70031AF75 /* ViewModelTests.swift */,
+				E71A774E1AA92D44000BF2F7 /* PlaygroundTests.swift */,
 			);
 			path = HaskellForMacTests;
 			sourceTree = "<group>";
@@ -862,6 +867,7 @@
 				E7F79895198B06850063294F /* SynchroScrollView.swift */,
 				E7F7988D198A610F0063294F /* PlaygroundController.swift */,
 				E7CFFE9F19F3BF1400356065 /* PlaygroundResultStorage.swift */,
+				E781E2A71AA8819A00015D15 /* PlaygroundCommands.swift */,
 			);
 			name = Playground;
 			sourceTree = "<group>";
@@ -1313,7 +1319,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"Release\" = \"${CONFIGURATION}\"]; then\n  echo \"Running Crashlytics to upload symbols\"\n  ./Crashlytics.framework/run 149e2f1c071531ba90e5d1baef11804ef2d0f2e9 ede29a60dbb0fb982f7150eaba8d906091f92d232c47a32de4e4a62901b363fb\nfi";
+			shellScript = "if [ \"Release\" = \"${CONFIGURATION}\" ]; then\n  echo \"Running Crashlytics to upload symbols\"\n  ./Crashlytics.framework/run 149e2f1c071531ba90e5d1baef11804ef2d0f2e9 ede29a60dbb0fb982f7150eaba8d906091f92d232c47a32de4e4a62901b363fb\nfi";
 		};
 		E730345F19E664E2006590B7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1456,6 +1462,7 @@
 				E78E73F619D52DCE0046BA51 /* Range.swift in Sources */,
 				E72AF5FA19E38D0400753077 /* CloudSession.swift in Sources */,
 				E7CC64031999B4DD00D8E1CD /* ContextController.swift in Sources */,
+				E781E2A81AA8819A00015D15 /* PlaygroundCommands.swift in Sources */,
 				E71D5AE61A1AF6AE0040045D /* Constants.swift in Sources */,
 				E785311B1A3C016000B6A6B0 /* QuicklookController.swift in Sources */,
 				E7E5DE9C19E4FD30008A101B /* MACAddress.m in Sources */,
@@ -1492,6 +1499,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E71A774F1AA92D44000BF2F7 /* PlaygroundTests.swift in Sources */,
 				E7A13B2F1888006C00D79087 /* HaskellForMacTests.m in Sources */,
 				E70D409719409AB700CA3455 /* CabalTest.swift in Sources */,
 				E73E01C81A9702D70031AF75 /* ViewModelTests.swift in Sources */,
