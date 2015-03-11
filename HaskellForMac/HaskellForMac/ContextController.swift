@@ -177,7 +177,8 @@ final class ContextController : NSObject {
                                               projectViewModelPlayground: viewModelPlayground,
                                                       diagnosticsHandler: processIssue,
                                              interactiveWorkingDirectory:
-                                               project.fileURL!.path!.stringByAppendingPathComponent(item.viewModel?.dataDir ?? ""))
+                                               project.fileURL!.path!.stringByAppendingPathComponent(item.viewModel?.dataDir ?? ""),
+                                                          contextChanges: contextChanges)
               {
 
                 config            = .HaskellEditor(editorController, playgroundController)
@@ -216,6 +217,8 @@ final class ContextController : NSObject {
   }
 
   /// React to asynchronous context changes.
+  ///
+  /// NB: Does not require the main thread.
   ///
   func contextChange(change: ContextChange)
   {

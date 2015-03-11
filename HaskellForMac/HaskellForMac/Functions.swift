@@ -27,6 +27,8 @@ public func flip<R, S, T>(f: (R, S) -> T) -> (S -> R -> T) {
 
 infix operator >- { associativity left }
 
+/// Reverse function application
+///
 public func >- <S, T>(x: S, f: S -> T) -> T {
   return f(x)
 }

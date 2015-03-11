@@ -17,6 +17,10 @@ import HaskellSpriteKit
 
 private let kPlaygroundSource = "<playground>"
 
+enum ContextState {
+  case InvalidContext, ValidContext
+}
+
 class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
@@ -30,6 +34,14 @@ class PlaygroundController: NSViewController {
   /// The playground model managed by this controller.
   ///
   private let projectViewModelPlayground: ProjectViewModelPlayground
+
+  /// Stream of changes to the context of this playground.
+  ///
+  private let contextChanges: Changes<ContextChange>
+
+  /// Trigger for playground execution.
+  ///
+  private var executionTriggers: Triggers!
 
   /// We need to keep the code storage delegate alive as the delegate reference from `NSTextStorage` is unowned.
   ///
@@ -76,9 +88,11 @@ class PlaygroundController: NSViewController {
     bundle:                          NSBundle!,
     projectViewModelPlayground:      ProjectViewModelPlayground,
     diagnosticsHandler:              Issue -> Void,
-    interactiveWorkingDirectory cwd: String)
+    interactiveWorkingDirectory cwd: String,
+    contextChanges:                  Changes<ContextChange>)
   {
     self.projectViewModelPlayground = projectViewModelPlayground
+    self.contextChanges             = contextChanges
     
       // Call the designated initialiser.
     super.init(nibName: nibName, bundle: bundle)
@@ -91,6 +105,7 @@ class PlaygroundController: NSViewController {
   required init?(coder: NSCoder) {
     // just to keep the compiler happy...
     self.projectViewModelPlayground = ProjectViewModelPlayground(identifier: "", model: HFMProjectViewModel())!
+    self.contextChanges             = Changes<ContextChange>()
     haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in },
                                     interactiveWorkingDirectory: nil)
     super.init(coder: coder)
@@ -102,6 +117,18 @@ class PlaygroundController: NSViewController {
   }
 
   override func awakeFromNib() {
+
+    func validity(contextState: ContextState, change: Either<(), ContextChange>) -> (ContextState, ContextState) {
+      switch (contextState, change) {
+      case (let contextState, .Left(_)):   return (contextState, contextState)
+      case (_, .Right(let contextChange)):
+        switch contextChange.unbox {
+        case .ConfigurationChanged: return (.InvalidContext, .InvalidContext)
+        case .ModuleLoaded:         return (.ValidContext,   .ValidContext)
+        case .ModuleLoadingFailed:  return (.InvalidContext, .InvalidContext)
+        }
+      }
+    }
 
       // Do not re-initialise when a nib is loaded with objects that we are the owner/delegate of — e.g., the popover view.
     if resultStorage != nil { return }
@@ -132,13 +159,16 @@ class PlaygroundController: NSViewController {
     if let item = contextMenu?.itemWithTitle("Layout Orientation")   { contextMenu?.removeItem(item) }
     codeTextView.menu = contextMenu
 
-      // Set up the delegate for the text storage.
+      // Set up the delegate for the text storage and transform its load triggers into playground execution triggers.
     if let textStorage = codeTextView.layoutManager?.textStorage {
+
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
-      codeStorageDelegate.loadTriggers.observeWithContext(self,
-                                                          observer: curry{ controller, _ in
-                                                                           controller.executePendingCommands() })
+      executionTriggers = merge(codeStorageDelegate.loadTriggers, contextChanges)
+                          >- { transduce($0, .InvalidContext, validity) }
+                          >- { trigger($0){ $0 == .ValidContext } }
+      executionTriggers.asyncObserveWithContext(self, observer: curry{ controller, _ in     // on the main queue!
+                                                                         controller.executePendingCommands() })
     }
 
       // Set up the delegate and data source for the result view.
@@ -191,7 +221,7 @@ class PlaygroundController: NSViewController {
       handler(success)
 
       self.commands.setAllCommandsPending()
-      if alsoLoadPlayground && success { dispatch_async(dispatch_get_main_queue()){ self.executePendingCommands() } }
+      if alsoLoadPlayground && success { self.codeStorageDelegate.loadTriggers.announce(()) }    // Execute right away!
     }
   }
 
@@ -248,7 +278,11 @@ class PlaygroundController: NSViewController {
     resultStorage.invalidateFrom(0)
   }
 
-  /// If there are any commands waiting for execution, execute them and their dependants.
+  /// If there are any commands waiting for execution, execute them and their dependants. This function is invoked by
+  /// the `executionTriggers`.
+  ///
+  /// NB: This function must run on the main thread as it interacts with the command store. (We use an asynchronous
+  ///     observer for `executionTriggers`.)
   ///
   private func executePendingCommands() {
 
@@ -277,7 +311,7 @@ class PlaygroundController: NSViewController {
           if self.commands.markAsCompleted(command) {
             self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
           }
-          self.executePendingCommands()
+          self.codeStorageDelegate.loadTriggers.announce(())
         }
       }
 
