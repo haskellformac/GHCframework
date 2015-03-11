@@ -238,6 +238,15 @@ class PlaygroundController: NSViewController {
   // MARK: -
   // MARK: Playground execution
 
+  /// Invalidate all errors and results.
+  ///
+  func invalidatePlayground() {
+    let gutter = codeScrollView.verticalRulerView as? TextGutterView
+
+    gutter?.updateIssues(.IssuesPending)
+    resultStorage.invalidateFrom(0)
+  }
+
   /// If there are any commands waiting for execution, execute them and their dependants.
   ///
   private func executePendingCommands() {

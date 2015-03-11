@@ -257,7 +257,10 @@ final class ContextController : NSObject {
       issues = IssuesForFile(file: issues.file, issues: [:])
       editor.moduleLoading()
 
-        // Load the module.
+        // Invalidate playground issues and results as well.
+      playground.invalidatePlayground()
+
+      // Load the module.
       if let item = self.item {
         if let projectPath            = project.fileURL?.path {
           if let fullFilename         = item.URL?.path {
