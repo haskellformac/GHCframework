@@ -10,6 +10,7 @@
 //  current playground (which in turns determines the GHC session context).
 
 import Cocoa
+import TacticalBase
 
 
 // MARK: -

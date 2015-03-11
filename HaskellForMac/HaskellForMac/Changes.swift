@@ -23,6 +23,8 @@ import Foundation
 import TacticalBase
 
 
+let kPreferenceChangesLogLevel = "ChangesLogLevel"
+
 /// Abstract interface to an observable stream of changes over time.
 ///
 public protocol Observable: class {
@@ -94,12 +96,12 @@ public class Changes<Change>: Observable {
     return "\(info) [\(filename):\(line)]"
   }
 
-  init(info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
+  public init(info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
     self.retainedObservedObject = nil
     self.creatorInfo            = Changes.makeInfo(info, file, line)
   }
 
-  init(retainObservedObject: AnyObject, info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
+  public init(retainObservedObject: AnyObject, info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__) {
     self.retainedObservedObject = retainObservedObject
     self.creatorInfo            = Changes.makeInfo(info, file, line)
   }
@@ -162,8 +164,8 @@ public class TimerChanges: Observable {
 
   /// Create a time stream with a given tick interval and tolerance.
   ///
-  init(every: NSTimeInterval, tolerance: NSTimeInterval,
-       info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
+  public init(every: NSTimeInterval, tolerance: NSTimeInterval,
+              info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
   {
     self.changes = Changes(info: info, file: file, line: line)
     self.timer   = NSTimer.scheduledTimerWithTimeInterval(every,
@@ -217,13 +219,13 @@ public class Variable<T>: Observable {
 
   public typealias Observer = Changes<T>.Observer
 
-  var value: T
+  public var value: T
     { didSet { valueChanges.announce(value) } }
 
   private var valueChanges: Changes<T>
 
-  init(initialValue: T,
-       info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
+  public init(initialValue: T,
+              info: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__)
   {
     self.value        = initialValue
     self.valueChanges = Changes(info: info, file: file, line: line)

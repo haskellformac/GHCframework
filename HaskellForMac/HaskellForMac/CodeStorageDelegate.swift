@@ -12,6 +12,7 @@
 //  text storage instance.
 
 import Cocoa
+import TacticalBase
 
 
 /// The current modification status of the associated code storage.

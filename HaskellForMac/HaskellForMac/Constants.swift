@@ -21,7 +21,7 @@ let kPreferenceEnableCloud        = "EnableCloud"
 let kPreferenceUsername           = "Username"
 
 // Debug preferences
-let kPreferenceChangesLogLevel    = "ChangesLogLevel"
+let kPreferenceChangesLogLevel    = "ChangesLogLevel"         // Must match the key used by 'TacticalBase'.
 let kPreferenceGHCLogLevel        = "GHCLogLevel"             // Must match the key used by 'GHCKit'.
 let kPreferenceSpriteKitLogLevel  = "SpriteKitLogLevel"
 let kPreferenceCloudLogLevel      = "CloudLogLevel"           // Must match the key used by 'CloudcelerateKit'.

@@ -64,6 +64,8 @@
 		E781E2A81AA8819A00015D15 /* PlaygroundCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = E781E2A71AA8819A00015D15 /* PlaygroundCommands.swift */; };
 		E785311B1A3C016000B6A6B0 /* QuicklookController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78531191A3C016000B6A6B0 /* QuicklookController.swift */; };
 		E785311C1A3C016000B6A6B0 /* Quicklook.xib in Resources */ = {isa = PBXBuildFile; fileRef = E785311A1A3C016000B6A6B0 /* Quicklook.xib */; };
+		E78B72B81AB0211600744F2C /* Changes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A817051A9D6EE900F3EF64 /* Changes.swift */; };
+		E78B72B91AB0217000744F2C /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A548031A8EFCB600ECF437 /* Functions.swift */; };
 		E78E73F619D52DCE0046BA51 /* Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78E73F519D52DCE0046BA51 /* Range.swift */; };
 		E791CF3F19F8B35800DECDC4 /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E791CF3E19F8B35800DECDC4 /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E791CF4D19F9DB2200DECDC4 /* GHC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E791CF4219F8B48100DECDC4 /* GHC.framework */; };
@@ -79,8 +81,6 @@
 		E7A13B3A1888D1C000D79087 /* HFMProject.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B391888D1C000D79087 /* HFMProject.m */; };
 		E7A13B48188E7BED00D79087 /* HFMWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A13B46188E7BED00D79087 /* HFMWindowController.m */; };
 		E7A13B49188E7BED00D79087 /* ProjectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7A13B47188E7BED00D79087 /* ProjectWindow.xib */; };
-		E7A548041A8EFCB600ECF437 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A548031A8EFCB600ECF437 /* Functions.swift */; };
-		E7A817061A9D6EE900F3EF64 /* Changes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A817051A9D6EE900F3EF64 /* Changes.swift */; };
 		E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AD6223198F28FD00AFF324 /* TextEditorController.swift */; };
 		E7B0AB011990B4890057FAD5 /* TextGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B0AB001990B4890057FAD5 /* TextGutterView.swift */; };
 		E7C5766119948C3000E6AAE0 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C5766019948C3000E6AAE0 /* Diagnostics.swift */; };
@@ -365,8 +365,8 @@
 		E7A13B45188E7BED00D79087 /* HFMWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFMWindowController.h; sourceTree = "<group>"; };
 		E7A13B46188E7BED00D79087 /* HFMWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HFMWindowController.m; sourceTree = "<group>"; };
 		E7A13B47188E7BED00D79087 /* ProjectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProjectWindow.xib; sourceTree = "<group>"; };
-		E7A548031A8EFCB600ECF437 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
-		E7A817051A9D6EE900F3EF64 /* Changes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Changes.swift; sourceTree = "<group>"; };
+		E7A548031A8EFCB600ECF437 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Functions.swift; path = ../HaskellForMac/Functions.swift; sourceTree = "<group>"; };
+		E7A817051A9D6EE900F3EF64 /* Changes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Changes.swift; path = ../HaskellForMac/Changes.swift; sourceTree = "<group>"; };
 		E7AD6223198F28FD00AFF324 /* TextEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextEditorController.swift; sourceTree = "<group>"; };
 		E7B0AB001990B4890057FAD5 /* TextGutterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextGutterView.swift; sourceTree = "<group>"; };
 		E7C5766019948C3000E6AAE0 /* Diagnostics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
@@ -628,8 +628,6 @@
 				E75DD13719A07E0300CDC18F /* StringExtensions.swift */,
 				E78E73F519D52DCE0046BA51 /* Range.swift */,
 				E7C9F0201A6FD9B900913B76 /* Geometry.swift */,
-				E7A548031A8EFCB600ECF437 /* Functions.swift */,
-				E7A817051A9D6EE900F3EF64 /* Changes.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -821,6 +819,8 @@
 			isa = PBXGroup;
 			children = (
 				E7196C351A8A173200521BD0 /* Box.swift */,
+				E7A817051A9D6EE900F3EF64 /* Changes.swift */,
+				E7A548031A8EFCB600ECF437 /* Functions.swift */,
 				E7D12B621AA5E48A00980FE7 /* TacticalBase.h */,
 				E7D12B601AA5E48A00980FE7 /* Supporting Files */,
 			);
@@ -1452,7 +1452,6 @@
 				E739EF931A07200C00236051 /* StyledSplitView.swift in Sources */,
 				E7EC45831A776BA0004AFA98 /* ValidatingToolbarItem.swift in Sources */,
 				E721D8F819B354F600DCBF68 /* SyntaxHighlighting.swift in Sources */,
-				E7A548041A8EFCB600ECF437 /* Functions.swift in Sources */,
 				E742321C1A4EB18C0098DF7E /* OS.swift in Sources */,
 				E713E3DA18A491FF00504164 /* HFMProjectViewModel.m in Sources */,
 				E7D53CF11A93132D0000A3C5 /* ProjectItemGroups.swift in Sources */,
@@ -1486,7 +1485,6 @@
 				E7D53CED1A92DE2E0000A3C5 /* ProjectItem.swift in Sources */,
 				E74B393D19EB6E5C00D60BE2 /* stableChanPtr.c in Sources */,
 				E7C9F0211A6FD9B900913B76 /* Geometry.swift in Sources */,
-				E7A817061A9D6EE900F3EF64 /* Changes.swift in Sources */,
 				E7AD6224198F28FD00AFF324 /* TextEditorController.swift in Sources */,
 				E75DD13819A07E0300CDC18F /* StringExtensions.swift in Sources */,
 				E7CFFEA019F3BF1400356065 /* PlaygroundResultStorage.swift in Sources */,
@@ -1513,6 +1511,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7D12B7D1AA5E5B100980FE7 /* Box.swift in Sources */,
+				E78B72B81AB0211600744F2C /* Changes.swift in Sources */,
+				E78B72B91AB0217000744F2C /* Functions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

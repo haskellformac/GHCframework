@@ -29,8 +29,6 @@ final public class Ref<T> {
 final public class WeakBox<T: AnyObject> {     // aka Schrödinger's Box
     private weak var box: T?  // RADAR #20020634
 //  private weak var box: AnyObject?
-//  public var unbox: T? { get { if let v: AnyObject = box { if let w = v as? T { return w } else { NSLog("1"); return nil } } else { NSLog("2"); return nil } } }
-//  public var unbox: T? { get { if let v: AnyObject = box { if let w = box as? T { return w } else { return nil } } else { return nil } } }
   //  public var unbox: T? { get { return box as! T? } }  // leads to a runtime errors when performing the cast in some cases
     public var unbox: T? { get { return box } }
 //  public init(_ value: T) { self.box = value as AnyObject }

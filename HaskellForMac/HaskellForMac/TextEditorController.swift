@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import TacticalBase
 
 class TextEditorController: NSViewController {
 
