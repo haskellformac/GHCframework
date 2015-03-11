@@ -146,7 +146,7 @@ public class Changes<Change>: Observable {
   }
 }
 
-/// Triggers are changes that only convey a point in time.
+/// Trigger streams are changes that only convey a point in time.
 ///
 public typealias Triggers = Changes<()>
 
