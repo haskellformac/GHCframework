@@ -43,9 +43,7 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
 // FIXME: Why '@objc'?
 @objc class HaskellSession {
 
-  var ghcInstance: GHCInstance!
-//  let ghcInstance: GHCInstance
-
+  var ghcInstance: GHCInstance!     // Needs to be a var to run GHC initialisation on another thread.
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
