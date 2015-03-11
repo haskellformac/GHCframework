@@ -24,6 +24,11 @@ import Foreign.Storable
 import System.IO.Unsafe               (unsafePerformIO)
 
 
+-- Limit of the number of characters produced by one call to the print interceptor.
+--
+cutoff :: Int
+cutoff = 10000
+
 -- |Global channel to pipe though data from the interactive print hook.
 --
 -- This will always return the identical value, even if the CAF is reevaluated.
@@ -48,8 +53,13 @@ interactivePrintChan = unsafePerformIO $ do
 --
 interactivePrintInterceptor :: Show a => a -> IO ()
 interactivePrintInterceptor v 
-  = let str = show v
+  = let str = limit cutoff $ show v
     in
     str `deepseq` (atomically $ writeTChan interactivePrintChan str)
+  where
+   limit :: Int -> String -> String
+   limit _ ""    = ""
+   limit 0 _     = "…"
+   limit n (c:s) = c : limit (n - 1) s
 
 foreign import ccall "&stableChanPtr" stableChanPtr :: Ptr (StablePtr (TChan String))
