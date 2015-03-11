@@ -392,9 +392,17 @@ extension PlaygroundController: NSTableViewDelegate {
   }
 
   func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-    if let result = resultStorage.queryResult(row) {
-      return fontHeight //result.height
-    } else { return 0 }
+
+      // Compute the height of the command in the code view.
+    if let lines = commands.queryCommand(row)?.lines {
+      if let layoutManager = codeTextView.layoutManager {
+        let charRange  = codeStorageDelegate.charRangeOfLines(lines)
+        let glyphRange = layoutManager.glyphRangeForCharacterRange(toNSRange(charRange), actualCharacterRange: nil)
+        let glyphRect  = layoutManager.boundingRectForGlyphRange(glyphRange, inTextContainer: codeTextView.textContainer!)
+        return glyphRect.size.height
+      }
+    }
+    return fontHeight
   }
 
   func tableViewSelectionDidChange(notification: NSNotification) {
