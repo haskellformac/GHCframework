@@ -34,6 +34,10 @@ class PlaygroundController: NSViewController {
   ///
   private var codeStorageDelegate: CodeStorageDelegate!
 
+  /// Meta data keeping track of playground commands.
+  ///
+  private var commands: PlaygroundCommands!
+
   /// We need to keep the result storage alive as the data source reference from `NSTableView` is weak.
   ///
   private var resultStorage: PlaygroundResultStorage!
@@ -131,7 +135,9 @@ class PlaygroundController: NSViewController {
     if let textStorage = codeTextView.layoutManager?.textStorage {
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
-      codeStorageDelegate.loadTriggers.observeWithContext(self, observer: curry{ controller, _ in controller.execute() })
+      codeStorageDelegate.loadTriggers.observeWithContext(self,
+                                                          observer: curry{ controller, _ in
+                                                                           controller.executePendingCommands() })
     }
 
       // Set up the delegate and data source for the result view.
@@ -146,22 +152,29 @@ class PlaygroundController: NSViewController {
     resultTableView.setDataSource(resultStorage)
 
       // Get the initial code view contents and enable highlighting.
-    codeTextView.string = projectViewModelPlayground.string as String
+    codeTextView.string = projectViewModelPlayground.string
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
     ThemesController.sharedThemesController().reportThemeInformation(self,
       fontChangeNotification: curry{ obj, font in return },
       themeChangeNotification: curry{ $0.setResultTableViewBackgroundAndDividerColour($1) })
+
+      // Set up playground commands tracking. This needs to happen after setting the initial code view contents, so that
+      // the initial command parsing has access to the initial playground contents.
+    if let textStorage = codeTextView.layoutManager?.textStorage {
+      commands = PlaygroundCommands(codeStorage: textStorage)
+    }
   }
 
 
   // MARK: -
-  // MARK: Module management
+  // MARK: Code loading and execution
 
   /// Load a new version of the context module asynchronously. The completion handler is being invoked after loading
   /// has finished and it indicates whether loading was successful. If loading was successful, the associated playground
   /// is also executed asynchronously. 
   ///
-  /// NB: The completion handler runs right after module loading; it is independent of playground loading.
+  /// NB: The completion handler runs right after module loading; it is independent of playground loading. The
+  ///     completion handler runs on a *concurrent* queue.
   ///
   /// Diagnostics are delivered asynchronously.
   ///
@@ -176,7 +189,25 @@ class PlaygroundController: NSViewController {
       let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
       handler(success)
 
-      if alsoLoadPlayground && success { dispatch_async(dispatch_get_main_queue()){ self.execute() } }
+      self.commands.setAllCommandsPending()
+      if alsoLoadPlayground && success { dispatch_async(dispatch_get_main_queue()){ self.executePendingCommands() } }
+    }
+  }
+
+  /// Execute the given command asynchronously. The completion handler is being invoked after execution has finished.
+  ///
+  /// NB: The completion handler runs on a *concurrent* queue.
+  ///
+  /// Diagnostics are delivered asynchronously.
+  ///
+  func asyncExecuteCommand(command: PlaygroundCommands.Command,
+                           completionHandler handler: (AnyObject, [String]) -> Void) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+
+      let (evalResult: AnyObject, evalTypes) = self.haskellSession.evalExprFromString(command.text,
+                                                                                      source: kPlaygroundSource,
+                                                                                      line: command.lines.startIndex)
+      handler(evalResult, evalTypes)
     }
   }
 
@@ -207,122 +238,78 @@ class PlaygroundController: NSViewController {
   // MARK: -
   // MARK: Playground execution
 
-  /// Execute all commands in the playground from top to bottom.
+  /// If there are any commands waiting for execution, execute them and their dependants.
   ///
-  /// A command starts in the first column of the playground and extends over all immediately following lines whose
-  /// first character is a whitespace (emulating Haskell's off-side rule).
-  ///
-  func execute() {
-    let gutter = codeScrollView.verticalRulerView as? TextGutterView
+  private func executePendingCommands() {
 
-      // Invalidate old issues and anounce that the playground gets loaded.
-    gutter?.updateIssues(.IssuesPending)
-    codeStorageDelegate.status.value = .LastLoading(NSDate())
-
-      // Mark all current results as being stale.
-    resultStorage.invalidate()
-
-      // Do not actually execute the playground if it is hidden.
+      // Do not actually execute commands if the playground is hidden.
     if let superview = view.superview { if superview.hidden { return } }
     else { return }
 
-      // To give AppKit an opportunity to update the gutter and results table (render as stale), we schedule the
-      // remainder of this function as a continuation.
-    dispatch_async(dispatch_get_main_queue(), {
-      self.executeWorker()
-    })
+    let gutter = codeScrollView.verticalRulerView as? TextGutterView
+
+    if let command = commands.nextPendingCommand {              // There are commands that need to be executed...
+
+        // Invalidate old issues, marks pending results as stale, and anounce that the playground gets loaded.
+      gutter?.updateIssues(.IssuesPending)
+      resultStorage.invalidateFrom(command.index)
+      codeStorageDelegate.status.value = .LastLoading(NSDate())
+
+        // Discard all old issues.
+      issues = IssuesForFile(file: issues.file, issues: [:])
+
+        // Run the command.
+      asyncExecuteCommand(command){ (evalResult, evalTypes) in
+
+          // Interacting with playground commands and results views must happen on the *main* thread!
+        dispatch_async(dispatch_get_main_queue()){
+
+          if self.commands.markAsCompleted(command) {
+            self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
+          }
+          self.executePendingCommands()
+        }
+      }
+
+    } else {                                                    // All results are up to date; nothing to be executed...
+
+        // Make sure any overhanging old items in the results storage are discarded.
+      resultStorage.pruneAt(commands.count)
+
+        // Display any diagnostics in the gutter.
+      if issues.issues.isEmpty {
+        gutter?.updateIssues(.NoIssues)
+      } else {
+        gutter?.updateIssues(.Issues(issues))
+      }
+
+    }
   }
 
-  func executeWorker() {
-    let layoutManager = codeTextView.layoutManager
-    let textContainer = codeTextView.textContainer
-    let string        = codeTextView.textStorage!.string
-    let lineMap       = codeTextView.lineMap
-    let gutter        = (codeScrollView.verticalRulerView as? TextGutterView)!
+  /// Report an evaluation result by entering it into the result storage.
+  ///
+  private func reportResultAtIndex(index: Int, result: AnyObject, withTypes evalTypes: [String]) {
+    if let resultScene = spriteKitView(result) {
 
-      // Discard all old issues.
-    issues = IssuesForFile(file: issues.file, issues: [:])
+      // Graphical result with custom presentation view.
+      resultStorage.reportResult(.SKSceneResult(scene: resultScene), type: ", ".join(evalTypes), atCommandIndex: index)
 
-    // Extracts one command, while advancing the current character index.
-    //
-    func extractCommandAtCharIndex(var charIndex: String.Index) -> (String.Index, String, CGFloat) {
-      let initialCharIndex = charIndex
-      let lineRange        = string.lineRangeForRange(charIndex...charIndex)
-      var command          = string[lineRange]
-      charIndex            = lineRange.endIndex
+    } else if let resultImage = result as? NSImage {
 
-        // Collect lines until you find one that has no white space in the first column.
-        // FIXME: we need to use a proper Unicode whitespace test
-      while string.endIndex > charIndex && (string[charIndex] == " " || string[charIndex] == "\t" || string[charIndex] == "\n") {
-        let lineRange = string.lineRangeForRange(charIndex...charIndex)
-        command      += string[lineRange]
-        charIndex     = lineRange.endIndex
-      }
-      let span         = string.startIndex..<initialCharIndex
-// Swift 1.2:      let firstIndex   = count(string[span].utf16)
-      let firstIndex   = string[span].utf16Count
-// Swift 1.2:      let indexLength  = count(string[initialCharIndex..<charIndex].utf16)
-      let indexLength  = string[initialCharIndex..<charIndex].utf16Count
-      let glyphRange   = layoutManager!.glyphRangeForCharacterRange(NSRange(location: firstIndex, length: indexLength),
-                                                                    actualCharacterRange: nil)
-      let rect         = layoutManager!.boundingRectForGlyphRange(glyphRange, inTextContainer:textContainer!)
-      return (charIndex, command, rect.size.height)
-    }
+      // The result is just a static image.
+      resultStorage.reportResult(.ImageResult(image: resultImage), type: ", ".join(evalTypes), atCommandIndex: index)
 
-      // Traverse all commands.
-    var firstIndexOfNextCommand: String.Index = string.startIndex
-    var commandIndex                          = 0
-    while string.endIndex > firstIndexOfNextCommand {
+    } else if let resultText = result as? String {
 
-      let lineNumber                   = string.lineNumber(lineMap, atLocation: firstIndexOfNextCommand)
-      let (nextIndex, command, height) = extractCommandAtCharIndex(firstIndexOfNextCommand)
-      firstIndexOfNextCommand          = nextIndex
+      // The result is just a string.
+      resultStorage.reportResult(.StringResult(string: resultText), type: ", ".join(evalTypes), atCommandIndex: index)
 
-      let (evalResult: AnyObject, evalTypes) = haskellSession.evalExprFromString(command,
-                                                                                 source: kPlaygroundSource,
-                                                                                 line: lineNumber)
-      if let resultScene = spriteKitView(evalResult) {
-
-          // Graphical result with custom presentation view.
-        resultStorage.reportResult(.SKSceneResult(scene: resultScene),
-                                   type: ", ".join(evalTypes),
-                                   height: height,
-                                   atCommandIndex: commandIndex)
-
-      } else if let resultImage = evalResult as? NSImage {
-
-          // The result is just a static image.
-        resultStorage.reportResult(.ImageResult(image: resultImage),
-                                   type: ", ".join(evalTypes),
-                                   height: height,
-                                   atCommandIndex: commandIndex)
-
-      } else if let resultText = evalResult as? String {
-
-        // The result is just a string.
-        resultStorage.reportResult(.StringResult(string: resultText),
-                                   type: ", ".join(evalTypes),
-                                   height: height,
-                                   atCommandIndex: commandIndex)
-
-      } else {
-
-          // No idea what this result is.
-        resultStorage.reportResult(.StringResult(string: "«unknown type of result»"),
-                                   type: ", ".join(evalTypes),
-                                   height: height,
-                                   atCommandIndex: commandIndex)
-      }
-      commandIndex++
-    }
-    resultStorage.pruneAt(commandIndex)
-    resultTableView.reloadData()
-
-      // Display any diagnostics in the gutter.
-    if issues.issues.isEmpty {
-      gutter.updateIssues(.NoIssues)
     } else {
-      gutter.updateIssues(.Issues(issues))
+
+      // No idea what this result is.
+      resultStorage.reportResult(.StringResult(string: "«unknown type of result»"),
+                                 type: ", ".join(evalTypes),
+                                 atCommandIndex: index)
     }
   }
 }
@@ -356,7 +343,9 @@ extension PlaygroundController {
 extension PlaygroundController: NSTextDelegate {
 
   func textDidChange(notification: NSNotification) {
+
     projectViewModelPlayground.string = codeTextView.string ?? ""
+    commands.scanCodeStorage()
   }
 }
 
@@ -368,6 +357,7 @@ extension PlaygroundController: NSTextViewDelegate {
 
   // Currently, none of the delegate methods are needed.
 }
+
 
 // MARK: -
 // MARK: First responder
@@ -530,15 +520,6 @@ extension PlaygroundController: NSTableViewDelegate {
     }
     resultTableView.deselectRow(row)    // .. so that selecting again will call this function again
   }
-
-  //  func tableViewColumnDidMove(_notification: NSNotification) {
-  //  }
-  //
-  //  func tableViewColumnDidResize(_notification: NSNotification) {
-  //  }
-  //
-  //  func tableViewSelectionIsChanging(_notification: NSNotification) {
-  //  }
 }
 
 

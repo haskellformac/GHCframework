@@ -21,7 +21,6 @@ let kResultCell = "ResultCell"
 struct Result {
   let value:  ResultValue
   let type:   String
-  let height: CGFloat       // Cell height — FIXME: this should be computed from the text view's layout manager instead of being chached
   let stale:  Bool          // A result is stale while it is being recomputed.
 }
 
@@ -59,13 +58,13 @@ class PlaygroundResultStorage: NSObject {
 
   /// Reports a result at a specific index. Allocates new results slots if needed.
   ///
-  func reportResult(value: ResultValue, type: String, height: CGFloat, atCommandIndex idx: Int) {
+  func reportResult(value: ResultValue, type: String, atCommandIndex idx: Int) {
 
       // Extend the array to include the reported index if necessary.
     if idx >= results.endIndex {
       for i in results.endIndex...idx { results.append(nil) }
     }
-    results[idx] = Result(value: value, type: type, height: height, stale: false)
+    results[idx] = Result(value: value, type: type, stale: false)
     redisplayRow(idx)
   }
 
@@ -78,16 +77,22 @@ class PlaygroundResultStorage: NSObject {
     redisplay()
   }
 
+  /// Marks all current results from the given index on as stale.
+  ///
+  func invalidateFrom(idx: Int) {
+    for i in idx..<results.endIndex {
+      if let result = results[i] {
+        if !result.stale {          // Avoid redisplay if already stale.
+          results[i] = Result(value: result.value, type: result.type, stale: true)
+          redisplayRow(i)
+        }
+      }
+    }
+  }
+
   /// Marks all current results as stale.
   ///
-  func invalidate() {
-    results = results.map{ result in
-      if let result = result {
-        return Result(value: result.value, type: result.type, height: result.height, stale: true)
-      } else { return nil }
-    }
-    redisplay()
-  }
+  func invalidate() { invalidateFrom(0) }
 
   /// Retrieve the result at the given command index.
   ///

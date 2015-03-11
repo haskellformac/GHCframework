@@ -108,8 +108,10 @@ startWithHandlerObject handlerObject logLevel cwd
            [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
     ; when (logLevel > 0) $
         $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
-    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel cwd
+    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel logString cwd
     }
+  where
+    logString = \str -> $(objc ['str :> ''String] $ void [cexp| NSLog(@"%@", str) |])
 
 reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
 reportDiagnostics handlerObject severity srcSpan msg

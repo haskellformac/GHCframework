@@ -1,8 +1,8 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, RecordWildCards #-}
 
 -- |
 -- Module    : Interpreter
--- Copyright : [2014] Manuel M T Chakravarty
+-- Copyright : [2014..2015] Manuel M T Chakravarty
 -- License   : All rights reserved
 --
 -- Maintainer: Manuel M T Chakravarty <chak@justtesting.org>
@@ -25,6 +25,7 @@ import Data.Dynamic                 hiding (typeOf)
 import Data.Either
 import Data.Maybe
 import Foreign                      hiding (void)
+import System.CPUTime
 import System.Directory
 import System.FilePath
 import System.IO
@@ -39,7 +40,10 @@ import qualified HscTypes     as GHC
 import qualified HsImpExp     as GHC
 import qualified GHC          as GHC
 import qualified GhcMonad     as GHC
+import qualified HscMain      as GHC
+import qualified InteractiveEvalTypes as GHC
 import qualified Lexer        as GHC
+import qualified Linker       as GHC
 import qualified MonadUtils   as GHC
 import qualified Name         as GHC
 import qualified StringBuffer as GHC
@@ -55,7 +59,7 @@ import PrintInterceptor
 import System.IO.Unsafe (unsafePerformIO)
 import Data.IORef
 
--- Relative (to the 'GHC.framework location) paths to the binary and library directory.
+-- Relative (to the 'GHC.framework' location) paths to the binary and library directory.
 --
 prefix, bindir, libdir :: String
 prefix = "GHC.framework/Versions/Current/usr/"
@@ -70,8 +74,12 @@ ccWrapper = "../MacOS" </> "ToolWrapper"
 
 -- |Abstract handle of an interpreter session.
 --
-data Session = Session (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to the interpreter thread
-                       Int                           -- log level
+data Session = Session 
+               { inlet         :: (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to the interpreter thread
+               , logLevel      :: Int                           -- log level
+               , logString     :: String -> IO ()               -- log function
+               , sessionDflags :: GHC.DynFlags                  -- dflags as determined at session start
+               }
 
 -- |Possible results of executing an interpreter action. 
 --
@@ -84,19 +92,28 @@ data Result r = Result r        -- ^Success or dynamic error, including error me
 start :: FilePath                                           -- ^GHC.framework location (to locate the package database).
       -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ())   -- ^Callback to report diagnostics.
       -> Int                                                -- ^Log level == GHC verbosity (0 == no logging)
+      -> (String -> IO ())
       -> Maybe FilePath                                     -- ^Working directory for interactive Haskell statement execution.
       -> IO Session
-start ghcBundlePath diagnosticHandler logLevel cwd
+start ghcBundlePath diagnosticHandler logLevel logString cwd
   = do
-    { when (logLevel > 0) $ putStrLn "Starting interactive session"
-    ; inlet <- newEmptyMVar
-    ; forkIO $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet)
-    ; return $ Session inlet logLevel
+    { setNumCapabilities 2
+    ; numCaps <- getNumCapabilities
+    ; when (logLevel > 0) $
+        logString $ "Starting interactive session (#capabilities = " ++ show numCaps ++ ")"
+
+        -- Run GHC on a seperate OS thread. (Instead of using those that we get from GCD for the calls into Haskell.)
+    ; inlet    <- newEmptyMVar
+    ; resultMV <- newEmptyMVar
+    ; forkOn 1 $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet resultMV)
+    ; takeMVar resultMV
     }
   where
-    startSession inlet 
+    startSession inlet resultMV
       = do
-        {   -- Initialise the session by reading the package database
+        { start <- GHC.liftIO $ getCPUTime
+        
+            -- Initialise the session by reading the package database
         ; dflags     <- GHC.getSessionDynFlags
         ; let settings = GHC.settings dflags
         ; packageIds <- GHC.setSessionDynFlags $ dflags 
@@ -111,7 +128,12 @@ start ghcBundlePath diagnosticHandler logLevel cwd
                                                  } 
                                                  `GHC.xopt_set`   GHC.Opt_ExtendedDefaultRules        -- extra options for..
                                                  `GHC.xopt_unset` GHC.Opt_MonomorphismRestriction     -- interactive evaluation
-        ; logMsg logLevel $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
+                                                 -- `GHC.gopt_unset` GHC.Opt_GhciSandbox  -- currently ignored in `runStmt` anyway
+        ; sessionDFlags <- GHC.getSessionDynFlags
+        ; let session = Session inlet logLevel logString sessionDFlags
+        ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
+        ; logMsg session $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
+
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
         -- ; unless (???successfully loaded???) $
@@ -121,7 +143,6 @@ start ghcBundlePath diagnosticHandler logLevel cwd
         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
         ; GHC.setContext [GHC.IIDecl interceptor]
         ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
-        ; dflags <- GHC.getSessionDynFlags
         ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
                                     in he {GHC.hsc_IC = new_ic})
         ; maybe_chan <- fromDynamic <$> GHC.dynCompileExpr "PrintInterceptor.interactivePrintChan"
@@ -130,48 +151,52 @@ start ghcBundlePath diagnosticHandler logLevel cwd
             Just chan -> GHC.liftIO $ writeIORef chanRef chan
             
             -- Set the working directory for Haskell evaluation.
-        ; logMsg logLevel $ "current working directory at GHC session start = " ++ show cwd
+        ; logMsg session $ "current working directory at GHC session start = " ++ show cwd
         ; GHC.modifySession $ \hsc ->
             let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
 
-        ; session inlet
+        ; logTiming session start "GHC session initialisation"
+
+        ; runSession inlet
         }
 
     logAction :: GHC.LogAction
     logAction dflags severity srcSpan style msg
       = diagnosticHandler severity srcSpan (GHC.renderWithStyle dflags msg style)
         
-    session inlet
+    runSession inlet
       = do
         { maybeCommand <- GHC.liftIO $ takeMVar inlet
         ; case maybeCommand of
             Nothing      -> return ()
-            Just command -> command >> session inlet
+            Just command -> command >> runSession inlet
         }
 
 -- Terminate an interpreter session.
 --
 stop :: Session -> IO ()
-stop (Session inlet _logLevel) = putMVar inlet Nothing
+stop session = putMVar (inlet session) Nothing
 
 -- Tokenise a string of Haskell code.
 --
+-- NB: In contrast to all other operations, we tokenise on the current thread and don't dispatch to our GHC worker. Tokenisation
+--     needs to be fast for syntax highlighting and must not have to wait for any currently ongoing statement evaluation.
+--
 tokenise :: Session -> GHC.StringBuffer -> GHC.RealSrcLoc -> IO [GHC.Located GHC.Token]
-tokenise (Session inlet _logLevel) strbuf loc
+tokenise session strbuf loc
   = do
-    { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $ do
-        { dflags <- GHC.getSessionDynFlags
-        ; let result = GHC.lexTokenStream strbuf loc dflags
-        ; case result of
-            GHC.POk _pstate tokens -> GHC.liftIO $ putMVar resultMV tokens
-            GHC.PFailed loc msg    -> do
-            { GHC.liftIO $ GHC.log_action dflags dflags GHC.SevError loc (GHC.defaultErrStyle dflags) msg
-            ; GHC.liftIO $ putMVar resultMV []
-            }
-        }      
-    ; takeMVar resultMV
+    { start <- getCPUTime
+    ; let result = GHC.lexTokenStream strbuf loc dflags
+    ; result `seq` logTimingIO session start "tokenise"
+    ; case result of
+        GHC.POk _pstate tokens -> return tokens
+        GHC.PFailed loc msg    -> do
+        { GHC.log_action dflags dflags GHC.SevError loc (GHC.defaultErrStyle dflags) msg
+        ; return []
+        }
     }
+  where
+    dflags = sessionDflags session
 
 -- The result of evaluation is usually a 'show'ed result together with the types of binders. However, it can also be a
 -- reference to an Objective-C representation of the result (again with type information in the second component).
@@ -185,10 +210,10 @@ type EvalResult = Result (Either (ForeignPtr ()) String, [String])
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 eval :: Session -> String -> Int -> String -> IO EvalResult
-eval (Session inlet logLevel) source line stmt
-  = tryGhcAction inlet (\msg -> Result (Right msg, [])) $
+eval session source line stmt
+  = tryGhcAction (inlet session) (\msg -> Result (Right msg, [])) $
         GHC.handleSourceError (\e -> handleError e >> return Error) $ do
-        { logCode logLevel $ "evaluating: «" ++ stmt ++ "»"
+        { logCode session $ "evaluating: «" ++ stmt ++ "»"
         
             -- if SpriteKit is available, test for return types that we render specially
         ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
@@ -228,14 +253,15 @@ eval (Session inlet logLevel) source line stmt
       = return $ Result (Right $ "** Exception: import Graphics.SpriteKit to render images", [ty_str])
       | otherwise
       = do
-        { logMsg logLevel "evaluating JuicyPixels image"
+        { logMsg session "evaluating JuicyPixels image"
         
         ; runNodeEval "Graphics.SpriteKit.imageToForeignPtr" ty_str
         }
       
     runNodeEval conversionName ty_str
       = do
-        { logMsg logLevel ("evaluating SpriteKit with " ++ conversionName)
+        { logMsg session ("evaluating SpriteKit with " ++ conversionName)
+        ; start <- GHC.liftIO $ getCPUTime
         
             -- result is a SpriteKit node => get a reference to that node instead of pretty printing
         ; let nodeExpr = conversionName ++ " " ++ parens stmt
@@ -245,6 +271,7 @@ eval (Session inlet logLevel) source line stmt
                       GHC.liftIO $
                         GHC.try $ 
                           (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
+        ; logTiming session start "evaluate node"
 
         -- ; GHC.setContext iis
         ; case result of
@@ -256,10 +283,12 @@ eval (Session inlet logLevel) source line stmt
       = GHC.handleSourceError (\e -> case maybe_ty_str of
                                        Nothing     -> handleError e >> return Error
                                        Just ty_str -> return $ Result (Right "«cannot show values of this type»", [ty_str])) $ do
-        { logMsg logLevel "evaluating general statement"
-        
+        { logMsg session "evaluating general statement"
+        ; start <- GHC.liftIO $ getCPUTime
+ 
             -- GHCi-style command execution
-        ; runResult <- GHC.runStmtWithLocation source line stmt GHC.RunToCompletion
+        ; runResult <- runStmt session source line stmt
+        ; logTiming session start "evaluate general statement"
         ; case runResult of
             GHC.RunOk names       -> do
                                      { chan        <- GHC.liftIO $ readIORef chanRef
@@ -277,6 +306,67 @@ eval (Session inlet logLevel) source line stmt
     --
     parens s = "(let {interpreter'binding_ =\n" ++ s ++ "\n ;} in interpreter'binding_)"
 
+-- Exectute a statement much like GHC API's `runStmtWithLocation`, but omit breakpoint handling.
+--
+-- FIXME: We can probaby get rid of this again. However, sandboxing uses forkIO, which allows the interpreted computation 
+--        to pick the capability that we got via the in-call from Swift-land. We'd rather run all interpreted code on a 
+--        seperate capability. Maybe we need out own sandbox code that uses `forkOn`...(then, we can use that for node evaluation,
+--        too!
+runStmt :: Session -> String -> Int -> String -> GHC.Ghc GHC.RunResult
+runStmt session source line stmt
+  = do
+    { hsc_env <- GHC.getSession
+    
+        -- Turn off -fwarn-unused-bindings when running a statement, to hide
+        -- warnings about the implicit bindings we introduce.
+    ; let ic       = GHC.hsc_IC hsc_env -- use the interactive dflags
+          idflags' = GHC.ic_dflags ic `GHC.wopt_unset` GHC.Opt_WarnUnusedBinds
+          hsc_env' = hsc_env{ GHC.hsc_IC = ic{ GHC.ic_dflags = idflags' } }
+
+        -- Compile to value (IO [HValue]), don't run
+    ; logMsg session "runStmt: compiling"
+    ; r <- GHC.liftIO $ GHC.hscStmtWithLocation hsc_env' stmt source line
+
+    ; case r of
+        Nothing -> return (GHC.RunOk [])        -- Empty statement or comment
+    
+        Just (tyThings, hval, fix_env) -> do
+          { updateFixityEnv fix_env
+             -- FIXME: do we want to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'?
+          ; logMsg session "runStmt: running"
+          ; status <- withVirtualCWD $
+                        GHC.liftIO $ 
+                          GHC.Complete <$>
+                            GHC.try hval
+          ; logMsg session "runStmt: done"
+          ; case status of
+              GHC.Break {}               -> return $ GHC.RunException breakExc   -- Hit a breakpoint — this shouldn't happen!
+              GHC.Complete (Left e)      -> return $ GHC.RunException e          -- Completed with an exception — report it!
+              GHC.Complete (Right hvals) -> do                                   -- Completed successfully — update environments!
+                { let ic          = GHC.hsc_IC hsc_env
+                      bindings    = (GHC.ic_tythings ic, GHC.ic_rn_gbl_env ic)
+                      final_ic    = GHC.extendInteractiveContext (GHC.hsc_IC hsc_env) (map GHC.AnId tyThings)
+                      final_names = map GHC.getName tyThings
+                ; GHC.liftIO $ GHC.extendLinkEnv (zip final_names hvals)
+                -- FIXME: rttiEnvironment is not exported by GHC API — needed once we want to inspect runtime types
+                -- ; hsc_env' <- liftIO $ GHC.rttiEnvironment hsc_env{ GHC.hsc_IC = final_ic }  
+                ; let hsc_env' = hsc_env{ GHC.hsc_IC = final_ic }
+                ; GHC.modifySession (\_ -> hsc_env')
+                ; return $ GHC.RunOk final_names
+                }
+          }
+    }
+  where
+    breakExc = GHC.toException $ GHC.ErrorCall "unexpected breakpoint"
+    
+    updateFixityEnv :: GHC.GhcMonad m => GHC.FixityEnv -> m ()
+    updateFixityEnv fix_env 
+      = do
+        { hsc_env <- GHC.getSession
+        ; let ic = GHC.hsc_IC hsc_env
+        ; GHC.setSession $ hsc_env { GHC.hsc_IC = ic { GHC.ic_fix_env = fix_env } }
+        }
+
 -- Infer the type of a Haskell expression in the given interpreter session.
 --
 -- If GHC raises an error, we pretty print it.
@@ -290,14 +380,17 @@ inferType = error "inferType is not implemented"
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 executeImport :: Session -> String -> Int -> String -> IO (Result ())
-executeImport (Session inlet _logLevel) _source _line stmt
+executeImport session _source _line stmt
   = do
     { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { iis <- GHC.getContext
+        { start <- GHC.liftIO $ getCPUTime
+        ; iis <- GHC.getContext
         ; importDecl <- GHC.parseImportDecl stmt
         ; GHC.setContext (GHC.IIDecl importDecl : iis)
+
+        ; logTiming session start stmt
 
             -- Communicate the result back to the main thread
         ; GHC.liftIO $ 
@@ -311,13 +404,16 @@ executeImport (Session inlet _logLevel) _source _line stmt
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 declare :: Session -> String -> Int -> String -> IO (Result [String])
-declare (Session inlet _logLevel) source line stmt
+declare session source line stmt
   = do
     { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { names <- GHC.runDeclsWithLocation source line stmt
+        { start <- GHC.liftIO $ getCPUTime
+        ; names <- GHC.runDeclsWithLocation source line stmt
         ; types <- renderTypesOfNames names
+
+       ; logTiming session start "compile declaration"
 
             -- Communicate the result back to the main thread
         ; GHC.liftIO $ 
@@ -331,14 +427,16 @@ declare (Session inlet _logLevel) source line stmt
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 load :: Session -> [String] -> GHC.Target -> IO (Result ())
-load (Session inlet _logLevel) importPaths target
+load session importPaths target
   = do
     { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $       -- the interpreter command we send over to the interpreter thread
+    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
         GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        {   -- Save the working directory for Haskell evaluation.
+        { start <- GHC.liftIO $ getCPUTime
+        
+            -- Save the working directory for Haskell evaluation.
         ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
-
+        
             -- Revert CAFs from previous evaluations
         ; GHC.liftIO $ rts_revertCAFs
         
@@ -348,6 +446,8 @@ load (Session inlet _logLevel) importPaths target
             -- Load the new target
         ; GHC.setTargets [target]
         ; GHC.load GHC.LoadAllTargets
+        
+        ; logTiming session start "loading"
 
             -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
         ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
@@ -405,20 +505,32 @@ chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initial
 modifyDynFlags :: (GHC.DynFlags -> GHC.DynFlags) -> GHC.Ghc ()
 modifyDynFlags f = GHC.getSessionDynFlags >>= void . GHC.setSessionDynFlags . f
 
--- FIXME: This should go through NSLog(). Easiest is probably to pass a logging function in from GHCInstance and store it in the
---        session data.
-logMsg :: Int -> String -> GHC.Ghc ()
+logMsg :: Session -> String -> GHC.Ghc ()
 logMsg = logMsgFromLevel 1
 
-logCode :: Int -> String -> GHC.Ghc ()
+logCode :: Session -> String -> GHC.Ghc ()
 logCode = logMsgFromLevel 2
 
-logMsgFromLevel :: Int -> Int -> String -> GHC.Ghc ()
-logMsgFromLevel minLogLevel logLevel msg
+logMsgFromLevel :: Int -> Session -> String -> GHC.Ghc ()
+logMsgFromLevel minLogLevel session msg = GHC.liftIO $ logMsgFromLevelIO minLogLevel session msg
+
+logMsgFromLevelIO :: Int -> Session -> String -> IO ()
+logMsgFromLevelIO minLogLevel (Session{..}) msg
   | logLevel >= minLogLevel
-  = GHC.liftIO $ hPutStrLn stderr ("[Interpreter] " ++ msg)
+  = logString ("[Interpreter] " ++ msg)
   | otherwise
   = return ()
+  
+logTiming :: Session -> Integer -> String -> GHC.Ghc ()
+logTiming session start what = GHC.liftIO $ logTimingIO session start what
+    
+logTimingIO :: Session -> Integer -> String -> IO ()
+logTimingIO session start what
+  = do
+    { end <- getCPUTime
+    ; let deltaSeconds = fromIntegral (end - start) / 1e12 :: Double
+    ; logMsgFromLevelIO 1 session $ "Elapsed time: " ++ show deltaSeconds ++ "s (" ++ what ++ ")"
+    }
 
 -- Wrap a command to execute in the context of the working directory of the interactive context.
 --
@@ -459,7 +571,8 @@ tryGhcAction inlet errMsgHandler action
     { resultMV <- newEmptyMVar
     ; putMVar inlet $ Just $ do    -- the interpreter command we send over to the interpreter thread
         { tid <- GHC.liftIO $ myThreadId
-        ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 2000000 >> throwTo tid GHC.UserInterrupt
+        -- ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 2000000 >> throwTo tid GHC.UserInterrupt
+        ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 20000000 >> throwTo tid GHC.UserInterrupt
         ; result <- GHC.gtry $ do {result <- action; GHC.liftIO $ killThread watchdogTid; return result}
         ; case result of
             Left exc -> 

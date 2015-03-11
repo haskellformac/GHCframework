@@ -43,14 +43,17 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
 // FIXME: Why '@objc'?
 @objc class HaskellSession {
 
-  let ghcInstance: GHCInstance
+  var ghcInstance: GHCInstance!
+//  let ghcInstance: GHCInstance
 
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
   init(diagnosticsHandler: DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
-    ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
+    dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+      self.ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
+    }
   }
 
 

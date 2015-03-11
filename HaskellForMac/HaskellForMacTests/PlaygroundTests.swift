@@ -64,23 +64,23 @@ class PlaygroundTests: XCTestCase {
     let (commands5, delegate5) = commandsForPlaygroundText(simplePlayground5)
 
     XCTAssertEqual(commands1.count, 1)
-    XCTAssertEqual(commands1.queryCommand(0)!, PlaygroundCommands.Command(lines: 1...1, dirty: true))
+    XCTAssertEqual(commands1.queryCommand(0)!.lines, 1...1)
     XCTAssertEqual(commands2.count, 1)
-    XCTAssertEqual(commands2.queryCommand(0)!, PlaygroundCommands.Command(lines: 1...1, dirty: true))
+    XCTAssertEqual(commands2.queryCommand(0)!.lines, 1...1)
     XCTAssertEqual(commands3.count, 1)
-    XCTAssertEqual(commands3.queryCommand(0)!, PlaygroundCommands.Command(lines: 1...2, dirty: true))
+    XCTAssertEqual(commands3.queryCommand(0)!.lines, 1...2)
     XCTAssertEqual(commands4.count, 1)
-    XCTAssertEqual(commands4.queryCommand(0)!, PlaygroundCommands.Command(lines: 1...2, dirty: true))
+    XCTAssertEqual(commands4.queryCommand(0)!.lines, 1...2)
     XCTAssertEqual(commands5.count, 1)
-    XCTAssertEqual(commands5.queryCommand(0)!, PlaygroundCommands.Command(lines: 2...3, dirty: true))
+    XCTAssertEqual(commands5.queryCommand(0)!.lines, 2...3)
   }
 
   func testMultipleCommands() {
     let (commands, delegate) = commandsForPlaygroundText(multipleCommands)
 
     XCTAssertEqual(commands.count, 3)
-    XCTAssertEqual(commands.queryCommand(0)!, PlaygroundCommands.Command(lines: 1...4, dirty: true))
-    XCTAssertEqual(commands.queryCommand(1)!, PlaygroundCommands.Command(lines: 5...8, dirty: true))
-    XCTAssertEqual(commands.queryCommand(2)!, PlaygroundCommands.Command(lines: 9...11, dirty: true))
+    XCTAssertEqual(commands.queryCommand(0)!.lines, 1...4)
+    XCTAssertEqual(commands.queryCommand(1)!.lines, 5...8)
+    XCTAssertEqual(commands.queryCommand(2)!.lines, 9...11)
   }
 }

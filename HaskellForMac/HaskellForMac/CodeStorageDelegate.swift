@@ -167,6 +167,19 @@ extension CodeStorageDelegate {
     }
     return 0..<0
   }
+
+  /// Get the character range for a given line range from the associated line map. A safe range will be returned — i.e.,
+  /// indexing the string with it will not crash. If the range in the line map doesn't fit the string, an empty range
+  /// is returned.
+  ///
+  func charRangeOfLines(lines: Range<Line>) -> Range<Int> {
+    if lines.isEmpty { return 0..<0 }
+    else {
+      let start = charRangeOfLine(lines.startIndex).startIndex
+      let end   = charRangeOfLine(lines.endIndex - 1).endIndex
+      if start <= end { return start..<end } else { return 0..<0 }
+    }
+  }
 }
 
 
