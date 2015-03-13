@@ -204,42 +204,23 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
       if NSTextStorageEditedOptions(UInt(textStorage.editedMask)) & NSTextStorageEditedOptions.Characters == nil { return }
 
         // Update the line map — NB: without highlighting, the line map does not exist.
-      lineMap = tokenMapProcessEdit(lineMap, textStorage.string, fromNSRange(editedRange), changeInLength, tokeniser)
+      let (newLineMap, rehighlightLines) = tokenMapProcessEdit(lineMap, textStorage.string, fromNSRange(editedRange),
+                                                               changeInLength, tokeniser)
+      lineMap = newLineMap
 
         // We need to delay fixing the temporary attributes until after the text storage is done processing the current
         // change.
       dispatch_async(dispatch_get_main_queue(), {
-        self.highlightingAfterEditing(editedRange, changeInLength: changeInLength)
+        self.highlightingAfterEditing(editedRange, lines: rehighlightLines)
       })
     }
   }
 
-  func highlightingAfterEditing(editedRange: NSRange, changeInLength: Int) {
+  func highlightingAfterEditing(editedRange: NSRange, lines: Range<Line>) {
 
-      // FIXME: this should go into SyntaxHighlighting via a call through an extension of NSTextStorage
-      //        to pick up the editedRange and changeInLength. (Disentangle from NSTextView to support testing.)
-    let oldRange       = editedRange.location ..< (NSMaxRange(editedRange) - changeInLength)
-    let string         = textStorage.string
-    let editedString   = (string as NSString).substringWithRange(editedRange)
-    //    NSLog("edited range = (pos: %i, len: %i); change in length = %i",
-    //          editedRange.location, editedRange.length, changeInLength)
-
-      // If the line count changed, we need to recompute the line map and update the gutter.
-    let lines          = lineMap.lineRange(oldRange)
-    let rescanOffsets  = lineRangeRescanOffsets(lineMap, lines)  // NB: need to use old range, because of old lines map
-    let newlineChars   = NSCharacterSet.newlineCharacterSet()
-    let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
-                         || (Int(lines.endIndex) - Int(lines.startIndex)) > 1
-
-      // For highlighting, we are interested in the new set of lines.
-    let editedLines      = lineMap.lineRange(fromNSRange(editedRange))
-    let rehighlightLines = clampRange(extendRange(editedLines, rescanOffsets), 1...lineMap.lastLine)
     for layoutManager in textStorage.layoutManagers {
       if let layoutManager = layoutManager as? NSLayoutManager {
-        layoutManager.highlight(lineMap, lineRange:rehighlightLines)
-        if didEditNewline {
-          (layoutManager.firstTextView as? CodeView)?.textGutterView?.needsDisplay = true    // update the line numbering in the gutter
-        }
+        layoutManager.highlight(lineMap, lineRange:lines)
       }
     }
   }

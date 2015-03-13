@@ -278,18 +278,22 @@ public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line
 /// Given an edited string and its old line map as well as the edit range and change in length, update the line map
 /// by (1) fixing up all affected start indices and (2) retokenising all possibly affected tokens.
 ///
+/// Also returns the range of lines that need to have their temporary attributes for syntax highlighting fixed.
+///
 public func tokenMapProcessEdit(lineMap: LineTokenMap,
                                 string: String,
                                 editedRange: Range<Int>,
                                 changeInLength: Int,
-                                tokeniser: HighlightingTokeniser) -> LineTokenMap
+                                tokeniser: HighlightingTokeniser) -> (LineTokenMap, Range<Line>)
 {
-  if count(editedRange) < changeInLength { return lineMap }   // Inconsistent arguments
+  if count(editedRange) < changeInLength { return (lineMap, 1..<1) }   // Inconsistent arguments
 
     // Determine range of lines edited according to the old line map.
   let oldEditedRange = editedRange.startIndex ..< editedRange.endIndex - changeInLength
   let oldLineRange   = lineMap.lineRange(oldEditedRange)
-  if oldLineRange.isEmpty || editedRange.startIndex < 0 || editedRange.endIndex > count(string.utf16) { return lineMap }
+  if oldLineRange.isEmpty || editedRange.startIndex < 0 || editedRange.endIndex > count(string.utf16) {
+    return (lineMap, 1..<1)
+  }
 
     // Newly added and/or modified text.
   let newString = (string as NSString).substringWithRange(toNSRange(editedRange))
@@ -340,59 +344,7 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   newLineMap.replaceLineInfo(tokenLineRange.map{ ($0, []) })       // FIXME: this and next line might be nicer combined
   newLineMap.addLineInfo(tokensForLines(tokeniser(tokenLineRange.startIndex, 1, rescanString)))
 
-  return newLineMap
-}
-
-/// Update the given token map by re-running the tokeniser on the given range of lines and fixing up the start indicies
-/// (and the last line end index) for all rescan lines and all following lines.
-///
-/// PRECONDITION: This function expects that the number of lines in the old and new line token map are the *same*.
-///
-public func rescanTokenLines(lineMap: LineTokenMap,
-                         rescanLines: Range<Line>,
-                              string: String,
-                           tokeniser: HighlightingTokeniser) -> LineTokenMap
-{
-  if rescanLines.isEmpty { return lineMap }
-
-  var newLineMap = lineMap
-  if let startIndex = lineMap.startOfLine(rescanLines.startIndex) {
-
-      // First, fix the start indicies in the line map (for edited lines and all following lines).
-    var idx = startIndex
-    for line in rescanLines {                                       // fix rescan lines
-      newLineMap.setStartOfLine(line, startIndex: idx)
-      idx = NSMaxRange((string as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
-    }
-    let oldEndIndex    = lineMap.endOfLine(rescanLines.endIndex - 1)
-    let newEndIndex    = idx
-    let changeInLength = newEndIndex - oldEndIndex
-
-    // Swift 1.1:    newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
-    newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
-
-      // `lineMap.lastLine` may be wrong after the change; so, we need to scan until the end of the string.
-    var line = rescanLines.endIndex
-// Swift 1.1:    while idx < string.utf16Count {
-    while idx < count(string.utf16) {
-      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
-      line++
-    }
-    for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
-      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
-    }
-//    // OLD
-//    for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
-//      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
-//    }
-
-      // Second, we update the token information for all affected lines.
-    let rescanString = (string as NSString).substringWithRange(toNSRange(startIndex..<newEndIndex))
-    newLineMap.replaceLineInfo(rescanLines.map{ ($0, []) })       // FIXME: this and next line might be nicer combined
-    newLineMap.addLineInfo(tokensForLines(tokeniser(rescanLines.startIndex, 1, rescanString)))
-    return newLineMap
-
-  } else { return lineMap }
+  return (newLineMap, tokenLineRange)
 }
 
 /// Computes an array of tokens (and their source span) for one line from a `LineTokenMap`.
