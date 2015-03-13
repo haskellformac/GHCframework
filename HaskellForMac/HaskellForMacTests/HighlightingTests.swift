@@ -195,7 +195,8 @@ class HighlightingTests: XCTestCase {
     let tokenMap: LineTokenMap = lineTokenMap(simpleProgram, tokeniser("test"))
 
     let editedProgram  = simpleProgram + "\n"
-    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+// Swift 1.1:    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+    let editedRange    = count(simpleProgram.utf16)..<count(editedProgram.utf16)
     let changeInLength = 1
 
     let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
@@ -212,7 +213,8 @@ class HighlightingTests: XCTestCase {
     let tokenMap: LineTokenMap = lineTokenMap(simpleProgram, tokeniser("test"))
 
     let editedProgram  = simpleProgram + "\n\n"
-    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+// Swift 1.1:    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+    let editedRange    = count(simpleProgram.utf16) ..< count(editedProgram.utf16)
     let changeInLength = 2
 
     let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))

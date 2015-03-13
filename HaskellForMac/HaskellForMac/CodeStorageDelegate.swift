@@ -164,7 +164,8 @@ extension CodeStorageDelegate {
     if let startChar = lineMap.startOfLine(line) {
 
       let endChar = lineMap.endOfLine(line)
-      if endChar <= textStorage.string.utf16Count { return startChar..<endChar }
+      // Swift 1.1:      if endChar <= textStorage.string.utf16Count { return startChar..<endChar }
+      if endChar <= count(textStorage.string.utf16) { return startChar..<endChar }
     }
     return 0..<0
   }
@@ -200,6 +201,10 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
       // NB: The first test also culls superflous traversals during set up for a file that will eventually be highlighted.
     if highlightingTokeniser == nil { return }
     if NSTextStorageEditedOptions(UInt(textStorage.editedMask)) & NSTextStorageEditedOptions.Characters == nil { return }
+
+    // FIXME: fix up the line map — NB: without highlighting, the line map does not exist.
+ // lineMap = tokenMapProcessEdit(lineMap, editedRange, changeInLength)
+
 
     // We need to delay fixing the temporary attributes until after the text storage is done processing the current
     // change.

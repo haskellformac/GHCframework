@@ -56,10 +56,10 @@ class UtilitiesTests: XCTestCase {
     var mapForEmptyString: StringLineMap<Bool> = StringLineMap(string: emptyString)
 
     XCTAssertEqual(mapForEmptyString.lastLine, Line(1))
-    XCTAssertEqual(mapForEmptyString.startOfLine(0)!, emptyString.utf16.endIndex)
-    XCTAssertEqual(mapForEmptyString.startOfLine(1)!, emptyString.utf16.startIndex)
-    XCTAssertEqual(mapForEmptyString.endOfLine(0), emptyString.utf16.endIndex)
-    XCTAssertEqual(mapForEmptyString.endOfLine(1), emptyString.utf16.endIndex)
+    XCTAssertEqual(String.UTF16Index(mapForEmptyString.startOfLine(0)!), emptyString.utf16.endIndex)
+    XCTAssertEqual(String.UTF16Index(mapForEmptyString.startOfLine(1)!), emptyString.utf16.startIndex)
+    XCTAssertEqual(String.UTF16Index(mapForEmptyString.endOfLine(0)), emptyString.utf16.endIndex)
+    XCTAssertEqual(String.UTF16Index(mapForEmptyString.endOfLine(1)), emptyString.utf16.endIndex)
     XCTAssertEqual(mapForEmptyString.infoOfLine(1), [])
     XCTAssertTrue(mapForEmptyString.startOfLine(2) == nil)
 
@@ -76,11 +76,11 @@ class UtilitiesTests: XCTestCase {
     var mapForString: StringLineMap<Bool> = StringLineMap(string: string)
 
     XCTAssertEqual(mapForString.lastLine, Line(2))
-    XCTAssertEqual(mapForString.startOfLine(0)!, string.utf16.endIndex)
-    XCTAssertEqual(mapForString.startOfLine(1)!, string.utf16.startIndex)
-    XCTAssertEqual(mapForString.endOfLine(1), advance(string.utf16.startIndex, 13))
-    XCTAssertEqual(mapForString.startOfLine(2)!, advance(string.utf16.startIndex, 13))
-    XCTAssertEqual(mapForString.endOfLine(2), advance(string.utf16.startIndex, 13))
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(0)!), string.utf16.endIndex)
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(1)!), string.utf16.startIndex)
+    XCTAssertEqual(String.UTF16Index(mapForString.endOfLine(1)), advance(string.utf16.startIndex, 13))
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(2)!), advance(string.utf16.startIndex, 13))
+    XCTAssertEqual(String.UTF16Index(mapForString.endOfLine(2)), advance(string.utf16.startIndex, 13))
   }
 
   func test_StringLineMap_3lines() {
@@ -88,13 +88,13 @@ class UtilitiesTests: XCTestCase {
     var mapForString: StringLineMap<Bool> = StringLineMap(string: string)
 
     XCTAssertEqual(mapForString.lastLine, Line(3))
-    XCTAssertEqual(mapForString.startOfLine(0)!, string.utf16.endIndex)
-    XCTAssertEqual(mapForString.startOfLine(1)!, string.utf16.startIndex)
-    XCTAssertEqual(mapForString.endOfLine(1), advance(string.utf16.startIndex, 1))
-    XCTAssertEqual(mapForString.startOfLine(2)!, advance(string.utf16.startIndex, 1))
-    XCTAssertEqual(mapForString.endOfLine(2), advance(string.utf16.startIndex, 14))
-    XCTAssertEqual(mapForString.startOfLine(3)!, advance(string.utf16.startIndex, 14))
-    XCTAssertEqual(mapForString.endOfLine(4), advance(string.utf16.startIndex, 22))
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(0)!), string.utf16.endIndex)
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(1)!), string.utf16.startIndex)
+    XCTAssertEqual(String.UTF16Index(mapForString.endOfLine(1)), advance(string.utf16.startIndex, 1))
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(2)!), advance(string.utf16.startIndex, 1))
+    XCTAssertEqual(String.UTF16Index(mapForString.endOfLine(2)), advance(string.utf16.startIndex, 14))
+    XCTAssertEqual(String.UTF16Index(mapForString.startOfLine(3)!), advance(string.utf16.startIndex, 14))
+    XCTAssertEqual(String.UTF16Index(mapForString.endOfLine(4)), advance(string.utf16.startIndex, 22))
   }
 
 //    func testPerformanceExample() {
