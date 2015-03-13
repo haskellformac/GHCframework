@@ -22,6 +22,22 @@ extension String
   }
 }
 
+let session: HaskellSession = HaskellSession(diagnosticsHandler: { _, _, _, _, _, _, _ in },
+                                             interactiveWorkingDirectory: "/tmp")
+
+func tokeniser(file: String) -> HighlightingTokeniser {
+  return { (line, column, text) in
+    map(session.tokeniseHaskell(text, file: file, line: line, column: column)){ token in
+                                                                                  HighlightingToken(ghcToken: token) }
+  }
+}
+
+let simpleProgram =
+  "map :: (a -> b) -> [a] -> [b]\n" +
+  "map f [] = []\n" +
+  "map f (x:xs) = f x : f xs"
+
+
 class HighlightingTests: XCTestCase {
 
   override func setUp() {
@@ -155,7 +171,62 @@ class HighlightingTests: XCTestCase {
     let t4 = program[snd(allTokens[4])]
     XCTAssertEqual(t4, "cool -}")
   }
+
+  func test_LineTokenMap_simpleProgram_tokenise() {
+    var tokenMap: LineTokenMap = lineTokenMap(simpleProgram, tokeniser("test"))
+
+    XCTAssertEqual(tokenMap.lastLine, Line(3))
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 1).count, 15)
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 2).count, 7)
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 3).count, 13)
+  }
+
+  func test_LineTokenMap_simpleProgram_withNewline() {
+    var tokenMap: LineTokenMap = lineTokenMap(simpleProgram + "\n", tokeniser("test"))
+
+    XCTAssertEqual(tokenMap.lastLine, Line(4))
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 1).count, 15)
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 2).count, 7)
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 3).count, 13)
+    XCTAssertEqual(tokensAtLine(tokenMap)(line: 4).count, 0)
+  }
+  
+  func test_LineTokenMap_simpleProgram_addNewline() {
+    let tokenMap: LineTokenMap = lineTokenMap(simpleProgram, tokeniser("test"))
+
+    let editedProgram  = simpleProgram + "\n"
+    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+    let changeInLength = 1
+
+    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(editedTokenMap.lastLine, Line(4))
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 7)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 13)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
+    XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! + 1)
+  }
+
+  func test_LineTokenMap_simpleProgram_addTwoNewline() {
+    let tokenMap: LineTokenMap = lineTokenMap(simpleProgram, tokeniser("test"))
+
+    let editedProgram  = simpleProgram + "\n\n"
+    let editedRange    = simpleProgram.utf16Count..<editedProgram.utf16Count
+    let changeInLength = 2
+
+    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(editedTokenMap.lastLine, Line(5))
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 7)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 13)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 5).count, 0)
+    XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! + 2)
+  }
 }
+
 
 class ThemeTests: XCTestCase {
 

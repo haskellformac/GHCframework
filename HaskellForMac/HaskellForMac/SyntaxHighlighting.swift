@@ -251,7 +251,7 @@ private func tokensForLines(tokens: [HighlightingToken]) -> [(Line, Highlighting
 /// hence, need to be rescanned for re-tokenisation.
 ///
 /// The current implementation is a conservative approximation as it extends the range by the number of extra lines that
-/// the token has *independent* of which lines within the multiline token is at the border of the original line range.
+/// the token has *independent* of which lines within the multiline token are at the border of the original line range.
 ///
 public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line>) -> (UInt, UInt) {
   if lines.isEmpty { return (0, 0) }
@@ -273,6 +273,68 @@ public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line
     return 0
     }()
   return (preOffset, sucOffset)
+}
+
+/// Given an edited string and its old line map as well as the edit range and change in length, update the line map
+/// by (1) fixing up all affected start indices and (2) retokenising all possibly affected tokens.
+///
+public func tokenMapProcessEdit(lineMap: LineTokenMap,
+                                string: String,
+                                editedRange: Range<Int>,
+                                changeInLength: Int,
+                                tokeniser: HighlightingTokeniser) -> LineTokenMap
+{
+    // Determine the start index set of the new lines.
+  let oldLineRange = lineMap.lineRange(editedRange)
+  let newString    = (string as NSString).substringWithRange(toNSRange(editedRange))
+  if oldLineRange.isEmpty { return lineMap }
+
+    // (1) Skip the first line of the edited range — that line's start index cannot have changed.
+  var idx:          Int   = 0
+  var newIndices:   [Int] = []
+  idx = NSMaxRange((newString as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
+
+    // (2) Collect the starting indices of all subsequent lines in the edited range, including a possibly empty last line.
+  while idx < newString.utf16Count {
+    newIndices.append(editedRange.startIndex + idx)
+    idx = NSMaxRange((newString as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
+  }
+  let newlines = NSCharacterSet.newlineCharacterSet()
+  if !newString.isEmpty && newlines.characterIsMember(newString.utf16[newString.utf16.endIndex - 1]) {
+    newIndices.append(editedRange.endIndex)
+  }
+
+  let changeInLines = newIndices.count + 1 - count(oldLineRange)   // NB: We skipped the first line of the edited range.
+  let newLineRange  = oldLineRange.startIndex ..< oldLineRange.endIndex + changeInLines
+
+  var newLineMap: LineTokenMap = lineMap
+  // Swift 1.2:   newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
+  newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
+
+    // Update all edited lines, except the first (whose start index cannot have changed).
+  newLineMap.replaceLines(oldLineRange.startIndex + 1 ..< oldLineRange.endIndex, startIndices: newIndices)
+
+    // Update all lines trailing the updated lines.
+  let trailingLines = newLineRange.endIndex ..< newLineMap.lastLine + 1
+  for line in trailingLines {
+    newLineMap.setStartOfLine(line, startIndex: advance(newLineMap.startOfLine(line)!, changeInLength))
+  }
+
+    // Now, we need to retokenise all lines that whose tokens may possibly be affected by the edit.
+  let tokenLineRangeOffsets = lineRangeRescanOffsets(lineMap, oldLineRange)
+  let newStart        = Line(advance(Int(newLineRange.startIndex), -Int(tokenLineRangeOffsets.0)))
+  let newEnd          = Line(advance(Int(newLineRange.endIndex),    Int(tokenLineRangeOffsets.1)))
+  let tokenLineRange  = newStart ..< newEnd
+  let tokenCharRange  = lineMap.startOfLine(newStart)! ..< lineMap.endOfLine(newEnd - 1)   // there is at least one line
+
+  // FIXME: If the new text includes '{-', then retokenise until the end of the file. If the text includes a '-}'
+  //        retokenise from the start of the file. If the text includes '"', retokenise the entire file.
+
+  let rescanString = (string as NSString).substringWithRange(toNSRange(tokenCharRange))
+  newLineMap.replaceLineInfo(tokenLineRange.map{ ($0, []) })       // FIXME: this and next line might be nicer combined
+  newLineMap.addLineInfo(tokensForLines(tokeniser(tokenLineRange.startIndex, 1, rescanString)))
+
+  return newLineMap
 }
 
 /// Update the given token map by re-running the tokeniser on the given range of lines and fixing up the start indicies
@@ -303,9 +365,19 @@ public func rescanTokenLines(lineMap: LineTokenMap,
 // Swift 1.2:   newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
     newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
 
+      // `lineMap.lastLine` may be wrong after the change; so, we need to scan until the end of the string.
+    var line = rescanLines.endIndex
+    while idx < string.utf16Count {
+      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
+      line++
+    }
     for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
       newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
     }
+//    // OLD
+//    for line in rescanLines.endIndex..<(lineMap.lastLine + 1) {     // fix all lines after the rescan lines
+//      newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
+//    }
 
       // Second, we update the token information for all affected lines.
     let rescanString = (string as NSString).substringWithRange(toNSRange(startIndex..<newEndIndex))

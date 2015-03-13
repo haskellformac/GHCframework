@@ -269,13 +269,16 @@ class PlaygroundController: NSViewController {
   // MARK: -
   // MARK: Playground execution
 
-  /// Invalidate all errors and results.
+  /// Invalidate all errors and results (as the context or commands changed).
   ///
-  func invalidatePlayground() {
+  func invalidatePlayground(fromCommandIndex index: Int = 0) {
     let gutter = codeScrollView.verticalRulerView as? TextGutterView
 
     gutter?.updateIssues(.IssuesPending)
-    resultStorage.invalidateFrom(0)
+    resultStorage.invalidateFrom(index)
+
+       // Discard all old issues.
+    issues = IssuesForFile(file: issues.file, issues: [:])
   }
 
   /// If there are any commands waiting for execution, execute them and their dependants. This function is invoked by
@@ -294,13 +297,8 @@ class PlaygroundController: NSViewController {
 
     if let command = commands.nextPendingCommand {              // There are commands that need to be executed...
 
-        // Invalidate old issues, marks pending results as stale, and anounce that the playground gets loaded.
-      gutter?.updateIssues(.IssuesPending)
-      resultStorage.invalidateFrom(command.index)
+        // Announce that the playground gets loaded.
       codeStorageDelegate.status.value = .LastLoading(NSDate())
-
-        // Discard all old issues.
-      issues = IssuesForFile(file: issues.file, issues: [:])
 
         // Run the command.
       asyncExecuteCommand(command){ (evalResult, evalTypes) in
@@ -312,6 +310,13 @@ class PlaygroundController: NSViewController {
             self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
           }
           self.codeStorageDelegate.loadTriggers.announce(())
+
+          // Display any diagnostics in the gutter.
+          if self.issues.issues.isEmpty {
+            gutter?.updateIssues(.NoIssues)
+          } else {
+            gutter?.updateIssues(.Issues(self.issues))
+          }
         }
       }
 
@@ -389,6 +394,7 @@ extension PlaygroundController: NSTextDelegate {
   func textDidChange(notification: NSNotification) {
 
     projectViewModelPlayground.string = codeTextView.string ?? ""
+    invalidatePlayground()
     commands.scanCodeStorage()
   }
 }

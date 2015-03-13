@@ -40,15 +40,14 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
 public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
 
 
-// FIXME: Why '@objc'?
-@objc class HaskellSession {
+public class HaskellSession {
 
-  var ghcInstance: GHCInstance!     // Needs to be a var to run GHC initialisation on another thread.
+  private var ghcInstance: GHCInstance!     // Needs to be a var to run GHC initialisation on another thread.
 
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  init(diagnosticsHandler: DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
+  public init(diagnosticsHandler: DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
       self.ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
     }
@@ -62,7 +61,7 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
   ///
   /// In case of failure, the resulting array is empty, but a diagnostic message is delivered asynchronously as usual.
   ///
-  func tokeniseHaskell(text: String, file: String, line: Line, column: Column) -> [Token] {
+  public func tokeniseHaskell(text: String, file: String, line: Line, column: Column) -> [Token] {
     return ghcInstance.tokeniseHaskell(text, file: file, line: line, column: column).map{ locatedToken in
       let tok = (locatedToken as? GHCLocatedToken)!
       return Token(kind: locatedToken.token,
@@ -80,7 +79,7 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
 
   /// Load a single module and make it the current evaluation context.
   ///
-  func loadModuleFromString(moduleText: String, file: String, importPaths: [String]) -> Bool {
+  public func loadModuleFromString(moduleText: String, file: String, importPaths: [String]) -> Bool {
     return ghcInstance.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
   }
 
@@ -94,7 +93,7 @@ public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
   /// If evaluation is successful, the second component contains the printed representation of the types of all new
   /// binders.
   ///
-  func evalExprFromString(exprText: String, source: String, line: Line) -> (AnyObject, [String]) {
+  public func evalExprFromString(exprText: String, source: String, line: Line) -> (AnyObject, [String]) {
     let resultAndTypes = ghcInstance.evalExprFromString(exprText, source: source, line: line)
 
     if resultAndTypes.count == 0 { return ("", []) }

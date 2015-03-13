@@ -62,11 +62,23 @@ public struct StringLineMap<LineInfo> {
     return line <= lastLine ? map[Int(line)].index : nil
   }
 
+  /// Set a new line start index for a line that is already in the map.
+  ///
   public mutating func setStartOfLine(line: Line, startIndex: Int) {
     if line <= lastLine {
-      let newIndex: MapElement = (index: startIndex, info: infoOfLine(line))
-      map[Int(line)] = newIndex
+      map[Int(line)] = (index: startIndex, info: infoOfLine(line))
     }
+  }
+
+  /// Replace the given range of lines in the line map with a new set of lines with the given start indices (and
+  /// initially empty token sets). The old and new range may be of different size.
+  ///
+  public mutating func replaceLines(lines: Range<Line>, startIndices: [Int]) {
+    if Int(lines.startIndex) > map.endIndex { return }
+
+    let clippedLines = (Int(lines.endIndex) > map.endIndex) ? Int(lines.startIndex)..<map.endIndex
+                                                            : Int(lines.startIndex)..<Int(lines.endIndex)
+    map.replaceRange(clippedLines, with: startIndices.map{ (index: $0, info: []) })
   }
 
   public func infoOfLine(line: Line) -> [LineInfo] {
@@ -80,12 +92,23 @@ public struct StringLineMap<LineInfo> {
   /// Determine the line range covered by the given character range according to the line map.
   ///
   /// This returns an empty range iff the character range is out of bounds, but returns a one line range if the
-  /// character range is within bounds, but empty (namely the line the empty range is located on).
+  /// character range is within bounds, but empty (namely the line the empty range is located on). If the char range
+  /// is right after the end of the string tracted by the line map, the last line of the line map is returned.
   ///
-  public func lineRange(charRange: Range<Int>) -> Range<Line> {
-    if charRange.startIndex < 0 || charRange.endIndex > startOfLine(0) {
+  public func lineRange(var charRange: Range<Int>) -> Range<Line> {
+
+      /// Char range does not intersect with nor continue the associated string.
+    if charRange.endIndex < 0 || charRange.startIndex > startOfLine(0) {
       return 1..<1
     }
+
+      /// Char range is a continuation of the underlying string.
+    if charRange.startIndex == startOfLine(0) {
+      return lastLine...lastLine
+    }
+
+      /// Clip the char range to be entirely within the string range.
+    charRange.startIndex = max(0, charRange.startIndex)
 
     if charRange.isEmpty {
       let oneLine = line(charRange.startIndex)
