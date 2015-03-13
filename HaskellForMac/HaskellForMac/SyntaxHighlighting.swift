@@ -295,7 +295,8 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   idx = NSMaxRange((newString as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
 
     // (2) Collect the starting indices of all subsequent lines in the edited range, including a possibly empty last line.
-  while idx < newString.utf16Count {
+  // Swift 1.1:  while idx < newString.utf16Count {
+  while idx < count(newString.utf16) {
     newIndices.append(editedRange.startIndex + idx)
     idx = NSMaxRange((newString as NSString).lineRangeForRange(NSRange(location: idx, length: 0)))
   }
@@ -305,11 +306,11 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   }
 
   let changeInLines = newIndices.count + 1 - count(oldLineRange)   // NB: We skipped the first line of the edited range.
-  let newLineRange  = oldLineRange.startIndex ..< oldLineRange.endIndex + changeInLines
+  let newLineRange  = oldLineRange.startIndex ..< (oldLineRange.endIndex + Line(changeInLines))
 
   var newLineMap: LineTokenMap = lineMap
-  // Swift 1.2:   newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
-  newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
+  // Swift 1.1:  newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
+  newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
 
     // Update all edited lines, except the first (whose start index cannot have changed).
   newLineMap.replaceLines(oldLineRange.startIndex + 1 ..< oldLineRange.endIndex, startIndices: newIndices)
@@ -362,12 +363,13 @@ public func rescanTokenLines(lineMap: LineTokenMap,
     let newEndIndex    = idx
     let changeInLength = newEndIndex - oldEndIndex
 
-// Swift 1.2:   newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
-    newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
+    // Swift 1.1:    newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
+    newLineMap.setStartOfLine(0, startIndex: count(string.utf16))   // special case of the end of the string
 
       // `lineMap.lastLine` may be wrong after the change; so, we need to scan until the end of the string.
     var line = rescanLines.endIndex
-    while idx < string.utf16Count {
+// Swift 1.1:    while idx < string.utf16Count {
+    while idx < count(string.utf16) {
       newLineMap.setStartOfLine(line, startIndex: advance(lineMap.startOfLine(line)!, changeInLength))
       line++
     }

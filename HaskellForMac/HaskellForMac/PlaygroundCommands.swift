@@ -119,6 +119,8 @@ extension PlaygroundCommands {
   }
 }
 
+private func mycount<T : _CollectionType>(x: T) -> T.Index.Distance { return count(x) }  /// really?!?...
+
 extension PlaygroundCommands {
 
   /// Extract the commands in the associated code storage from scratch.
@@ -137,16 +139,18 @@ extension PlaygroundCommands {
       ///
       func scanCommandAtLine(startLine: Line) -> Range<Line>? {
         let string          = codeStorage.string.utf16
-        let length          = codeStorage.string.utf16Count
+// Swift 1.1:        let length          = codeStorage.string.utf16Count
+        let length          = mycount(string)
         let whitespaceChars = NSCharacterSet.whitespaceAndNewlineCharacterSet()
 
         let startIndex = codeStorageDelegate.charRangeOfLine(startLine).startIndex
-        if startIndex >= length || whitespaceChars.characterIsMember(string[startIndex]) { return nil }
+// Swift 1.1:        if startIndex >= length || whitespaceChars.characterIsMember(string[startIndex]) { return nil }
+        if startIndex >= length || whitespaceChars.characterIsMember(string[String.UTF16Index(startIndex)]) { return nil }
         
         func lineCompletesCommand(line: Line) -> Bool {
           let charRange = codeStorageDelegate.charRangeOfLine(line)
           let endIndex  = charRange.endIndex
-          return endIndex >= length || !whitespaceChars.characterIsMember(string[endIndex])
+          return endIndex >= length || !whitespaceChars.characterIsMember(string[String.UTF16Index(endIndex)])
         }
         
         var endLine: Line = startLine

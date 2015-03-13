@@ -10,7 +10,6 @@
 
 import Cocoa
 
-// FIXME: This file needs to be renamed...
 
 class CodeView: NSTextView {
 
@@ -34,14 +33,15 @@ class CodeView: NSTextView {
   ///
   var indentWidth: Int
 
-  override init() {
+  override init(frame frameRect: NSRect, textContainer container: NSTextContainer?)
+  {
     indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
-    super.init()
+    super.init(frame: frameRect, textContainer: container)
 
     NSNotificationCenter.defaultCenter().addObserver(self,
-                                                     selector: "userDefaultsDidChange:",
-                                                     name: NSUserDefaultsDidChangeNotification,
-                                                     object: NSUserDefaults.standardUserDefaults())
+      selector: "userDefaultsDidChange:",
+      name: NSUserDefaultsDidChangeNotification,
+      object: NSUserDefaults.standardUserDefaults())
   }
 
   required init?(coder: NSCoder) {
