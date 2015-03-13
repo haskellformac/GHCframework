@@ -368,14 +368,15 @@ class TextGutterView: NSRulerView {
       // Draw an issue symbol if any.
     if let severity = maxSeverity {
 
-      var symbol: String
+      var symbol:     String
+      var yoffset: CGFloat
       switch severity {
-      case .Error:   symbol = errorSymbol
-      case .Warning: symbol = warningSymbol
+      case .Error:   symbol = errorSymbol;   yoffset = 0
+      case .Warning: symbol = warningSymbol; yoffset = -size.height * 0.08    // the symbol sits quite low
       case .Other:   return
       }
       symbol.drawAtPoint(NSPoint(x: rect.origin.x,
-                                 y: rect.origin.y + middleline - size.height / 2),
+                                 y: rect.origin.y + middleline - size.height / 2 + yoffset),
                                  withAttributes: lineNumberAttributes)
     }
   }
