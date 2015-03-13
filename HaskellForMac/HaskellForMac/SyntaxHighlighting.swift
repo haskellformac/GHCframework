@@ -284,10 +284,15 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
                                 changeInLength: Int,
                                 tokeniser: HighlightingTokeniser) -> LineTokenMap
 {
-    // Determine the start index set of the new lines.
-  let oldLineRange = lineMap.lineRange(editedRange)
-  let newString    = (string as NSString).substringWithRange(toNSRange(editedRange))
-  if oldLineRange.isEmpty { return lineMap }
+  if count(editedRange) < changeInLength { return lineMap }   // Inconsistent arguments
+
+    // Determine range of lines edited according to the old line map.
+  let oldEditedRange = editedRange.startIndex ..< editedRange.endIndex - changeInLength
+  let oldLineRange   = lineMap.lineRange(oldEditedRange)
+  if oldLineRange.isEmpty || editedRange.startIndex < 0 || editedRange.endIndex > count(string.utf16) { return lineMap }
+
+    // Newly added and/or modified text.
+  let newString = (string as NSString).substringWithRange(toNSRange(editedRange))
 
     // (1) Skip the first line of the edited range — that line's start index cannot have changed.
   var idx:          Int   = 0
@@ -306,7 +311,7 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   }
 
   let changeInLines = newIndices.count + 1 - count(oldLineRange)   // NB: We skipped the first line of the edited range.
-  let newLineRange  = oldLineRange.startIndex ..< (oldLineRange.endIndex + Line(changeInLines))
+  let newLineRange  = oldLineRange.startIndex ..< (Line(Int(oldLineRange.endIndex) + changeInLines))
 
   var newLineMap: LineTokenMap = lineMap
   // Swift 1.1:  newLineMap.setStartOfLine(0, startIndex: string.utf16Count)   // special case of the end of the string
@@ -326,7 +331,7 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   let newStart        = Line(advance(Int(newLineRange.startIndex), -Int(tokenLineRangeOffsets.0)))
   let newEnd          = Line(advance(Int(newLineRange.endIndex),    Int(tokenLineRangeOffsets.1)))
   let tokenLineRange  = newStart ..< newEnd
-  let tokenCharRange  = lineMap.startOfLine(newStart)! ..< lineMap.endOfLine(newEnd - 1)   // there is at least one line
+  let tokenCharRange  = newLineMap.startOfLine(newStart)! ..< newLineMap.endOfLine(newEnd - 1)   // there is at least one line
 
   // FIXME: If the new text includes '{-', then retokenise until the end of the file. If the text includes a '-}'
   //        retokenise from the start of the file. If the text includes '"', retokenise the entire file.

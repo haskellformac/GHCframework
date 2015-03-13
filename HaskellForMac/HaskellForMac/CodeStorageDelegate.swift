@@ -199,18 +199,19 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
 
       // Highlighting needs to be activated and we are only interested in character changes.
       // NB: The first test also culls superflous traversals during set up for a file that will eventually be highlighted.
-    if highlightingTokeniser == nil { return }
-    if NSTextStorageEditedOptions(UInt(textStorage.editedMask)) & NSTextStorageEditedOptions.Characters == nil { return }
+    if let tokeniser = highlightingTokeniser {
 
-    // FIXME: fix up the line map — NB: without highlighting, the line map does not exist.
- // lineMap = tokenMapProcessEdit(lineMap, editedRange, changeInLength)
+      if NSTextStorageEditedOptions(UInt(textStorage.editedMask)) & NSTextStorageEditedOptions.Characters == nil { return }
 
+        // Update the line map — NB: without highlighting, the line map does not exist.
+      lineMap = tokenMapProcessEdit(lineMap, textStorage.string, fromNSRange(editedRange), changeInLength, tokeniser)
 
-    // We need to delay fixing the temporary attributes until after the text storage is done processing the current
-    // change.
-    dispatch_async(dispatch_get_main_queue(), {
-      self.highlightingAfterEditing(editedRange, changeInLength: changeInLength)
-    })
+        // We need to delay fixing the temporary attributes until after the text storage is done processing the current
+        // change.
+      dispatch_async(dispatch_get_main_queue(), {
+        self.highlightingAfterEditing(editedRange, changeInLength: changeInLength)
+      })
+    }
   }
 
   func highlightingAfterEditing(editedRange: NSRange, changeInLength: Int) {
@@ -229,28 +230,6 @@ extension CodeStorageDelegate: NSTextStorageDelegate {
     let newlineChars   = NSCharacterSet.newlineCharacterSet()
     let didEditNewline = (editedString as NSString).rangeOfCharacterFromSet(newlineChars).location != NSNotFound
                          || (Int(lines.endIndex) - Int(lines.startIndex)) > 1
-                // FIXME: The above predicate is too coarse. Even if `lines.endIndex - lines.startIndex > 1`, that is ok in that
-                //        the number of lines didn't *change*, iff the number of newline characters in the edited string is equal
-                //        to `lines.endIndex - lines.startIndex`.
-    if didEditNewline {
-
-        // line count changed => compute a completely new line map
-      if let tokeniser = highlightingTokeniser {
-        lineMap = lineTokenMap(textStorage.string, tokeniser)
-      } else {
-        lineMap = lineTokenMap(textStorage.string, { _string in [] })
-      }
-
-    } else if let tokeniser = highlightingTokeniser {
-
-        // line count stayed the same => may determine lines for rescan with the old (outdated) map
-        // FIXME: this is dodgy and really only works, because we only get here in the case where only one line was
-        //        modified; we would probably need split `rescanTokenLines` into the fixing up of the start indicies
-        //        and the recomputation of the token array, and then. compute the lineRange in the middle...
-      let rescanLines = clampRange(extendRange(lines, rescanOffsets), 1...lineMap.lastLine)
-      lineMap = rescanTokenLines(lineMap, rescanLines, textStorage.string, tokeniser)
-
-    }
 
       // For highlighting, we are interested in the new set of lines.
     let editedLines      = lineMap.lineRange(fromNSRange(editedRange))

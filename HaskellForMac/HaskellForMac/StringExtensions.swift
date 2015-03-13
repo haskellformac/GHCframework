@@ -109,16 +109,18 @@ public struct StringLineMap<LineInfo> {
 
       /// Clip the char range to be entirely within the string range.
     charRange.startIndex = max(0, charRange.startIndex)
+    charRange.endIndex   = min(charRange.endIndex, startOfLine(0)!)
 
     if charRange.isEmpty {
       let oneLine = line(charRange.startIndex)
       return oneLine...oneLine
     } else {
-      return line(charRange.startIndex) ... line(charRange.endIndex - 1)
+      return line(charRange.startIndex) ... line(charRange.endIndex)
     }
   }
 
-  /// Determine the line on which a character is according to the line map by binary search.
+  /// Determine the line on which a character is according to the line map by binary search. Safe to be called with
+  /// out of bounds (i.e., too large) character indices.
   ///
   public func line(charIndex: Int) -> Line {
     var lineRange = 0...lastLine
