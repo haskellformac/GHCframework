@@ -210,6 +210,14 @@ extension String {
     return distance(self.utf16.startIndex, idx.samePositionIn(self.utf16))
   }
 
+  /// Convert a plain `Int` index into a string index.
+  ///
+  /// In the precense of `Foundation`, this should be O(1) as `UTF16Index` is a `RandomAccessIndexType`.
+  ///
+  func intToStringIndex(idx: Int) -> String.Index? {
+    return advance(self.utf16.startIndex, idx).samePositionIn(self)
+  }
+
   /// Compute the line number of a character location, using a line map if available.
   ///
   func lineNumber<LineInfo>(lineMap: StringLineMap<LineInfo>?, atLocation loc: String.Index) -> UInt {

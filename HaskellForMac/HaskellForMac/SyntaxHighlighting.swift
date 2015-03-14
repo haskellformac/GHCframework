@@ -250,29 +250,83 @@ private func tokensForLines(tokens: [HighlightingToken]) -> [(Line, Highlighting
 /// For the given line range, determine how many preceeding or succeeding lines are part of multi-line tokens, and
 /// hence, need to be rescanned for re-tokenisation.
 ///
-/// The current implementation is a conservative approximation as it extends the range by the number of extra lines that
-/// the token has *independent* of which lines within the multiline token are at the border of the original line range.
-///
-public func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line>) -> (UInt, UInt) {
+private func lineRangeRescanOffsets(lineTokenMap: LineTokenMap, lines: Range<Line>) -> (UInt, UInt) {
   if lines.isEmpty { return (0, 0) }
 
-  let preOffset: UInt = {
-    if let firstToken = lineTokenMap.infoOfLine(lines.startIndex).first {
-      if firstToken.span.lines > 1 {
-        return firstToken.span.lines - 1
-      }
+    // Scan backwards for a line that is empty or whose first token starts on that line.
+  var start: Line = lines.startIndex
+  while start > 1 {
+    if let line = lineTokenMap.infoOfLine(start).first?.span.start.line {
+      if line == start { break }
     }
-    return 0
-  }()
-  let sucOffset: UInt = {
-    if let lastToken = lineTokenMap.infoOfLine(lines.endIndex - 1).last {
-      if lastToken.span.lines > 1 {
-        return lastToken.span.lines - 1
-      }
+    else { break }
+    start--
+  }
+
+    // Scan fowards for a line that is empty or whose last token ends on that line.
+  var end: Line = lines.endIndex - 1
+  while end < lineTokenMap.lastLine {
+    if let srcSpan = lineTokenMap.infoOfLine(end).last?.span {
+      if srcSpan.start.line + srcSpan.lines - 1 == end { break }
     }
-    return 0
-    }()
-  return (preOffset, sucOffset)
+    else { break }
+    end++
+  }
+
+  return (lines.startIndex - start, end - (lines.endIndex - 1))
+}
+
+/// Check whether the edited characters contain or complete opening or closing brackets of nested comments.
+///
+private func commentBrackets(string: String, editedRange: Range<Int>) -> (Bool, Bool) {
+
+  var openingBrackets: Bool    = false
+  var closingBrackets: Bool    = false
+
+  var range: Range<String.Index>
+  if let start = string.intToStringIndex(editedRange.startIndex), end = string.intToStringIndex(editedRange.endIndex) {
+
+      // In case of an empty range, this edit did a deletion => check its context.
+    if (start ..< end).isEmpty {
+      range = ((start > string.startIndex) ? advance(start, -1) : start) ..< ((end < string.endIndex) ? advance(end, 1) : end)
+
+    } else { range = start ..< end }
+  } else { return (false, false) }
+
+  let commentBracketChars = NSCharacterSet(charactersInString: "{-}")
+  while !range.isEmpty {
+    if let charRange = string.rangeOfCharacterFromSet(commentBracketChars, options: NSStringCompareOptions(0), range: range) {
+
+      var contIndex: String.Index = charRange.startIndex
+      switch string.substringWithRange(charRange) {
+      case "{":
+        contIndex++
+        if advance(charRange.startIndex, 1) < string.endIndex && string[advance(charRange.startIndex, 1)] == "-" {
+          openingBrackets = true; contIndex++
+        }
+
+      case "-":
+        // NB: Testing for preceding characters from "{-}" is important as the edited range may start in the middle of
+        //     a comment bracket token.
+        contIndex++
+        if charRange.startIndex > string.startIndex && string[advance(charRange.startIndex, -1)] == "{" {
+          openingBrackets = true
+        } else if advance(charRange.startIndex, 1) < string.endIndex && string[advance(charRange.startIndex, 1)] == "}" {
+          closingBrackets = true; contIndex++
+        }
+
+      case "}":
+        contIndex++
+        if charRange.startIndex > string.startIndex && string[advance(charRange.startIndex, -1)] == "-" {
+          closingBrackets = true
+        }
+      default:
+        contIndex++
+      }
+      range = min(contIndex, range.endIndex) ..< range.endIndex
+    } else { break }
+  }
+  return (openingBrackets, closingBrackets)
 }
 
 /// Given an edited string and its old line map as well as the edit range and change in length, update the line map
@@ -331,16 +385,14 @@ public func tokenMapProcessEdit(lineMap: LineTokenMap,
   }
 
     // Now, we need to retokenise all lines that whose tokens may possibly be affected by the edit.
-  let tokenLineRangeOffsets = lineRangeRescanOffsets(lineMap, oldLineRange)
-  let newStart        = Line(advance(Int(newLineRange.startIndex), -Int(tokenLineRangeOffsets.0)))
-  let newEnd          = Line(advance(Int(newLineRange.endIndex),    Int(tokenLineRangeOffsets.1)))
-  let tokenLineRange  = newStart ..< newEnd
-  let tokenCharRange  = newLineMap.startOfLine(newStart)! ..< newLineMap.endOfLine(newEnd - 1)   // there is at least one line
-
-  // FIXME: If the new text includes '{-', then retokenise until the end of the file. If the text includes a '-}'
-  //        retokenise from the start of the file. If the text includes '"', retokenise the entire file.
-
-  let rescanString = (string as NSString).substringWithRange(toNSRange(tokenCharRange))
+  let offsets        = lineRangeRescanOffsets(lineMap, oldLineRange)
+  let newStart       = max(1, Line(advance(Int(newLineRange.startIndex), -Int(offsets.0))))
+  let newEnd         = min(Line(advance(Int(newLineRange.endIndex), Int(offsets.1))), newLineMap.lastLine + Line(1))
+  let (open, close)  = commentBrackets(string, editedRange)
+  let tokenLineRange = (close ? 1 : newStart) ..< (open ? newLineMap.lastLine + Line(1) : newEnd)
+  let tokenCharRange = newLineMap.startOfLine(tokenLineRange.startIndex)!
+                       ..< newLineMap.endOfLine(tokenLineRange.endIndex - 1)   // there is at least one line
+  let rescanString   = (string as NSString).substringWithRange(toNSRange(tokenCharRange))
   newLineMap.replaceLineInfo(tokenLineRange.map{ ($0, []) })       // FIXME: this and next line might be nicer combined
   newLineMap.addLineInfo(tokensForLines(tokeniser(tokenLineRange.startIndex, 1, rescanString)))
 

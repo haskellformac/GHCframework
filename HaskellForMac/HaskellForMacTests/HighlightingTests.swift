@@ -37,6 +37,29 @@ let simpleProgram =
   "map f [] = []\n" +
   "map f (x:xs) = f x : f xs"
 
+let comment =
+  " x \n" +
+  " {- Comment \n" +
+  "\n" +
+  "-}"
+
+let nearlyComment1 =
+  " x \n" +
+  " { Comment \n" +
+  "\n" +
+  "-}"
+
+let nearlyComment2 =
+  " x \n" +
+  " {- Comment \n" +
+  "\n" +
+  "}"
+
+let nearlyComment3 =
+  " x \n" +
+  " { - Comment \n" +
+  "\n" +
+  "-}"
 
 class HighlightingTests: XCTestCase {
 
@@ -199,7 +222,8 @@ class HighlightingTests: XCTestCase {
     let editedRange    = count(simpleProgram.utf16)..<count(editedProgram.utf16)
     let changeInLength = 1
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength,
+                                                      tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(4))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
@@ -207,6 +231,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 13)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! + 1)
+    XCTAssertEqual(lines, 3 ..< 5)
   }
 
   func test_LineTokenMap_simpleProgram_addTwoNewline() {
@@ -217,7 +242,8 @@ class HighlightingTests: XCTestCase {
     let editedRange    = count(simpleProgram.utf16) ..< count(editedProgram.utf16)
     let changeInLength = 2
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength,
+                                                      tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(5))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
@@ -226,6 +252,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 5).count, 0)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! + 2)
+    XCTAssertEqual(lines, 3 ..< 6)
   }
 
   func test_LineTokenMap_simpleProgram_removeNewline() {
@@ -236,7 +263,8 @@ class HighlightingTests: XCTestCase {
     let editedRange    = count(editedProgram.utf16) ..< count(editedProgram.utf16)
     let changeInLength = -1
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength,
+                                                      tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(4))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
@@ -244,6 +272,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 13)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! - 1)
+    XCTAssertEqual(lines, 4 ..< 5)
   }
 
   func test_LineTokenMap_simpleProgram_removeNewlineFront() {
@@ -253,7 +282,8 @@ class HighlightingTests: XCTestCase {
     let editedRange    = 0 ..< 1
     let changeInLength = -1
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength,
+                                                      tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(5))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
@@ -262,6 +292,7 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 0)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 5).count, 0)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! - 1)
+    XCTAssertEqual(lines, 1 ..< 2)
   }
 
   func test_LineTokenMap_simpleProgram_removeNewlineMiddle() {
@@ -274,12 +305,14 @@ class HighlightingTests: XCTestCase {
     let editedRange    = prefixIdx ..< prefixIdx + 1
     let changeInLength = -1
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength,
+                                                      tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(2))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 20)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! - 1)
+    XCTAssertEqual(lines, 2 ..< 3)
   }
 
   func test_LineTokenMap_simpleProgram_addNewlineMiddle() {
@@ -292,7 +325,7 @@ class HighlightingTests: XCTestCase {
     let editedRange    = prefixIdx ..< prefixIdx + 1
     let changeInLength = 1
 
-    let editedTokenMap = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
 
     XCTAssertEqual(editedTokenMap.lastLine, Line(4))
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 1).count, 15)
@@ -300,6 +333,71 @@ class HighlightingTests: XCTestCase {
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 3)
     XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 13)
     XCTAssertEqual(editedTokenMap.startOfLine(0)!, tokenMap.startOfLine(0)! + 1)
+    XCTAssertEqual(lines, 2 ..< 4)
+  }
+
+  func test_LineTokenMap_comment_change() {
+    let tokenMap: LineTokenMap = lineTokenMap(comment, tokeniser("test"))
+
+    let editedProgram  = " x \n" +
+                         " {- Comment \n" +
+                         " \n" +
+                         "-}"
+    let prefixIdx      = count((" x \n" + " {- Comment \n").utf16)
+    let editedRange    = prefixIdx ..< prefixIdx + 1
+    let changeInLength = 1
+
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(lines, 2 ..< 5)
+  }
+
+  func test_LineTokenMap_comment_formation1() {
+    let tokenMap: LineTokenMap = lineTokenMap(nearlyComment1, tokeniser("test"))
+
+    let editedProgram  = comment
+    let prefixIdx      = count((" x \n" + " {").utf16)
+    let editedRange    = prefixIdx ..< prefixIdx + 1
+    let changeInLength = 1
+
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(lines, 2 ..< 5)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 1)
+  }
+
+  func test_LineTokenMap_comment_formation2() {
+    let tokenMap: LineTokenMap = lineTokenMap(nearlyComment2, tokeniser("test"))
+
+    let editedProgram  = comment
+    let prefixIdx      = count((" x \n" + " {- Comment \n" + "\n").utf16)
+    let editedRange    = prefixIdx ..< prefixIdx + 1
+    let changeInLength = 1
+
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(lines, 1 ..< 5)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 1)
+  }
+
+  func test_LineTokenMap_comment_formation3() {
+    let tokenMap: LineTokenMap = lineTokenMap(nearlyComment3, tokeniser("test"))
+
+    let editedProgram  = comment
+    let prefixIdx      = count((" x \n" + " {").utf16)
+    let editedRange    = prefixIdx ..< prefixIdx
+    let changeInLength = -1
+
+    let (editedTokenMap, lines) = tokenMapProcessEdit(tokenMap, editedProgram, editedRange, changeInLength, tokeniser("test"))
+
+    XCTAssertEqual(lines, 2 ..< 5)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 2).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 3).count, 1)
+    XCTAssertEqual(tokensAtLine(editedTokenMap)(line: 4).count, 1)
   }
 }
 

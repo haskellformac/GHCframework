@@ -12,7 +12,7 @@
 import Cocoa
 import SpriteKit
 
-// FIXME: The corresponding emil is not properly bridged to Swift yet.
+// FIXME: The corresponding enum is not properly bridged to Swift yet.
 let NSStackViewVisibilityPriorityMustHold: Float              = 1000
 let NSStackViewVisibilityPriorityDetachOnlyIfNecessary: Float = 900
 let NSStackViewVisibilityPriorityNotVisible: Float            = 0
