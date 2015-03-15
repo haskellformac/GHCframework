@@ -60,7 +60,7 @@ class SynchroScrollView: NSScrollView {
       let changedBoundsOrigin = changedContentView.documentVisibleRect.origin
       let currentBoundsOrigin = contentView.bounds.origin
 
-        // Only adjust the scroll position if the origin actuall changed.
+        // Only adjust the scroll position if the origin actually changed.
       if currentBoundsOrigin != changedBoundsOrigin {
         let newOffset = CGPoint(x: currentBoundsOrigin.x, y: changedBoundsOrigin.y)
         contentView.scrollToPoint(newOffset)

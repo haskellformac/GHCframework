@@ -33,6 +33,8 @@ class CodeView: NSTextView {
   ///
   var indentWidth: Int
 
+  override static func isCompatibleWithResponsiveScrolling() -> Bool { return false }
+
   override init(frame frameRect: NSRect, textContainer container: NSTextContainer?)
   {
     indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
