@@ -232,13 +232,17 @@ class PlaygroundController: NSViewController {
   /// Diagnostics are delivered asynchronously.
   ///
   func asyncExecuteCommand(command: PlaygroundCommands.Command,
-                           completionHandler handler: (AnyObject, [String]) -> Void) {
+                           completionHandler handler: (AnyObject?, [String]) -> Void) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
 
-      let (evalResult: AnyObject, evalTypes) = self.haskellSession.evalExprFromString(command.text,
-                                                                                      source: kPlaygroundSource,
-                                                                                      line: command.lines.startIndex)
-      handler(evalResult, evalTypes)
+      if let (evalResult: AnyObject, evalTypes) = self.haskellSession.evalExprFromString(command.text,
+                                                                                         source: kPlaygroundSource,
+                                                                                         line: command.lines.startIndex)
+      {
+        handler(evalResult, evalTypes)      // Evaluation successful
+      } else {
+        handler(nil, [])                    // Evaluation failed
+      }
     }
   }
 
@@ -301,21 +305,30 @@ class PlaygroundController: NSViewController {
       codeStorageDelegate.status.value = .LastLoading(NSDate())
 
         // Run the command.
-      asyncExecuteCommand(command){ (evalResult, evalTypes) in
+      asyncExecuteCommand(command){ (evalResultOrNil, evalTypes) in
 
           // Interacting with playground commands and results views must happen on the *main* thread!
         dispatch_async(dispatch_get_main_queue()){
 
-          if self.commands.markAsCompleted(command) {
-            self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
-          }
-          self.codeStorageDelegate.loadTriggers.announce(())
+          if let evalResult: AnyObject = evalResultOrNil {
 
-          // Display any diagnostics in the gutter.
-          if self.issues.issues.isEmpty {
-            gutter?.updateIssues(.NoIssues)
+              // Successful evaluation => post the result & continue
+            if self.commands.markAsCompleted(command) {
+              self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
+            }
+            self.codeStorageDelegate.loadTriggers.announce(())
+
           } else {
-            gutter?.updateIssues(.Issues(self.issues))
+
+              // Failure => Discard any results from the error on & stop evaluating
+            self.resultStorage.pruneAt(command.index)
+
+              // Display any diagnostics in the gutter.
+            if self.issues.issues.isEmpty {
+              gutter?.updateIssues(.NoIssues)
+            } else {
+              gutter?.updateIssues(.Issues(self.issues))
+            }
           }
         }
       }
@@ -331,7 +344,6 @@ class PlaygroundController: NSViewController {
       } else {
         gutter?.updateIssues(.Issues(issues))
       }
-
     }
   }
 

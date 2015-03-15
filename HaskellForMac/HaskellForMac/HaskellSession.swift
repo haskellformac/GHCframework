@@ -88,15 +88,15 @@ public class HaskellSession {
   //MARK: Code execution
 
   /// Evaluate an expression in the current evaluation context. The result will either be a 'String' or an object
-  /// produced as the result of the evaluation. In case of evaluation errors, the string will simply be empty.
+  /// produced as the result of the evaluation. In case of evaluation errors, returns nil.
   ///
   /// If evaluation is successful, the second component contains the printed representation of the types of all new
   /// binders.
   ///
-  public func evalExprFromString(exprText: String, source: String, line: Line) -> (AnyObject, [String]) {
+  public func evalExprFromString(exprText: String, source: String, line: Line) -> (AnyObject, [String])? {
     let resultAndTypes = ghcInstance.evalExprFromString(exprText, source: source, line: line)
 
-    if resultAndTypes.count == 0 { return ("", []) }
+    if resultAndTypes.count == 0 { return nil }
     else {
       let types = Array(resultAndTypes[1..<resultAndTypes.endIndex])
       if let typeStrings = types as? [String] {

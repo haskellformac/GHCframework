@@ -97,8 +97,6 @@ class TextGutterView: NSRulerView {
 
   /// Notify the gutter of a new set of issues for the associated file. (This invalidated all previous issues.)
   ///
-  /// NB: Does not require the main thread.
-  ///
   func updateIssues(notification: IssueNotification) {
     switch notification {
 
