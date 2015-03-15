@@ -11,7 +11,7 @@
 
 module Interpreter (
   Session, Result(..), EvalResult,
-  start, stop, tokenise, eval, inferType, executeImport, declare, load 
+  start, restart, stop, tokenise, eval, inferType, executeImport, declare, load 
 ) where
 
   -- standard libraries
@@ -76,6 +76,7 @@ ccWrapper = "../MacOS" </> "ToolWrapper"
 --
 data Session = Session 
                { inlet         :: (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to the interpreter thread
+               , workerTid     :: ThreadId                      -- thread id of the GHC worker thread
                , logLevel      :: Int                           -- log level
                , logString     :: String -> IO ()               -- log function
                , sessionDflags :: GHC.DynFlags                  -- dflags as determined at session start
@@ -105,7 +106,7 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         -- Run GHC on a seperate OS thread. (Instead of using those that we get from GCD for the calls into Haskell.)
     ; inlet    <- newEmptyMVar
     ; resultMV <- newEmptyMVar
-    ; forkOn 1 $ void $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet resultMV)
+    ; forkOn 1 $ restartable $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet resultMV)
     ; takeMVar resultMV
     }
   where
@@ -130,7 +131,8 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
                                                  `GHC.xopt_unset` GHC.Opt_MonomorphismRestriction     -- interactive evaluation
                                                  -- `GHC.gopt_unset` GHC.Opt_GhciSandbox  -- currently ignored in `runStmt` anyway
         ; sessionDFlags <- GHC.getSessionDynFlags
-        ; let session = Session inlet logLevel logString sessionDFlags
+        ; tid <- GHC.liftIO $ myThreadId
+        ; let session = Session inlet tid logLevel logString sessionDFlags
         ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
         ; logMsg session $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
 
@@ -172,10 +174,15 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
             Just command -> command >> runSession inlet
         }
 
+-- Restart the current interpreter session. Any current operation will be interrupted and all current state will be lost.
+--
+restart :: Session -> IO ()
+restart session = killThread (workerTid session)
+
 -- Terminate an interpreter session.
 --
 stop :: Session -> IO ()
-stop session = putMVar (inlet session) Nothing
+stop session = restart session >> putMVar (inlet session) Nothing
 
 -- Tokenise a string of Haskell code.
 --
@@ -532,6 +539,12 @@ logTimingIO session start what
     ; logMsgFromLevelIO 1 session $ "Elapsed time: " ++ show deltaSeconds ++ "s (" ++ what ++ ")"
     }
 
+-- Run an IO action that restarts if it receives an exception.
+--
+restartable :: IO () -> IO ()
+restartable action
+  = action `GHC.gcatch` \(e :: GHC.SomeException) -> (restartable action)
+
 -- Wrap a command to execute in the context of the working directory of the interactive context.
 --
 -- GHC does that for 'runStmtWithLocation', but we need that for other ways of executing Haskel code, too.
@@ -561,7 +574,7 @@ withVirtualCWD m
     ; GHC.gbracket set_cwd reset_cwd $ const m
     }
 
--- Execute the given given GHC action in the interpreter thread through the inlet (first argument). Gracefully handle all
+-- Execute the given GHC action in the interpreter thread through the inlet (first argument). Gracefully handle all
 -- exceptions and ensure that the action is terminated within a fixed timeframe.
 --
 -- FIXME: This is currently only being used for evaluation. Other GHC actions should be protected, too.

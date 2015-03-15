@@ -412,6 +412,10 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 - (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler
                interactiveWorkingDirectory:(typename NSString *)workingDirectory;
 
+/// Restart this GHC instance, interrupting any currently execution operation.
+///
+- (void)restart;
+
 /// Turn a string of Haskell code into an array of tokens.
 ///
 /// If tokenisation fails, the array is empty and the diagnostics handler is called with a suitable message.
@@ -458,7 +462,8 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
 -- Objective-C class implementation
 -- --------------------------------
 
-objc_implementation [Typed 'startWithHandlerObject, Typed 'stop, Typed 'tokeniseString, Typed 'loadModuleText, Typed 'evalText]
+objc_implementation [Typed 'startWithHandlerObject, Typed 'restart, Typed 'stop, Typed 'tokeniseString, Typed 'loadModuleText,
+                     Typed 'evalText]
   [cunit|
 
 @interface GHCInstance ()
@@ -519,6 +524,11 @@ void GHCInstance_initialise(void);
 
 // Public model methods
 // --
+
+- (void)restart
+{
+  restart(self.interpreterSession);
+}
 
 - (typename NSArray *)tokeniseHaskell:(typename NSString*)text 
                                  file:(typename NSString *)file 
