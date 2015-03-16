@@ -13,9 +13,11 @@ class SynchroScrollView: NSScrollView {
 
   var synchronisedScrollView: NSScrollView?
 
+  override static func isCompatibleWithResponsiveScrolling() -> Bool { return false }
+
   /// Associate a second scroll view with the current one, such that changes in the vertical position of the associated
   /// scroll view are reflected in the current one.
-  //
+  ///
   func startSynchronisedScrollView(scrollView: NSScrollView) {
 
       // In case we are already synchronising, drop that connection.
@@ -33,11 +35,10 @@ class SynchroScrollView: NSScrollView {
                                                      selector: "synchronisedViewContentBoundsDidChange:",
                                                      name: NSViewBoundsDidChangeNotification,
                                                      object: synchronisedContentView)
-
   }
 
   /// Break the current scroll view association.
-  //
+  ///
   func stopSynchronising() {
     if let view = synchronisedScrollView {
 
@@ -53,7 +54,7 @@ class SynchroScrollView: NSScrollView {
   }
 
   /// Inlet for bounds change notifications of associated scroll views.
-  //
+  ///
   func synchronisedViewContentBoundsDidChange(notification: NSNotification) {
     if let changedContentView = notification.object as? NSClipView {
 
@@ -66,8 +67,6 @@ class SynchroScrollView: NSScrollView {
         contentView.scrollToPoint(newOffset)
         reflectScrolledClipView(contentView)
       }
-
     }
   }
-
 }
