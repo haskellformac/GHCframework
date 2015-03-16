@@ -59,14 +59,14 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                         </scrollView>
-                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="15" horizontalPageScroll="10" verticalLineScroll="15" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
+                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="272" y="0.0" width="250" height="272"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="DhE-t6-jl6">
                                 <rect key="frame" x="1" y="0.0" width="238" height="134"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="none" columnReordering="NO" multipleSelection="NO" typeSelect="NO" rowHeight="15" viewBased="YES" id="aoG-xy-tdn">
+                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" selectionHighlightStyle="none" columnReordering="NO" multipleSelection="NO" typeSelect="NO" rowHeight="28" viewBased="YES" id="aoG-xy-tdn">
                                         <rect key="frame" x="0.0" y="0.0" width="250" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -89,14 +89,14 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="251" height="28"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="499" verticalStackHuggingPriority="250" horizontalHuggingPriority="249" verticalHuggingPriority="249" misplaced="YES" placeholderIntrinsicWidth="251" placeholderIntrinsicHeight="15" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                <rect key="frame" x="0.0" y="0.0" width="251.5" height="17"/>
+                                                            <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" horizontalHuggingPriority="249" verticalHuggingPriority="249" placeholderIntrinsicWidth="251" placeholderIntrinsicHeight="15" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
+                                                                <rect key="frame" x="0.0" y="0.0" width="251" height="28"/>
                                                                 <beginningViews>
-                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="499" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
+                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="499" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
                                                                         <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
                                                                         <imageCell key="cell" controlSize="small" refusesFirstResponder="YES" alignment="left" imageAlignment="left" imageScaling="proportionallyDown" id="iuw-Pe-pAG"/>
                                                                     </imageView>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
+                                                                    <textField verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVD-20-bsq">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
                                                                         <textFieldCell key="cell" controlSize="small" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultString" id="cFq-63-XmJ">
                                                                             <font key="font" metaFont="smallSystem"/>
@@ -104,7 +104,7 @@
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                         </textFieldCell>
                                                                     </textField>
-                                                                    <customView horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uVU-jC-k7g">
+                                                                    <customView horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uVU-jC-k7g">
                                                                         <rect key="frame" x="0.0" y="0.0" width="163" height="96"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="900" constant="30" id="moY-0l-I3m"/>
@@ -112,9 +112,9 @@
                                                                     </customView>
                                                                 </beginningViews>
                                                                 <endViews>
-                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="500" misplaced="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="500" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q9z-KZ-ky3">
                                                                         <rect key="frame" x="6" y="15" width="38" height="17"/>
-                                                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="ResultType" usesSingleLineMode="YES" id="r7K-wl-Fvb">
+                                                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" refusesFirstResponder="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="right" title="ResultType" usesSingleLineMode="YES" id="r7K-wl-Fvb">
                                                                             <font key="font" metaFont="fixedUser" size="11"/>
                                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
