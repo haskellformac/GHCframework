@@ -148,7 +148,7 @@ class ResultCellView: NSTableCellView {
 
     resultString.font      = NSFont(name: resultString.font!.fontName, size: reducedFontSize)
     resultString.textColor = valueTextColor
-    resultType.font        = NSFont(name: resultType.font!.fontName, size: reducedFontSize)
+    resultType.font        = NSFont(name: codeFontName, size: reducedFontSize)
     resultType.textColor   = theme.comment.foreground
 
   }
