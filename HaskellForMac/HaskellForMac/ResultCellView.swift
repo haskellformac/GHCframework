@@ -132,19 +132,25 @@ class ResultCellView: NSTableCellView {
   // FIXME: Images and scenes should also be drawn faded out when they are stale!
   private func configureAppearance(stringResult: String?, stale: Bool) {
     let theme            = ThemesController.sharedThemesController().currentTheme
+    let codeFontName     = ThemesController.sharedThemesController().currentFontName
+    let codeFontSize     = ThemesController.sharedThemesController().currentFontSize
     let isException      = stringResult != nil && stringResult!.hasPrefix("** Exception: ")
     let isNote           = stringResult != nil &&
                            stringResult!.startIndex < stringResult!.endIndex &&
                            stringResult![stringResult!.startIndex] == "«" &&
                            stringResult![advance(stringResult!.endIndex, -1)] == "»"
-//    let defaultTextColor = stale ? NSColor.disabledControlTextColor() : NSColor.controlTextColor()
     let defaultTextColor = stale ? disabledForegroundColour(theme) : theme.foreground
     let valueTextColor   = isException
                              ? (stale ? self.exceptionRedColor.highlightWithLevel(0.5) : self.exceptionRedColor)
                              : (isNote ? disabledForegroundColour(theme) : defaultTextColor)
 
+    let reducedFontSize  = CGFloat(floorf(Float(codeFontSize) * 0.85))
+
+    resultString.font      = NSFont(name: resultString.font!.fontName, size: reducedFontSize)
     resultString.textColor = valueTextColor
-    resultType.textColor   = defaultTextColor
+    resultType.font        = NSFont(name: resultType.font!.fontName, size: reducedFontSize)
+    resultType.textColor   = theme.comment.foreground
+
   }
 }
 
