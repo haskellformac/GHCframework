@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables, RecordWildCards, DeriveDataTypeable, StandaloneDeriving, TupleSections #-}
 
 -- |
 -- Module    : Interpreter
@@ -23,9 +23,12 @@ import Control.Exception            (SomeException, evaluate)
 import Control.Monad
 import Data.Dynamic                 hiding (typeOf)
 import Data.Either
+import Data.List
 import Data.Maybe
+import Data.Time
+import Data.Typeable
 import Foreign                      hiding (void)
-import System.CPUTime
+import System.CPUTime  -- FIXME: replace use with functions from Data.Time
 import System.Directory
 import System.FilePath
 import System.IO
@@ -59,6 +62,7 @@ import PrintInterceptor
 import System.IO.Unsafe (unsafePerformIO)
 import Data.IORef
 
+
 -- Relative (to the 'GHC.framework' location) paths to the binary and library directory.
 --
 prefix, bindir, libdir :: String
@@ -72,10 +76,17 @@ libdir = prefix </> "lib/ghc-7.8.3"
 ccWrapper :: String
 ccWrapper = "../MacOS" </> "ToolWrapper"
 
+-- GHC task as an action in the GHC monad, including a timestamp of when it was issued.
+--
+type GHCTask = Maybe ( UTCTime        -- time the task was issued
+                     , GHC.Ghc ()     -- cancel the task (unblocking the in-call)
+                     , GHC.Ghc ()     -- task action
+                     )
+
 -- |Abstract handle of an interpreter session.
 --
 data Session = Session 
-               { inlet         :: (MVar (Maybe (GHC.Ghc ())))   -- inlet to submit tasks to the interpreter thread
+               { inlet         :: MVar GHCTask                  -- inlet to submit tasks to the interpreter thread
                , workerTid     :: ThreadId                      -- thread id of the GHC worker thread
                , logLevel      :: Int                           -- log level
                , logString     :: String -> IO ()               -- log function
@@ -84,9 +95,19 @@ data Session = Session
 
 -- |Possible results of executing an interpreter action. 
 --
---FIXME: we want to make this asynchronous...
 data Result r = Result r        -- ^Success or dynamic error, including error message as a string.
               | Error           -- ^Static error: error information is delivered asynchonously.
+
+
+-- Exception that signals to the GHC worker thread that all tasks originating before the given time should be discarded.
+--
+data FlushTasks = FlushTasks UTCTime
+  deriving (Show, Typeable)
+
+instance GHC.Exception FlushTasks
+
+isFlushTasks :: GHC.SomeException -> Bool
+isFlushTasks = isJust . (GHC.fromException :: SomeException -> Maybe FlushTasks)
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
@@ -111,7 +132,7 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
     }
   where
     startSession inlet resultMV
-      = do
+      = GHC.gmask $ \restore -> do
         { start <- GHC.liftIO $ getCPUTime
         
             -- Initialise the session by reading the package database
@@ -133,13 +154,14 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         ; sessionDFlags <- GHC.getSessionDynFlags
         ; tid <- GHC.liftIO $ myThreadId
         ; let session = Session inlet tid logLevel logString sessionDFlags
-        ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
         ; logMsg session $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
 
             -- Load 'ghckit-support' and...
         ; GHC.load GHC.LoadAllTargets
         -- ; unless (???successfully loaded???) $
         --     error "PANIC: could not initialise 'ghckit-support'"
+
+        ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
 
             -- ...initialise the interactive print channel
         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
@@ -159,20 +181,46 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
 
         ; logTiming session start "GHC session initialisation"
 
-        ; runSession inlet
+        ; runSession session restore
         }
 
     logAction :: GHC.LogAction
     logAction dflags severity srcSpan style msg
       = diagnosticHandler severity srcSpan (GHC.renderWithStyle dflags msg style)
         
-    runSession inlet
+      -- Execute tasks, while asynchronous exceptions are masked. Selectively allow asynchronous exceptions while
+      -- waiting for tasks and while execution tasks. If a `FlushTasks` exception at these times, all pending tasks
+      -- issued before the flush tasks timestamp are discarded. (Pending = those in the inlet without waiting.)
+    runSession session@(Session{..}) restore
       = do
-        { maybeCommand <- GHC.liftIO $ takeMVar inlet
-        ; case maybeCommand of
-            Nothing      -> return ()
-            Just command -> command >> runSession inlet
+        { maybeTask <- takeAndFlushMVar inlet
+        ; case maybeTask of
+              Nothing                             -> return ()
+              Just (_timestamp, cancelTask, task) -> cancelOnFlush restore cancelTask task inlet >> runSession session restore
         }
+      where
+        takeAndFlushMVar inlet = GHC.liftIO (takeMVar inlet) `GHC.gcatch` 
+                                   \(FlushTasks _until) -> logMsg session "FlushTasks while blocked" >>
+                                                           takeAndFlushMVar inlet   -- nothing to be flushed (we are blocked)
+          
+        cancelOnFlush restore cancelTask task inlet 
+          = restore task `GHC.gcatch` 
+              \(FlushTasks until) -> logMsg session "FlushTasks cancelling task" >>
+                                     cancelTask >> flush inlet until
+        
+        flush inlet until
+          = do
+            { maybeContents <- GHC.liftIO $ tryTakeMVar inlet
+            ; case maybeContents of
+                Nothing      -> return ()
+                Just Nothing -> GHC.liftIO $ putMVar inlet Nothing       >> return ()      -- terminating this session
+                Just task@(Just (timestamp, cancelTask, _task))
+                  | timestamp < until -> logMsg session "FlushTasks flushing a task" >>
+                                         cancelTask                      >> flush inlet until
+                  | otherwise         -> GHC.liftIO $ putMVar inlet task >> return ()
+            }
+            -- FIXME: this has a *race*: if inlet gets filled before we putMVar the contents back, we deadlock
+            --        we need to return any task that shouldn't be flushed for immediate processing
 
 -- Restart the current interpreter session. Any current operation will be interrupted and all current state will be lost.
 --
@@ -219,41 +267,41 @@ type EvalResult = Result (Either (ForeignPtr ()) String, [String])
 eval :: Session -> String -> Int -> String -> IO EvalResult
 eval session source line stmt
   = tryGhcAction (inlet session) (\msg -> Result (Right msg, [])) $
-        GHC.handleSourceError (\e -> handleError e >> return Error) $ do
-        { logCode session $ "evaluating: «" ++ stmt ++ "»"
-        
-            -- if SpriteKit is available, test for return types that we render specially
-        ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
-            GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
-            :: GHC.Ghc (Either GHC.SourceError GHC.RunResult))
-        ; colorNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Color"   else return []
-        ; skImageNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Image"   else return []
-        ; textureNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Texture" else return []
-        ; nodeNames    <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"    else return []
-        ; sceneNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene"   else return []
-        
-            -- if JuicyPixels is available, test for image return types
-        ; imageNames        <- ((++) <$> GHC.parseName "Codec.Picture.Image" 
-                                     <*> GHC.parseName "Codec.Picture.DynamicImage")
-                               `GHC.gcatch` \(_exc :: GHC.SourceError) -> return []
+      GHC.handleSourceError (\e -> handleError e >> return Error) $ do
+      { logCode session $ "evaluating: «" ++ stmt ++ "»"
+      
+          -- if SpriteKit is available, test for return types that we render specially
+      ; isSpriteKitAvailable <- isRight <$> (GHC.gtry $ 
+          GHC.runStmtWithLocation source line "Graphics.SpriteKit.spritekit_initialise" GHC.RunToCompletion
+          :: GHC.Ghc (Either GHC.SourceError GHC.RunResult))
+      ; colorNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Color"   else return []
+      ; skImageNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Image"   else return []
+      ; textureNames <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Texture" else return []
+      ; nodeNames    <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Node"    else return []
+      ; sceneNames   <- if isSpriteKitAvailable then GHC.parseName "Graphics.SpriteKit.Scene"   else return []
+      
+          -- if JuicyPixels is available, test for image return types
+      ; imageNames        <- ((++) <$> GHC.parseName "Codec.Picture.Image" 
+                                   <*> GHC.parseName "Codec.Picture.DynamicImage")
+                             `GHC.gcatch` \(_exc :: GHC.SourceError) -> return []
 
-            -- try to determine the type of the statement if it is an expression
-        ; ty <- GHC.gtry $ GHC.exprType stmt
-        ; case ty :: Either GHC.SourceError GHC.Type of
-            Right ty -> do
-              { ty_str <- renderType ty
-              ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
-                  Just tycon 
-                    | GHC.getName tycon `elem` colorNames   -> runNodeEval "Graphics.SpriteKit.colorToForeignPtr"   ty_str
-                    | GHC.getName tycon `elem` skImageNames -> runNodeEval "Graphics.SpriteKit.imageToForeignPtr"   ty_str
-                    | GHC.getName tycon `elem` textureNames -> runNodeEval "Graphics.SpriteKit.textureToForeignPtr" ty_str
-                    | GHC.getName tycon `elem` nodeNames    -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"    ty_str
-                    | GHC.getName tycon `elem` sceneNames   -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr"   ty_str
-                    | GHC.getName tycon `elem` imageNames   -> runImageEval isSpriteKitAvailable ty_str
-                  _                                         -> runGHCiStatement (Just ty_str)
-              }
-            Left _e -> runGHCiStatement Nothing
-        }
+          -- try to determine the type of the statement if it is an expression
+      ; ty <- GHC.gtry $ GHC.exprType stmt
+      ; case ty :: Either GHC.SourceError GHC.Type of
+          Right ty -> do
+            { ty_str <- renderType ty
+            ; case GHC.tyConAppTyCon_maybe . GHC.dropForAlls $ ty of    -- look through type synonyms & extract the base type
+                Just tycon 
+                  | GHC.getName tycon `elem` colorNames   -> runNodeEval "Graphics.SpriteKit.colorToForeignPtr"   ty_str
+                  | GHC.getName tycon `elem` skImageNames -> runNodeEval "Graphics.SpriteKit.imageToForeignPtr"   ty_str
+                  | GHC.getName tycon `elem` textureNames -> runNodeEval "Graphics.SpriteKit.textureToForeignPtr" ty_str
+                  | GHC.getName tycon `elem` nodeNames    -> runNodeEval "Graphics.SpriteKit.nodeToForeignPtr"    ty_str
+                  | GHC.getName tycon `elem` sceneNames   -> runNodeEval "Graphics.SpriteKit.sceneToForeignPtr"   ty_str
+                  | GHC.getName tycon `elem` imageNames   -> runImageEval isSpriteKitAvailable ty_str
+                _                                         -> runGHCiStatement (Just ty_str)
+            }
+          Left _e -> runGHCiStatement Nothing
+      }
   where
     runImageEval isSpriteKitAvailable ty_str
       | not isSpriteKitAvailable
@@ -282,8 +330,10 @@ eval session source line stmt
 
         -- ; GHC.setContext iis
         ; case result of
-            Right result -> return $ Result (Left result, [ty_str])
-            Left  exc    -> return $ Result (Right $ "** Exception: " ++ show (exc :: SomeException), [ty_str])
+            Right result         -> return $ Result (Left result, [ty_str])
+            Left  exc    
+              | isFlushTasks exc -> GHC.throw exc
+              | otherwise        -> return $ Result (Right $ "** Exception: " ++ show (exc :: SomeException), [ty_str])
         }
         
     runGHCiStatement maybe_ty_str
@@ -307,7 +357,9 @@ eval session source line stmt
                                        else
                                          return $ Result (Right $ fromMaybe "" maybe_value, types)
                                      }
-            GHC.RunException exc  -> return $ Result (Right $ "** Exception: " ++ show exc, maybeToList maybe_ty_str)
+            GHC.RunException exc
+              | isFlushTasks exc  -> GHC.throw exc
+              | otherwise         -> return $ Result (Right $ "** Exception: " ++ show exc, maybeToList maybe_ty_str)
             _                     -> return $ Result (Right $ "** Exception: <unexpected break point>", maybeToList maybe_ty_str)
         }
     --
@@ -388,46 +440,36 @@ inferType = error "inferType is not implemented"
 --
 executeImport :: Session -> String -> Int -> String -> IO (Result ())
 executeImport session _source _line stmt
-  = do
-    { resultMV <- newEmptyMVar
-    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { start <- GHC.liftIO $ getCPUTime
-        ; iis <- GHC.getContext
-        ; importDecl <- GHC.parseImportDecl stmt
-        ; GHC.setContext (GHC.IIDecl importDecl : iis)
+  = tryGhcAction (inlet session) (\_msg -> Result ()) $
+      GHC.handleSourceError (\e -> handleError e >> return Error) $ do
+      { start <- GHC.liftIO $ getCPUTime
+      ; iis <- GHC.getContext
+      ; importDecl <- GHC.parseImportDecl stmt
+      ; GHC.setContext (GHC.IIDecl importDecl : iis)
 
-        ; logTiming session start stmt
+      ; logTiming session start stmt
 
-            -- Communicate the result back to the main thread
-        ; GHC.liftIO $ 
-            putMVar resultMV (Result ())
-        }
-    ; takeMVar resultMV
-    }
+          -- Communicate the result back to the main thread
+      ; return $ Result ()
+      }
 
--- Bring a set of delcrations into scope in the given interpreter session.
+-- Bring a set of declrations into scope in the given interpreter session.
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 declare :: Session -> String -> Int -> String -> IO (Result [String])
 declare session source line stmt
-  = do
-    { resultMV <- newEmptyMVar
-    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { start <- GHC.liftIO $ getCPUTime
-        ; names <- GHC.runDeclsWithLocation source line stmt
-        ; types <- renderTypesOfNames names
+  = tryGhcAction (inlet session) (\msg -> Result [msg]) $
+      GHC.handleSourceError (\e -> handleError e >> return Error) $ do
+      { start <- GHC.liftIO $ getCPUTime
+      ; names <- GHC.runDeclsWithLocation source line stmt
+      ; types <- renderTypesOfNames names
 
-       ; logTiming session start "compile declaration"
+      ; logTiming session start "compile declaration"
 
-            -- Communicate the result back to the main thread
-        ; GHC.liftIO $ 
-            putMVar resultMV (Result types)
-        }
-    ; takeMVar resultMV
-    }
+          -- Communicate the result back to the main thread
+      ; return $ Result types
+      }
 
 -- Load a module into in the given interpreter session.
 --
@@ -435,55 +477,56 @@ declare session source line stmt
 --
 load :: Session -> [String] -> GHC.Target -> IO (Result ())
 load session importPaths target
-  = do
-    { resultMV <- newEmptyMVar
-    ; putMVar (inlet session) $ Just $       -- the interpreter command we send over to the interpreter thread
-        GHC.handleSourceError (\e -> handleError e >> GHC.liftIO (putMVar resultMV Error)) $ do
-        { start <- GHC.liftIO $ getCPUTime
-        
-            -- Save the working directory for Haskell evaluation.
-        ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
-        
-            -- Revert CAFs from previous evaluations
-        ; GHC.liftIO $ rts_revertCAFs
-        
-            -- Set the search paths
-        ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
+  = do 
+    timestamp <- getCurrentTime
+    logString session $ "timestamp = " ++ show timestamp
+    throwTo (workerTid session) (FlushTasks timestamp)
+    logString session $ "flushed tasks"
+    tryGhcAction (inlet session) (\_msg -> Result ()) $
+      GHC.handleSourceError (\e -> handleError e >> return Error) $ do
+      { start <- GHC.liftIO $ getCPUTime
+      
+          -- Save the working directory for Haskell evaluation.
+      ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
+      
+          -- Revert CAFs from previous evaluations
+      ; GHC.liftIO $ rts_revertCAFs
+      
+          -- Set the search paths
+      ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
 
-            -- Load the new target
-        ; GHC.setTargets [target]
-        ; GHC.load GHC.LoadAllTargets
-        
-        ; logTiming session start "loading"
+          -- Load the new target
+      ; GHC.setTargets [target]
+      ; GHC.load GHC.LoadAllTargets
+      
+      ; logTiming session start "loading"
 
-            -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
-        ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
-        ; case loadedModules of
-            modname:_ -> do
-                         {   -- Intercept the interactive printer to get evaluation results
-                             -- (NB: We need to do that again after every 'GHC.load', as that scraps the interactive context.)
-                         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
-                         ; GHC.setContext [GHC.IIDecl interceptor]
-                         ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
-                         ; dflags <- GHC.getSessionDynFlags
-                         ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
-                                                     in he {GHC.hsc_IC = new_ic})
+          -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
+      ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
+      ; result <- case loadedModules of
+          modname:_ -> do
+                       {   -- Intercept the interactive printer to get evaluation results
+                           -- (NB: We need to do that again after every 'GHC.load', as that scraps the interactive context.)
+                       ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
+                       ; GHC.setContext [GHC.IIDecl interceptor]
+                       ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
+                       ; dflags <- GHC.getSessionDynFlags
+                       ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
+                                                   in he {GHC.hsc_IC = new_ic})
 
-                             -- Only make the user module available for interactive use
-                         ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
+                           -- Only make the user module available for interactive use
+                       ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
 
-                             -- Communicate the result back to the main thread
-                         ; GHC.liftIO $ 
-                             putMVar resultMV (Result ())
-                         }
-            []        -> GHC.liftIO $ putMVar resultMV Error
+                           -- Communicate the result back to the main thread
+                       ; return $ Result ()
+                       }
+          []        -> return Error
 
-            -- Set the working directory for Haskell evaluation again in the new interactive context.
-        ; GHC.modifySession $ \hsc ->
-            let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
-        }
-    ; takeMVar resultMV
-    }
+          -- Set the working directory for Haskell evaluation again in the new interactive context.
+      ; GHC.modifySession $ \hsc ->
+          let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
+      ; return result
+      }
 
 -- Inject the error messages contained in the given 'SourceError' exception into the asynchronous diagnostics stream.
 -- 
@@ -543,7 +586,7 @@ logTimingIO session start what
 --
 restartable :: IO () -> IO ()
 restartable action
-  = action `GHC.gcatch` \(e :: GHC.SomeException) -> (restartable action)
+  = action `GHC.gcatch` \(e :: GHC.SomeException) -> restartable action
 
 -- Wrap a command to execute in the context of the working directory of the interactive context.
 --
@@ -574,27 +617,21 @@ withVirtualCWD m
     ; GHC.gbracket set_cwd reset_cwd $ const m
     }
 
--- Execute the given GHC action in the interpreter thread through the inlet (first argument). Gracefully handle all
--- exceptions and ensure that the action is terminated within a fixed timeframe.
+-- Execute the given GHC action in the interpreter thread through the inlet (first argument). In the case of an exception,
+-- unblock the in-call, rethrow flush tasks exception to be handled by the session main loop, and report other exceptions.
 --
--- FIXME: This is currently only being used for evaluation. Other GHC actions should be protected, too.
-tryGhcAction :: MVar (Maybe (GHC.Ghc ())) -> (String -> result) -> GHC.Ghc result -> IO result
+tryGhcAction :: MVar GHCTask -> (String -> result) -> GHC.Ghc result -> IO result
 tryGhcAction inlet errMsgHandler action
   = do
-    { resultMV <- newEmptyMVar
-    ; putMVar inlet $ Just $ do    -- the interpreter command we send over to the interpreter thread
-        { tid <- GHC.liftIO $ myThreadId
-        -- ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 2000000 >> throwTo tid GHC.UserInterrupt
-        ; watchdogTid <- GHC.liftIO $ forkIO $ threadDelay 20000000 >> throwTo tid GHC.UserInterrupt
-        ; result <- GHC.gtry $ do {result <- action; GHC.liftIO $ killThread watchdogTid; return result}
+    { timestamp <- getCurrentTime
+    ; resultMV  <- newEmptyMVar
+    ; let cancel = GHC.liftIO $ putMVar resultMV (errMsgHandler "** Exception: interrupted")
+    ; putMVar inlet $ Just $ (timestamp, cancel, ) $ do    -- the GHC tasks we send over to the interpreter thread
+        { result <- GHC.gtry $ action
         ; case result of
-            Left exc -> 
-              case GHC.fromException exc of
-                Just GHC.UserInterrupt -> 
-                  GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: evaluation timed out (took too long)")
-                Just asyncExc -> 
-                  GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: " ++ show asyncExc)
-                Nothing -> 
+            Left exc 
+              | isFlushTasks exc -> GHC.throw exc        -- needs to be handled by the task handler
+              | otherwise        ->
                   GHC.liftIO $ putMVar resultMV (errMsgHandler $ "** Exception: " ++ show (exc :: SomeException))
             Right result -> GHC.liftIO $ putMVar resultMV result
         }
