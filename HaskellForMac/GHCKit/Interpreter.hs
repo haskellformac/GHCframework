@@ -161,6 +161,9 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         -- ; unless (???successfully loaded???) $
         --     error "PANIC: could not initialise 'ghckit-support'"
 
+        -- FIXME: We would like to do this before loading all targets, but then module loading requests that come in during
+        --        initialisation interrupt initialisation (because load contains interruptable operations, but masking without
+        --        interrupts seesm risky, too...)
         ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
 
             -- ...initialise the interactive print channel
@@ -471,61 +474,62 @@ declare session source line stmt
       ; return $ Result types
       }
 
--- Load a module into in the given interpreter session.
+-- Load a module into in the given interpreter session. Any currently executing or pending tasks are cancelled as the module
+-- loading will invalidate their context anyway.
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
 load :: Session -> [String] -> GHC.Target -> IO (Result ())
 load session importPaths target
   = do 
-    timestamp <- getCurrentTime
-    logString session $ "timestamp = " ++ show timestamp
-    throwTo (workerTid session) (FlushTasks timestamp)
-    logString session $ "flushed tasks"
-    tryGhcAction (inlet session) (\_msg -> Result ()) $
-      GHC.handleSourceError (\e -> handleError e >> return Error) $ do
-      { start <- GHC.liftIO $ getCPUTime
-      
-          -- Save the working directory for Haskell evaluation.
-      ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
-      
-          -- Revert CAFs from previous evaluations
-      ; GHC.liftIO $ rts_revertCAFs
-      
-          -- Set the search paths
-      ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
-
-          -- Load the new target
-      ; GHC.setTargets [target]
-      ; GHC.load GHC.LoadAllTargets
-      
-      ; logTiming session start "loading"
-
-          -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
-      ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
-      ; result <- case loadedModules of
-          modname:_ -> do
-                       {   -- Intercept the interactive printer to get evaluation results
-                           -- (NB: We need to do that again after every 'GHC.load', as that scraps the interactive context.)
-                       ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
-                       ; GHC.setContext [GHC.IIDecl interceptor]
-                       ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
-                       ; dflags <- GHC.getSessionDynFlags
-                       ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
-                                                   in he {GHC.hsc_IC = new_ic})
-
-                           -- Only make the user module available for interactive use
-                       ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
-
-                           -- Communicate the result back to the main thread
-                       ; return $ Result ()
-                       }
-          []        -> return Error
-
-          -- Set the working directory for Haskell evaluation again in the new interactive context.
-      ; GHC.modifySession $ \hsc ->
-          let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
-      ; return result
+    {   -- Flush any executing and pending tasks before submitting the module loading task.
+    ; timestamp <- getCurrentTime
+    ; throwTo (workerTid session) (FlushTasks timestamp)
+    ; tryGhcAction (inlet session) (\_msg -> Result ()) $
+        GHC.handleSourceError (\e -> handleError e >> return Error) $ do
+        { start <- GHC.liftIO $ getCPUTime
+        
+            -- Save the working directory for Haskell evaluation.
+        ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
+        
+            -- Revert CAFs from previous evaluations
+        ; GHC.liftIO $ rts_revertCAFs
+        
+            -- Set the search paths
+        ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
+  
+            -- Load the new target
+        ; GHC.setTargets [target]
+        ; GHC.load GHC.LoadAllTargets
+        
+        ; logTiming session start "loading"
+  
+            -- Set the GHC context if loading was successful (to support subsequent expression evaluation)
+        ; loadedModules <- map GHC.ms_mod_name <$> GHC.getModuleGraph >>= filterM GHC.isLoaded
+        ; result <- case loadedModules of
+            modname:_ -> do
+                         {   -- Intercept the interactive printer to get evaluation results
+                             -- (NB: We need to do that again after every 'GHC.load', as that scraps the interactive context.)
+                         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
+                         ; GHC.setContext [GHC.IIDecl interceptor]
+                         ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
+                         ; dflags <- GHC.getSessionDynFlags
+                         ; GHC.modifySession (\he -> let new_ic = GHC.setInteractivePrintName (GHC.hsc_IC he) printInterceptor
+                                                     in he {GHC.hsc_IC = new_ic})
+  
+                             -- Only make the user module available for interactive use
+                         ; GHC.setContext [GHC.IIModule modname]    -- FIXME: so far, we only try to 
+  
+                             -- Communicate the result back to the main thread
+                         ; return $ Result ()
+                         }
+            []        -> return Error
+  
+            -- Set the working directory for Haskell evaluation again in the new interactive context.
+        ; GHC.modifySession $ \hsc ->
+            let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
+        ; return result
+        }
       }
 
 -- Inject the error messages contained in the given 'SourceError' exception into the asynchronous diagnostics stream.
