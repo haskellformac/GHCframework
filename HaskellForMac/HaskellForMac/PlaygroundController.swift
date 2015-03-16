@@ -112,6 +112,9 @@ class PlaygroundController: NSViewController {
   }
 
   deinit {
+    NSNotificationCenter.defaultCenter().removeObserver(self,
+                                                        name: NSViewFrameDidChangeNotification,
+                                                        object: codeTextView)
     resultScrollView.stopSynchronising()
     codeScrollView.stopSynchronising()
   }
@@ -136,6 +139,13 @@ class PlaygroundController: NSViewController {
       // Synchronise the scroll views.
     codeScrollView.startSynchronisedScrollView(resultScrollView)
     resultScrollView.startSynchronisedScrollView(codeScrollView)
+
+      // Results table needs to resize its row heights with frame changes of the code view.
+    codeTextView.postsFrameChangedNotifications =  true
+    NSNotificationCenter.defaultCenter().addObserver(self,
+                                                     selector: "textViewFrameChange",
+                                                     name: NSViewFrameDidChangeNotification,
+                                                     object: codeTextView)
 
       // Set up the gutter.
     codeScrollView.hasVerticalRuler = true
@@ -418,6 +428,28 @@ extension PlaygroundController: NSTextDelegate {
 extension PlaygroundController: NSTextViewDelegate {
 
   // Currently, none of the delegate methods are needed.
+}
+
+
+// MARK: -
+// MARK: NSTextView notifications
+
+extension PlaygroundController {
+
+    // Frame change notification, which is needed to adjust the row height of the results table view.
+  func textViewFrameChange() {
+
+    if let results = resultStorage {
+
+        // We update all rows as we currently have no way of tracking which row's height does need to be adjusted.
+      let allRows = NSIndexSet(indexesInRange: NSRange(location: 0,
+                                                       length: results.numberOfRowsInTableView(resultTableView)))
+      NSAnimationContext.runAnimationGroup({ context in
+        context.duration = 0.0
+        self.resultTableView.noteHeightOfRowsWithIndexesChanged(allRows)
+        }, completionHandler: { })
+    }
+  }
 }
 
 
