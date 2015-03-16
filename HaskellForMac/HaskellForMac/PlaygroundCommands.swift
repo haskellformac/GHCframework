@@ -25,6 +25,12 @@ public struct PlaygroundCommands {
     case LastEvaluated(NSDate)
   }
 
+  public enum EvaluationStatus {
+    case NothingToDo                // No command needs to be evaluated.
+    case Evaluate(Int)              // The command at the given index needs to be evaluated next.
+    case Evaluating(Int)            // The command at the given index is currently being evaluated.
+  }
+
   public struct Command {
     public let index: Int
     public let text:  String
@@ -37,7 +43,7 @@ public struct PlaygroundCommands {
 
   /// Index of the next command that needs to be evaluated.
   ///
-  private var nextCommand: Int?
+  private var nextCommand: EvaluationStatus = .NothingToDo
 
   /// The number of available commands.
   ///
@@ -73,32 +79,36 @@ extension PlaygroundCommands {
 
   /// Next command that needs to be evaluated if any.
   ///
-  public var nextPendingCommand: Command? {
-    get {
-      if let idx = nextCommand { return queryCommand(idx) } else { return nil }
-    } }
+  /// NB: This function is *not* idempotent. A pending command can only be obtained once.
+  ///
+  public mutating func nextPendingCommand() -> Command? {
+    switch nextCommand {
+    case .Evaluate(let idx): nextCommand = .Evaluating(idx); return queryCommand(idx)
+    default:                 return nil
+    }
+  }
 
   /// Reset all command evaluation and start from scratch (e.g., because the module context changed).
   ///
   public mutating func setAllCommandsPending() {
-    if count > 0 { nextCommand = 0 }
+    if count > 0 { nextCommand = .Evaluate(0) }
   }
 
-  /// Marks the given command as being completed *iff* it is the next pending command and still has the same text.
+  /// Marks the given command as being completed *iff* it is the currently pending command and still has the same text.
   ///
   /// The return value indicates whether marking completed successfully.
   ///
   public mutating func markAsCompleted(command: Command) -> Bool {
-    if let pendingIndex = nextCommand {
-      if pendingIndex == command.index {
-        if queryCommand(pendingIndex)?.text == command.text {
+    switch nextCommand {
+    case .Evaluating(let pendingIndex):
+      if pendingIndex == command.index && queryCommand(pendingIndex)?.text == command.text {
 
-          nextCommand = (pendingIndex + 1 < count) ? pendingIndex + 1 : nil
-          return true
-        }
-      }
+        nextCommand = (pendingIndex + 1 < count) ? .Evaluate(pendingIndex + 1) : .NothingToDo
+        return true
+
+      } else { return false }
+    default: return false
     }
-    return false
   }
 
   /// Retrieve the nth command.

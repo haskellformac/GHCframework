@@ -299,7 +299,7 @@ class PlaygroundController: NSViewController {
 
     let gutter = codeScrollView.verticalRulerView as? TextGutterView
 
-    if let command = commands.nextPendingCommand {              // There are commands that need to be executed...
+    if let command = commands.nextPendingCommand() {              // There are commands that need to be executed...
 
         // Announce that the playground gets loaded.
       codeStorageDelegate.status.value = .LastLoading(NSDate())
