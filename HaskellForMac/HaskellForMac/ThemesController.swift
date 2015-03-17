@@ -192,9 +192,9 @@ class ThemesController: NSController {
     let tokens             = haskellSession.tokeniseHaskell(sampleCode, file: "PreferencesSampleCode", line: 1, column: 1)
     let highlightingTokens = map(tokens){ HighlightingToken(ghcToken: $0) }
 
-      // Set up the the text view.
+      // Set up the the text view. Highlighting requires the text storage delegate.
     NSScrollView.setRulerViewClass(TextGutterView)
-    if let textStorage = preferencesController.sampleCodeView.layoutManager?.textStorage { // Highlighting requires the text storage delegate.
+    if let textStorage = preferencesController.sampleCodeView.layoutManager?.textStorage {
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
     }
@@ -202,7 +202,7 @@ class ThemesController: NSController {
     preferencesController.sampleCodeScrollView.rulersVisible    = true
     preferencesController.sampleCodeView.delegate               = self
     preferencesController.sampleCodeView.enableHighlighting({unusedArg in highlightingTokens})  // We always produce the same tokens.
-    preferencesController.sampleCodeView.string = sampleCode
+    preferencesController.sampleCodeView.string                 = sampleCode
     preferencesController.sampleCodeView.highlight()
 
     reportThemeInformation(self,
