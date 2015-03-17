@@ -25,11 +25,12 @@ class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
-  @IBOutlet private weak var splitView:        StyledSplitView!
-  @IBOutlet private weak var codeScrollView:   SynchroScrollView!
-  @IBOutlet private weak var resultScrollView: SynchroScrollView!
-  @IBOutlet private      var codeTextView:     CodeView!
-  @IBOutlet private weak var resultTableView:  NSTableView!
+  @IBOutlet private weak var splitView:             StyledSplitView!
+  @IBOutlet private weak var codeScrollView:        SynchroScrollView!
+  @IBOutlet private weak var resultScrollView:      SynchroScrollView!
+  @IBOutlet private      var codeTextView:          CodeView!
+  @IBOutlet private weak var resultTableView:       NSTableView!
+  @IBOutlet private weak var evalProgressIndicator: NSProgressIndicator!
 
   /// The playground model managed by this controller.
   ///
@@ -182,6 +183,9 @@ class PlaygroundController: NSViewController {
     }
 
       // Set up the delegate and data source for the result view.
+    let addDataForRow: Int -> () = { [unowned self] (row: Int) in
+      self.resultTableView.insertRowsAtIndexes(NSIndexSet(index: row), withAnimation: NSTableViewAnimationOptions.SlideDown)
+    }
     let reloadDataForRow: Int -> () = { [unowned self] (row: Int) in
       let rowSet    = NSIndexSet(index: row)
       let columnSet = NSIndexSet(indexesInRange: NSRange(location: 0,
@@ -189,7 +193,9 @@ class PlaygroundController: NSViewController {
       self.resultTableView.reloadDataForRowIndexes(rowSet, columnIndexes: columnSet)
     }
     resultTableView.setDelegate(self)
-    resultStorage = PlaygroundResultStorage(redisplay: resultTableView.reloadData, redisplayRow: reloadDataForRow)
+    resultStorage = PlaygroundResultStorage(redisplay: resultTableView.reloadData,
+                                            addRow: addDataForRow,
+                                            redisplayRow: reloadDataForRow)
     resultTableView.setDataSource(resultStorage)
 
       // Get the initial code view contents and enable highlighting.
@@ -204,6 +210,8 @@ class PlaygroundController: NSViewController {
     if let textStorage = codeTextView.layoutManager?.textStorage {
       commands = PlaygroundCommands(codeStorage: textStorage)
     }
+
+    evalProgressIndicator.usesThreadedAnimation =  true
   }
 
 
@@ -311,8 +319,9 @@ class PlaygroundController: NSViewController {
 
     if let command = commands.nextPendingCommand() {              // There are commands that need to be executed...
 
-        // Announce that the playground gets loaded.
+        // Announce that the playground gets loaded and set the progress indicator spinning.
       codeStorageDelegate.status.value = .LastLoading(NSDate())
+      evalProgressIndicator.startAnimation(self)
 
         // Run the command.
       asyncExecuteCommand(command){ (evalResultOrNil, evalTypes) in
@@ -332,6 +341,7 @@ class PlaygroundController: NSViewController {
 
               // Failure => Discard any results from the error on & stop evaluating
             self.resultStorage.pruneAt(command.index)
+            self.evalProgressIndicator.stopAnimation(self)
 
               // Display any diagnostics in the gutter.
             if self.issues.issues.isEmpty {
@@ -347,6 +357,7 @@ class PlaygroundController: NSViewController {
 
         // Make sure any overhanging old items in the results storage are discarded.
       resultStorage.pruneAt(commands.count)
+      self.evalProgressIndicator.stopAnimation(self)
 
         // Display any diagnostics in the gutter.
       if issues.issues.isEmpty {

@@ -44,15 +44,17 @@ class PlaygroundResultStorage: NSObject {
   ///
   typealias Redisplay = () -> ()
 
-  /// Type of callback to advise results view that the row for the given command index needs to be redisplayed.
+  /// Type of callback to advise results view that the row for the given command index needs to be (re)displayed.
   ///
-  typealias RedisplayRow = Int -> ()
+  typealias UpdateRow = Int -> ()
 
   private let redisplay:    Redisplay
-  private let redisplayRow: RedisplayRow
+  private let addRow:       UpdateRow
+  private let redisplayRow: UpdateRow
 
-  init(redisplay: Redisplay, redisplayRow: RedisplayRow) {
+  init(redisplay: Redisplay, addRow: UpdateRow, redisplayRow: UpdateRow) {
     self.redisplay    = redisplay
+    self.addRow       = addRow
     self.redisplayRow = redisplayRow
   }
 
@@ -60,12 +62,13 @@ class PlaygroundResultStorage: NSObject {
   ///
   func reportResult(value: ResultValue, type: String, atCommandIndex idx: Int) {
 
+    let extend = idx >= results.endIndex
+
       // Extend the array to include the reported index if necessary.
-    if idx >= results.endIndex {
-      for i in results.endIndex...idx { results.append(nil) }
-    }
+    if extend { for i in results.endIndex...idx { results.append(nil) } }
+
     results[idx] = Result(value: value, type: type, stale: false)
-    redisplayRow(idx)
+    if extend { addRow(idx) } else { redisplayRow(idx) }
   }
 
   /// Discard all entries from the given index on.

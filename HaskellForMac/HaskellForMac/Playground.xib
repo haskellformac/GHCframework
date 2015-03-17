@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="codeScrollView" destination="eLl-PP-4ag" id="0Pb-1L-qNT"/>
                 <outlet property="codeTextView" destination="qo0-xU-zu6" id="NLB-hm-5EA"/>
+                <outlet property="evalProgressIndicator" destination="839-xM-bad" id="9Oh-76-Jr2"/>
                 <outlet property="resultScrollView" destination="KXj-yv-v49" id="uVy-47-WlW"/>
                 <outlet property="resultTableView" destination="aoG-xy-tdn" id="Dzc-RG-ti7"/>
                 <outlet property="splitView" destination="04R-W1-2a8" id="3us-wl-atD"/>
@@ -21,11 +22,41 @@
             <rect key="frame" x="0.0" y="0.0" width="522" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="CeH-xR-7Yr">
+                    <rect key="frame" x="0.0" y="251" width="522" height="21"/>
+                    <view key="contentView">
+                        <rect key="frame" x="0.0" y="0.0" width="522" height="21"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="fP6-Nn-CIo">
+                                <rect key="frame" x="0.0" y="-2" width="522" height="5"/>
+                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <font key="titleFont" metaFont="system"/>
+                            </box>
+                            <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="839-xM-bad">
+                                <rect key="frame" x="504" y="3" width="16" height="16"/>
+                            </progressIndicator>
+                        </subviews>
+                    </view>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="fP6-Nn-CIo" secondAttribute="trailing" id="AYa-QT-XTe"/>
+                        <constraint firstAttribute="trailing" secondItem="839-xM-bad" secondAttribute="trailing" constant="2" id="H5a-dP-haf"/>
+                        <constraint firstAttribute="height" constant="21" id="VZ7-Eo-xPq"/>
+                        <constraint firstItem="839-xM-bad" firstAttribute="centerY" secondItem="CeH-xR-7Yr" secondAttribute="centerY" id="ZI5-9i-4uf"/>
+                        <constraint firstItem="839-xM-bad" firstAttribute="top" secondItem="CeH-xR-7Yr" secondAttribute="top" constant="2" id="d2C-Nk-X93"/>
+                        <constraint firstItem="fP6-Nn-CIo" firstAttribute="leading" secondItem="CeH-xR-7Yr" secondAttribute="leading" id="hHa-Rd-y4c"/>
+                        <constraint firstItem="fP6-Nn-CIo" firstAttribute="top" secondItem="839-xM-bad" secondAttribute="bottom" constant="2" id="kf1-xb-fU9"/>
+                        <constraint firstAttribute="bottom" secondItem="fP6-Nn-CIo" secondAttribute="bottom" id="oyh-js-zFp"/>
+                    </constraints>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                </box>
                 <splitView autosaveName="PlaygroundSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="04R-W1-2a8" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="0.0" width="522" height="272"/>
+                    <rect key="frame" x="0.0" y="0.0" width="522" height="251"/>
                     <subviews>
                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" horizontalScrollElasticity="none" id="eLl-PP-4ag" userLabel="Bordered Scroll View - Code View" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="271" height="272"/>
+                            <rect key="frame" x="0.0" y="0.0" width="271" height="251"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="mai-sj-4Ku">
                                 <rect key="frame" x="1" y="1" width="238" height="133"/>
@@ -35,10 +66,10 @@
                                         <rect key="frame" x="0.0" y="0.0" width="249" height="272"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <size key="minSize" width="271" height="272"/>
+                                        <size key="minSize" width="271" height="251"/>
                                         <size key="maxSize" width="533" height="10000000"/>
                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <size key="minSize" width="271" height="272"/>
+                                        <size key="minSize" width="271" height="251"/>
                                         <size key="maxSize" width="533" height="10000000"/>
                                         <connections>
                                             <outlet property="delegate" destination="-2" id="Ald-1Z-rip"/>
@@ -60,7 +91,7 @@
                             </scroller>
                         </scrollView>
                         <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
-                            <rect key="frame" x="272" y="0.0" width="250" height="272"/>
+                            <rect key="frame" x="272" y="0.0" width="250" height="251"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="DhE-t6-jl6">
                                 <rect key="frame" x="1" y="0.0" width="238" height="134"/>
@@ -185,8 +216,11 @@
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="04R-W1-2a8" secondAttribute="bottom" id="1Zs-Ya-Dso"/>
+                <constraint firstItem="CeH-xR-7Yr" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="5L3-dZ-atf"/>
+                <constraint firstItem="CeH-xR-7Yr" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="Jpd-KB-TNZ"/>
+                <constraint firstItem="04R-W1-2a8" firstAttribute="top" secondItem="CeH-xR-7Yr" secondAttribute="bottom" id="S1h-x5-ETx"/>
+                <constraint firstAttribute="trailing" secondItem="CeH-xR-7Yr" secondAttribute="trailing" id="o7K-bx-Bdi"/>
                 <constraint firstItem="04R-W1-2a8" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="p10-zz-LWL"/>
-                <constraint firstItem="04R-W1-2a8" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="sfq-xv-67X"/>
                 <constraint firstAttribute="trailing" secondItem="04R-W1-2a8" secondAttribute="trailing" priority="999" id="xYf-DO-geQ"/>
             </constraints>
             <point key="canvasLocation" x="171" y="189"/>
