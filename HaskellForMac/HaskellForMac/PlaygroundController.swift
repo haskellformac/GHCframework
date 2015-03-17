@@ -184,7 +184,7 @@ class PlaygroundController: NSViewController {
 
       // Set up the delegate and data source for the result view.
     let addDataForRow: Int -> () = { [unowned self] (row: Int) in
-      self.resultTableView.insertRowsAtIndexes(NSIndexSet(index: row), withAnimation: NSTableViewAnimationOptions.SlideDown)
+      self.resultTableView.insertRowsAtIndexes(NSIndexSet(index: row), withAnimation: NSTableViewAnimationOptions.SlideLeft)
     }
     let reloadDataForRow: Int -> () = { [unowned self] (row: Int) in
       let rowSet    = NSIndexSet(index: row)
