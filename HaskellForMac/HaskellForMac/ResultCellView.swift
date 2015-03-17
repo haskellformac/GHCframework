@@ -8,9 +8,13 @@
 //  Cell views of the single-column table view used to display playground results inline.
 //
 //  Each cell consists of a result type and either a textual or graphical result value.
+//
+//  The scroll view embedding the table view hosting these table cells must be layer-baked as the cells embed `SKView`s;
+//  otherwise, the interaction with the scroll view leads to graphical artifacts.
 
 import Cocoa
 import SpriteKit
+
 
 // FIXME: The corresponding enum is not properly bridged to Swift yet.
 let NSStackViewVisibilityPriorityMustHold: Float              = 1000
@@ -87,10 +91,6 @@ class ResultCellView: NSTableCellView {
           tableView.selectRowIndexes(NSIndexSet(index: tableView.rowForView(rowView)), byExtendingSelection: false)
         }
       } }
-
-      // Scene result views need to be layer-baked as they embed `SKView`s; otherwise, the interaction with the scroll
-      // view leads to graphical artifacts.
-    wantsLayer = true
 
       // Ensure the scene size is valid.
     var sceneSize = scene.size
