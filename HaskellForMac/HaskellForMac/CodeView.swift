@@ -33,6 +33,10 @@ class CodeView: NSTextView {
   ///
   var indentWidth: Int
 
+  /// We need to switch of responsive scrolling as it leads to the gutter view lagging during scrolling. (The scroll
+  /// view's `visibleRect` property lags during responsive scrolling.) Instead, we use layer backing. It also improves
+  /// scrolling at updates the view automatically with contents changes, just like responsive scrolling.
+  ///
   override static func isCompatibleWithResponsiveScrolling() -> Bool { return false }
 
   override init(frame frameRect: NSRect, textContainer container: NSTextContainer?)
@@ -40,6 +44,7 @@ class CodeView: NSTextView {
     indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
     super.init(frame: frameRect, textContainer: container)
 
+    wantsLayer = true
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "userDefaultsDidChange:",
       name: NSUserDefaultsDidChangeNotification,
@@ -50,6 +55,7 @@ class CodeView: NSTextView {
     indentWidth = NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceIndentationWidth)
     super.init(coder: coder)
 
+    wantsLayer = true
     NSNotificationCenter.defaultCenter().addObserver(self,
                                                      selector: "userDefaultsDidChange:",
                                                      name: NSUserDefaultsDidChangeNotification,
