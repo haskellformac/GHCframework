@@ -351,9 +351,10 @@ evalText :: Session -> String -> Int -> String -> IO [NSObject]
 evalText session source line stmtText
   | "import " `isPrefixOf` stmtText
   = do
-    { executeImport session source line stmtText
-        -- we are ignoring the result value for now
-    ; return []
+    { result <- executeImport session source line stmtText
+    ; case result of
+        Error          -> return []
+        Result modname -> mapM stringToNSObject [modname]
     }
   | any (flip isPrefixOf stmtText) declPrefixes
   = do 

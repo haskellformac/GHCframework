@@ -441,9 +441,9 @@ inferType = error "inferType is not implemented"
 --
 -- GHC errors are reported asynchronously through the diagnostics handler.
 --
-executeImport :: Session -> String -> Int -> String -> IO (Result ())
+executeImport :: Session -> String -> Int -> String -> IO (Result String)
 executeImport session _source _line stmt
-  = tryGhcAction (inlet session) (\_msg -> Result ()) $
+  = tryGhcAction (inlet session) (\msg -> Result msg) $
       GHC.handleSourceError (\e -> handleError e >> return Error) $ do
       { start <- GHC.liftIO $ getCPUTime
       ; iis <- GHC.getContext
@@ -453,7 +453,7 @@ executeImport session _source _line stmt
       ; logTiming session start stmt
 
           -- Communicate the result back to the main thread
-      ; return $ Result ()
+      ; return $ Result (GHC.moduleNameString . GHC.unLoc . GHC.ideclName $ importDecl)
       }
 
 -- Bring a set of declrations into scope in the given interpreter session.
