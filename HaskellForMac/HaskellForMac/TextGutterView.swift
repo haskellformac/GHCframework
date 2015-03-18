@@ -369,7 +369,7 @@ class TextGutterView: NSRulerView {
       var symbol:     String
       var yoffset: CGFloat
       switch severity {
-      case .Error:   symbol = errorSymbol;   yoffset = 0
+      case .Error:   symbol = errorSymbol;   yoffset = -size.height * 0.04
       case .Warning: symbol = warningSymbol; yoffset = -size.height * 0.08    // the symbol sits quite low
       case .Other:   return
       }
