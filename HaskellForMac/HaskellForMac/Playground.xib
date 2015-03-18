@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="codeScrollView" destination="eLl-PP-4ag" id="0Pb-1L-qNT"/>
                 <outlet property="codeTextView" destination="qo0-xU-zu6" id="NLB-hm-5EA"/>
+                <outlet property="consoleSplitView" destination="gGM-gj-rBy" id="9zu-cz-0f0"/>
                 <outlet property="evalProgressIndicator" destination="839-xM-bad" id="9Oh-76-Jr2"/>
                 <outlet property="resultScrollView" destination="KXj-yv-v49" id="uVy-47-WlW"/>
                 <outlet property="resultTableView" destination="aoG-xy-tdn" id="Dzc-RG-ti7"/>
@@ -52,10 +53,10 @@
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                 </box>
-                <splitView autosaveName="PlaygroundConsoleSplitView" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="gGM-gj-rBy" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
+                <splitView autosaveName="PlaygroundConsoleSplitView" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="gGM-gj-rBy" userLabel="Styled Split View — Console" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="522" height="251"/>
                     <subviews>
-                        <splitView fixedFrame="YES" autosaveName="PlaygroundSplitView" dividerStyle="thin" vertical="YES" id="04R-W1-2a8" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
+                        <splitView autosaveName="PlaygroundSplitView" dividerStyle="thin" vertical="YES" id="04R-W1-2a8" userLabel="Styled Split View — Results" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="522" height="150.5"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
@@ -121,11 +122,11 @@
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
                                                             <tableCellView identifier="ResultCell" placeholderIntrinsicWidth="252" placeholderIntrinsicHeight="15" id="T48-Mu-9IN" customClass="ResultCellView" customModule="Haskell" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="251" height="28"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="267" height="28"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="250" horizontalHuggingPriority="249" verticalHuggingPriority="249" placeholderIntrinsicWidth="251" placeholderIntrinsicHeight="15" translatesAutoresizingMaskIntoConstraints="NO" id="uM6-ov-6ex">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="251" height="28"/>
+                                                                        <rect key="frame" x="4" y="0.0" width="259" height="28"/>
                                                                         <beginningViews>
                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="499" translatesAutoresizingMaskIntoConstraints="NO" id="Fxw-e7-huc" userLabel="ResultImage">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
@@ -172,8 +173,8 @@
                                                                 </subviews>
                                                                 <constraints>
                                                                     <constraint firstAttribute="bottom" secondItem="uM6-ov-6ex" secondAttribute="bottom" id="Im9-SX-4t9"/>
-                                                                    <constraint firstItem="uM6-ov-6ex" firstAttribute="leading" secondItem="T48-Mu-9IN" secondAttribute="leading" id="bg3-Wm-F6U"/>
-                                                                    <constraint firstAttribute="trailing" secondItem="uM6-ov-6ex" secondAttribute="trailing" priority="999" id="gTE-sJ-Kbf"/>
+                                                                    <constraint firstItem="uM6-ov-6ex" firstAttribute="leading" secondItem="T48-Mu-9IN" secondAttribute="leading" constant="4" id="bg3-Wm-F6U"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="uM6-ov-6ex" secondAttribute="trailing" priority="999" constant="4" id="gTE-sJ-Kbf"/>
                                                                     <constraint firstItem="uM6-ov-6ex" firstAttribute="top" secondItem="T48-Mu-9IN" secondAttribute="top" id="rdI-e6-44O"/>
                                                                 </constraints>
                                                                 <connections>
@@ -207,6 +208,9 @@
                                     </scroller>
                                 </scrollView>
                             </subviews>
+                            <constraints>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="0uo-vo-tkQ"/>
+                            </constraints>
                             <holdingPriorities>
                                 <real value="300"/>
                                 <real value="350"/>
@@ -217,7 +221,7 @@
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </splitView>
-                        <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="D9m-gF-6DJ">
+                        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="D9m-gF-6DJ" userLabel="Scroll View - Console">
                             <rect key="frame" x="0.0" y="151.5" width="522" height="99.5"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <clipView key="contentView" id="iz3-X1-Tim">
@@ -237,6 +241,9 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </clipView>
+                            <constraints>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="999" constant="26" id="QIU-uE-jWQ"/>
+                            </constraints>
                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="Uc1-Qy-VMP">
                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -247,8 +254,11 @@
                             </scroller>
                         </scrollView>
                     </subviews>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="450" id="6Oh-Xj-yed"/>
+                    </constraints>
                     <holdingPriorities>
-                        <real value="250"/>
+                        <real value="300"/>
                         <real value="250"/>
                     </holdingPriorities>
                     <userDefinedRuntimeAttributes>

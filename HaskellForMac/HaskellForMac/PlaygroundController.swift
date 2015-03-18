@@ -25,6 +25,7 @@ class PlaygroundController: NSViewController {
 
   // Views in 'Playground.xib'
   //
+  @IBOutlet private weak var consoleSplitView:      StyledSplitView!
   @IBOutlet private weak var splitView:             StyledSplitView!
   @IBOutlet private weak var codeScrollView:        SynchroScrollView!
   @IBOutlet private weak var resultScrollView:      SynchroScrollView!
@@ -142,7 +143,8 @@ class PlaygroundController: NSViewController {
     resultScrollView.startSynchronisedScrollView(codeScrollView)
 
       // Set delegate of the split view to be this playground controller.
-    splitView.delegate = self
+    splitView.delegate        = self
+    consoleSplitView.delegate = self
 
       // Results table needs to resize its row heights with frame changes of the code view.
     codeTextView.postsFrameChangedNotifications =  true
@@ -427,11 +429,11 @@ extension PlaygroundController {
 
 extension PlaygroundController: NSSplitViewDelegate {
 
-  func splitView(splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool
-  {
-      // Only the results table can be collapsed.
-    return subview === self.resultTableView
-  }
+//  func splitView(splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool
+//  {
+//      // Only the results table can be collapsed.
+//    return subview === self.resultTableView
+//  }
 
   func splitView(splitView: NSSplitView, constrainSplitPosition proposedPosition: CGFloat, ofSubviewAt dividerIndex: Int)
     -> CGFloat

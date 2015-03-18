@@ -192,12 +192,9 @@
                                     <constraint firstAttribute="centerY" secondItem="sSz-C3-ErB" secondAttribute="centerY" id="hAI-WE-BGh"/>
                                 </constraints>
                             </customView>
-                            <customView id="8bF-Zs-hji" userLabel="Playground View">
+                            <customView fixedFrame="YES" id="8bF-Zs-hji" userLabel="Playground View">
                                 <rect key="frame" x="461" y="0.0" width="539" height="622"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="450" id="vcX-at-eGc"/>
-                                </constraints>
                             </customView>
                         </subviews>
                         <holdingPriorities>
