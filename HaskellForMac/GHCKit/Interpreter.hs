@@ -21,6 +21,7 @@ import Control.Concurrent
 import Control.Concurrent.STM
 import Control.Exception            (SomeException, evaluate)
 import Control.Monad
+import qualified Data.ByteString    as BS
 import Data.Dynamic                 hiding (typeOf)
 import Data.Either
 import Data.List
@@ -32,7 +33,11 @@ import System.CPUTime  -- FIXME: replace use with functions from Data.Time
 import System.Directory
 import System.FilePath
 import System.IO
+import System.Posix.IO              as Posix
 import Unsafe.Coerce                (unsafeCoerce)
+
+  -- GHC libraries
+import GHC.IO.Handle
 
   -- GHC
 import qualified Bag          as GHC
@@ -52,6 +57,7 @@ import qualified Name         as GHC
 import qualified StringBuffer as GHC
 import qualified PprTyThing   as GHC
 import qualified Type         as GHC
+import qualified ObjLink      as GHC
 import qualified Outputable   as GHC
 
   -- GHCKit
@@ -127,10 +133,12 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         -- Run GHC on a seperate OS thread. (Instead of using those that we get from GCD for the calls into Haskell.)
     ; inlet    <- newEmptyMVar
     ; resultMV <- newEmptyMVar
-    ; forkOn 1 $ restartable $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet resultMV)
+    ; forkOn myvcpu $ restartable logString $ GHC.runGhc (Just $ ghcBundlePath </> libdir) (startSession inlet resultMV)
     ; takeMVar resultMV
     }
   where
+    myvcpu = 1
+    
     startSession inlet resultMV
       = GHC.gmask $ \restore -> do
         { start <- GHC.liftIO $ getCPUTime
@@ -181,6 +189,14 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         ; logMsg session $ "current working directory at GHC session start = " ++ show cwd
         ; GHC.modifySession $ \hsc ->
             let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
+            
+        ;   -- Initialise stdout/stdin/stderr redirection
+        ; GHC.liftIO $ GHC.initDynLinker dflags
+    -- FIXME: we should replicate GhciMonad.initInterpBuffering and then also flush buffers etc
+        -- ; mb_stdin_ptr  <- ObjLink.lookupSymbol "base_GHCziIOziHandleziFD_stdin_closure"
+        ; mb_stdout_ptr <- GHC.liftIO $ GHC.lookupSymbol "base_GHCziIOziHandleziFD_stdout_closure"
+        -- ; mb_stderr_ptr <- ObjLink.lookupSymbol "base_GHCziIOziHandleziFD_stderr_closure"
+        ; GHC.liftIO $ interceptReadHandle mb_stdout_ptr
 
         ; logTiming session start "GHC session initialisation"
 
@@ -190,6 +206,26 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
     logAction :: GHC.LogAction
     logAction dflags severity srcSpan style msg
       = diagnosticHandler severity srcSpan (GHC.renderWithStyle dflags msg style)
+      
+    interceptReadHandle Nothing    = logString "Failed to obtain read handle" >> return ()
+    interceptReadHandle (Just hdl)
+      = do
+        { (readFd, writeFd) <- Posix.createPipe
+        -- ; let writeHandle = Posix.fdToHandle readFd -- mkHandleFromFD writeFd 
+        -- ; hDuplicateTo writeHandle stdout
+        ; Posix.dupTo writeFd Posix.stdOutput
+        ; readHandle <- GHC.liftIO $ Posix.fdToHandle readFd
+        ; void $ forkIO $ reader readHandle
+        }
+      where
+        reader hdl
+          = do
+            { line <- BS.hGetLine hdl
+            ; logString ("STDOUT: " ++ show line)
+            ; reader hdl
+            }
+            -- FIXME: kill this thread eventually
+                
         
       -- Execute tasks, while asynchronous exceptions are masked. Selectively allow asynchronous exceptions while
       -- waiting for tasks and while execution tasks. If a `FlushTasks` exception at these times, all pending tasks
@@ -588,9 +624,9 @@ logTimingIO session start what
 
 -- Run an IO action that restarts if it receives an exception.
 --
-restartable :: IO () -> IO ()
-restartable action
-  = action `GHC.gcatch` \(e :: GHC.SomeException) -> restartable action
+restartable :: (String -> IO ()) -> IO () -> IO ()
+restartable logString action
+  = action `GHC.gcatch` \(e :: GHC.SomeException) -> logString ("GHC Restart: " ++ show e) >> restartable logString action
 
 -- Wrap a command to execute in the context of the working directory of the interactive context.
 --
