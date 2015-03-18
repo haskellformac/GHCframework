@@ -248,7 +248,7 @@ class TextGutterView: NSRulerView {
   // MARK: Custom drawing
 
   override func viewWillDraw() {
-    ruleThickness = ("9999" as NSString).sizeWithAttributes(lineNumberAttributes).width + margin * 2;
+    ruleThickness = ceil(("9999" as NSString).sizeWithAttributes(lineNumberAttributes).width) + margin * 2;
       // setting 'ruleThickness' in init leads to a loop
   }
 
