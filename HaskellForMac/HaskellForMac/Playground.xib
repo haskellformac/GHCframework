@@ -252,8 +252,8 @@
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="450" id="6Oh-Xj-yed"/>
                     </constraints>
                     <holdingPriorities>
-                        <real value="300"/>
-                        <real value="250"/>
+                        <real value="200"/>
+                        <real value="400"/>
                     </holdingPriorities>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="customDividerColor">

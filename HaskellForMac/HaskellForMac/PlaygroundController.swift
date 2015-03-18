@@ -408,9 +408,10 @@ class PlaygroundController: NSViewController {
 extension PlaygroundController {
 
   func setResultTableViewBackgroundAndDividerColour(theme: Theme) {
-    resultTableView.backgroundColor = gutterColour(theme)
-    splitView.customDividerColor    = dividerColour(theme)
-    splitView.needsDisplay          = true      // ...to redraw the divider
+    resultTableView.backgroundColor         = gutterColour(theme)
+    splitView.customDividerColor            = dividerColour(theme)
+    splitView.needsDisplay                  = true      // ...to redraw the divider
+    resultScrollView.layer?.backgroundColor = gutterColour(theme).CGColor
     resultTableView.reloadData()
   }
 
