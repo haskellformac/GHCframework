@@ -13,7 +13,7 @@
 //  Only one subview is being animated at any one time.
 //
 //  We don't animate on Mavericks for now as it leads to UI glitches in its current form. The pre-Yosemite code also
-//  assumes, in its size calculation, that we do not hide the divide of a collapsed subview. Moreover, it assumes we are
+//  assumes, in its size calculation, that we do not hide the divider of a collapsed subview. Moreover, it assumes we are
 //  having a horizontal split view. (All this could be easily generalised.)
 
 import Cocoa

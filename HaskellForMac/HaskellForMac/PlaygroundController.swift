@@ -141,6 +141,9 @@ class PlaygroundController: NSViewController {
     codeScrollView.startSynchronisedScrollView(resultScrollView)
     resultScrollView.startSynchronisedScrollView(codeScrollView)
 
+      // Set delegate of the split view to be this playground controller.
+    splitView.delegate = self
+
       // Results table needs to resize its row heights with frame changes of the code view.
     codeTextView.postsFrameChangedNotifications =  true
     NSNotificationCenter.defaultCenter().addObserver(self,
@@ -418,6 +421,20 @@ extension PlaygroundController {
 
 }
 
+
+// MARK: -
+// MARK: NSSplitViewDelegate protocol methods (for the code view)
+
+extension PlaygroundController: NSSplitViewDelegate {
+
+  func splitView(splitView: NSSplitView, constrainSplitPosition proposedPosition: CGFloat, ofSubviewAt dividerIndex: Int)
+    -> CGFloat
+  {
+      // Half-point positions on retina screens cause problems if one of the subviews is a scrollview.
+    return floor(proposedPosition)
+  }
+
+}
 
 // MARK: -
 // MARK: NSTextDelegate protocol methods (for the code view)

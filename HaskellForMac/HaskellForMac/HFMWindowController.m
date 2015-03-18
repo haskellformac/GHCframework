@@ -780,6 +780,16 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
           || ([subview isEqual:self.playgroundView] && dividerIndex == 1));
 }
 
+- (CGFloat) splitView:(NSSplitView *)splitView
+constrainSplitPosition:(CGFloat)proposedPosition
+          ofSubviewAt:(NSInteger)dividerIndex
+{
+#pragma unused(splitView,dividerIndex)
+
+    // Half-point positions on retina screens cause problems if one of the subviews is a scrollview.
+  return floor(proposedPosition);
+}
+
 
 #pragma mark -
 #pragma mark NSTextFieldDelegate protocol methods
