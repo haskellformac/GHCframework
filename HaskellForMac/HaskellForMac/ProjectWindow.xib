@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7525" systemVersion="14C1510" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7525"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="HFMWindowController">
@@ -45,7 +45,8 @@
                                                 <rect key="frame" x="1" y="1" width="148" height="505"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="14" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
+                                                    <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" rowSizeStyle="small" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="14" autosaveExpandedItems="YES" outlineTableColumn="VTn-Vj-yUe" id="xMX-Dm-h40">
+                                                        <rect key="frame" x="0.0" y="0.0" width="171" height="0.0"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="0.0"/>
                                                         <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -118,7 +119,7 @@
                                                 <nil key="backgroundColor"/>
                                             </clipView>
                                             <constraints>
-                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="160" id="CUP-aP-EjY"/>
+                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="160" id="CUP-aP-EjY"/>
                                             </constraints>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KhN-wh-VPq">
                                                 <rect key="frame" x="1" y="490" width="18.5" height="16"/>
@@ -163,7 +164,7 @@
                                     <constraint firstAttribute="bottom" secondItem="Be7-pi-uiM" secondAttribute="bottom" id="JgJ-hR-KLo"/>
                                     <constraint firstItem="fiD-Li-Mgi" firstAttribute="top" secondItem="c8F-AC-7Zk" secondAttribute="top" id="L2y-fl-SX0"/>
                                     <constraint firstItem="yoy-lc-F0e" firstAttribute="baseline" secondItem="Be7-pi-uiM" secondAttribute="baseline" id="Pil-bb-Up6"/>
-                                    <constraint firstItem="fiD-Li-Mgi" firstAttribute="leading" secondItem="c8F-AC-7Zk" secondAttribute="leading" id="V12-lQ-QDm"/>
+                                    <constraint firstItem="fiD-Li-Mgi" firstAttribute="leading" secondItem="c8F-AC-7Zk" secondAttribute="leading" priority="999" id="V12-lQ-QDm"/>
                                     <constraint firstItem="yoy-lc-F0e" firstAttribute="top" secondItem="Be7-pi-uiM" secondAttribute="top" id="WO4-Im-xAh"/>
                                     <constraint firstItem="yoy-lc-F0e" firstAttribute="leading" secondItem="Be7-pi-uiM" secondAttribute="trailing" constant="1" id="Yid-Uj-iAM"/>
                                     <constraint firstItem="Be7-pi-uiM" firstAttribute="leading" secondItem="c8F-AC-7Zk" secondAttribute="leading" id="cE3-Ix-D8k"/>
@@ -187,7 +188,7 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="sSz-C3-ErB" secondAttribute="centerX" id="NBG-Kf-BMh"/>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Qen-AZ-lRi"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="250" id="Qen-AZ-lRi"/>
                                     <constraint firstAttribute="centerY" secondItem="sSz-C3-ErB" secondAttribute="centerY" id="hAI-WE-BGh"/>
                                 </constraints>
                             </customView>
@@ -195,14 +196,14 @@
                                 <rect key="frame" x="461" y="0.0" width="539" height="622"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="vcX-at-eGc"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="450" id="vcX-at-eGc"/>
                                 </constraints>
                             </customView>
                         </subviews>
                         <holdingPriorities>
-                            <real value="350"/>
-                            <real value="275"/>
-                            <real value="250"/>
+                            <real value="490"/>
+                            <real value="450"/>
+                            <real value="400"/>
                         </holdingPriorities>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="customDividerColor">

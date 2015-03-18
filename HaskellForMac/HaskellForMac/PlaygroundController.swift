@@ -427,6 +427,12 @@ extension PlaygroundController {
 
 extension PlaygroundController: NSSplitViewDelegate {
 
+  func splitView(splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool
+  {
+      // Only the results table can be collapsed.
+    return subview === self.resultTableView
+  }
+
   func splitView(splitView: NSSplitView, constrainSplitPosition proposedPosition: CGFloat, ofSubviewAt dividerIndex: Int)
     -> CGFloat
   {

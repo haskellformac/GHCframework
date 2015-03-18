@@ -19,7 +19,7 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-F3-fCH">
+                <box autoresizesSubviews="NO" borderWidth="0.0" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kWT-F3-fCH" userLabel="Editor Path Control Box">
                     <rect key="frame" x="0.0" y="251" width="480" height="21"/>
                     <view key="contentView">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="21"/>
@@ -86,14 +86,13 @@
                 </scrollView>
             </subviews>
             <constraints>
-                <constraint firstItem="z8k-aE-UVe" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="7ng-hp-I5o"/>
                 <constraint firstAttribute="bottom" secondItem="z8k-aE-UVe" secondAttribute="bottom" id="B5O-aY-TZM"/>
                 <constraint firstItem="z8k-aE-UVe" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="J4x-bn-tSx"/>
                 <constraint firstItem="z8k-aE-UVe" firstAttribute="top" secondItem="kWT-F3-fCH" secondAttribute="bottom" id="ZSk-Ot-iaa"/>
                 <constraint firstItem="kWT-F3-fCH" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="fZw-QN-8uR"/>
                 <constraint firstAttribute="trailing" secondItem="kWT-F3-fCH" secondAttribute="trailing" id="t2e-KY-Ltt"/>
                 <constraint firstItem="kWT-F3-fCH" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="xG8-sV-GsW"/>
-                <constraint firstAttribute="trailing" secondItem="z8k-aE-UVe" secondAttribute="trailing" id="zep-XP-Vgx"/>
+                <constraint firstAttribute="trailing" secondItem="z8k-aE-UVe" secondAttribute="trailing" priority="999" id="zep-XP-Vgx"/>
             </constraints>
             <point key="canvasLocation" x="444" y="351"/>
         </customView>
