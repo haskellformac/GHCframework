@@ -119,11 +119,14 @@ public final class CodeStorageDelegate: NSObject {
       // Set the background colour and re-apply highlighting on the associated text view.
     for layoutManager in textStorage.layoutManagers {
       if let codeView = layoutManager.firstTextView as? CodeView {
+
         codeView.backgroundColor              = theme.background
         codeView.textColor                    = theme.foreground
         codeView.insertionPointColor          = theme.cursor
         codeView.selectedTextAttributes       = [NSBackgroundColorAttributeName: theme.selection]
         codeView.textGutterView?.needsDisplay = true
+        if let layer = codeView.layer { layer.backgroundColor = theme.background.CGColor }
+
         if highlightingTokeniser != nil { codeView.highlight() }
       }
     }
