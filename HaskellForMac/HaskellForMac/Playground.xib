@@ -11,6 +11,7 @@
                 <outlet property="codeTextView" destination="toI-hQ-Z6s" id="nVy-F0-S7a"/>
                 <outlet property="consoleSplitView" destination="gGM-gj-rBy" id="9zu-cz-0f0"/>
                 <outlet property="evalProgressIndicator" destination="839-xM-bad" id="9Oh-76-Jr2"/>
+                <outlet property="infoBoxBottomHLine" destination="fP6-Nn-CIo" id="Krg-ct-Elj"/>
                 <outlet property="resultScrollView" destination="KXj-yv-v49" id="uVy-47-WlW"/>
                 <outlet property="resultTableView" destination="aoG-xy-tdn" id="Dzc-RG-ti7"/>
                 <outlet property="splitView" destination="04R-W1-2a8" id="3us-wl-atD"/>
@@ -29,7 +30,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="515" height="21"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="fP6-Nn-CIo">
+                            <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="fP6-Nn-CIo" customClass="StyledBox" customModule="Haskell" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="-2" width="515" height="4"/>
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -50,7 +51,7 @@
                         <constraint firstItem="fP6-Nn-CIo" firstAttribute="top" secondItem="839-xM-bad" secondAttribute="bottom" constant="2" id="kf1-xb-fU9"/>
                         <constraint firstAttribute="bottom" secondItem="fP6-Nn-CIo" secondAttribute="bottom" id="oyh-js-zFp"/>
                     </constraints>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="borderColor" name="textColor" catalog="System" colorSpace="catalog"/>
                     <color key="fillColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                 </box>
                 <splitView autosaveName="PlaygroundConsoleSplitView" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="gGM-gj-rBy" userLabel="Styled Split View — Console" customClass="StyledSplitView" customModule="Haskell" customModuleProvider="target">

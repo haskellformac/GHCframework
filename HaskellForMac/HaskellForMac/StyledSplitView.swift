@@ -26,7 +26,7 @@ class StyledSplitView: NSSplitView {
   // MARK: Customise the divider colour
 
   @IBInspectable
-  var customDividerColor: NSColor = NSColor.redColor()
+  var customDividerColor: NSColor = NSColor.gridColor()
 
   override var dividerColor: NSColor {
     get {
