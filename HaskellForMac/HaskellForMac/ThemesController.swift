@@ -187,8 +187,12 @@ class ThemesController: NSController {
     if let themeIndex = find(themeNames, initialThemeName) { currentThemeIndexes = NSIndexSet(index: themeIndex) }
 
       // Tokenise the sample code by running a temporary Haskell session.
-    let handler: DiagnosticsHandler = { unusedArg in return }
-    let haskellSession     = HaskellSession(diagnosticsHandler: handler, interactiveWorkingDirectory: "/tmp")
+    let handler:   DiagnosticsHandler    = { unusedArg in return }
+    let forwarder: OutputStreamForwarder = { unusedArg in return }
+    let haskellSession     = HaskellSession(diagnosticsHandler: handler,
+                                            interactiveWorkingDirectory: "/tmp",
+                                            stdoutForwarder: forwarder,
+                                            stderrForwarder: forwarder)
     let tokens             = haskellSession.tokeniseHaskell(sampleCode, file: "PreferencesSampleCode", line: 1, column: 1)
     let highlightingTokens = map(tokens){ HighlightingToken(ghcToken: $0) }
 

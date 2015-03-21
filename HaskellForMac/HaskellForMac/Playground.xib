@@ -10,8 +10,8 @@
                 <outlet property="codeScrollView" destination="S1j-8p-2Xi" id="kWm-pA-7tg"/>
                 <outlet property="codeTextView" destination="toI-hQ-Z6s" id="nVy-F0-S7a"/>
                 <outlet property="consoleSplitView" destination="gGM-gj-rBy" id="9zu-cz-0f0"/>
+                <outlet property="consoleTextView" destination="UOJ-ag-3VN" id="Ng1-zw-tbh"/>
                 <outlet property="evalProgressIndicator" destination="839-xM-bad" id="9Oh-76-Jr2"/>
-                <outlet property="infoBoxBottomHLine" destination="fP6-Nn-CIo" id="Krg-ct-Elj"/>
                 <outlet property="resultScrollView" destination="KXj-yv-v49" id="uVy-47-WlW"/>
                 <outlet property="resultTableView" destination="aoG-xy-tdn" id="Dzc-RG-ti7"/>
                 <outlet property="splitView" destination="04R-W1-2a8" id="3us-wl-atD"/>

@@ -262,7 +262,7 @@ final class ContextController : NSObject {
       editor.moduleLoading()
 
         // Invalidate playground issues and results as well.
-      playground.invalidatePlayground()
+      if alsoLoadPlayground { playground.invalidatePlayground() }
 
       // Load the module.
       if let item = self.item {

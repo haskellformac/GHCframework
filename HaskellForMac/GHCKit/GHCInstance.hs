@@ -95,7 +95,8 @@ ghcInstance = return
 objc_marshaller 'ghcInstance 'ghcInstance
 
 -- Create a new GHC session that reports diagnostics through the provided object using the method 
--- 'reportWithSeverity:filename:line:column:lines:endColumn:message:'.
+-- 'reportWithSeverity:filename:line:column:lines:endColumn:message:' and forwards stdout and stderr
+-- through 'forwardStdout:' and 'forwardStderr:'. (The callsbacks may happen on arbitrary threads.)
 --
 -- The file path (third argument) is the working directory for interactive Haskell execution.
 --
@@ -108,10 +109,14 @@ startWithHandlerObject handlerObject logLevel cwd
            [cexp| [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Contents/Frameworks"] |])
     ; when (logLevel > 0) $
         $(objc ['ghcBundlePath :> ''String] $ void [cexp| NSLog(@"bundle frameworks path: %@", ghcBundlePath) |])
-    ; start ghcBundlePath (reportDiagnostics handlerObject) logLevel logString cwd
+    ; start ghcBundlePath (reportDiagnostics handlerObject) forwardStdout forwardStderr logLevel logString cwd
     }
   where
-    logString = \str -> $(objc ['str :> ''String] $ void [cexp| NSLog(@"%@", str) |])
+    forwardStdout str = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
+                         [cexp| [handlerObject forwardStdout:str] |])
+    forwardStderr str = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
+                         [cexp| [handlerObject forwardStderr:str] |])
+    logString     str = $(objc ['str :> ''String] $ void [cexp| NSLog(@"%@", str) |])
 
 reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
 reportDiagnostics handlerObject severity srcSpan msg
@@ -406,12 +411,18 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
                                   typename NSUInteger   endColumn,
                                   typename NSString    *msg);
 
+typedef void(^OutputStreamForwarder)(typename NSString *text);
+
 @interface GHCInstance : NSObject
 
 /// Initialise a new GHC instance.
 ///
+/// The diagnostics handler and stream forwarders may be invoked on arbitrary threads.
+///
 - (instancetype)initWithDiagnosticsHandler:(DiagnosticsHandler)handler
-               interactiveWorkingDirectory:(typename NSString *)workingDirectory;
+               interactiveWorkingDirectory:(typename NSString *)workingDirectory
+                           stdoutForwarder:(OutputStreamForwarder)stdoutForwarder
+                           stderrForwarder:(OutputStreamForwarder)stderrForwarder;
 
 /// Restart this GHC instance, interrupting any currently execution operation.
 ///
@@ -456,6 +467,14 @@ typedef void(^DiagnosticsHandler)(typename GHCSeverity  severity,
                  endColumn:(typename NSUInteger)endColumn
                    message:(typename NSString *)msg;
 
+// User code stdout stream forwarder.
+//
+- (void)forwardStdout:(typename NSString *)text;
+
+// User code stderr stream forwarder.
+//
+- (void)forwardStderr:(typename NSString *)text;
+
 @end
 |]
 
@@ -474,6 +493,10 @@ objc_implementation [Typed 'startWithHandlerObject, Typed 'restart, Typed 'stop,
 
 // The handler to process diagnostic messages arriving from GHC.
 @property (strong) typename DiagnosticsHandler diagnosticsHandler;
+
+// The handler to process stdout and stderr streams originating from evaluated user code.
+@property (strong) typename OutputStreamForwarder stdoutForwarder;
+@property (strong) typename OutputStreamForwarder stderrForwarder;
 
 // GHC log level from defaults.
 @property typename NSInteger logLevel;
@@ -496,11 +519,13 @@ void GHCInstance_initialise(void);
 
 - (instancetype)init
 {
-  return [self initWithDiagnosticsHandler:nil interactiveWorkingDirectory:nil];
+  return [self initWithDiagnosticsHandler:nil interactiveWorkingDirectory:nil stdoutForwarder:nil stderrForwarder:nil];
 }
 
 - (instancetype)initWithDiagnosticsHandler:(typename DiagnosticsHandler)handler 
-              interactiveWorkingDirectory:(typename NSString *)workingDirectory
+               interactiveWorkingDirectory:(typename NSString *)workingDirectory
+                           stdoutForwarder:(typename OutputStreamForwarder)stdoutForwarder
+                           stderrForwarder:(typename OutputStreamForwarder)stderrForwarder
 {
   self = [super init];
   if (self) {
@@ -509,7 +534,9 @@ void GHCInstance_initialise(void);
     if (_logLevel)
       NSLog(@"GHC instance start");
     self.interpreterSession = startWithHandlerObject(self, _logLevel, workingDirectory);
-    self.diagnosticsHandler  = handler;
+    self.diagnosticsHandler = handler;
+    self.stdoutForwarder    = stdoutForwarder;
+    self.stderrForwarder    = stderrForwarder;
     
   }
   return self;
@@ -567,6 +594,16 @@ void GHCInstance_initialise(void);
                    message:(typename NSString *)msg
 {
   self.diagnosticsHandler(severity, fname, line, column, lines, endColumn, msg);
+}
+
+- (void)forwardStdout:(typename NSString *)text
+{
+  self.stdoutForwarder(text);
+}
+
+- (void)forwardStderr:(typename NSString *)text
+{
+  self.stderrForwarder(text);
 }
 
 @end

@@ -32,6 +32,7 @@ class PlaygroundController: NSViewController {
   @IBOutlet private      var codeTextView:          CodeView!
   @IBOutlet private weak var resultTableView:       NSTableView!
   @IBOutlet private weak var evalProgressIndicator: NSProgressIndicator!
+  @IBOutlet private      var consoleTextView:       NSTextView!
 
   /// The playground model managed by this controller.
   ///
@@ -41,7 +42,11 @@ class PlaygroundController: NSViewController {
   ///
   private let contextChanges: Changes<ContextChange>
 
-  /// Trigger for playground execution.
+  /// Trigger suggesting playground execution — i.e., there is outstanding evaluation work.
+  ///
+  private let shouldExecuteTriggers: Triggers = Triggers()
+
+  /// Trigger effecting playground execution — i.e., playground should execute *and* the context is valid/permits execution.
   ///
   private var executionTriggers: Triggers!
 
@@ -101,7 +106,9 @@ class PlaygroundController: NSViewController {
 
       // Launch a GHC session for this playground.
     haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler),
-                                    interactiveWorkingDirectory: cwd)
+                                    interactiveWorkingDirectory: cwd,
+                                    stdoutForwarder: processStdout,
+                                    stderrForwarder: processStderr)
   }
 
   required init?(coder: NSCoder) {
@@ -109,7 +116,9 @@ class PlaygroundController: NSViewController {
     self.projectViewModelPlayground = ProjectViewModelPlayground(identifier: "", model: HFMProjectViewModel())!
     self.contextChanges             = Changes<ContextChange>()
     haskellSession = HaskellSession(diagnosticsHandler: {severity, filename, line, column, lines, endColumn, message in },
-                                    interactiveWorkingDirectory: nil)
+                                    interactiveWorkingDirectory: nil,
+                                    stdoutForwarder: { _msg in },
+                                    stderrForwarder: { _msg in })
     super.init(coder: coder)
   }
 
@@ -180,10 +189,19 @@ class PlaygroundController: NSViewController {
 
       codeStorageDelegate  = CodeStorageDelegate(textStorage: textStorage)
       textStorage.delegate = codeStorageDelegate
-      executionTriggers = merge(codeStorageDelegate.loadTriggers, contextChanges)
+
+        // We `announce` on `shouldReloadTriggers` instead of using `codeStorageDelegate.loadTriggers` directly as
+        // playground invalidation and setting commands pending *must* happen before triggering the actual reloading.
+      codeStorageDelegate.loadTriggers.asyncObserveWithContext(self){ controller in { _ in    // on the main queue!
+        controller.invalidatePlayground()
+        controller.commands.setAllCommandsPending()
+        controller.shouldExecuteTriggers.announce(())
+        NSLog("should execute")
+        } }
+      executionTriggers = merge(shouldExecuteTriggers, contextChanges)
                           >- { transduce($0, .InvalidContext, validity) }
                           >- { trigger($0){ $0 == .ValidContext } }
-      executionTriggers.asyncObserveWithContext(self, observer: curry{ controller, _ in     // on the main queue!
+      executionTriggers.asyncObserveWithContext(self, observer: curry{ controller, _ in       // on the main queue!
                                                                          controller.executePendingCommands() })
     }
 
@@ -207,8 +225,8 @@ class PlaygroundController: NSViewController {
     codeTextView.string = projectViewModelPlayground.string
     codeTextView.enableHighlighting(tokeniseHaskell(kPlaygroundSource))
     ThemesController.sharedThemesController().reportThemeInformation(self,
-      fontChangeNotification: curry{ obj, font in return },
-      themeChangeNotification: curry{ $0.setResultTableViewBackgroundAndDividerColour($1) })
+      fontChangeNotification: curry{ $0.setConsoleFont($1) },
+      themeChangeNotification: curry{ $0.setResultTableAndConsoleTheme($1) })
 
       // Set up playground commands tracking. This needs to happen after setting the initial code view contents, so that
       // the initial command parsing has access to the initial playground contents.
@@ -243,8 +261,10 @@ class PlaygroundController: NSViewController {
       let success = self.haskellSession.loadModuleFromString(moduleText, file: file, importPaths: importPaths)
       handler(success)
 
-      self.commands.setAllCommandsPending()
-      if alsoLoadPlayground && success { self.codeStorageDelegate.loadTriggers.announce(()) }    // Execute right away!
+      if alsoLoadPlayground {
+        self.commands.setAllCommandsPending()
+        if success { self.shouldExecuteTriggers.announce(()) }          // Execute right away!
+      }
     }
   }
 
@@ -294,6 +314,29 @@ class PlaygroundController: NSViewController {
 
 
   // MARK: -
+  // MARK: Processing I/O streams
+
+  /// Process a asynchronously delivered text to stdout.
+  ///
+  /// NB: May be invoked from any thread.
+  ///
+  private func processStdout(text: String!) -> Void {
+    dispatch_async(dispatch_get_main_queue()){
+      consoleTextView?.textStorage?.appendAttributedString(NSAttributedString(string: text))
+    }
+  }
+
+  /// Process a asynchronously delivered text to stderr.
+  ///
+  /// NB: May be invoked from any thread.
+  ///
+  private func processStderr(text: String!) -> Void {
+    dispatch_async(dispatch_get_main_queue()){
+      consoleTextView?.textStorage?.appendAttributedString(NSAttributedString(string: text))
+    }
+  }
+
+  // MARK: -
   // MARK: Playground execution
 
   /// Invalidate all errors and results (as the context or commands changed).
@@ -325,7 +368,7 @@ class PlaygroundController: NSViewController {
     if let command = commands.nextPendingCommand() {              // There are commands that need to be executed...
 
         // Announce that the playground gets loaded and set the progress indicator spinning.
-      codeStorageDelegate.status.value = .LastLoading(NSDate())
+      codeStorageDelegate.status.value = .LastLoading(NSDate())     // This prevents repeated re-loading requests
       evalProgressIndicator.startAnimation(self)
 
         // Run the command.
@@ -340,7 +383,7 @@ class PlaygroundController: NSViewController {
             if self.commands.markAsCompleted(command) {
               self.reportResultAtIndex(command.index, result: evalResult, withTypes: evalTypes)
             }
-            self.codeStorageDelegate.loadTriggers.announce(())
+            self.shouldExecuteTriggers.announce(())
 
           } else {
 
@@ -407,12 +450,24 @@ class PlaygroundController: NSViewController {
 
 extension PlaygroundController {
 
-  func setResultTableViewBackgroundAndDividerColour(theme: Theme) {
-    resultTableView.backgroundColor         = gutterColour(theme)
+  func setConsoleFont(font: NSFont) { consoleTextView.font = font }
+
+  func setResultTableAndConsoleTheme(theme: Theme) {
+
+      // Theme split view divider
     splitView.customDividerColor            = dividerColour(theme)
     splitView.needsDisplay                  = true      // ...to redraw the divider
+
+      // Theme result table
+    resultTableView.backgroundColor         = gutterColour(theme)
     resultScrollView.layer?.backgroundColor = gutterColour(theme).CGColor
     resultTableView.reloadData()
+
+      // Theme console
+    consoleTextView.backgroundColor        = theme.background
+    consoleTextView.textColor              = theme.foreground
+    consoleTextView.insertionPointColor    = theme.cursor
+    consoleTextView.selectedTextAttributes = [NSBackgroundColorAttributeName: theme.selection]
   }
 
   func tokeniseHaskell(file: String) -> HighlightingTokeniser {

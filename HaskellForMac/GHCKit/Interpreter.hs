@@ -1,4 +1,5 @@
-{-# LANGUAGE ScopedTypeVariables, RecordWildCards, DeriveDataTypeable, StandaloneDeriving, TupleSections #-}
+{-# LANGUAGE ScopedTypeVariables, RecordWildCards, DeriveDataTypeable, StandaloneDeriving, TupleSections, MagicHash #-}
+{-# LANGUAGE MagicHash, UnboxedTuples #-}
 
 -- |
 -- Module    : Interpreter
@@ -15,29 +16,31 @@ module Interpreter (
 ) where
 
   -- standard libraries
-import Prelude                      hiding (catch)
+import Prelude                         hiding (catch)
 import Control.Applicative
 import Control.Concurrent
 import Control.Concurrent.STM
-import Control.Exception            (SomeException, evaluate)
+import Control.Exception               (SomeException, evaluate)
 import Control.Monad
-import qualified Data.ByteString    as BS
-import Data.Dynamic                 hiding (typeOf)
+import qualified Data.ByteString.Char8 as BS
+import Data.Dynamic                    hiding (typeOf)
 import Data.Either
 import Data.List
 import Data.Maybe
 import Data.Time
 import Data.Typeable
-import Foreign                      hiding (void)
+import Foreign                         hiding (void)
 import System.CPUTime  -- FIXME: replace use with functions from Data.Time
 import System.Directory
 import System.FilePath
 import System.IO
-import System.Posix.IO              as Posix
-import Unsafe.Coerce                (unsafeCoerce)
+import System.Posix.IO                 as Posix
+import Unsafe.Coerce                   (unsafeCoerce)
 
   -- GHC libraries
+import GHC.Exts               (Ptr(..))
 import GHC.IO.Handle
+import GHC.Prim
 
   -- GHC
 import qualified Bag          as GHC
@@ -89,21 +92,25 @@ type GHCTask = Maybe ( UTCTime        -- time the task was issued
                      , GHC.Ghc ()     -- task action
                      )
 
+type IOStreamHandles = (Ptr (), Ptr (), Ptr ())  -- Pointers to closures of stdin/stdout/stderr handles for the interpreter
+
 -- |Abstract handle of an interpreter session.
 --
 data Session = Session 
-               { inlet         :: MVar GHCTask                  -- inlet to submit tasks to the interpreter thread
-               , workerTid     :: ThreadId                      -- thread id of the GHC worker thread
-               , logLevel      :: Int                           -- log level
-               , logString     :: String -> IO ()               -- log function
-               , sessionDflags :: GHC.DynFlags                  -- dflags as determined at session start
+               { inlet           :: MVar GHCTask                  -- inlet to submit tasks to the interpreter thread
+               , workerTid       :: ThreadId                      -- thread id of the GHC worker thread
+               , forwardStdout   :: String -> IO ()               -- Forward stdout to session stream (async)
+               , forwardStderr   :: String -> IO ()               -- Forward stderr to session stream (async)
+               , ioStreamHandles :: IOStreamHandles               -- Pointers to interpreter stream handles
+               , logLevel        :: Int                           -- log level
+               , logString       :: String -> IO ()               -- log function
+               , sessionDflags   :: GHC.DynFlags                  -- dflags as determined at session start
                }
 
 -- |Possible results of executing an interpreter action. 
 --
 data Result r = Result r        -- ^Success or dynamic error, including error message as a string.
               | Error           -- ^Static error: error information is delivered asynchonously.
-
 
 -- Exception that signals to the GHC worker thread that all tasks originating before the given time should be discarded.
 --
@@ -117,13 +124,17 @@ isFlushTasks = isJust . (GHC.fromException :: SomeException -> Maybe FlushTasks)
 
 -- |Start a new interpreter session given a handler for the diagnostic messages arising in this session.
 --
+-- The diagnostics reporter as well as stdout and stderr stream forwarders may be invoked on an arbitrary thread.
+--
 start :: FilePath                                           -- ^GHC.framework location (to locate the package database).
       -> (GHC.Severity -> GHC.SrcSpan -> String -> IO ())   -- ^Callback to report diagnostics.
+      -> (String -> IO ())                                  -- ^Forward string to session stdout stream
+      -> (String -> IO ())                                  -- ^Forward string to session stderr stream
       -> Int                                                -- ^Log level == GHC verbosity (0 == no logging)
-      -> (String -> IO ())
+      -> (String -> IO ())                                  -- ^Log given string to ASL
       -> Maybe FilePath                                     -- ^Working directory for interactive Haskell statement execution.
       -> IO Session
-start ghcBundlePath diagnosticHandler logLevel logString cwd
+start ghcBundlePath diagnosticHandler stdoutReporter stderrReporter logLevel logString cwd
   = do
     { setNumCapabilities 2
     ; numCaps <- getNumCapabilities
@@ -141,7 +152,8 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
     
     startSession inlet resultMV
       = GHC.gmask $ \restore -> do
-        { start <- GHC.liftIO $ getCPUTime
+        { tid   <- GHC.liftIO $ myThreadId
+        ; start <- GHC.liftIO $ getCPUTime
         
             -- Initialise the session by reading the package database
         ; dflags     <- GHC.getSessionDynFlags
@@ -159,22 +171,22 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
                                                  `GHC.xopt_set`   GHC.Opt_ExtendedDefaultRules        -- extra options for..
                                                  `GHC.xopt_unset` GHC.Opt_MonomorphismRestriction     -- interactive evaluation
                                                  -- `GHC.gopt_unset` GHC.Opt_GhciSandbox  -- currently ignored in `runStmt` anyway
-        ; sessionDFlags <- GHC.getSessionDynFlags
-        ; tid <- GHC.liftIO $ myThreadId
-        ; let session = Session inlet tid logLevel logString sessionDFlags
-        ; logMsg session $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
 
-            -- Load 'ghckit-support' and...
+            -- Load 'ghckit-support' (and initialise linker).
         ; GHC.load GHC.LoadAllTargets
         -- ; unless (???successfully loaded???) $
         --     error "PANIC: could not initialise 'ghckit-support'"
 
-        -- FIXME: We would like to do this before loading all targets, but then module loading requests that come in during
-        --        initialisation interrupt initialisation (because load contains interruptable operations, but masking without
-        --        interrupts seesm risky, too...)
-        ; GHC.liftIO $ putMVar resultMV session    -- send caller home as quickly as possible
+            -- Grab handles to control buffering of standard I/O streams (depends on linker being initialised).
+        ; iostreamPtrs <- GHC.liftIO $ interpreterIOStreamHandles
+          
+            -- Send caller home by returning our session handle (we do this at the earliest possible moment).
+        ; sessionDFlags <- GHC.getSessionDynFlags
+        ; let session = Session inlet tid stdoutReporter stderrReporter iostreamPtrs logLevel logString sessionDFlags
+        ; GHC.liftIO $ putMVar resultMV session
+        ; logMsg session $ "Session packages: " ++ GHC.showSDoc dflags (GHC.pprQuotedList packageIds)
 
-            -- ...initialise the interactive print channel
+            -- Initialise the interactive print channel
         ; interceptor <- GHC.parseImportDecl "import PrintInterceptor"
         ; GHC.setContext [GHC.IIDecl interceptor]
         ; [printInterceptor] <- GHC.parseName "PrintInterceptor.interactivePrintInterceptor"
@@ -190,14 +202,6 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
         ; GHC.modifySession $ \hsc ->
             let ic = GHC.hsc_IC hsc in hsc { GHC.hsc_IC = ic { GHC.ic_cwd = cwd } }
             
-        ;   -- Initialise stdout/stdin/stderr redirection
-        ; GHC.liftIO $ GHC.initDynLinker dflags
-    -- FIXME: we should replicate GhciMonad.initInterpBuffering and then also flush buffers etc
-        -- ; mb_stdin_ptr  <- ObjLink.lookupSymbol "base_GHCziIOziHandleziFD_stdin_closure"
-        ; mb_stdout_ptr <- GHC.liftIO $ GHC.lookupSymbol "base_GHCziIOziHandleziFD_stdout_closure"
-        -- ; mb_stderr_ptr <- ObjLink.lookupSymbol "base_GHCziIOziHandleziFD_stderr_closure"
-        ; GHC.liftIO $ interceptReadHandle mb_stdout_ptr
-
         ; logTiming session start "GHC session initialisation"
 
         ; runSession session restore
@@ -207,26 +211,6 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
     logAction dflags severity srcSpan style msg
       = diagnosticHandler severity srcSpan (GHC.renderWithStyle dflags msg style)
       
-    interceptReadHandle Nothing    = logString "Failed to obtain read handle" >> return ()
-    interceptReadHandle (Just hdl)
-      = do
-        { (readFd, writeFd) <- Posix.createPipe
-        -- ; let writeHandle = Posix.fdToHandle readFd -- mkHandleFromFD writeFd 
-        -- ; hDuplicateTo writeHandle stdout
-        ; Posix.dupTo writeFd Posix.stdOutput
-        ; readHandle <- GHC.liftIO $ Posix.fdToHandle readFd
-        ; void $ forkIO $ reader readHandle
-        }
-      where
-        reader hdl
-          = do
-            { line <- BS.hGetLine hdl
-            ; logString ("STDOUT: " ++ show line)
-            ; reader hdl
-            }
-            -- FIXME: kill this thread eventually
-                
-        
       -- Execute tasks, while asynchronous exceptions are masked. Selectively allow asynchronous exceptions while
       -- waiting for tasks and while execution tasks. If a `FlushTasks` exception at these times, all pending tasks
       -- issued before the flush tasks timestamp are discarded. (Pending = those in the inlet without waiting.)
@@ -258,8 +242,8 @@ start ghcBundlePath diagnosticHandler logLevel logString cwd
                                          cancelTask                      >> flush inlet until
                   | otherwise         -> GHC.liftIO $ putMVar inlet task >> return ()
             }
-            -- FIXME: this has a *race*: if inlet gets filled before we putMVar the contents back, we deadlock
-            --        we need to return any task that shouldn't be flushed for immediate processing
+            -- FIXME: This has a *race*: if inlet gets filled before we putMVar the contents back, we deadlock.
+            --        We need to return any task that shouldn't be flushed for immediate processing.
 
 -- Restart the current interpreter session. Any current operation will be interrupted and all current state will be lost.
 --
@@ -355,6 +339,7 @@ eval session source line stmt
     runNodeEval conversionName ty_str
       = do
         { logMsg session ("evaluating SpriteKit with " ++ conversionName)
+        ; GHC.liftIO $ installIOStreamForwarders (forwardStdout session, forwardStderr session) (ioStreamHandles session)
         ; start <- GHC.liftIO $ getCPUTime
         
             -- result is a SpriteKit node => get a reference to that node instead of pretty printing
@@ -365,6 +350,7 @@ eval session source line stmt
                       GHC.liftIO $
                         GHC.try $ 
                           (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
+        ; GHC.liftIO $ removeIOStreamForwarders (ioStreamHandles session)
         ; logTiming session start "evaluate node"
 
         -- ; GHC.setContext iis
@@ -380,10 +366,12 @@ eval session source line stmt
                                        Nothing     -> handleError e >> return Error
                                        Just ty_str -> return $ Result (Right "«cannot show values of this type»", [ty_str])) $ do
         { logMsg session "evaluating general statement"
+        ; GHC.liftIO $ installIOStreamForwarders (forwardStdout session, forwardStderr session) (ioStreamHandles session)
         ; start <- GHC.liftIO $ getCPUTime
  
             -- GHCi-style command execution
         ; runResult <- runStmt session source line stmt
+        ; GHC.liftIO $ removeIOStreamForwarders (ioStreamHandles session)
         ; logTiming session start "evaluate general statement"
         ; case runResult of
             GHC.RunOk names       -> do
@@ -528,8 +516,8 @@ load session importPaths target
             -- Save the working directory for Haskell evaluation.
         ; cwd <- GHC.withSession $ return . GHC.ic_cwd . GHC.hsc_IC
         
-            -- Revert CAFs from previous evaluations
-        ; GHC.liftIO $ rts_revertCAFs
+            -- Revert CAFs from previous evaluations (and switch buffering off again after reverting the handle CAFs)
+        ; GHC.liftIO $ rts_revertCAFs >> turnOffBuffering (ioStreamHandles session)
         
             -- Set the search paths
         ; modifyDynFlags $ \dflags -> dflags { GHC.importPaths = importPaths }
@@ -568,6 +556,10 @@ load session importPaths target
         }
       }
 
+
+-- Asynchronous information coming back from GHC
+-- ---------------------------------------------
+
 -- Inject the error messages contained in the given 'SourceError' exception into the asynchronous diagnostics stream.
 -- 
 handleError :: GHC.GhcMonad m => GHC.SourceError -> m ()
@@ -584,9 +576,129 @@ handleError e
         doc     = GHC.errMsgShortDoc errMsg GHC.$$ GHC.errMsgExtraInfo errMsg
         unqual  = GHC.errMsgContext errMsg
 
+-- Channel reporting evaluation results
+--
 chanRef :: IORef (TChan String)
 {-# NOINLINE chanRef #-}
 chanRef = unsafePerformIO $ newIORef (error "Interpreter.chanRef not yet initialised")
+
+type IOStreamForwarders = (String -> IO (), String -> IO ())   -- stdout & stderr
+  
+-- Currently active iostream forwarders
+--
+iostreamForwarderRef :: IORef (Maybe IOStreamForwarders)
+{-# NOINLINE iostreamForwarderRef #-}
+iostreamForwarderRef 
+  = unsafePerformIO $ do
+    { interceptIOStreams
+    ; newIORef Nothing
+    }
+
+-- Install a set of I/O stream forwarders to use from now on.
+--
+installIOStreamForwarders :: IOStreamForwarders -> IOStreamHandles -> IO ()
+installIOStreamForwarders forwarders ioStreamHandles
+  = do
+    { flushInterpBuffers ioStreamHandles
+    ; atomicWriteIORef iostreamForwarderRef $ Just forwarders
+    }
+
+-- Do not forward the I/O streams anymore until new forwarders have been installed.
+--
+removeIOStreamForwarders :: IOStreamHandles -> IO ()
+removeIOStreamForwarders ioStreamHandles
+  = do
+    { flushInterpBuffers ioStreamHandles
+    ; atomicWriteIORef iostreamForwarderRef Nothing
+    }
+
+-- Launch threads intercepting the I/O streams. These threads will keep running until the GHC runtime shuts down.
+--
+-- GHC instances can access those streams by putting forwarding functions into 'iostreamForwarderRef'.
+--
+-- NB: Threads launching is initiated by 'iostreamForwarderRef', while the launched threads also refer to
+--     'iostreamForwarderRef'. This is a benign cyclic dependency as the evaluation of 'iostreamForwarderRef'
+--     blackholes its thunk, thus suspending the launched threads if they try to access 'iostreamForwarderRef'
+--     before initialisation is complete.
+--
+interceptIOStreams :: IO ()
+interceptIOStreams
+  = do
+    { (stdoutSource, stdoutSink) <- interceptOutput Posix.stdOutput
+    ; (stderrSource, stderrSink) <- interceptOutput Posix.stdError
+    ; void $ forkIO $ reportOutputStream stdoutSource stdoutSink fst
+    ; void $ forkIO $ reportOutputStream stderrSource stderrSink snd
+    }
+  where
+    interceptOutput originalFd
+      = do
+        { (readPipeFd, writePipeFd) <- Posix.createPipe
+        ; dupedFd <- Posix.dup originalFd
+        ; Posix.dupTo writePipeFd originalFd
+        ; sourceHdl <- Posix.fdToHandle readPipeFd
+        ; sinkHdl   <- Posix.fdToHandle dupedFd
+        ; return (sourceHdl, sinkHdl)
+        }
+
+    reportOutputStream sourceHdl sinkHdl selectForwarder        
+      = do
+        { bytes <- BS.hGetSome sourceHdl blockSize                           -- report any data as soon as it is available
+        ; forwarders <- readIORef iostreamForwarderRef
+        ; case forwarders of
+            Nothing         -> return ()                                     -- no forwarding active
+            Just forwarders -> selectForwarder forwarders (BS.unpack bytes)  -- forward stream
+        ; BS.hPutStr sinkHdl bytes
+        ; reportOutputStream sourceHdl sinkHdl selectForwarder
+        }
+      where
+        blockSize = 1024
+
+-- Grab the standard I/O stream handles of the library context used by the interpreter (which is distinct from our own).
+--
+interpreterIOStreamHandles :: IO IOStreamHandles
+interpreterIOStreamHandles
+  = do
+    {   -- This is adapted from GHCi:
+
+        -- HACK! If we happen to get into an infinite loop (eg the user
+        -- types 'let x=x in x' at the prompt), then the thread will block
+        -- on a blackhole, and become unreachable during GC.  The GC will
+        -- detect that it is unreachable and send it the NonTermination
+        -- exception.  However, since the thread is unreachable, everything
+        -- it refers to might be finalized, including the standard Handles.
+        -- This sounds like a bug, but we don't have a good solution right
+        -- now.
+    ; _ <- newStablePtr stdin
+    ; _ <- newStablePtr stdout
+    ; _ <- newStablePtr stderr
+
+    ;   -- Get the handles of the standard I/O streams.
+    ; mb_stdin_ptr  <- GHC.lookupSymbol "base_GHCziIOziHandleziFD_stdin_closure"
+    ; mb_stdout_ptr <- GHC.lookupSymbol "base_GHCziIOziHandleziFD_stdout_closure"
+    ; mb_stderr_ptr <- GHC.lookupSymbol "base_GHCziIOziHandleziFD_stderr_closure"
+    ; ioStreamHandles <- case (mb_stdin_ptr, mb_stdout_ptr, mb_stderr_ptr) of
+        (Just stdin_ptr, Just stdout_ptr, Just stderr_ptr) -> return (stdin_ptr, stdout_ptr, stderr_ptr)
+        _                                                  -> error "interpreter: cannot get the I/O stream closure pointers"
+
+        -- Turn off buffering for the interpreter
+    ; turnOffBuffering ioStreamHandles
+    ; return ioStreamHandles
+    }
+
+-- Flush the interpreter output streams.
+--
+flushInterpBuffers :: IOStreamHandles -> IO ()
+flushInterpBuffers (_stdin_ptr, stdout_ptr, stderr_ptr)
+  = mapM_ (\stream_ptr -> toHandle stream_ptr >>= hFlush) [stdout_ptr, stderr_ptr]
+
+-- Turn buffering off for all standard I/O streams.
+--
+turnOffBuffering :: IOStreamHandles -> IO ()
+turnOffBuffering (_stdin_ptr, stdout_ptr, stderr_ptr)
+  = mapM_ (\stream_ptr -> do { hdl <- toHandle stream_ptr; hSetBuffering hdl NoBuffering }) [stdout_ptr, stderr_ptr]
+
+toHandle :: Ptr () -> IO Handle
+toHandle (Ptr addr) = case addrToAny# addr of (# hval #) -> return $ unsafeCoerce# hval
 
 
 -- Utitlity functions

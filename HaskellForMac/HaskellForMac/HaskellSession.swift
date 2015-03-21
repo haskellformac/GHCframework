@@ -37,8 +37,8 @@ public func ==(lhs: Token, rhs: Token) -> Bool {
   return lhs.kind == rhs.kind && lhs.span == rhs.span
 }
 
-public typealias DiagnosticsHandler = GHCKit.DiagnosticsHandler
-
+public typealias DiagnosticsHandler    = GHCKit.DiagnosticsHandler
+public typealias OutputStreamForwarder = GHCKit.OutputStreamForwarder
 
 public class HaskellSession {
 
@@ -47,9 +47,15 @@ public class HaskellSession {
   //MARK: -
   //MARK: Initialisation and deinitialisation
 
-  public init(diagnosticsHandler: DiagnosticsHandler, interactiveWorkingDirectory cwd: String?) {
+  public init(diagnosticsHandler: DiagnosticsHandler,
+              interactiveWorkingDirectory cwd: String?,
+              stdoutForwarder: OutputStreamForwarder,
+              stderrForwarder: OutputStreamForwarder) {
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-      self.ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler, interactiveWorkingDirectory: cwd)
+      self.ghcInstance = GHCInstance(diagnosticsHandler: diagnosticsHandler,
+                                     interactiveWorkingDirectory: cwd,
+                                     stdoutForwarder: stdoutForwarder,
+                                     stderrForwarder: stderrForwarder)
     }
   }
 

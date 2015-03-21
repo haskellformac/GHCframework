@@ -51,7 +51,7 @@ public final class CodeStorageDelegate: NSObject {
   ///
   private let ticks: TimerChanges = TimerChanges(every: 0.5, tolerance: 0.15)
 
-  /// Triggers that indicate to check/load the code.
+  /// Triggers that indicate that the code must be checked/loaded due to changes to its contents.
   ///
   let loadTriggers: Triggers
 
