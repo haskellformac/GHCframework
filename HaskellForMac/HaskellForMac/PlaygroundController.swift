@@ -194,9 +194,8 @@ class PlaygroundController: NSViewController {
         // playground invalidation and setting commands pending *must* happen before triggering the actual reloading.
       codeStorageDelegate.loadTriggers.asyncObserveWithContext(self){ controller in { _ in    // on the main queue!
         controller.invalidatePlayground()
-        controller.commands.setAllCommandsPending()
+        controller.commands.scanCodeStorage()             // also sets commands pending
         controller.shouldExecuteTriggers.announce(())
-        NSLog("should execute")
         } }
       executionTriggers = merge(shouldExecuteTriggers, contextChanges)
                           >- { transduce($0, .InvalidContext, validity) }
@@ -507,9 +506,8 @@ extension PlaygroundController: NSTextDelegate {
 
   func textDidChange(notification: NSNotification) {
 
+      // Save the changed text to the view model.
     projectViewModelPlayground.string = codeTextView.string ?? ""
-    invalidatePlayground()
-    commands.scanCodeStorage()
   }
 }
 
