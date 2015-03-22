@@ -751,18 +751,25 @@ withVirtualCWD m
 
     ; let set_cwd 
             = do
-              { dir <- GHC.liftIO $ getCurrentDirectory
+              { dir <- GHC.gtry $                           -- careful: the current directory might disappear
+                         GHC.liftIO $ getCurrentDirectory                       
               ; case GHC.ic_cwd ic of
-                  Just dir -> GHC.liftIO $ setCurrentDirectory dir
+                  Just cwd -> GHC.liftIO $ setCurrentDirectory cwd
                   Nothing  -> return ()
-              ; return dir
+              ; return (dir :: Either SomeException FilePath)
               }
           reset_cwd orig_dir 
             = do
-              { virt_dir <- GHC.liftIO $ getCurrentDirectory
+              { virt_dir <- GHC.gtry $                           -- careful: the current directory might disappear
+                              GHC.liftIO $ getCurrentDirectory                            
+              ; let maybe_virt_dir = case virt_dir :: Either SomeException FilePath of
+                                       Left _    -> Nothing
+                                       Right dir -> Just dir
               ; hsc <- GHC.getSession
-              ; GHC.setSession $ hsc { GHC.hsc_IC = (GHC.hsc_IC hsc) { GHC.ic_cwd = Just virt_dir } }
-              ; GHC.liftIO $ setCurrentDirectory orig_dir
+              ; GHC.setSession $ hsc { GHC.hsc_IC = (GHC.hsc_IC hsc) { GHC.ic_cwd = maybe_virt_dir } }
+              ; case orig_dir of
+                  Right dir -> GHC.liftIO $ setCurrentDirectory dir
+                  Left  _   -> return ()
               }
 
     ; GHC.gbracket set_cwd reset_cwd $ const m
