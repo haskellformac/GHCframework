@@ -384,6 +384,7 @@ class PlaygroundController: NSViewController {
         }
       }
     }
+    consoleTextView.scrollRangeToVisible(consoleTextView.selectedRange)
   }
 
   /// If a console header is available, print it in a normalised manner.
