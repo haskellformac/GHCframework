@@ -112,11 +112,16 @@ startWithHandlerObject handlerObject logLevel cwd
     ; start ghcBundlePath (reportDiagnostics handlerObject) forwardStdout forwardStderr logLevel logString cwd
     }
   where
-    forwardStdout str = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
-                         [cexp| [handlerObject forwardStdout:str] |])
-    forwardStderr str = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
-                         [cexp| [handlerObject forwardStderr:str] |])
-    logString     str = $(objc ['str :> ''String] $ void [cexp| NSLog(@"%@", str) |])
+    forwardStdout str    = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
+                             [cexp| [handlerObject forwardStdout:str] |])
+    forwardStderr str 
+      | isASLMessage str = return ()
+      | otherwise        = $(objc ['handlerObject :> Class ''GHCInstance, 'str :> ''String] $ void 
+                             [cexp| [handlerObject forwardStderr:str] |])
+    logString     str    = $(objc ['str :> ''String] $ void [cexp| NSLog(@"%@", str) |])
+    
+    isASLMessage (_:_:_:_:'-':_:_:'-':_:_:' ':_:_:':':_:_:':':_:_:'.':_:_:_:' ':'H':'a':'s':'k':'e':'l':'l':'[':_) = True
+    isASLMessage _                                                                                                = False
 
 reportDiagnostics :: GHCInstance -> GHC.Severity -> GHC.SrcSpan -> String -> IO ()
 reportDiagnostics handlerObject severity srcSpan msg

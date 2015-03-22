@@ -58,6 +58,10 @@ class PlaygroundController: NSViewController {
   ///
   private var commands: PlaygroundCommands!
 
+  /// Next header for console output if any.
+  ///
+  private var consoleHeader: String?
+
   /// We need to keep the result storage alive as the data source reference from `NSTableView` is weak.
   ///
   private var resultStorage: PlaygroundResultStorage!
@@ -321,7 +325,7 @@ class PlaygroundController: NSViewController {
   ///
   private func processStdout(text: String!) -> Void {
     dispatch_async(dispatch_get_main_queue()){
-      consoleTextView?.textStorage?.appendAttributedString(NSAttributedString(string: text))
+      self.emitConsoleText(text, attributes: self.consoleAttributes(.Stdout))
     }
   }
 
@@ -331,7 +335,118 @@ class PlaygroundController: NSViewController {
   ///
   private func processStderr(text: String!) -> Void {
     dispatch_async(dispatch_get_main_queue()){
-      consoleTextView?.textStorage?.appendAttributedString(NSAttributedString(string: text))
+      self.emitConsoleText(text, attributes: self.consoleAttributes(.Stderr))
+    }
+  }
+
+  /// Emit console text with the given attributes, while interpreting backspace characters as backwards delete.
+  ///
+  private func emitConsoleText(text: String, attributes: [NSObject: AnyObject]) {
+
+    self.maybeEmitConsoleHeader()
+
+    let backspace = NSCharacterSet(range: NSRange(location: NSBackspaceCharacter, length: 1))
+
+    if let textStorage = self.consoleTextView?.textStorage {
+
+      var remainingText = text
+      while !remainingText.isEmpty {
+
+        if let backspaceIndex = remainingText.rangeOfCharacterFromSet(backspace)?.startIndex {
+
+            // Emit the text up to the backspace.
+          let emitRange = remainingText.startIndex ..< backspaceIndex
+          if !emitRange.isEmpty  {
+
+            let text     = remainingText[emitRange]
+            let attrText = NSAttributedString(string: text, attributes: attributes)
+            textStorage.appendAttributedString(attrText)
+
+          }
+
+            // Delete backspaced console character.
+          if textStorage.length > 0 {
+            textStorage.deleteCharactersInRange(NSRange(location: textStorage.length - 1, length: 1))
+          }
+
+            // Determine the remaining text.
+          remainingText = remainingText[advance(backspaceIndex, 1)..<remainingText.endIndex]
+
+        } else {
+
+          let attrText = NSAttributedString(string: remainingText, attributes: attributes)
+          textStorage.appendAttributedString(attrText)
+          remainingText = ""
+
+        }
+      }
+    }
+  }
+
+  /// If a console header is available, print it in a normalised manner.
+  ///
+  private func maybeEmitConsoleHeader() {
+
+    func normalise(s: String) -> String {                // We want exactly one trailing newline.
+      if s.isEmpty || s[advance(s.endIndex, -1)..<s.endIndex] != "\n" { return s + "\n" }
+
+      var newEnd: String.Index = s.endIndex
+      while newEnd >= advance(s.startIndex, 2) {
+        let idx = advance(newEnd, -2)
+        if s[idx...idx] != "\n" { break }
+        newEnd--
+      }
+      return s[s.startIndex..<newEnd]
+    }
+
+    if let text = consoleHeader {
+      if let console = consoleTextView {
+
+          // Only emit it once!
+        consoleHeader = nil
+
+          // Normalise trailing newlines.
+        let normalisedText = normalise(text)
+
+          // Start a newline if we are not already at the start of a line.
+        if let string = console.string {
+
+          let insertionPoint = console.selectedRange()
+          if insertionPoint.location != (string as NSString).lineRangeForRange(insertionPoint).location {
+            console.textStorage?.appendAttributedString(NSAttributedString(string: "\n"))
+          }
+        }
+
+          // Emit the header text.
+        let attrText = NSAttributedString(string: normalisedText, attributes: self.consoleAttributes(.Header))
+        console.textStorage?.appendAttributedString(attrText)
+      }
+    }
+  }
+
+  enum ConsoleTextElement { case Header, Stdout, Stderr }
+
+  /// Text attributes for console text.
+  ///
+  private func consoleAttributes(kind: ConsoleTextElement) -> [NSObject: AnyObject] {
+    let theme            = ThemesController.sharedThemesController().currentTheme
+    let codeFontName     = ThemesController.sharedThemesController().currentFontName
+    let codeFontSize     = ThemesController.sharedThemesController().currentFontSize
+
+    let reducedFontSize  = CGFloat(floorf(Float(codeFontSize) * 0.85))            // Same as the results font size
+    let consoleFont      = NSFont(name: codeFontName, size: reducedFontSize)
+                           ?? NSFont(name: "Menlo-Regular", size:13)!
+
+    switch kind {
+    case .Header: return [ NSFontAttributeName:            consoleFont
+                         , NSForegroundColorAttributeName: theme.comment.foreground
+                         ]
+    case .Stdout: return [ NSFontAttributeName:            consoleFont
+                         , NSForegroundColorAttributeName: theme.foreground
+                         ]
+    case .Stderr: return [ NSFontAttributeName:            consoleFont
+                         , NSForegroundColorAttributeName: disabledForegroundColour(theme)
+                         ]
     }
   }
 
@@ -340,11 +455,13 @@ class PlaygroundController: NSViewController {
 
   /// Invalidate all errors and results (as the context or commands changed).
   ///
+  /// FIXME: this doesn't work well yet for an `index` > 0 — see Issue #315
   func invalidatePlayground(fromCommandIndex index: Int = 0) {
     let gutter = codeScrollView.verticalRulerView as? TextGutterView
 
     gutter?.updateIssues(.IssuesPending)
     resultStorage.invalidateFrom(index)
+    consoleTextView.string = ""
 
        // Discard all old issues.
     issues = IssuesForFile(file: issues.file, issues: [:])
@@ -369,6 +486,9 @@ class PlaygroundController: NSViewController {
         // Announce that the playground gets loaded and set the progress indicator spinning.
       codeStorageDelegate.status.value = .LastLoading(NSDate())     // This prevents repeated re-loading requests
       evalProgressIndicator.startAnimation(self)
+
+        // Set the header text for the console in case this command uses the standard I/O streams.
+      consoleHeader = command.text
 
         // Run the command.
       asyncExecuteCommand(command){ (evalResultOrNil, evalTypes) in
@@ -449,7 +569,9 @@ class PlaygroundController: NSViewController {
 
 extension PlaygroundController {
 
-  func setConsoleFont(font: NSFont) { consoleTextView.font = font }
+  func setConsoleFont(font: NSFont) {
+    if let font = consoleAttributes(.Stdout)[NSFontAttributeName] as? NSFont { consoleTextView.font = font }
+  }
 
   func setResultTableAndConsoleTheme(theme: Theme) {
 

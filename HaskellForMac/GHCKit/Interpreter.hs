@@ -253,7 +253,12 @@ restart session = killThread (workerTid session)
 -- Terminate an interpreter session.
 --
 stop :: Session -> IO ()
-stop session = restart session >> putMVar (inlet session) Nothing
+stop session
+  = do
+    { restart session
+    ; putMVar (inlet session) Nothing
+    ; removeIOStreamForwarders (ioStreamHandles session)
+    }
 
 -- Tokenise a string of Haskell code.
 --
@@ -339,7 +344,6 @@ eval session source line stmt
     runNodeEval conversionName ty_str
       = do
         { logMsg session ("evaluating SpriteKit with " ++ conversionName)
-        ; GHC.liftIO $ installIOStreamForwarders (forwardStdout session, forwardStderr session) (ioStreamHandles session)
         ; start <- GHC.liftIO $ getCPUTime
         
             -- result is a SpriteKit node => get a reference to that node instead of pretty printing
@@ -350,7 +354,6 @@ eval session source line stmt
                       GHC.liftIO $
                         GHC.try $ 
                           (unsafeCoerce hval :: IO (ForeignPtr ()))     -- force evaluation => contain effects & catch exceptions
-        ; GHC.liftIO $ removeIOStreamForwarders (ioStreamHandles session)
         ; logTiming session start "evaluate node"
 
         -- ; GHC.setContext iis
@@ -366,12 +369,10 @@ eval session source line stmt
                                        Nothing     -> handleError e >> return Error
                                        Just ty_str -> return $ Result (Right "«cannot show values of this type»", [ty_str])) $ do
         { logMsg session "evaluating general statement"
-        ; GHC.liftIO $ installIOStreamForwarders (forwardStdout session, forwardStderr session) (ioStreamHandles session)
         ; start <- GHC.liftIO $ getCPUTime
  
             -- GHCi-style command execution
         ; runResult <- runStmt session source line stmt
-        ; GHC.liftIO $ removeIOStreamForwarders (ioStreamHandles session)
         ; logTiming session start "evaluate general statement"
         ; case runResult of
             GHC.RunOk names       -> do
@@ -410,7 +411,6 @@ runStmt session source line stmt
           hsc_env' = hsc_env{ GHC.hsc_IC = ic{ GHC.ic_dflags = idflags' } }
 
         -- Compile to value (IO [HValue]), don't run
-    ; logMsg session "runStmt: compiling"
     ; r <- GHC.liftIO $ GHC.hscStmtWithLocation hsc_env' stmt source line
 
     ; case r of
@@ -419,12 +419,10 @@ runStmt session source line stmt
         Just (tyThings, hval, fix_env) -> do
           { updateFixityEnv fix_env
              -- FIXME: do we want to sandbox this as in GHCi's 'InteractiveEval.sandboxIO'?
-          ; logMsg session "runStmt: running"
           ; status <- withVirtualCWD $
                         GHC.liftIO $ 
                           GHC.Complete <$>
                             GHC.try hval
-          ; logMsg session "runStmt: done"
           ; case status of
               GHC.Break {}               -> return $ GHC.RunException breakExc   -- Hit a breakpoint — this shouldn't happen!
               GHC.Complete (Left e)      -> return $ GHC.RunException e          -- Completed with an exception — report it!
@@ -509,6 +507,12 @@ load session importPaths target
     {   -- Flush any executing and pending tasks before submitting the module loading task.
     ; timestamp <- getCurrentTime
     ; throwTo (workerTid session) (FlushTasks timestamp)
+
+        -- Configure I/O stream forwarding for the session we are executing in.
+        -- NB: Switching per statement execution doesn't make sense as the forwarder threads may not be scheduled on a
+        --     timely basis. As there may be multiple sessions, we need to set the forwarders once per load (and not just
+        --     at session start).
+    ; GHC.liftIO $ installIOStreamForwarders (forwardStdout session, forwardStderr session) (ioStreamHandles session)
     ; tryGhcAction (inlet session) (\_msg -> Result ()) $
         GHC.handleSourceError (\e -> handleError e >> return Error) $ do
         { start <- GHC.liftIO $ getCPUTime
@@ -598,19 +602,13 @@ iostreamForwarderRef
 --
 installIOStreamForwarders :: IOStreamForwarders -> IOStreamHandles -> IO ()
 installIOStreamForwarders forwarders ioStreamHandles
-  = do
-    { flushInterpBuffers ioStreamHandles
-    ; atomicWriteIORef iostreamForwarderRef $ Just forwarders
-    }
+  = flushInterpBuffers ioStreamHandles >> atomicWriteIORef iostreamForwarderRef (Just forwarders)
 
 -- Do not forward the I/O streams anymore until new forwarders have been installed.
 --
 removeIOStreamForwarders :: IOStreamHandles -> IO ()
 removeIOStreamForwarders ioStreamHandles
-  = do
-    { flushInterpBuffers ioStreamHandles
-    ; atomicWriteIORef iostreamForwarderRef Nothing
-    }
+  = flushInterpBuffers ioStreamHandles >> atomicWriteIORef iostreamForwarderRef Nothing
 
 -- Launch threads intercepting the I/O streams. These threads will keep running until the GHC runtime shuts down.
 --
@@ -640,7 +638,7 @@ interceptIOStreams
         ; return (sourceHdl, sinkHdl)
         }
 
-    reportOutputStream sourceHdl sinkHdl selectForwarder        
+    reportOutputStream sourceHdl sinkHdl selectForwarder
       = do
         { bytes <- BS.hGetSome sourceHdl blockSize                           -- report any data as soon as it is available
         ; forwarders <- readIORef iostreamForwarderRef
@@ -689,7 +687,8 @@ interpreterIOStreamHandles
 --
 flushInterpBuffers :: IOStreamHandles -> IO ()
 flushInterpBuffers (_stdin_ptr, stdout_ptr, stderr_ptr)
-  = mapM_ (\stream_ptr -> toHandle stream_ptr >>= hFlush) [stdout_ptr, stderr_ptr]
+  = mapM_ (\stream_ptr -> toHandle stream_ptr >>= hFlush) [stdout_ptr, stderr_ptr] >> yield  
+      -- Yield to give the stream forwarder threads an opportunity to run
 
 -- Turn buffering off for all standard I/O streams.
 --
