@@ -237,7 +237,10 @@ class PlaygroundController: NSViewController {
       commands = PlaygroundCommands(codeStorage: textStorage)
     }
 
-    evalProgressIndicator.usesThreadedAnimation =  true
+      // No layer backing for the SKViews on Mavericks.
+    resultScrollView.wantsLayer = isOperatingSystemAtLeastVersion10_10()
+
+    evalProgressIndicator.usesThreadedAnimation = true
   }
 
 

@@ -62,7 +62,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="S1j-8p-2Xi" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="280" height="0.0"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="280.5" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <clipView key="contentView" id="1du-R7-F35">
                                         <rect key="frame" x="1" y="1" width="223" height="133"/>
@@ -72,10 +72,10 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="223" height="133"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <size key="minSize" width="280" height="0.0"/>
+                                                <size key="minSize" width="280.5" height="0.0"/>
                                                 <size key="maxSize" width="507" height="10000000"/>
                                                 <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <size key="minSize" width="280" height="0.0"/>
+                                                <size key="minSize" width="280.5" height="0.0"/>
                                                 <size key="maxSize" width="507" height="10000000"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="-2" id="zC8-M7-Nf9"/>
@@ -93,7 +93,7 @@
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
-                                <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
+                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="KXj-yv-v49" customClass="SynchroScrollView" customModule="Haskell" customModuleProvider="target">
                                     <rect key="frame" x="281.5" y="0.0" width="257.5" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <clipView key="contentView" id="DhE-t6-jl6">
