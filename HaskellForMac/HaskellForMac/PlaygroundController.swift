@@ -32,6 +32,7 @@ class PlaygroundController: NSViewController {
   @IBOutlet private      var codeTextView:          CodeView!
   @IBOutlet private weak var resultTableView:       NSTableView!
   @IBOutlet private weak var evalProgressIndicator: NSProgressIndicator!
+  @IBOutlet private weak var consoleScrollView:     NSScrollView!
   @IBOutlet private      var consoleTextView:       NSTextView!
 
   /// The playground model managed by this controller.
@@ -346,6 +347,7 @@ class PlaygroundController: NSViewController {
   ///
   private func emitConsoleText(text: String, attributes: [NSObject: AnyObject]) {
 
+    consoleScrollView.hidden = false
     self.maybeEmitConsoleHeader()
 
     let backspace = NSCharacterSet(range: NSRange(location: NSBackspaceCharacter, length: 1))
@@ -610,11 +612,11 @@ extension PlaygroundController {
 
 extension PlaygroundController: NSSplitViewDelegate {
 
-//  func splitView(splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool
-//  {
-//      // Only the results table can be collapsed.
-//    return subview === self.resultTableView
-//  }
+  func splitView(splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool
+  {
+      // Only the console can be collapsed.
+    return subview === self.consoleScrollView
+  }
 
   func splitView(splitView: NSSplitView, constrainSplitPosition proposedPosition: CGFloat, ofSubviewAt dividerIndex: Int)
     -> CGFloat

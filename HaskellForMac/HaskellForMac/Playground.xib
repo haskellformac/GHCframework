@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="codeScrollView" destination="S1j-8p-2Xi" id="kWm-pA-7tg"/>
                 <outlet property="codeTextView" destination="toI-hQ-Z6s" id="nVy-F0-S7a"/>
+                <outlet property="consoleScrollView" destination="D9m-gF-6DJ" id="jwf-DG-njp"/>
                 <outlet property="consoleSplitView" destination="gGM-gj-rBy" id="9zu-cz-0f0"/>
                 <outlet property="consoleTextView" destination="UOJ-ag-3VN" id="Ng1-zw-tbh"/>
                 <outlet property="evalProgressIndicator" destination="839-xM-bad" id="9Oh-76-Jr2"/>
