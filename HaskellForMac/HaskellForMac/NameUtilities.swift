@@ -62,3 +62,18 @@ extension Swift {
     return isValidModuleName(name)
   }
 }
+
+/// Checks whether the given string is a valid filename.
+///
+func isValidFileName(name: String) -> Bool {
+  let illegalCharacters        = NSCharacterSet(charactersInString: "/")
+  let containsIllegalCharacter = name.rangeOfCharacterFromSet(illegalCharacters) != nil
+
+  return !name.isEmpty && !containsIllegalCharacter
+}
+
+extension Swift {
+  class func swift_isValidFileName(name: String) -> Bool {
+    return isValidFileName(name)
+  }
+}

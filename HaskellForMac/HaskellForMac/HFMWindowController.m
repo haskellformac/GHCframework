@@ -807,9 +807,8 @@ constrainSplitPosition:(CGFloat)proposedPosition
   NSString *extension = [string pathExtension];
   NSString *name      = [string stringByDeletingPathExtension];
 
-    // FIXME: We need some constraints on the names of non-Haskell files. The same fix needs to be applied in `-controlTextDidEndEditing:`.
   if (item.isInDataCategory || item.isInExtraSourceCategory)
-      return YES;
+      return ([Swift swift_isValidFileName:name]);
 
   if (item.isFile)
     return ([Swift swift_isValidModuleName:name] && [extension isEqualToString:[HFMProjectViewModel haskellFileExtension]]);
