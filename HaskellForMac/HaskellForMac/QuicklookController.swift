@@ -21,16 +21,23 @@ class QuicklookController: NSViewController {
   ///
   private let viewModelItem: ProjectItem
 
+  /// The quicklook view that we are controlling.
+  ///
+  private var quicklookView: QLPreviewView!
 
-  //MARK: -
-  //MARK: Initialisation and deinitialisation
+
+  // MARK: -
+  // MARK: Initialisation and deinitialisation
 
   /// Initialise the view controller by loading its NIB file and also set the associated file URL.
   ///
   init?(nibName: String!, bundle: NSBundle!, projectViewModelItem: ProjectItem) {
-
     viewModelItem = projectViewModelItem
     super.init(nibName: nibName, bundle: bundle)
+  }
+
+  deinit {
+    quicklookView.close()
   }
 
   required init?(coder: NSCoder) {
@@ -40,14 +47,17 @@ class QuicklookController: NSViewController {
   }
   
   override func awakeFromNib() {
+
+      // Configure path control.
     if let path = viewModelItem.filePath { self.pathControl.URL = NSURL(string: path) }
-  }
 
-  override func viewDidLayout() {
-    let quicklookView = QLPreviewView(frame: contentView.bounds)
-    quicklookView.previewItem = viewModelItem
+      // Set up quicklook view.
+    quicklookView                       = QLPreviewView(frame: contentView.bounds)
+    quicklookView.previewItem           = viewModelItem
+    quicklookView.shouldCloseWithWindow = false
+    quicklookView.autoresizingMask = NSAutoresizingMaskOptions.ViewWidthSizable
+                                   | NSAutoresizingMaskOptions.ViewHeightSizable
+    quicklookView.translatesAutoresizingMaskIntoConstraints = true
     contentView.addSubview(quicklookView)
-    quicklookView.needsDisplay = true
-
   }
 }
