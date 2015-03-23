@@ -59,6 +59,11 @@ public class HaskellSession {
     }
   }
 
+  deinit {
+    if NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceDeinitLogLevel) > 0 {
+      NSLog("deinit HaskellSession")
+    }
+  }
 
   //MARK: -
   //MARK: Syntax support

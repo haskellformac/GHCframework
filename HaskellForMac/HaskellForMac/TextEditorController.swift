@@ -56,6 +56,12 @@ class TextEditorController: NSViewController {
     super.init(coder: coder)
   }
 
+  deinit {
+    if NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceDeinitLogLevel) > 0 {
+      NSLog("deinit TextEditorController for \"\(viewModelItem.identifier)\"")
+    }
+  }
+
   override func awakeFromNib() {
 
       // Set up for code editing (not prose).

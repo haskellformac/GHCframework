@@ -112,8 +112,8 @@ class PlaygroundController: NSViewController {
       // Launch a GHC session for this playground.
     haskellSession = HaskellSession(diagnosticsHandler: processIssue(diagnosticsHandler),
                                     interactiveWorkingDirectory: cwd,
-                                    stdoutForwarder: processStdout,
-                                    stderrForwarder: processStderr)
+                                    stdoutForwarder: { [unowned self] text in self.processStdout(text) },
+                                    stderrForwarder: { [unowned self] text in self.processStderr(text) })
   }
 
   required init?(coder: NSCoder) {
@@ -133,6 +133,10 @@ class PlaygroundController: NSViewController {
                                                         object: codeTextView)
     resultScrollView.stopSynchronising()
     codeScrollView.stopSynchronising()
+
+    if NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceDeinitLogLevel) > 0 {
+      NSLog("deinit PlaygroundController for \"\(projectViewModelPlayground.debugDescription)\"")
+    }
   }
 
   override func awakeFromNib() {
@@ -304,19 +308,19 @@ class PlaygroundController: NSViewController {
   ///
   private func processIssue(contextDiagnosticsHandler: Issue -> Void) -> DiagnosticsHandler {
     return {[weak self] severity, filename, line, column, lines, endColumn, message
-    in
-    let issue = Issue(severity: severity,
-                      filename: filename,
-                      line: line,
-                      column: column,
-                      lines: lines,
-                      endColumn: endColumn,
-                      message: message)
-    if filename == kPlaygroundSource {
-      self?.issues = addIssueForFile(issue, self!.issues)
-    } else {
-      contextDiagnosticsHandler(issue)
-    }}
+      in
+      let issue = Issue(severity: severity,
+                        filename: filename,
+                        line: line,
+                        column: column,
+                        lines: lines,
+                        endColumn: endColumn,
+                        message: message)
+      if filename == kPlaygroundSource {
+        self?.issues = addIssueForFile(issue, self!.issues)
+      } else {
+        contextDiagnosticsHandler(issue)
+      }}
   }
 
 
@@ -598,7 +602,7 @@ extension PlaygroundController {
   }
 
   func tokeniseHaskell(file: String) -> HighlightingTokeniser {
-    return { (line, column, text) in
+    return { [unowned self] (line, column, text) in
       map(self.haskellSession.tokeniseHaskell(text, file: file, line: line, column: column)){ token in
         HighlightingToken(ghcToken: token) }
     }

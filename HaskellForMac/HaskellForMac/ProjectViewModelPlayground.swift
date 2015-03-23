@@ -145,3 +145,11 @@ extension ProjectViewModelPlayground {
     }
   }
 }
+
+
+// MARK: -
+// MARK: Debugging
+
+extension ProjectViewModelPlayground {
+  override public var debugDescription: String { get { return theFileWrapper.preferredFilename } }
+}

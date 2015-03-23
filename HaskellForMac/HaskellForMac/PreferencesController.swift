@@ -56,6 +56,7 @@ class PreferencesController: NSWindowController {
                         , kPreferenceFontSize:           defaultFontSize
                         , kPreferenceEnableCloud:        false
                         , kPreferenceChangesLogLevel:    0
+                        , kPreferenceDeinitLogLevel:     0
                         , kPreferenceGHCLogLevel:        0
                         , kPreferenceSpriteKitLogLevel:  0
                         , kPreferenceCloudLogLevel:      0

@@ -101,6 +101,12 @@ final class ContextController : NSObject {
     contextChanges.asyncObserveWithContext(self, observer: { context in context.contextChange })
   }
 
+  deinit {
+    if NSUserDefaults.standardUserDefaults().integerForKey(kPreferenceDeinitLogLevel) > 0 {
+      NSLog("deinit ContextController for \"\(project.description)\"")
+    }
+  }
+
 
   // MARK: -
   // MARK: Change notification
@@ -175,7 +181,7 @@ final class ContextController : NSObject {
               if let playgroundController = PlaygroundController(nibName: kPlayground,
                                                                   bundle: nil,
                                               projectViewModelPlayground: viewModelPlayground,
-                                                      diagnosticsHandler: processIssue,
+                                                      diagnosticsHandler: { [unowned self] issue in self.processIssue(issue) },
                                              interactiveWorkingDirectory:
                                                project.fileURL!.path!.stringByAppendingPathComponent(item.viewModel?.dataDir ?? ""),
                                                           contextChanges: contextChanges)

@@ -20,8 +20,9 @@ let kPreferenceThemeName          = "ThemeName"
 let kPreferenceEnableCloud        = "EnableCloud"
 let kPreferenceUsername           = "Username"
 
-// Debug preferences
+  // Debug preferences
 let kPreferenceChangesLogLevel    = "ChangesLogLevel"         // Must match the key used by 'TacticalBase'.
+let kPreferenceDeinitLogLevel     = "DeinitLogLevel"
 let kPreferenceGHCLogLevel        = "GHCLogLevel"             // Must match the key used by 'GHCKit'.
 let kPreferenceSpriteKitLogLevel  = "SpriteKitLogLevel"
 let kPreferenceCloudLogLevel      = "CloudLogLevel"           // Must match the key used by 'CloudcelerateKit'.
@@ -37,6 +38,7 @@ extension Swift {
   class var swift_kPreferenceUsername:           String { get { return kPreferenceUsername } }
 
   class var swift_kPreferenceChangesLogLevel:    String { get { return kPreferenceChangesLogLevel } }
+  class var swift_kPreferenceDeinitLogLevel:     String { get { return kPreferenceDeinitLogLevel } }
   class var swift_kPreferenceGHCLogLevel:        String { get { return kPreferenceGHCLogLevel } }
   class var swift_kPreferenceSpriteKitLogLevel:  String { get { return kPreferenceSpriteKitLogLevel } }
   class var swift_kPreferenceCloudLogLevel:      String { get { return kPreferenceCloudLogLevel } }
