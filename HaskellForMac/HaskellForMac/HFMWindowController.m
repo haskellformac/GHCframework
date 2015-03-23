@@ -19,6 +19,7 @@ NSString *kOutlineViewButtonAction = @"NavigatorAction";
 
 // Views in 'ProjectWindow.xib'
 //
+@property (weak)   IBOutlet NSBox           *navigatorBox;
 @property (weak)   IBOutlet NSScrollView    *outlineScrollView;
 @property (weak)   IBOutlet NSOutlineView   *outlineView;
 @property (strong) IBOutlet NSMenu          *outlineViewAddMenu;
@@ -517,9 +518,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 {
 #pragma unused(sender)
 
-  [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:!self.outlineScrollView.hidden completionHandler:^{
+  [self.splitView animateSetSubview:self.navigatorBox toCollapsed:!self.navigatorBox.hidden completionHandler:^{
       // We cannot show the source view without the editor view.
-    if (!self.outlineScrollView.hidden && self.editorView.hidden) [self toggleEditorView:sender];
+    if (!self.navigatorBox.hidden && self.editorView.hidden) [self toggleEditorView:sender];
   }];
 }
 
@@ -539,7 +540,7 @@ NSString *const kCabalCellID = @"cabalCellID";
     [self.splitView animateSetSubview:self.editorView toCollapsed:!self.editorView.hidden completionHandler:^{
 
         // We cannot hide the editor view without hiding the source view.
-      if (self.editorView.hidden && !self.outlineScrollView.hidden) [self toggleNavigatorView:sender];
+      if (self.editorView.hidden && !self.navigatorBox.hidden) [self toggleNavigatorView:sender];
 
         // Make editor the first responder if presented; otherwise, the playground.
       if (!self.editorView.hidden && [self.editorViewController isKindOfClass:[TextEditorController class]])
@@ -580,9 +581,9 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (!self.playgroundView.hidden && self.editorView.hidden)
     [self.splitView animateSetSubview:self.editorView toCollapsed:NO completionHandler:nil];         // reveal editor
-  else if (!self.playgroundView.hidden && !self.editorView.hidden && self.outlineScrollView.hidden)
-    [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:NO completionHandler:nil];  // reveal navigator
-  else if (!self.playgroundView.hidden && !self.editorView.hidden && !self.outlineScrollView.hidden)
+  else if (!self.playgroundView.hidden && !self.editorView.hidden && self.navigatorBox.hidden)
+    [self.splitView animateSetSubview:self.navigatorBox toCollapsed:NO completionHandler:nil];  // reveal navigator
+  else if (!self.playgroundView.hidden && !self.editorView.hidden && !self.navigatorBox.hidden)
     [self.splitView animateSetSubview:self.playgroundView toCollapsed:YES completionHandler:nil];    // hide playground
 
     // Make editor the first responder if presented; otherwise, the playground.
@@ -598,8 +599,8 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (self.playgroundView.hidden)
     [self.splitView animateSetSubview:self.playgroundView toCollapsed:NO completionHandler:nil];     // reveal playground
-  else if (!self.playgroundView.hidden && !self.outlineScrollView.hidden)
-    [self.splitView animateSetSubview:self.outlineScrollView toCollapsed:YES completionHandler:nil]; // hide navigator
+  else if (!self.playgroundView.hidden && !self.navigatorBox.hidden)
+    [self.splitView animateSetSubview:self.navigatorBox toCollapsed:YES completionHandler:nil]; // hide navigator
   else if (!self.playgroundView.hidden && !self.editorView.hidden)
     [self.splitView animateSetSubview:self.editorView toCollapsed:YES completionHandler:nil];        // hide editor
 
@@ -622,7 +623,7 @@ NSString *const kCabalCellID = @"cabalCellID";
       [self.playgroundController makeCodeViewFirstResponder];
   }
   else if ([self.playgroundController isCodeViewFirstResponder]) {
-    if (!self.outlineScrollView.hidden)
+    if (!self.navigatorBox.hidden)
       [self.window makeFirstResponder:self.outlineView];
   }
   else if ([self.window.firstResponder isEqual:self.outlineView]) {
@@ -651,7 +652,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   if (action == @selector(toggleNavigatorView:)) {
 
-    menuItem.title = self.outlineScrollView.hidden ? @"Show Project Navigator" : @"Hide Project Navigator";
+    menuItem.title = self.navigatorBox.hidden ? @"Show Project Navigator" : @"Hide Project Navigator";
 
   } else if (action == @selector(toggleEditorView:)) {
 
@@ -714,7 +715,7 @@ NSString *const kCabalCellID = @"cabalCellID";
   } else if (action == @selector(toggleEditorView:)) {
 
     return [Swift swift_isOperatingSystemAtLeastVersion10_10]   // always avaliable on 10.10 and later
-           || self.outlineScrollView.hidden;
+           || self.navigatorBox.hidden;
 
   } else if (action == @selector(togglePlaygroundView:)) {
 
@@ -722,11 +723,11 @@ NSString *const kCabalCellID = @"cabalCellID";
 
   } else if (action == @selector(moveViewLeft:)) {
 
-    return self.outlineScrollView.hidden || self.editorView.hidden || !self.playgroundView.hidden;
+    return self.navigatorBox.hidden || self.editorView.hidden || !self.playgroundView.hidden;
     
   } else if (action == @selector(moveViewRight:)) {
 
-    return !self.outlineScrollView.hidden || !self.editorView.hidden || self.playgroundView.hidden;
+    return !self.navigatorBox.hidden || !self.editorView.hidden || self.playgroundView.hidden;
 
   } else if (action == @selector(newCloudAccount:)) {
 
@@ -767,7 +768,7 @@ NSString *const kCabalCellID = @"cabalCellID";
 #pragma unused(splitView)
 
     // The editor view can only be collapsed if the outline view is already collapsed.
-  return (subview != self.editorView || [self.splitView isSubviewCollapsed:self.outlineScrollView]) ? YES : NO;
+  return (subview != self.editorView || [self.splitView isSubviewCollapsed:self.navigatorBox]) ? YES : NO;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView
@@ -776,7 +777,7 @@ forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 {
 #pragma unused(splitView)
 
-  return (([subview isEqual:self.outlineScrollView] && dividerIndex == 0)
+  return (([subview isEqual:self.navigatorBox] && dividerIndex == 0)
           || ([subview isEqual:self.playgroundView] && dividerIndex == 1));
 }
 

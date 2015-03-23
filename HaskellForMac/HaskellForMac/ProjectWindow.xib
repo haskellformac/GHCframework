@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="HFMWindowController">
             <connections>
                 <outlet property="editorView" destination="hVH-bJ-KGO" id="n3r-3l-JC3"/>
+                <outlet property="navigatorBox" destination="c8F-AC-7Zk" id="JeW-iG-yrX"/>
                 <outlet property="noEditorLabel" destination="sSz-C3-ErB" id="WTR-XS-YXo"/>
                 <outlet property="outlineScrollView" destination="fiD-Li-Mgi" id="kgM-Qq-RTo"/>
                 <outlet property="outlineView" destination="xMX-Dm-h40" id="4eD-9D-bXB"/>
