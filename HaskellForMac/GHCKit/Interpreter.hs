@@ -139,7 +139,8 @@ start ghcBundlePath diagnosticHandler stdoutReporter stderrReporter logLevel log
     { setNumCapabilities 2
     ; numCaps <- getNumCapabilities
     ; when (logLevel > 0) $
-        logString $ "Starting interactive session (#capabilities = " ++ show numCaps ++ ")"
+        logString $ "Starting interactive session (#capabilities = " ++ show numCaps ++ 
+                    "; libdir = " ++ ghcBundlePath </> libdir ++ ")"
 
         -- Run GHC on a seperate OS thread. (Instead of using those that we get from GCD for the calls into Haskell.)
     ; inlet    <- newEmptyMVar

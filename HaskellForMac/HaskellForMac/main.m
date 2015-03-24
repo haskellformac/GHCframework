@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "GHC/GHC.h"
-void hs_init_with_rtsopts (int *argc, char **argv[]);
+  // void hs_init_with_rtsopts (int *argc, char **argv[]);
 
 
 void CloudcelerateKit_initialise(void);
@@ -18,8 +18,13 @@ int main(int argc, char *argv[])
 
     // Make sure GHC is properly relocated.
   NSString *relocateRelative = @"Contents/Frameworks/GHC.framework/Versions/Current/Executables/RelocateGHC";
-  NSString *relocate = [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:relocateRelative];
-  system([relocate cStringUsingEncoding:NSUTF8StringEncoding]);
+  NSString *relocate         = [[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:relocateRelative];
+  NSTask   *relocateTask     = [NSTask launchedTaskWithLaunchPath:relocate arguments: @[]];
+  [relocateTask waitUntilExit];
+  if ([relocateTask terminationStatus] != 0) {
+    NSLog(@"relocation of GHC failed");
+  }
+  relocateTask = nil;
 
     // Get the Haskell runtime going.
   dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

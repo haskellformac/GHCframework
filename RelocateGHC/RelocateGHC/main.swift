@@ -78,4 +78,9 @@ for package in packages {
 
   // Refresh the package db cache.
 let ghcPkgPath = location.stringByAppendingPathComponent(relativeBin).stringByAppendingPathComponent("ghc-pkg")
-system(ghcPkgPath + " recache")
+let ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath, arguments: ["recache"])
+ghcPkgTask.waitUntilExit()
+if ghcPkgTask.terminationStatus != 0 {
+  println("regenerating the binary package cache failed")
+  exit(1)
+}
