@@ -35,6 +35,13 @@
 			remoteGlobalIDString = E720D61719E14D7A008D8C8E;
 			remoteInfo = ToolWrapper;
 		};
+		E7C4FFBB1ADEA4C300E652AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E7E54FF6195D6CEE0019278B;
+			remoteInfo = GHCBuild;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,6 +65,7 @@
 		E791CF2319F8AEC900DECDC4 /* GHC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GHC.h; sourceTree = "<group>"; };
 		E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = RelocateGHC.xcodeproj; sourceTree = "<group>"; };
 		E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ToolWrapper.xcodeproj; sourceTree = "<group>"; };
+		E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = GHCBuild.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +86,7 @@
 				E791CF1F19F8AEC900DECDC4 /* Products */,
 				E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */,
 				E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */,
+				E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +128,14 @@
 			isa = PBXGroup;
 			children = (
 				E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E7C4FFB81ADEA4C300E652AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7C4FFBC1ADEA4C300E652AA /* GHCBuild.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,6 +200,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = E7C4FFB81ADEA4C300E652AA /* Products */;
+					ProjectRef = E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */;
+				},
+				{
 					ProductGroup = E7C4FF911ADE9B7C00E652AA /* Products */;
 					ProjectRef = E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */;
 				},
@@ -218,6 +239,13 @@
 			fileType = "compiled.mach-o.executable";
 			path = ToolWrapper;
 			remoteRef = E7C4FFA11ADE9E9B00E652AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7C4FFBC1ADEA4C300E652AA /* GHCBuild.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = GHCBuild.bundle;
+			remoteRef = E7C4FFBB1ADEA4C300E652AA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
