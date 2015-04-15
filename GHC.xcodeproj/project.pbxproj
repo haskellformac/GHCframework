@@ -7,10 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E73120CD1A156A4100E9535A /* StandardizePath in CopyFiles */ = {isa = PBXBuildFile; fileRef = E73120CC1A156A4100E9535A /* StandardizePath */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E791CF2419F8AEC900DECDC4 /* GHC.h in Headers */ = {isa = PBXBuildFile; fileRef = E791CF2319F8AEC900DECDC4 /* GHC.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E791CF4B19F9137000DECDC4 /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E791CF4A19F9137000DECDC4 /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF961ADE9B7C00E652AA /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF981ADE9B7C00E652AA /* StandardizePath */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FFA31ADE9FE800E652AA /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E7C4FF951ADE9B7C00E652AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E72F537B19C288DB002692E6;
+			remoteInfo = RelocateGHC;
+		};
+		E7C4FF971ADE9B7C00E652AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E73120C51A1566AA00E9535A;
+			remoteInfo = StandardizePath;
+		};
+		E7C4FFA11ADE9E9B00E652AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E720D61719E14D7A008D8C8E;
+			remoteInfo = ToolWrapper;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		E791CF4919F9135F00DECDC4 /* CopyFiles */ = {
@@ -19,19 +44,20 @@
 			dstPath = Executables;
 			dstSubfolderSpec = 6;
 			files = (
-				E791CF4B19F9137000DECDC4 /* RelocateGHC in CopyFiles */,
-				E73120CD1A156A4100E9535A /* StandardizePath in CopyFiles */,
+				E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in CopyFiles */,
+				E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in CopyFiles */,
+				E7C4FFA31ADE9FE800E652AA /* ToolWrapper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E73120CC1A156A4100E9535A /* StandardizePath */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = StandardizePath; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/StandardizePath"; sourceTree = "<absolute>"; };
 		E791CF1E19F8AEC900DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GHC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E791CF2219F8AEC900DECDC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E791CF2319F8AEC900DECDC4 /* GHC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GHC.h; sourceTree = "<group>"; };
-		E791CF4A19F9137000DECDC4 /* RelocateGHC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = RelocateGHC; path = "/Users/chak/Library/Developer/Xcode/DerivedData/HFMWorkspace-cxnfixjeewzbomdjvbkovnoqxnqv/Build/Products/Debug/RelocateGHC"; sourceTree = "<absolute>"; };
+		E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = RelocateGHC.xcodeproj; sourceTree = "<group>"; };
+		E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = ToolWrapper.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,10 +74,10 @@
 		E791CF1419F8AEC900DECDC4 = {
 			isa = PBXGroup;
 			children = (
-				E73120CC1A156A4100E9535A /* StandardizePath */,
-				E791CF4A19F9137000DECDC4 /* RelocateGHC */,
 				E791CF2019F8AEC900DECDC4 /* GHC */,
 				E791CF1F19F8AEC900DECDC4 /* Products */,
+				E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */,
+				E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +104,23 @@
 				E791CF2219F8AEC900DECDC4 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E7C4FF911ADE9B7C00E652AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7C4FF961ADE9B7C00E652AA /* RelocateGHC */,
+				E7C4FF981ADE9B7C00E652AA /* StandardizePath */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E7C4FF9E1ADE9E9B00E652AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,12 +181,46 @@
 			mainGroup = E791CF1419F8AEC900DECDC4;
 			productRefGroup = E791CF1F19F8AEC900DECDC4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E7C4FF911ADE9B7C00E652AA /* Products */;
+					ProjectRef = E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */;
+				},
+				{
+					ProductGroup = E7C4FF9E1ADE9E9B00E652AA /* Products */;
+					ProjectRef = E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E791CF1D19F8AEC900DECDC4 /* GHC */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E7C4FF961ADE9B7C00E652AA /* RelocateGHC */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = RelocateGHC;
+			remoteRef = E7C4FF951ADE9B7C00E652AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7C4FF981ADE9B7C00E652AA /* StandardizePath */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = StandardizePath;
+			remoteRef = E7C4FF971ADE9B7C00E652AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = ToolWrapper;
+			remoteRef = E7C4FFA11ADE9E9B00E652AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E791CF1C19F8AEC900DECDC4 /* Resources */ = {
