@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Manuel M T Chakravarty. All rights reserved.
 //
 //  Rewrite the launch scripts and package database configuration files to the current location of the 'GHC.framework'.
+//
+//  This script finds the 'GHC.framework' in one of two ways. Firstly, it checks whether the script is embedded in 
+//  the framework, and secondly, it checks whether the framework is in the current working directory.
 
 import Foundation
 
@@ -36,7 +39,11 @@ func replaceStringWithString(inFile: String, string oldString: String, withStrin
 
 // MARK: Main
 
-let location    = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..").stringByResolvingSymlinksInPath
+let bundleLocation = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..").stringByResolvingSymlinksInPath
+let location       = bundleLocation.hasSuffix("GHC.framework/Versions/A")
+                     ? bundleLocation
+                     : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/A")
+
 let relativeBin = "usr/bin"
 let relativeLib = "usr/lib/ghc-7.8.3"
 let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
