@@ -1,0 +1,4 @@
+[submodule "GHCBuild/ghc"]
+	path = GHCBuild/ghc
+	url = https://github.com/mchakravarty/ghc.git
+	branch = ghc-7.8
