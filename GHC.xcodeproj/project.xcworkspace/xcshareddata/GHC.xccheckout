@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>E9E750D0-6B32-4B8D-A9BC-59937023319D</string>
 	<key>IDESourceControlProjectName</key>
-	<string>GHC</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>650AF1C8CF37CEB8B95BE4B90CEC57AB9E485FAC</key>
 		<string>https://github.com/mchakravarty/GHCframework.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>GHC.xcodeproj</string>
+	<string>GHC.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>650AF1C8CF37CEB8B95BE4B90CEC57AB9E485FAC</key>

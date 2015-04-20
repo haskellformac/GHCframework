@@ -45,13 +45,13 @@ let location       = bundleLocation.hasSuffix("GHC.framework/Versions/A")
                      : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/A")
 
 let relativeBin = "usr/bin"
-let relativeLib = "usr/lib/ghc-7.8.3"
+let relativeLib = "usr/lib/ghc"
 let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
 let package_db  = location.stringByAppendingPathComponent(relativeLib).stringByAppendingPathComponent("package.conf.d")
 
 let ghcPath     = location.stringByAppendingPathComponent(relativeBin).stringByAppendingPathComponent("ghc")
 let ghcScript   = String(contentsOfFile: ghcPath)
-                  ?! ("RelocateGHC: fatal error: could not load GHC launch script")
+                  ?! ("RelocateGHC: fatal error: could not load GHC launch script at \(ghcPath)")
 
 let startOfLoc  = ghcScript.rangeOfString("topdir=\"")?.endIndex
                   ?! ("RelocateGHC: fatal error: could not locate 'topdir' definition")
@@ -74,7 +74,7 @@ for executable in
 }
 
 let packagesDir = defaultFileManager.contentsOfDirectoryAtPath(package_db, error: nil)
-  ?!  ("RelocateGHC: fatal error: could not read directory containing GHC package database")
+  ?!  ("RelocateGHC: fatal error: could not read directory containing GHC package database at \(package_db)")
 let packages    = (packagesDir as? [String])!.filter{ $0.hasSuffix("conf") }.map{ package_db.stringByAppendingPathComponent($0) }
   ?! ("RelocateGHC: fatal error: could not load GHC package database")
 
