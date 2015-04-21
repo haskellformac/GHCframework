@@ -143,6 +143,12 @@ BUILD_DOCBOOK_HTML = NO
 BUILD_DOCBOOK_PS   = NO
 BUILD_DOCBOOK_PDF  = NO
 
+# only dyn libs
+# FIXME: Doesn't work as compiling Setup.hs for cabal installs properly use dynamic linking.
+#   Might work if we use DYNAMIC BY DEFAULT, but that probably means GHC is linked dynamically, too,
+#   and that doesn't work with relocation at the moment.
+#GhcLibWays = dyn
+
 endif
 
 # -------- A Fast build with optimised libs using LLVM ------------------------
