@@ -171,6 +171,7 @@
 				E791CF1A19F8AEC900DECDC4 /* Frameworks */,
 				E791CF1B19F8AEC900DECDC4 /* Headers */,
 				E791CF1C19F8AEC900DECDC4 /* Resources */,
+				E78800011B15505300FB33BC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -269,6 +270,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		E78800011B15505300FB33BC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Unique build numbers calculated from Git commits http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode/\n\nbranch='master'\nbuildNumber=$(expr $(git rev-list $branch --count) - $(git rev-list HEAD..$branch --count))\necho \"Updating build number to $buildNumber using branch '$branch'.\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# The following command checks the source corresponding to a particular build number out\n#\n#   git checkout `git rev-list master | tail -n $1 | head -n 1`";
+			showEnvVarsInLog = 0;
+		};
 		E791CF4819F8CF0800DECDC4 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

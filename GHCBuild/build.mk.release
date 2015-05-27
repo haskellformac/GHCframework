@@ -75,7 +75,7 @@ BUILD_DOCBOOK_PS   = NO
 BUILD_DOCBOOK_PDF  = NO
 
 # Haddock build removed due to a bug in 7.6.3 — reenabled with 7.6.4
-HADDOCK_DOCS       = NO
+HADDOCK_DOCS       = YES
 
 
 ifeq "$(PlatformSupportsSharedLibs)" "YES"
