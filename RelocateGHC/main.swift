@@ -23,7 +23,7 @@ func ?!<A>(v: A?, msg: String) -> A {
   if let v = v {
     return v
   } else {
-    println(msg)
+    NSLog(msg)
     exit(1)
   }
 }
@@ -88,6 +88,6 @@ let ghcPkgPath = location.stringByAppendingPathComponent(relativeBin).stringByAp
 let ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath, arguments: ["recache"])
 ghcPkgTask.waitUntilExit()
 if ghcPkgTask.terminationStatus != 0 {
-  println("regenerating the binary package cache failed")
+  NSLog("regenerating the binary package cache failed")
   exit(1)
 }
