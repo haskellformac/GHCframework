@@ -95,7 +95,6 @@ println("Relocating from \(oldLocation) to \(location)")
 let defaultFileManager = NSFileManager.defaultManager()
 
 let appContainerPackageDBPath: String?
-println("arguments = \(Process.arguments)")
 if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
 
   appContainerPackageDBPath      = Process.arguments[2].stringByAppendingPathComponent("package.conf.d")
