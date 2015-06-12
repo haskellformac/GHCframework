@@ -55,9 +55,9 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
 // MARK: Determine target location
 
 let bundleLocation = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..").stringByResolvingSymlinksInPath
-let location       = bundleLocation.hasSuffix("GHC.framework/Versions/A")
+let location       = bundleLocation.hasSuffix("GHC.framework/Versions/Current")
                      ? bundleLocation
-                     : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/A")
+                     : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/Current")
 
 let relativeBin = "usr/bin"
 let relativeLib = "usr/lib/ghc"
