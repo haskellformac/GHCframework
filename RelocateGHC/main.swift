@@ -55,21 +55,21 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
 // MARK: Determine target location
 
 let bundleLocation = NSBundle.mainBundle().bundlePath.stringByAppendingPathComponent("..").stringByResolvingSymlinksInPath
-let location       = bundleLocation.hasSuffix("GHC.framework/Versions/Current")
+let location       = bundleLocation.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
                      ? bundleLocation
-                     : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/Current")
+                     : NSFileManager.defaultManager().currentDirectoryPath.stringByAppendingPathComponent("GHC.framework/Versions/A")
 
-let relativeBin = "usr/bin"
-let relativeLib = "usr/lib/ghc"
-let executables = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
-let packageDB    = location.stringByAppendingPathComponent(relativeLib).stringByAppendingPathComponent("package.conf.d")
+let relativeBin   = "usr/bin"
+let relativeLib   = "usr/lib/ghc"
+let executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
+let packageDBPath = location.stringByAppendingPathComponent(relativeLib).stringByAppendingPathComponent("package.conf.d")
 
-let rtsConfPath = packageDB.stringByAppendingPathComponent("builtin_rts.conf")
-let rtsConfData = String(contentsOfFile: rtsConfPath)
-                  ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
+let rtsConfPath   = packageDBPath.stringByAppendingPathComponent("builtin_rts.conf")
+let rtsConfData   = String(contentsOfFile: rtsConfPath)
+                    ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
-let oldLocation = libraryLocation(rtsConfData)
-                  ?! ("fatal error: could not extract library path from 'library-dirs' field")
+let oldLocation   = libraryLocation(rtsConfData)
+                    ?! ("fatal error: could not extract library path from 'library-dirs' field")
 
 /*
 let ghcPath     = location.stringByAppendingPathComponent(relativeBin).stringByAppendingPathComponent("ghc")
@@ -97,12 +97,38 @@ let defaultFileManager = NSFileManager.defaultManager()
 let appContainerPackageDBPath: String?
 if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
 
+    // We need to check both the location as well as the time stamp, as we may switch between different copies as well
+    // as update one to a newer version. NB: This is still not entirely safe, as we may overwrite one version with an
+    // older one — but that should only happen during testing (when we have to manually remove the app container DB).
   appContainerPackageDBPath      = Process.arguments[2].stringByAppendingPathComponent("package.conf.d")
   let appContainerRtsConfPath    = appContainerPackageDBPath!.stringByAppendingPathComponent("builtin_rts.conf")
-  if let appContainerRtsConfData = String(contentsOfFile: rtsConfPath),
-         appContainerLocation    = libraryLocation(appContainerRtsConfData) where appContainerLocation == location
+  if let appContainerRtsConfData = String(contentsOfFile: appContainerRtsConfPath),
+         appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
   {
-    exit(0)  // location in app-container package-db is up to date
+    if appContainerLocation == location {
+
+      let embeddedCachePath      = packageDBPath.stringByAppendingPathComponent("package.cache"),
+          embeddedCacheAttrs     = defaultFileManager.attributesOfItemAtPath(embeddedCachePath, error: nil),
+          appContainerCachePath  = appContainerPackageDBPath!.stringByAppendingPathComponent("package.cache"),
+          appContainerCacheAttrs = defaultFileManager.attributesOfItemAtPath(appContainerCachePath, error: nil)
+      if let embeddedCacheDate      = (embeddedCacheAttrs as NSDictionary?)?.fileModificationDate(),
+              appContainerCacheDate = (appContainerCacheAttrs as NSDictionary?)?.fileModificationDate()
+        where appContainerCacheDate.compare(embeddedCacheDate) == .OrderedDescending
+      {
+        exit(0)  // location and timestamp of app-container package-db are up to date
+      }
+    }
+
+      // Remove the out of date package database as a whole. (The new one may have different package sets, versions,
+      // or package IDs, in which case, droppings of the old may remain if we just write over the old DB.)
+    println("Removing old package DB in app container")
+    var error: NSError?
+    if let packageDBPath = appContainerPackageDBPath
+    where !defaultFileManager.removeItemAtPath(packageDBPath, error: &error)
+    {
+      NSLog("failed to remove existing file at package DB location in app container: %@", error!)
+      exit(1)
+    }
   }
   println("Updating package DB in app container")
 
@@ -122,8 +148,8 @@ if !sandboxed {
   }
 }
 
-let packagesDir = defaultFileManager.contentsOfDirectoryAtPath(packageDB, error: nil)
-                  ?!  ("fatal error: could not read directory containing GHC package database at \(packageDB)")
+let packagesDir = defaultFileManager.contentsOfDirectoryAtPath(packageDBPath, error: nil)
+                  ?!  ("fatal error: could not read directory containing GHC package database at \(packageDBPath)")
 let packages    = (packagesDir as? [String])!.filter{ $0.hasSuffix("conf") }
                   ?! ("fatal error: could not load GHC package database")
 
@@ -165,7 +191,7 @@ if let packageDBPath = appContainerPackageDBPath {
   // Rewrite the location in all package 'conf' files, writing to the app container in sandboxed mode.
 for package in packages {
 
-  let source = packageDB.stringByAppendingPathComponent(package),
+  let source = packageDBPath.stringByAppendingPathComponent(package),
       target = appContainerPackageDBPath?.stringByAppendingPathComponent(package)
   replaceInFile(source, string: oldLocation, withString: location, writingTo: target)
 
