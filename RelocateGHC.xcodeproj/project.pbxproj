@@ -36,6 +36,8 @@
 		E72F537B19C288DB002692E6 /* RelocateGHC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RelocateGHC; sourceTree = BUILT_PRODUCTS_DIR; };
 		E72F537E19C288DB002692E6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		E73120C51A1566AA00E9535A /* StandardizePath */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = StandardizePath; sourceTree = BUILT_PRODUCTS_DIR; };
+		E78F46191B5B61DD00FB6200 /* RelocateGHC.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RelocateGHC.entitlements; sourceTree = "<group>"; };
+		E78F461D1B5CA86600FB6200 /* StandardizePath.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = StandardizePath.entitlements; sourceTree = "<group>"; };
 		E7C4FF991ADE9DA400E652AA /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -60,6 +62,8 @@
 		E72F537219C288DB002692E6 = {
 			isa = PBXGroup;
 			children = (
+				E78F46191B5B61DD00FB6200 /* RelocateGHC.entitlements */,
+				E78F461D1B5CA86600FB6200 /* StandardizePath.entitlements */,
 				E72F537D19C288DB002692E6 /* RelocateGHC */,
 				E73120C61A1566AA00E9535A /* StandardizePath */,
 				E72F537C19C288DB002692E6 /* Products */,
@@ -261,6 +265,8 @@
 		E72F538319C288DB002692E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RelocateGHC.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -268,6 +274,8 @@
 		E72F538419C288DB002692E6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RelocateGHC.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -275,6 +283,8 @@
 		E73120CA1A1566AA00E9535A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StandardizePath.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -287,6 +297,8 @@
 		E73120CB1A1566AA00E9535A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StandardizePath.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

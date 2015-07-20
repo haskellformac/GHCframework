@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		E720D61719E14D7A008D8C8E /* ToolWrapper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToolWrapper; sourceTree = BUILT_PRODUCTS_DIR; };
 		E720D61A19E14D7A008D8C8E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E78F461E1B5CBD1B00FB6200 /* ToolWrapper.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ToolWrapper.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +42,7 @@
 		E720D60E19E14D7A008D8C8E = {
 			isa = PBXGroup;
 			children = (
+				E78F461E1B5CBD1B00FB6200 /* ToolWrapper.entitlements */,
 				E720D61919E14D7A008D8C8E /* ToolWrapper */,
 				E720D61819E14D7A008D8C8E /* Products */,
 			);
@@ -203,6 +205,8 @@
 		E720D61F19E14D7A008D8C8E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ToolWrapper.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -210,6 +214,8 @@
 		E720D62019E14D7A008D8C8E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ToolWrapper.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
