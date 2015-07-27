@@ -158,8 +158,9 @@
 			buildConfigurationList = E791CF3419F8AEC900DECDC4 /* Build configuration list for PBXNativeTarget "GHC" */;
 			buildPhases = (
 				E791CF4919F9135F00DECDC4 /* CopyFiles */,
-				E78F461F1B5CDAF000FB6200 /* ShellScript */,
 				E791CF4819F8CF0800DECDC4 /* ShellScript */,
+				E78F461F1B5CDAF000FB6200 /* ShellScript */,
+				E74DEA5E1B659DB800EACD6D /* ShellScript */,
 				E791CF1B19F8AEC900DECDC4 /* Headers */,
 				E78800011B15505300FB33BC /* ShellScript */,
 			);
@@ -251,6 +252,20 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		E74DEA5E1B659DB800EACD6D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Relocate the copied ghc tree from GHCBuild (now that we fixed the entitlements for build tools)\nGHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\n\necho \"Relocating the copied GHC tree\"\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC.buildtime\nif [ $? -ne 0 ]; then exit 1; fi\n";
+			showEnvVarsInLog = 0;
+		};
 		E78800011B15505300FB33BC /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -292,7 +307,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\necho \"GHCROOT = $GHCROOT\"\n\n# Copy the GHC build and relocate it\necho \"Copying GHC build to $CONTENTS_PATH\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC.buildtime\nif [ $? -ne 0 ]; then exit 1; fi\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking aginst this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.8.3.dylib\n# This doesn't work anyway as it creates an absolute link...\n#ln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/rts-1.0/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\n#ln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n\ntouch $CONFIGURATION_BUILD_DIR/GHC_HaskellSpriteKit.lock";
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\necho \"GHCROOT = $GHCROOT\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.8.3.dylib\n# This doesn't work anyway as it creates an absolute link...\n#ln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/rts-1.0/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\n#ln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
