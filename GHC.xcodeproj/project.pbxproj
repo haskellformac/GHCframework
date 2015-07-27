@@ -76,6 +76,16 @@
 		E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = GHCBuild.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		E7F983871B65E6C600956431 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		E791CF1419F8AEC900DECDC4 = {
 			isa = PBXGroup;
@@ -162,6 +172,7 @@
 				E78F461F1B5CDAF000FB6200 /* ShellScript */,
 				E74DEA5E1B659DB800EACD6D /* ShellScript */,
 				E791CF1B19F8AEC900DECDC4 /* Headers */,
+				E7F983871B65E6C600956431 /* Frameworks */,
 				E78800011B15505300FB33BC /* ShellScript */,
 			);
 			buildRules = (
