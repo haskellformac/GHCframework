@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E75BC68E1B688D15000134CF /* GHC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75BC68D1B688D15000134CF /* GHC.swift */; };
 		E791CF2419F8AEC900DECDC4 /* GHC.h in Headers */ = {isa = PBXBuildFile; fileRef = E791CF2319F8AEC900DECDC4 /* GHC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF961ADE9B7C00E652AA /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF981ADE9B7C00E652AA /* StandardizePath */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -67,6 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E75BC68D1B688D15000134CF /* GHC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GHC.swift; sourceTree = "<group>"; };
 		E78F46201B5CDEA400FB6200 /* ghc-pkg.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "ghc-pkg.entitlements"; sourceTree = "<group>"; };
 		E791CF1E19F8AEC900DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GHC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E791CF2219F8AEC900DECDC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 			children = (
 				E791CF2319F8AEC900DECDC4 /* GHC.h */,
 				E791CF2119F8AEC900DECDC4 /* Supporting Files */,
+				E75BC68D1B688D15000134CF /* GHC.swift */,
 			);
 			path = GHC;
 			sourceTree = "<group>";
@@ -329,6 +332,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E75BC68E1B688D15000134CF /* GHC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,8 +431,9 @@
 		E791CF3519F8AEC900DECDC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -439,14 +444,16 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		E791CF3619F8AEC900DECDC4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
