@@ -322,7 +322,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\necho \"GHCROOT = $GHCROOT\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nmkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/stg/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.8.3.dylib\n# This doesn't work anyway as it creates an absolute link...\n#ln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/rts-1.0/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\n#ln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n";
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\necho \"GHCROOT = $GHCROOT\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|stg/Types.h|Types.h|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.8.3.dylib\n# This doesn't work anyway as it creates an absolute link...\n#ln -hfs $CONTENTS_PATH/usr/lib/ghc-7.8.3/rts-1.0/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\n#ln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -431,9 +431,8 @@
 		E791CF3519F8AEC900DECDC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -451,9 +450,8 @@
 		E791CF3619F8AEC900DECDC4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
