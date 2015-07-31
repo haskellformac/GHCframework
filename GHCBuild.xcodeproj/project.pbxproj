@@ -15,7 +15,6 @@
 		E7C4FFC01ADEA7C400E652AA /* build.mk.debug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.debug; sourceTree = "<group>"; };
 		E7C4FFC11ADEA7C400E652AA /* build.mk.release */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.release; sourceTree = "<group>"; };
 		E7C4FFC21ADEA7C400E652AA /* extra-packages */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "extra-packages"; sourceTree = "<group>"; };
-		E7C4FFC31ADEA7C400E652AA /* ghc-packages */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ghc-packages"; sourceTree = "<group>"; };
 		E7C4FFC41ADEA7C400E652AA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E7E54FF6195D6CEE0019278B /* GHCBuild.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GHCBuild.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -62,7 +61,6 @@
 				E7C4FFC01ADEA7C400E652AA /* build.mk.debug */,
 				E7C4FFC11ADEA7C400E652AA /* build.mk.release */,
 				E7C4FFC21ADEA7C400E652AA /* extra-packages */,
-				E7C4FFC31ADEA7C400E652AA /* ghc-packages */,
 				E7C4FFC41ADEA7C400E652AA /* Info.plist */,
 			);
 			name = "Supporting Files";
