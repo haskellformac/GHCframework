@@ -12,6 +12,6 @@ import Foundation
 
 for i in 1..<Process.arguments.count {
   if Process.arguments[i] == "--print-file-name" && i + 1 < Process.arguments.count {
-    println(Process.arguments[i + 1])
+    print(Process.arguments[i + 1])
   }
 }

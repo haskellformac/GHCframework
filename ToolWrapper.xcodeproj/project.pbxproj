@@ -90,6 +90,8 @@
 		E720D60F19E14D7A008D8C8E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {

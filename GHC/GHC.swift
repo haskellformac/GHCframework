@@ -20,7 +20,7 @@ final public class GHC: NSObject {
   public class var haskellVersion: (String, String, String) { get {
     let bundle        = NSBundle(forClass: GHC.self),
         bundleVersion = (bundle.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "unknown",
-        components    = split(bundleVersion, allowEmptySlices: true){ $0 == "-" }
+        components    = bundleVersion.characters.split(allowEmptySlices: true){ $0 == "-" }.map { String($0) }
     if components.count == 3 {
       return (components[0], components[1], components[2])
     } else { return ("", "", bundleVersion) }
