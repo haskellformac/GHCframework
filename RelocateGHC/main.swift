@@ -91,7 +91,7 @@ let oldLocation = ghcScript[startOfLoc..<endOfLoc]
 if location == oldLocation {
   exit(0)  // location is already up to date
 }
-print("Relocating from \(oldLocation) to \(location)")
+print("Relocating from \(oldLocation) to \(location.path!)")
 
 
 // MARK: Process arguments
