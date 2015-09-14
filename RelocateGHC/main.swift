@@ -88,7 +88,7 @@ let endOfLoc    = ghcScript.rangeOfString("/usr/lib", options: nil, range: start
 let oldLocation = ghcScript[startOfLoc..<endOfLoc]
 */
 
-if location == oldLocation {
+if location == NSURL(fileURLWithPath: oldLocation) {
   exit(0)  // location is already up to date
 }
 print("Relocating from \(oldLocation) to \(location.path!)")
@@ -112,7 +112,7 @@ if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
 //  if let appContainerRtsConfData = try String(contentsOfFile: appContainerRtsConfPath.path!),
          appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
   {
-    if appContainerLocation == location {
+    if NSURL(fileURLWithPath: appContainerLocation) == location {
 
       let embeddedCachePath      = packageDBPath.URLByAppendingPathComponent("package.cache"),
           embeddedCacheAttrs     = try? defaultFileManager.attributesOfItemAtPath(embeddedCachePath.path!),
