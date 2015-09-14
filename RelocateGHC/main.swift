@@ -68,9 +68,8 @@ let executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
 let packageDBPath = location.URLByAppendingPathComponent(relativeLib).URLByAppendingPathComponent("package.conf.d")
 
 let rtsConfPath   = packageDBPath.URLByAppendingPathComponent("builtin_rts.conf")
-let rtsConfData   = try String(contentsOfFile: rtsConfPath.path!)
-//                    ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
-// FIXME: better error handling
+let rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path!))
+                    ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
 let oldLocation   = libraryLocation(rtsConfData)
                     ?! ("fatal error: could not extract library path from 'library-dirs' field")
@@ -107,7 +106,7 @@ if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
   appContainerPackageDBPath      = NSURL(fileURLWithPath: Process.arguments[2]).URLByAppendingPathComponent("package.conf.d")
   let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
     // FIXME: the following needs to have error handling cleaned up
-  let str: String? = try String(contentsOfFile: appContainerRtsConfPath.path!)
+  let str: String? = try? String(contentsOfFile: appContainerRtsConfPath.path!)
   if let appContainerRtsConfData = str,
 //  if let appContainerRtsConfData = try String(contentsOfFile: appContainerRtsConfPath.path!),
          appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
