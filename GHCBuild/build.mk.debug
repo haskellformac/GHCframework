@@ -40,6 +40,17 @@ BuildFlavour = quick
 # A development build, working on the stage 2 compiler:
 #BuildFlavour = devel2
 
+# A build with max optimisation that still builds the stage2 compiler
+# quickly. Compiled code will be the same as with "perf". Programs
+# will compile more slowly.
+#BuildFlavour = bench
+
+# As above but build GHC using the LLVM backend
+#BuildFlavour = bench-llvm
+
+# Bench build configured for a cross-compiler
+#BuildFlavour = bench-cross
+
 # -------- Miscellaneous variables --------------------------------------------
 
 # Set to V = 0 to get prettier build output.
@@ -55,7 +66,13 @@ V = 0
 # working on stage 2 and want to freeze stage 1 and the libraries for
 # a while.
 
+# Uncomment the following line to enable building DPH
+#BUILD_DPH=YES
+
 GhcLibWays = $(if $(filter $(DYNAMIC_GHC_PROGRAMS),YES),v dyn,v)
+
+# Only use -fasm by default on platforms that support it.
+GhcFAsm = $(if $(filter $(GhcWithNativeCodeGen),YES),-fasm,)
 
 # ----------- A Performance/Distribution build --------------------------------
 
@@ -94,7 +111,7 @@ endif
 ifeq "$(BuildFlavour)" "perf-cross"
 
 SRC_HC_OPTS     = -O -H64m -fllvm
-GhcStage1HcOpts = -O2 -fllvm
+GhcStage1HcOpts = -O2
 GhcStage2HcOpts = -O2 -fllvm
 GhcHcOpts       = -Rghc-timing
 GhcLibHcOpts    = -O2
@@ -116,10 +133,10 @@ endif
 
 ifeq "$(BuildFlavour)" "quickest"
 
-SRC_HC_OPTS        = -H64m -O0 -fasm
-GhcStage1HcOpts    = -O -fasm
-GhcStage2HcOpts    = -O0 -fasm
-GhcLibHcOpts       = -O0 -fasm
+SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
+GhcStage1HcOpts    = -O $(GhcFAsm)
+GhcStage2HcOpts    = -O0 $(GhcFAsm)
+GhcLibHcOpts       = -O0 $(GhcFAsm)
 SplitObjs          = NO
 HADDOCK_DOCS       = NO
 BUILD_DOCBOOK_HTML = NO
@@ -132,11 +149,11 @@ endif
 
 ifeq "$(BuildFlavour)" "quick"
 
-SRC_HC_OPTS        = -H64m -O0 -fasm
-GhcStage1HcOpts    = -O -fasm
-#GhcStage2HcOpts    = -O0 -fasm
+SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
+GhcStage1HcOpts    = -O $(GhcFAsm)
+#GhcStage2HcOpts    = -O0 $(GhcFAsm)
 GhcStage2HcOpts    = -O -fasm
-GhcLibHcOpts       = -O -fasm
+GhcLibHcOpts       = -O $(GhcFAsm)
 SplitObjs          = NO
 HADDOCK_DOCS       = NO
 BUILD_DOCBOOK_HTML = NO
@@ -172,7 +189,7 @@ endif
 ifeq "$(BuildFlavour)" "quick-cross"
 
 SRC_HC_OPTS        = -H64m -O0
-GhcStage1HcOpts    = -O -fllvm
+GhcStage1HcOpts    = -O
 GhcStage2HcOpts    = -O0 -fllvm
 GhcLibHcOpts       = -O -fllvm
 SplitObjs          = NO
@@ -192,10 +209,10 @@ endif
 
 ifeq "$(BuildFlavour)" "prof"
 
-SRC_HC_OPTS        = -H64m -O0 -fasm
-GhcStage1HcOpts    = -O -fasm
-GhcStage2HcOpts    = -O -fasm
-GhcLibHcOpts       = -O -fasm
+SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
+GhcStage1HcOpts    = -O $(GhcFAsm)
+GhcStage2HcOpts    = -O $(GhcFAsm)
+GhcLibHcOpts       = -O $(GhcFAsm)
 
 GhcLibWays         += p
 GhcProfiled        = YES
@@ -212,10 +229,10 @@ endif
 
 ifeq "$(BuildFlavour)" "devel1"
 
-SRC_HC_OPTS        = -H64m -O -fasm
+SRC_HC_OPTS        = -H64m -O $(GhcFAsm)
 GhcLibHcOpts       = -O -dcore-lint
 GhcStage1HcOpts    = -Rghc-timing -O0 -DDEBUG
-GhcStage2HcOpts    = -Rghc-timing -O -fasm
+GhcStage2HcOpts    = -Rghc-timing -O $(GhcFAsm)
 SplitObjs          = NO
 HADDOCK_DOCS       = NO
 BUILD_DOCBOOK_HTML = NO
@@ -229,9 +246,9 @@ endif
 
 ifeq "$(BuildFlavour)" "devel2"
 
-SRC_HC_OPTS        = -H64m -O -fasm
+SRC_HC_OPTS        = -H64m -O $(GhcFAsm)
 GhcLibHcOpts       = -O -dcore-lint
-GhcStage1HcOpts    = -Rghc-timing -O -fasm
+GhcStage1HcOpts    = -Rghc-timing -O $(GhcFAsm)
 GhcStage2HcOpts    = -Rghc-timing -O0 -DDEBUG
 SplitObjs          = NO
 HADDOCK_DOCS       = NO
@@ -239,6 +256,59 @@ BUILD_DOCBOOK_HTML = NO
 BUILD_DOCBOOK_PS   = NO
 BUILD_DOCBOOK_PDF  = NO
 LAX_DEPENDENCIES   = YES
+
+endif
+
+# -------- A bench build with optimised libs -----------------------------------
+
+ifeq "$(BuildFlavour)" "bench"
+
+SRC_HC_OPTS        = -O -H64m
+GhcStage1HcOpts    = -O $(GhcFAsm)
+GhcStage2HcOpts    = -O0 $(GhcFAsm)
+GhcLibHcOpts       = -O2 $(GhcFAsm)
+SplitObjs          = NO
+HADDOCK_DOCS       = NO
+BUILD_DOCBOOK_HTML = NO
+BUILD_DOCBOOK_PS   = NO
+BUILD_DOCBOOK_PDF  = NO
+
+endif
+
+# ---------------- Bench build using LLVM --------------------------------------
+
+ifeq "$(BuildFlavour)" "bench-llvm"
+
+SRC_HC_OPTS        = -O -H64m
+GhcStage1HcOpts    = -O -fllvm
+GhcStage2HcOpts    = -O0 -fllvm
+GhcLibHcOpts       = -O2 -fllvm
+SplitObjs          = NO
+HADDOCK_DOCS       = NO
+BUILD_DOCBOOK_HTML = NO
+BUILD_DOCBOOK_PS   = NO
+BUILD_DOCBOOK_PDF  = NO
+
+endif
+
+# ------- A Bench build configured for cross-compilation ----------------------
+
+ifeq "$(BuildFlavour)" "bench-cross"
+
+SRC_HC_OPTS        = -O -H64m
+GhcStage1HcOpts    = -O $(GhcFAsm)
+GhcStage2HcOpts    = -O0 $(GhcFAsm)
+GhcLibHcOpts       = -O2 $(GhcFAsm)
+SplitObjs          = NO
+INTEGER_LIBRARY    = integer-simple
+Stage1Only         = YES
+HADDOCK_DOCS       = NO
+BUILD_DOCBOOK_HTML = NO
+BUILD_DOCBOOK_PS   = NO
+BUILD_DOCBOOK_PDF  = NO
+
+DYNAMIC_BY_DEFAULT   = NO
+DYNAMIC_GHC_PROGRAMS = NO
 
 endif
 

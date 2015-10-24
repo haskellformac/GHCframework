@@ -9,7 +9,6 @@ Rasterific
 SVGFonts
 Yampa
 accelerate
-accelerate-io-0.15.0.0
 active
 adjunctions
 aeson
@@ -49,11 +48,10 @@ haskell-src-exts
 haskell-src-meta
 http-client
 http-client-tls
-language-c-inline-0.7.9.1
+language-c-inline-0.7.9.2
 lens
 lens-aeson
 linear
-linear-accelerate
 mmap
 monad-par
 monoid-extras
