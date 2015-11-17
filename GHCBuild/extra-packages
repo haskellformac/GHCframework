@@ -20,6 +20,7 @@ async
 attoparsec
 bifunctors
 blaze-builder
+blaze-html
 blaze-markup
 blaze-svg
 bmp
