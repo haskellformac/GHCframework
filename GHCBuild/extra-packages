@@ -62,6 +62,7 @@ network
 newtype
 operational
 optparse-applicative
+palette
 parallel
 parsec
 pipes
