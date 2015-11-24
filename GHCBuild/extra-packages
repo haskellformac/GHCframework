@@ -29,6 +29,7 @@ comonad
 contravariant
 cpphs
 criterion
+data-ordlist
 diagrams-core
 diagrams-lib
 diagrams-postscript
