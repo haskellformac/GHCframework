@@ -84,7 +84,8 @@ SRC_HC_OPTS     = -O -H64m
 GhcStage1HcOpts = -O $(GhcFAsm)
 GhcStage2HcOpts = -O2 $(GhcFAsm)
 GhcHcOpts       = -Rghc-timing
-GhcLibHcOpts    = -O2
+GhcLibHcOpts    = -O2 -optl-Wl,-headerpad_max_install_names
+# To ensure sufficient space for changing RPATH and for code signing, we use -optl-Wl,-headerpad_max_install_names
 # GhcLibWays     += p
 # no profiling support for now
 BUILD_DOCBOOK_HTML = NO
