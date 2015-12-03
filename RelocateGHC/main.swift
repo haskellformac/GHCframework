@@ -97,13 +97,21 @@ print("Relocating from \(oldLocation) to \(location.path!)")
 
 let defaultFileManager = NSFileManager.defaultManager()
 
-let appContainerPackageDBPath: NSURL?
+var appContainerGHCRoot      : NSURL? = nil
+var appContainerGHCLib       : NSURL? { get {
+  return appContainerGHCRoot?.URLByAppendingPathComponent("lib/ghc")
+} }
+var appContainerPackageDBPath: NSURL? { get {
+  return appContainerGHCLib?.URLByAppendingPathComponent("package.conf.d")
+} }
+
 if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
+
+  appContainerGHCRoot = NSURL(fileURLWithPath: Process.arguments[2])
 
     // We need to check both the location as well as the time stamp, as we may switch between different copies as well
     // as update one to a newer version. NB: This is still not entirely safe, as we may overwrite one version with an
     // older one — but that should only happen during testing (when we have to manually remove the app container DB).
-  appContainerPackageDBPath      = NSURL(fileURLWithPath: Process.arguments[2]).URLByAppendingPathComponent("package.conf.d")
   let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
     // FIXME: the following needs to have error handling cleaned up
   let str: String? = try? String(contentsOfFile: appContainerRtsConfPath.path!)
@@ -145,7 +153,7 @@ if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
   }
   print("Updating package DB in app container")
 
-} else { appContainerPackageDBPath = nil }
+}
 
 var sandboxed: Bool { get { return appContainerPackageDBPath != nil } }
 
