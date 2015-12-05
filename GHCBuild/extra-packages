@@ -14,7 +14,6 @@ adjunctions
 aeson
 aeson-pretty
 aeson-qq
-alex
 ansi-terminal
 ansi-wl-pprint
 async
@@ -25,7 +24,6 @@ blaze-html
 blaze-markup
 blaze-svg
 bmp
-cabal-install
 colour
 comonad
 contravariant
@@ -46,7 +44,6 @@ fclabels
 fingertree
 free
 groups
-happy
 hashable
 hashtables
 haskell-src-exts
