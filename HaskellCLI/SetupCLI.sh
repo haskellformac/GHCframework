@@ -40,9 +40,8 @@ fi
 
 if `$appContainerIsOutdated`; then
   echo "$0: incomplete set up"
-  echo "  Before you can use the Haskell for Mac command line tools,"
-  echo "  please start Haskell.app (so that it can configure the"
-  echo "  Haskell package database)."
+  echo "  Before you can use the Haskell for Mac command line tools, please start"
+  echo "  Haskell.app (so that it can configure the Haskell package database)."
   exit 1
 fi
 

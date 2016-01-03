@@ -57,18 +57,21 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
 
 // MARK: Determine target location
 
-let bundleLocation = NSURL(fileURLWithPath: NSBundle.mainBundle().bundlePath).URLByAppendingPathComponent("..").URLByResolvingSymlinksInPath!
-let location       = bundleLocation.path!.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
+let bundleLocation = NSURL(fileURLWithPath: NSBundle.mainBundle().bundlePath)
+                     .URLByAppendingPathComponent("..")
+                     .URLByResolvingSymlinksInPath!,
+    location       = bundleLocation.path!.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
                      ? bundleLocation
                      : NSURL(fileURLWithPath: NSFileManager.defaultManager().currentDirectoryPath).URLByAppendingPathComponent("GHC.framework/Versions/A")
 
-let relativeBin   = "usr/bin"
-let relativeLib   = "usr/lib/ghc"
-let executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"]
-let packageDBPath = location.URLByAppendingPathComponent(relativeLib).URLByAppendingPathComponent("package.conf.d")
+let relativeBin   = "usr/bin",
+    relativeLib   = "usr/lib/ghc",
+    executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"],
+    ghcLibPath    = location.URLByAppendingPathComponent(relativeLib),
+    packageDBPath = ghcLibPath.URLByAppendingPathComponent("package.conf.d")
 
-let rtsConfPath   = packageDBPath.URLByAppendingPathComponent("builtin_rts.conf")
-let rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path!))
+let rtsConfPath   = packageDBPath.URLByAppendingPathComponent("builtin_rts.conf"),
+    rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path!))
                     ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
 let oldLocation   = libraryLocation(rtsConfData)
@@ -120,25 +123,26 @@ if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
       }
     }
 
-      // Remove the out of date package database as a whole. (The new one may have different package sets, versions,
-      // or package IDs, in which case, droppings of the old may remain if we just write over the old DB.)
-    print("Removing old package DB in app container")
-    if let packageDBPath = appContainerPackageDBPath {
+      // Remove the out of date GHC root directory including package database as a whole. (The new one may have
+      // different package sets, versions, or package IDs, in which case, droppings of the old may remain if we
+      // just write over the old root directory.)
+    print("Removing old GHC root directory including package DB in app container")
+    if let ghcLib = appContainerGHCLib {
 
-      do { try defaultFileManager.removeItemAtPath(packageDBPath.path!) }
+      do { try defaultFileManager.removeItemAtPath(ghcLib.path!) }
       catch let error {
-        NSLog("failed to remove existing file at package DB location in app container: \(error)")
+        NSLog("failed to remove existing file at GHC root directory location in app container: \(error)")
         exit(1)
       }
 
     } else {
 
-      NSLog("failed to remove existing file at package DB location in app container: no container path")
+      NSLog("failed to remove existing file at GHC root directory location in app container: no directory path")
       exit(1)
 
     }
   }
-  print("Updating package DB in app container")
+  print("Updating GHC root directory and package DB in app container")
 
 }
 
@@ -156,12 +160,7 @@ if !sandboxed {
   }
 }
 
-let packagesDir = (try? defaultFileManager.contentsOfDirectoryAtPath(packageDBPath.path!))
-                  ?!  ("fatal error: could not read directory containing GHC package database at \(packageDBPath)")
-let packages    = packagesDir.filter{ $0.hasSuffix("conf") }
-                  ?! ("fatal error: could not load GHC package database")
-
-  // In sandboxed mode, create the package DB in the app container if it doesn't exit yet.
+  // In sandboxed mode, create the GHC root directory and package DB in the app container if it doesn't exit yet.
 if let packageDBPath = appContainerPackageDBPath {
 
   var error:       NSError?
@@ -171,11 +170,13 @@ if let packageDBPath = appContainerPackageDBPath {
 
     do {
       try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
-                                                       withIntermediateDirectories: true,
-                                                       attributes: nil)
-    } catch var error1 as NSError {
-      error = error1
-      NSLog("failed to create package DB in app container: %@", error!)
+                                                   withIntermediateDirectories: true,
+                                                   attributes: nil)
+      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin").path!,
+                                                   withIntermediateDirectories: true,
+                                                   attributes: nil)
+    } catch var error as NSError {
+      NSLog("failed to create package DB (or bin directory) in app container: %@", error)
       exit(1)
     }
 
@@ -183,23 +184,41 @@ if let packageDBPath = appContainerPackageDBPath {
 
     do {
       try defaultFileManager.removeItemAtPath(packageDBPath.path!)
-    } catch var error1 as NSError {
-      error = error1
-      NSLog("failed to remove existing file at package DB location in app container: %@", error!)
+    } catch var error as NSError {
+      NSLog("failed to remove existing file at package DB location in app container: %@", error)
       exit(1)
     }
     do {
       try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
-                                                       withIntermediateDirectories: true,
-                                                       attributes: nil)
-    } catch var error1 as NSError {
-      error = error1
-      NSLog("failed to create package DB in app container: %@", error!)
+                                                   withIntermediateDirectories: true,
+                                                   attributes: nil)
+    } catch var error as NSError {
+      NSLog("failed to create package DB in app container: %@", error)
       exit(1)
     }
 
   }
 }
+
+let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath.path!))
+                  ?!  ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
+    ghcLibFiles = ghcLibDir.filter{ $0 != "package.conf.d" }
+
+  // In sandboxed mode, create symbolic links in the app container too all files in the embedded GHC root directory
+  // with the exception of the package DB.
+if let packageDBPath = appContainerPackageDBPath {
+  for ghcRootFile in ghcLibFiles {
+
+    let source = ghcLibPath.URLByAppendingPathComponent(ghcRootFile),
+        target = appContainerGHCLib!.URLByAppendingPathComponent(ghcRootFile)
+    try defaultFileManager.createSymbolicLinkAtURL(target, withDestinationURL: source)
+
+  }
+}
+
+let packagesDir = (try? defaultFileManager.contentsOfDirectoryAtPath(packageDBPath.path!))
+                  ?!  ("fatal error: could not read directory containing GHC package database at \(packageDBPath)"),
+    packages    = packagesDir.filter{ $0.hasSuffix("conf") }
 
   // Rewrite the location in all package 'conf' files, writing to the app container in sandboxed mode.
 for package in packages {
