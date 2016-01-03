@@ -8,12 +8,30 @@
 
 /* Begin PBXFileReference section */
 		E71989C81C37CFA300FE353B /* SetupCLI.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = SetupCLI.sh; sourceTree = "<group>"; };
+		E71989CA1C39275700FE353B /* ghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghc.sh; sourceTree = "<group>"; };
+		E71989CB1C392A0400FE353B /* ghc-pkg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-pkg.sh"; sourceTree = "<group>"; };
+		E71989CC1C392AA300FE353B /* hpc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = hpc.sh; sourceTree = "<group>"; };
+		E71989CD1C392C4B00FE353B /* hsc2hs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = hsc2hs.sh; sourceTree = "<group>"; };
+		E71989CE1C392D1100FE353B /* runghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = runghc.sh; sourceTree = "<group>"; };
+		E71989CF1C392EAB00FE353B /* ghci.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghci.sh; sourceTree = "<group>"; };
+		E71989D01C39340400FE353B /* alex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = alex.sh; sourceTree = "<group>"; };
+		E71989D11C3935CD00FE353B /* happy.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = happy.sh; sourceTree = "<group>"; };
+		E71989D21C3935F000FE353B /* cabal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = cabal.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		E71989B91C37ADB300FE353B = {
 			isa = PBXGroup;
 			children = (
+				E71989D01C39340400FE353B /* alex.sh */,
+				E71989D11C3935CD00FE353B /* happy.sh */,
+				E71989D21C3935F000FE353B /* cabal.sh */,
+				E71989CA1C39275700FE353B /* ghc.sh */,
+				E71989CF1C392EAB00FE353B /* ghci.sh */,
+				E71989CB1C392A0400FE353B /* ghc-pkg.sh */,
+				E71989CC1C392AA300FE353B /* hpc.sh */,
+				E71989CD1C392C4B00FE353B /* hsc2hs.sh */,
+				E71989CE1C392D1100FE353B /* runghc.sh */,
 				E71989C81C37CFA300FE353B /* SetupCLI.sh */,
 			);
 			sourceTree = "<group>";
