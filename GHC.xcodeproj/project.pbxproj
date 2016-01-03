@@ -68,6 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E71989C41C37ADB300FE353B /* HaskellCLI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HaskellCLI.xcodeproj; path = HaskellCLI/HaskellCLI.xcodeproj; sourceTree = "<group>"; };
 		E75BC68D1B688D15000134CF /* GHC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GHC.swift; sourceTree = "<group>"; };
 		E78F46201B5CDEA400FB6200 /* ghc-pkg.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "ghc-pkg.entitlements"; sourceTree = "<group>"; };
 		E791CF1E19F8AEC900DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GHC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +90,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E71989C51C37ADB300FE353B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E791CF1419F8AEC900DECDC4 = {
 			isa = PBXGroup;
 			children = (
@@ -98,6 +106,7 @@
 				E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */,
 				E7C4FF9D1ADE9E9B00E652AA /* ToolWrapper.xcodeproj */,
 				E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */,
+				E71989C41C37ADB300FE353B /* HaskellCLI.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -220,6 +229,10 @@
 				{
 					ProductGroup = E7C4FFB81ADEA4C300E652AA /* Products */;
 					ProjectRef = E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */;
+				},
+				{
+					ProductGroup = E71989C51C37ADB300FE353B /* Products */;
+					ProjectRef = E71989C41C37ADB300FE353B /* HaskellCLI.xcodeproj */;
 				},
 				{
 					ProductGroup = E7C4FF911ADE9B7C00E652AA /* Products */;

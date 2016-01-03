@@ -3,7 +3,7 @@
 //  RelocateGHC
 //
 //  Created by Manuel M T Chakravarty on 12/09/2014.
-//  Copyright (c) [2014..2015] Manuel M T Chakravarty. All rights reserved.
+//  Copyright (c) [2014..2016] Manuel M T Chakravarty. All rights reserved.
 //
 //  Rewrite the launch scripts and package database configuration files to the current location of the 'GHC.framework'.
 //
@@ -73,19 +73,6 @@ let rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path!))
 
 let oldLocation   = libraryLocation(rtsConfData)
                     ?! ("fatal error: could not extract library path from 'library-dirs' field")
-
-/*
-let ghcPath     = location.stringByAppendingPathComponent(relativeBin).stringByAppendingPathComponent("ghc")
-let ghcScript   = String(contentsOfFile: ghcPath)
-                  ?! ("RelocateGHC: fatal error: could not load GHC launch script at \(ghcPath)")
-
-let startOfLoc  = ghcScript.rangeOfString("topdir=\"")?.endIndex
-                  ?! ("RelocateGHC: fatal error: could not locate 'topdir' definition")
-
-let endOfLoc    = ghcScript.rangeOfString("/usr/lib", options: nil, range: startOfLoc..<ghcScript.endIndex)?.startIndex
-                  ?! ("RelocateGHC: fatal error: could not find end of old location")
-let oldLocation = ghcScript[startOfLoc..<endOfLoc]
-*/
 
 if location == NSURL(fileURLWithPath: oldLocation) {
   exit(0)  // location is already up to date
