@@ -8,6 +8,6 @@ bindir="/usr/local/bin"
 topdir="$appContainer/lib/ghc"
 executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
-  $libGHC/SetupCLI
+  $libGHC/SetupCLI $libGHC/bin
 fi
 exec "$executablename" -f "$bindir/ghc" ${1+"$@"}

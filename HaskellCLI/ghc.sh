@@ -7,6 +7,6 @@ exeprog="ghc"
 topdir="$appContainer/lib/ghc"
 executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
-  $libGHC/SetupCLI
+  $libGHC/SetupCLI $libGHC/bin
 fi
-exec "$executablename" -B"$topdir" ${1+"$@"}
+exec "$executablename" -B"$topdir" -dynamic -optl -rpath -optl "$topdir" ${1+"$@"}

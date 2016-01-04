@@ -6,6 +6,16 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		E71989DE1C3A02FC00FE353B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E71989BA1C37ADB300FE353B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E71989D61C3A02E300FE353B;
+			remoteInfo = CLITree;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		E71989C81C37CFA300FE353B /* SetupCLI.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = SetupCLI.sh; sourceTree = "<group>"; };
 		E71989CA1C39275700FE353B /* ghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghc.sh; sourceTree = "<group>"; };
@@ -17,10 +27,37 @@
 		E71989D01C39340400FE353B /* alex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = alex.sh; sourceTree = "<group>"; };
 		E71989D11C3935CD00FE353B /* happy.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = happy.sh; sourceTree = "<group>"; };
 		E71989D21C3935F000FE353B /* cabal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = cabal.sh; sourceTree = "<group>"; };
+		E71989D71C3A02E300FE353B /* CLITree.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CLITree.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		E71989DA1C3A02E300FE353B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		E71989B91C37ADB300FE353B = {
+			isa = PBXGroup;
+			children = (
+				E71989E21C3A049800FE353B /* HaskellCLI */,
+				E71989D91C3A02E300FE353B /* CLITree */,
+				E71989D81C3A02E300FE353B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E71989D81C3A02E300FE353B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E71989D71C3A02E300FE353B /* CLITree.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E71989D91C3A02E300FE353B /* CLITree */ = {
+			isa = PBXGroup;
+			children = (
+				E71989DA1C3A02E300FE353B /* Info.plist */,
+			);
+			path = CLITree;
+			sourceTree = "<group>";
+		};
+		E71989E21C3A049800FE353B /* HaskellCLI */ = {
 			isa = PBXGroup;
 			children = (
 				E71989D01C39340400FE353B /* alex.sh */,
@@ -34,6 +71,7 @@
 				E71989CE1C392D1100FE353B /* runghc.sh */,
 				E71989C81C37CFA300FE353B /* SetupCLI.sh */,
 			);
+			name = HaskellCLI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -41,18 +79,38 @@
 /* Begin PBXLegacyTarget section */
 		E71989BE1C37ADB300FE353B /* HaskellCLI */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
+			buildArgumentsString = "--root ROOTPATH /usr/local";
 			buildConfigurationList = E71989C11C37ADB300FE353B /* Build configuration list for PBXLegacyTarget "HaskellCLI" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/productbuild;
+			buildWorkingDirectory = "";
 			dependencies = (
+				E71989DF1C3A02FC00FE353B /* PBXTargetDependency */,
 			);
 			name = HaskellCLI;
 			passBuildSettingsInEnvironment = 1;
 			productName = HaskellCLI;
 		};
 /* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		E71989D61C3A02E300FE353B /* CLITree */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E71989DB1C3A02E300FE353B /* Build configuration list for PBXNativeTarget "CLITree" */;
+			buildPhases = (
+				E71989E01C3A032C00FE353B /* Create CLI Distribution Tree */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CLITree;
+			productName = CLITree;
+			productReference = E71989D71C3A02E300FE353B /* CLITree.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		E71989BA1C37ADB300FE353B /* Project object */ = {
@@ -62,6 +120,9 @@
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {
 					E71989BE1C37ADB300FE353B = {
+						CreatedOnToolsVersion = 7.2;
+					};
+					E71989D61C3A02E300FE353B = {
 						CreatedOnToolsVersion = 7.2;
 					};
 				};
@@ -74,13 +135,40 @@
 				en,
 			);
 			mainGroup = E71989B91C37ADB300FE353B;
+			productRefGroup = E71989D81C3A02E300FE353B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				E71989BE1C37ADB300FE353B /* HaskellCLI */,
+				E71989D61C3A02E300FE353B /* CLITree */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E71989E01C3A032C00FE353B /* Create CLI Distribution Tree */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create CLI Distribution Tree";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# This is where we create the destination tree\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\nmkdir -p $CONTENTS_PATH/usr/local/bin\nmkdir -p $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\n\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc.sh >$CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghci.sh >$CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/runghc.sh >$CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc-pkg.sh >$CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/alex.sh >$CONTENTS_PATH/usr/local/bin/alex\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/happy.sh >$CONTENTS_PATH/usr/local/bin/happy\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/cabal.sh >$CONTENTS_PATH/usr/local/bin/cabal\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hpc.sh >$CONTENTS_PATH/usr/local/bin/hpc\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hsc2hs.sh >$CONTENTS_PATH/usr/local/bin/hsc2hs\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/alex\nchmod a+x $CONTENTS_PATH/usr/local/bin/happy\nchmod a+x $CONTENTS_PATH/usr/local/bin/cabal\nchmod a+x $CONTENTS_PATH/usr/local/bin/hpc\nchmod a+x $CONTENTS_PATH/usr/local/bin/hsc2hs\n\nln -hfs ghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc\nln -hfs ghci-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghci\nln -hfs runghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/runghc\nln -hfs runghc $CONTENTS_PATH/usr/local/bin/runhaskell\nln -hfs ghc-pkg-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc-pkg\n\ncp -f $SOURCE_ROOT/SetupCLI.sh $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\nchmod a+x $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\n\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/runghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc-pkg $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hpc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hsc2hs $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/alex $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/happy $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/cabal $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E71989DF1C3A02FC00FE353B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E71989D61C3A02E300FE353B /* CLITree */;
+			targetProxy = E71989DE1C3A02FC00FE353B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		E71989BF1C37ADB300FE353B /* Debug */ = {
@@ -179,6 +267,38 @@
 			};
 			name = Release;
 		};
+		E71989DC1C3A02E300FE353B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CLITree/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.haskellformac.CLITree;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		E71989DD1C3A02E300FE353B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CLITree/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.haskellformac.CLITree;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -196,6 +316,14 @@
 			buildConfigurations = (
 				E71989C21C37ADB300FE353B /* Debug */,
 				E71989C31C37ADB300FE353B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		E71989DB1C3A02E300FE353B /* Build configuration list for PBXNativeTarget "CLITree" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E71989DC1C3A02E300FE353B /* Debug */,
+				E71989DD1C3A02E300FE353B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

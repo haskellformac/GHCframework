@@ -15,6 +15,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E71989E41C3A059D00FE353B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E71989C41C37ADB300FE353B /* HaskellCLI.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E71989D71C3A02E300FE353B;
+			remoteInfo = CLITree;
+		};
 		E7AF2B101AE3BBC0009BA3C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E7C4FFB71ADEA4C300E652AA /* GHCBuild.xcodeproj */;
@@ -93,6 +100,7 @@
 		E71989C51C37ADB300FE353B /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				E71989E51C3A059D00FE353B /* CLITree.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,13 +188,13 @@
 			buildConfigurationList = E791CF3419F8AEC900DECDC4 /* Build configuration list for PBXNativeTarget "GHC" */;
 			buildPhases = (
 				E791CF4919F9135F00DECDC4 /* CopyFiles */,
-				E791CF4819F8CF0800DECDC4 /* ShellScript */,
-				E78F461F1B5CDAF000FB6200 /* ShellScript */,
-				E74DEA5E1B659DB800EACD6D /* ShellScript */,
+				E791CF4819F8CF0800DECDC4 /* Copy GHC build */,
+				E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg and Create Buildtime Executables */,
+				E74DEA5E1B659DB800EACD6D /* Relocate Copied GHC Tree */,
 				E7F983B61B661C6500956431 /* Sources */,
 				E7F983871B65E6C600956431 /* Frameworks */,
 				E791CF1B19F8AEC900DECDC4 /* Headers */,
-				E78800011B15505300FB33BC /* ShellScript */,
+				E78800011B15505300FB33BC /* Determine Build Number */,
 			);
 			buildRules = (
 			);
@@ -251,6 +259,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		E71989E51C3A059D00FE353B /* CLITree.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CLITree.bundle;
+			remoteRef = E71989E41C3A059D00FE353B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E7C4FF961ADE9B7C00E652AA /* RelocateGHC */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
@@ -282,13 +297,14 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		E74DEA5E1B659DB800EACD6D /* ShellScript */ = {
+		E74DEA5E1B659DB800EACD6D /* Relocate Copied GHC Tree */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Relocate Copied GHC Tree";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,13 +312,14 @@
 			shellScript = "# Relocate the copied ghc tree from GHCBuild (now that we fixed the entitlements for build tools)\nGHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\n\necho \"Relocating the copied GHC tree\"\n$CONFIGURATION_BUILD_DIR/$EXECUTABLE_FOLDER_PATH/Executables/RelocateGHC.buildtime\nif [ $? -ne 0 ]; then exit 1; fi\n";
 			showEnvVarsInLog = 0;
 		};
-		E78800011B15505300FB33BC /* ShellScript */ = {
+		E78800011B15505300FB33BC /* Determine Build Number */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Determine Build Number";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,13 +327,14 @@
 			shellScript = "# Unique build numbers calculated from Git commits http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode/\n\nbranch='master'\nbuildNumber=$(expr $(git rev-list $branch --count) - $(git rev-list HEAD..$branch --count))\necho \"Updating build number to $buildNumber using branch '$branch'.\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# The following command checks the source corresponding to a particular build number out\n#\n#   git checkout `git rev-list master | tail -n $1 | head -n 1`";
 			showEnvVarsInLog = 0;
 		};
-		E78F461F1B5CDAF000FB6200 /* ShellScript */ = {
+		E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg and Create Buildtime Executables */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Sign ghc-pkg and Create Buildtime Executables";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -324,20 +342,21 @@
 			shellScript = "CONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Create a signed copy of 'ghc-pkg' with entitlements, so it can be shipped in th bundle. (HfM needs it to create the binary package cache.)\n\necho \"Creating signed copy of 'ghc-pkg'...\"\nmkdir -p ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg\ncp -f ${CONTENTS_PATH}/usr/lib/ghc/bin/ghc-pkg ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg/\nln -hfs ../usr/lib/ghc/ghc-pkg/ghc-pkg ${CONTENTS_PATH}/Executables/\n\n# FIXME: The hardcoded code signing details are not great...\nexport CODESIGN_ALLOCATE=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 --entitlements $SOURCE_ROOT/ghc-pkg.entitlements --requirements '=designated => anchor apple generic  and identifier \"$self.identifier\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or ( certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists  and certificate leaf[subject.OU] = \"K46KPXLRKW\" ))' ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg/ghc-pkg\n\n# Copies of the two tools without sandboxing, so we can use them during builds (re-signing deletes the old entitelments by default)\n\ncp -f ${CONTENTS_PATH}/Executables/RelocateGHC ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\ncp -f ${CONTENTS_PATH}/Executables/StandardizePath ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n";
 			showEnvVarsInLog = 0;
 		};
-		E791CF4819F8CF0800DECDC4 /* ShellScript */ = {
+		E791CF4819F8CF0800DECDC4 /* Copy GHC build */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Copy GHC build";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/HsFFI.h",
 				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/Libraries/$(TARGET_NAME).dylib",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\necho \"GHCROOT = $GHCROOT\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|stg/Types.h|Types.h|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc7.10.2.dylib\nln -hfs ../usr/lib/ghc/rts/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\nln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n";
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|stg/Types.h|Types.h|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc${GHC_VERSION}.dylib\nln -hfs ../usr/lib/ghc/rts/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\nln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
