@@ -9,4 +9,4 @@ executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
   $libGHC/SetupCLI $libGHC/bin
 fi
-exec "$executablename" ${1+"$@"}
+exec "$executablename" --config-file="$appContainer/cabal.config" ${1+"$@"}
