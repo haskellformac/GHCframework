@@ -55,6 +55,6 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
     ln "$cliLocation/$file" "$appContainerBin"
   done
 
-  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" "$cliLocation/../cabal.config" >$appContainer/cabal.config
+  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|BIN_DIR|/Users/$USER/Library/Haskell/bin|g" "$cliLocation/../cabal.config" >$appContainer/cabal.config
 
 fi
