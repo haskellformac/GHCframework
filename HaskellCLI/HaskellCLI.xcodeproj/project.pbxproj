@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		E71989DE1C3A02FC00FE353B /* PBXContainerItemProxy */ = {
+		E70916811C3CC2D100F5E0E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E71989BA1C37ADB300FE353B /* Project object */;
 			proxyType = 1;
@@ -17,6 +17,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildPKG.sh; sourceTree = "<group>"; };
 		E71989C81C37CFA300FE353B /* SetupCLI.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = SetupCLI.sh; sourceTree = "<group>"; };
 		E71989CA1C39275700FE353B /* ghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghc.sh; sourceTree = "<group>"; };
 		E71989CB1C392A0400FE353B /* ghc-pkg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-pkg.sh"; sourceTree = "<group>"; };
@@ -30,6 +31,7 @@
 		E71989D71C3A02E300FE353B /* CLITree.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CLITree.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E71989DA1C3A02E300FE353B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E71989E61C3A774300FE353B /* cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cabal.config; sourceTree = "<group>"; };
+		E748C25D1C3CE76100027019 /* Distribution */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Distribution; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -37,7 +39,6 @@
 			isa = PBXGroup;
 			children = (
 				E71989E21C3A049800FE353B /* HaskellCLI */,
-				E71989D91C3A02E300FE353B /* CLITree */,
 				E71989D81C3A02E300FE353B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,8 +71,11 @@
 				E71989CC1C392AA300FE353B /* hpc.sh */,
 				E71989CD1C392C4B00FE353B /* hsc2hs.sh */,
 				E71989CE1C392D1100FE353B /* runghc.sh */,
+				E748C25D1C3CE76100027019 /* Distribution */,
+				E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */,
 				E71989C81C37CFA300FE353B /* SetupCLI.sh */,
 				E71989E61C3A774300FE353B /* cabal.config */,
+				E71989D91C3A02E300FE353B /* CLITree */,
 			);
 			name = HaskellCLI;
 			sourceTree = "<group>";
@@ -79,16 +83,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		E71989BE1C37ADB300FE353B /* HaskellCLI */ = {
+		E709167D1C3CC2B600F5E0E4 /* HaskellCLI */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "--root ROOTPATH /usr/local";
-			buildConfigurationList = E71989C11C37ADB300FE353B /* Build configuration list for PBXLegacyTarget "HaskellCLI" */;
+			buildArgumentsString = "$(SOURCE_ROOT)/BuildPKG.sh $(ACTION)";
+			buildConfigurationList = E709167E1C3CC2B600F5E0E4 /* Build configuration list for PBXLegacyTarget "HaskellCLI" */;
 			buildPhases = (
 			);
-			buildToolPath = /usr/bin/productbuild;
+			buildToolPath = /bin/bash;
 			buildWorkingDirectory = "";
 			dependencies = (
-				E71989DF1C3A02FC00FE353B /* PBXTargetDependency */,
+				E70916821C3CC2D100F5E0E4 /* PBXTargetDependency */,
 			);
 			name = HaskellCLI;
 			passBuildSettingsInEnvironment = 1;
@@ -121,7 +125,7 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {
-					E71989BE1C37ADB300FE353B = {
+					E709167D1C3CC2B600F5E0E4 = {
 						CreatedOnToolsVersion = 7.2;
 					};
 					E71989D61C3A02E300FE353B = {
@@ -141,7 +145,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E71989BE1C37ADB300FE353B /* HaskellCLI */,
+				E709167D1C3CC2B600F5E0E4 /* HaskellCLI */,
 				E71989D61C3A02E300FE353B /* CLITree */,
 			);
 		};
@@ -160,20 +164,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# This is where we create the destination tree\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\nmkdir -p $CONTENTS_PATH/usr/local/bin\nmkdir -p $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\n\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc.sh >$CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghci.sh >$CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/runghc.sh >$CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc-pkg.sh >$CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/alex.sh >$CONTENTS_PATH/usr/local/bin/alex\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/happy.sh >$CONTENTS_PATH/usr/local/bin/happy\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/cabal.sh >$CONTENTS_PATH/usr/local/bin/cabal\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hpc.sh >$CONTENTS_PATH/usr/local/bin/hpc\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hsc2hs.sh >$CONTENTS_PATH/usr/local/bin/hsc2hs\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/alex\nchmod a+x $CONTENTS_PATH/usr/local/bin/happy\nchmod a+x $CONTENTS_PATH/usr/local/bin/cabal\nchmod a+x $CONTENTS_PATH/usr/local/bin/hpc\nchmod a+x $CONTENTS_PATH/usr/local/bin/hsc2hs\n\nln -hfs ghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc\nln -hfs ghci-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghci\nln -hfs runghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/runghc\nln -hfs runghc $CONTENTS_PATH/usr/local/bin/runhaskell\nln -hfs ghc-pkg-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc-pkg\n\ncp -f $GHCROOT/usr/bin/hp2ps $CONTENTS_PATH/usr/local/bin\n\ncp -f $SOURCE_ROOT/SetupCLI.sh $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\nchmod a+x $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\n\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/runghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc-pkg $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hpc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hsc2hs $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/alex $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/happy $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/cabal $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/alex\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/happy\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/cabal\n\n# We get the LTS repo URL from the cabal.config used to build the package for GHC.framework\ngrep '\\-- remote-repo:' $SOURCE_ROOT/../GHCBuild/cabal.config | sed -e 's/-- //' >$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config\ncat $SOURCE_ROOT/cabal.config >>$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config";
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# This is where we create the destination tree\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\nmkdir -p $CONTENTS_PATH/usr/local/bin\nmkdir -p $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\n\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc.sh >$CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghci.sh >$CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/runghc.sh >$CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/ghc-pkg.sh >$CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/alex.sh >$CONTENTS_PATH/usr/local/bin/alex\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/happy.sh >$CONTENTS_PATH/usr/local/bin/happy\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/cabal.sh >$CONTENTS_PATH/usr/local/bin/cabal\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hpc.sh >$CONTENTS_PATH/usr/local/bin/hpc\nsed -e \"s/VERSION/$GHC_VERSION/g\" $SOURCE_ROOT/hsc2hs.sh >$CONTENTS_PATH/usr/local/bin/hsc2hs\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghci-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/runghc-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/ghc-pkg-$GHC_VERSION\nchmod a+x $CONTENTS_PATH/usr/local/bin/alex\nchmod a+x $CONTENTS_PATH/usr/local/bin/happy\nchmod a+x $CONTENTS_PATH/usr/local/bin/cabal\nchmod a+x $CONTENTS_PATH/usr/local/bin/hpc\nchmod a+x $CONTENTS_PATH/usr/local/bin/hsc2hs\n\nln -hfs ghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc\nln -hfs ghci-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghci\nln -hfs runghc-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/runghc\nln -hfs runghc $CONTENTS_PATH/usr/local/bin/runhaskell\nln -hfs ghc-pkg-$GHC_VERSION $CONTENTS_PATH/usr/local/bin/ghc-pkg\n\ncp -f $GHCROOT/usr/bin/hp2ps $CONTENTS_PATH/usr/local/bin\n\ncp -f $SOURCE_ROOT/SetupCLI.sh $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\nchmod a+x $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/SetupCLI\n\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/runghc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/ghc-pkg $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hpc $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/hsc2hs $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/alex $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/happy $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ncp -f $GHCROOT/usr/lib/ghc/bin/cabal $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/alex\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/happy\ninstall_name_tool -add_rpath @loader_path/.. $CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/bin/cabal\n\n# We get the LTS repo URL from the cabal.config used to build the package for GHC.framework\n# FIXME: Maybe we should construct it from the CFBundleShortVersionString that we get from the framework plist...\necho -n \"-- Haskell for Mac CLI for GHC.framework \" >$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config\nplutil -extract CFBundleShortVersionString xml1 $SOURCE_ROOT/../GHC/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||' >>$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config\ngrep '\\-- remote-repo:' $SOURCE_ROOT/../GHCBuild/cabal.config | sed -e 's/-- //' >>$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config\ncat $SOURCE_ROOT/cabal.config >>$CONTENTS_PATH/usr/local/lib/ghc-${GHC_VERSION}/cabal.config";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E71989DF1C3A02FC00FE353B /* PBXTargetDependency */ = {
+		E70916821C3CC2D100F5E0E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E71989D61C3A02E300FE353B /* CLITree */;
-			targetProxy = E71989DE1C3A02FC00FE353B /* PBXContainerItemProxy */;
+			targetProxy = E70916811C3CC2D100F5E0E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		E709167F1C3CC2B600F5E0E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E70916801C3CC2B600F5E0E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		E71989BF1C37ADB300FE353B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -247,29 +274,6 @@
 			};
 			name = Release;
 		};
-		E71989C21C37ADB300FE353B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEBUGGING_SYMBOLS = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		E71989C31C37ADB300FE353B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		E71989DC1C3A02E300FE353B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -305,6 +309,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E709167E1C3CC2B600F5E0E4 /* Build configuration list for PBXLegacyTarget "HaskellCLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E709167F1C3CC2B600F5E0E4 /* Debug */,
+				E70916801C3CC2B600F5E0E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E71989BD1C37ADB300FE353B /* Build configuration list for PBXProject "HaskellCLI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -314,14 +327,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E71989C11C37ADB300FE353B /* Build configuration list for PBXLegacyTarget "HaskellCLI" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E71989C21C37ADB300FE353B /* Debug */,
-				E71989C31C37ADB300FE353B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-		};
 		E71989DB1C3A02E300FE353B /* Build configuration list for PBXNativeTarget "CLITree" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -329,6 +334,7 @@
 				E71989DD1C3A02E300FE353B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

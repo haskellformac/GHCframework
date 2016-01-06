@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Haskell for Mac Command Line Tools</title>
+    <pkg-ref id="com.haskellformac.pkg.CLI"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.haskellformac.pkg.CLI"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.haskellformac.pkg.CLI" visible="false">
+        <pkg-ref id="com.haskellformac.pkg.CLI"/>
+    </choice>
+    <pkg-ref id="com.haskellformac.pkg.CLI" onConclusion="none">CLI.pkg</pkg-ref>
+</installer-gui-script>
