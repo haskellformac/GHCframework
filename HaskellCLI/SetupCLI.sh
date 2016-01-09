@@ -52,9 +52,10 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
     rm -f "$appContainerBin/$file"
   done
   for file in `ls "$cliLocation"`; do
-    ln "$cliLocation/$file" "$appContainerBin"
+    ln -f "$cliLocation/$file" "$appContainerBin"
   done
+  ln -f "$appContainerBin/unlit" "$appContainerBin/.."
 
-  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|BIN_DIR|/Users/$USER/Library/Haskell/bin|g" "$cliLocation/../cabal.config" >$appContainer/cabal.config
+  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|USER|$USER|g" "$cliLocation/../cabal.config" >"$appContainer/cabal.config"
 
 fi
