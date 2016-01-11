@@ -12,7 +12,8 @@
 //
 //  In the former case, the script may be invoked in sandboxed mode by passing the '--sandboxed' flag. In sandboxed mode,
 //  we don't relocate executables and create a copy of the rewritten package database in the app container (as writing
-//  to the app bundle would be a sandbox violation.)
+//  to the app bundle would be a sandbox violation.) In sandboxed mode, the flag is being followed by two further 
+//  arguments: (1) the 'NSApplicationSupportDirectory' and (2) the 'CFBundleVersion'.
 
 import Foundation
 
@@ -87,29 +88,46 @@ print("Relocating from \(oldLocation) to \(location.path!)")
 
 let defaultFileManager = NSFileManager.defaultManager()
 
-var appContainerGHCRoot      : NSURL? = nil
-var appContainerGHCLib       : NSURL? { get {
-  return appContainerGHCRoot?.URLByAppendingPathComponent("lib/ghc")
+var appContainerGHCRoot:           NSURL? = nil
+var appContainerLib:               NSURL? { get {
+  return appContainerGHCRoot?.URLByAppendingPathComponent("lib")
 } }
-var appContainerPackageDBPath: NSURL? { get {
+var appContainerGHCLib:            NSURL? { get {
+  return appContainerLib?.URLByAppendingPathComponent("ghc")
+} }
+var appContainerBundleVersionPath: NSURL? { get {
+  return appContainerLib?.URLByAppendingPathComponent("Version")
+} }
+var appContainerBin:               NSURL? { get {
+  return appContainerGHCRoot?.URLByAppendingPathComponent("bin")
+} }
+var appContainerShare:             NSURL? { get {
+  return appContainerGHCRoot?.URLByAppendingPathComponent("share")
+} }
+var appContainerPackageDBPath:     NSURL? { get {
   return appContainerGHCLib?.URLByAppendingPathComponent("package.conf.d")
 } }
+var bundleVersion: NSString? = nil
 
-if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
+if Process.argc == 4 && Process.arguments[1] == "--sandboxed" {
 
   appContainerGHCRoot = NSURL(fileURLWithPath: Process.arguments[2])
+  bundleVersion       = Process.arguments[3]
 
-    // We need to check both the location as well as the time stamp, as we may switch between different copies as well
-    // as update one to a newer version. NB: This is still not entirely safe, as we may overwrite one version with an
-    // older one — but that should only happen during testing (when we have to manually remove the app container DB).
+    // To consider the package database up to date, the following three conditions must hold:
+    // (1) The current 'bundleVersion' and that stored in the app container need to be the same.
+    // (2) The location of the library embedded HfM and the location encoded in the package specs in the package
+    //     database located in the app container need to match.
+    // (3) The package cache embedded in HfM needs to be older than that in the app container.
   let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
     // FIXME: the following needs to have error handling cleaned up
-  let str: String? = try? String(contentsOfFile: appContainerRtsConfPath.path!)
+  let appContainerBundleVersion = (try? String(contentsOfFile: appContainerBundleVersionPath!.path!)) ?? "UNKNOWN",
+      str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath.path!)
   if let appContainerRtsConfData = str,
 //  if let appContainerRtsConfData = try String(contentsOfFile: appContainerRtsConfPath.path!),
          appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
   {
-    if NSURL(fileURLWithPath: appContainerLocation) == location {
+    if NSURL(fileURLWithPath: appContainerLocation) == location && appContainerBundleVersion == bundleVersion {
 
       let embeddedCachePath      = packageDBPath.URLByAppendingPathComponent("package.cache"),
           embeddedCacheAttrs     = try? defaultFileManager.attributesOfItemAtPath(embeddedCachePath.path!),
@@ -127,9 +145,13 @@ if Process.argc == 3 && Process.arguments[1] == "--sandboxed" {
       // different package sets, versions, or package IDs, in which case, droppings of the old may remain if we
       // just write over the old root directory.)
     print("Removing old GHC root directory including package DB in app container")
-    if let ghcLib = appContainerGHCLib {
+    if let lib = appContainerLib, bin = appContainerBin, share = appContainerShare {
 
-      do { try defaultFileManager.removeItemAtPath(ghcLib.path!) }
+      do {
+        if defaultFileManager.fileExistsAtPath(lib.path!)   { try defaultFileManager.removeItemAtPath(lib.path!) }
+        if defaultFileManager.fileExistsAtPath(bin.path!)   { try defaultFileManager.removeItemAtPath(bin.path!) }
+        if defaultFileManager.fileExistsAtPath(share.path!) { try defaultFileManager.removeItemAtPath(share.path!) }
+      }
       catch let error {
         NSLog("failed to remove existing file at GHC root directory location in app container: \(error)")
         exit(1)
@@ -160,7 +182,7 @@ if !sandboxed {
   }
 }
 
-  // In sandboxed mode, create the GHC root directory and package DB in the app container if it doesn't exit yet.
+  // In sandboxed mode, create the GHC root directory, package DB & ghc/bin path in the app container if they don't exit yet.
 if let packageDBPath = appContainerPackageDBPath {
 
   var error:       NSError?
@@ -175,6 +197,9 @@ if let packageDBPath = appContainerPackageDBPath {
       try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin").path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
+      defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
+                                          contents: bundleVersion!.dataUsingEncoding(NSUTF8StringEncoding),
+                                          attributes: nil)
     } catch var error as NSError {
       NSLog("failed to create package DB (or bin directory) in app container: %@", error)
       exit(1)
@@ -189,9 +214,16 @@ if let packageDBPath = appContainerPackageDBPath {
       exit(1)
     }
     do {
+      // FIXME: de-duplicate by using a local function
       try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
+      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin").path!,
+                                                   withIntermediateDirectories: true,
+                                                   attributes: nil)
+      defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
+                                          contents: bundleVersion!.dataUsingEncoding(NSUTF8StringEncoding),
+                                          attributes: nil)
     } catch var error as NSError {
       NSLog("failed to create package DB in app container: %@", error)
       exit(1)
