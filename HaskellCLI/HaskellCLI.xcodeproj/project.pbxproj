@@ -32,6 +32,7 @@
 		E71989DA1C3A02E300FE353B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E71989E61C3A774300FE353B /* cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cabal.config; sourceTree = "<group>"; };
 		E748C25D1C3CE76100027019 /* Distribution */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Distribution; sourceTree = "<group>"; };
+		E764319E1C4E1C51002091F0 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -72,6 +73,7 @@
 				E71989CD1C392C4B00FE353B /* hsc2hs.sh */,
 				E71989CE1C392D1100FE353B /* runghc.sh */,
 				E748C25D1C3CE76100027019 /* Distribution */,
+				E764319E1C4E1C51002091F0 /* Resources */,
 				E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */,
 				E71989C81C37CFA300FE353B /* SetupCLI.sh */,
 				E71989E61C3A774300FE353B /* cabal.config */,

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-gui-script minSpecVersion="1">
     <title>Haskell for Mac Command Line Tools</title>
+    <background alignment="center" scaling="tofit" file="Background.jpg" mime-type="image/jpeg"/>
+    <welcome file="Welcome.rtf" mime-type="text/rtf"/>
+    <conclusion file="Conclusion.rtf" mime-type="text/rtf"/>
     <pkg-ref id="com.haskellformac.pkg.CLI"/>
     <options customize="never" require-scripts="false"/>
     <choices-outline>

@@ -25,6 +25,6 @@ else
 #  echo "Synthesise"
 #  /usr/bin/productbuild --identifier com.haskellformac.app.$PRODUCT_NAME --version $VERSION --synthesize --package $CLITREE_PKG $DISTRIBUTION_PATH
   echo "** Build Product"
-  /usr/bin/productbuild --identifier com.haskellformac.pkg.$PRODUCT_NAME --version $VERSION --sign "Developer ID Installer" --distribution $SOURCE_ROOT/Distribution --package-path $CONFIGURATION_BUILD_DIR $FULL_PRODUCT_NAME
+  /usr/bin/productbuild --identifier com.haskellformac.pkg.$PRODUCT_NAME --version $VERSION --sign "Developer ID Installer" --distribution $SOURCE_ROOT/Distribution --resources $SOURCE_ROOT/Resources --package-path $CONFIGURATION_BUILD_DIR $FULL_PRODUCT_NAME
 
 fi
