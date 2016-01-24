@@ -9,7 +9,7 @@
 #  Create hard links from the application container to the CLI tools at the location given in the first command line
 #  argument (something like '/usr/local/lib/ghc-7.10.2/bin'). Links to all binaries at the latter location are created.
 
-appContainer="/Users/$USER/Library/Containers/com.haskellformac.Haskell.basic/Data/Library/Application Support"
+appContainer="$HOME/Library/Containers/com.haskellformac.Haskell.basic/Data/Library/Application Support"
 appContainerBin="$appContainer/lib/ghc/bin"
 appContainerPackageDB="$appContainer/lib/ghc/package.conf.d"
 appContainerPackageCache="$appContainerPackageDB/package.cache"
@@ -56,6 +56,6 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
   done
   ln -f "$appContainerBin/unlit" "$appContainerBin/.."
 
-  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|USER|$USER|g" "$cliLocation/../cabal.config" >"$appContainer/cabal.config"
+  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|HOME_DIR|$HOME|g" "$cliLocation/../cabal.config" >"$appContainer/cabal.config"
 
 fi
