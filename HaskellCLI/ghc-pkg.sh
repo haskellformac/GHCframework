@@ -7,7 +7,7 @@ exeprog="ghc-pkg"
 topdir="$appContainer/lib/ghc"
 executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
-  $libGHC/SetupCLI $libGHC/bin
+  $libGHC/SetupCLI $libGHC/bin || exit 1
 fi
 PKGCONF="$topdir/package.conf.d"
 exec "$executablename" --global-package-db "$PKGCONF" ${1+"$@"}

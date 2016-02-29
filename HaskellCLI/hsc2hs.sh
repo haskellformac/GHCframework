@@ -7,7 +7,7 @@ exeprog="hsc2hs"
 topdir="$appContainer/lib/ghc"
 executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
-  $libGHC/SetupCLI $libGHC/bin
+  $libGHC/SetupCLI $libGHC/bin || exit 1
 fi
 HSC2HS_EXTRA="--cflag=-m64 --cflag=-fno-stack-protector --lflag=-m64"
 tflag="--template=$topdir/template-hsc.h"
