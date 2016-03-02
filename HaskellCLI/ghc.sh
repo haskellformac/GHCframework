@@ -9,4 +9,4 @@ executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
   $libGHC/SetupCLI $libGHC/bin || exit 1
 fi
-exec "$executablename" -B"$topdir" -dynamic -optl -rpath -optl "$topdir" ${1+"$@"}
+exec "$executablename" -B"$topdir" -dynamic ${1+"$@"}

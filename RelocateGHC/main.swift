@@ -50,9 +50,9 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
   do {
     try String(contentsOfFile: source).stringByReplacingOccurrencesOfString(oldString, withString: newString)
       .writeToFile(target ?? source, atomically: false, encoding: NSUTF8StringEncoding)
+                                        // ^^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
   } catch _ {
   }
-                                   // ^^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
 }
 
 
@@ -289,6 +289,22 @@ for package in packages {
       target = appContainerPackageDBPath?.URLByAppendingPathComponent(package)
   replaceInFile(source.path!, string: oldLocation, withString: location.path!, writingTo: target?.path)
 
+}
+
+  // In sandboxed mode, add an rpath linker option pointing to the app container GHC library path to the RTS conf.
+if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).first,
+       builtin_rtsPath = appContainerPackageDBPath?.URLByAppendingPathComponent(builtin_rts).path
+{
+  do {
+
+    let contents    = try String(contentsOfFile: builtin_rtsPath),
+        rpathOption = "            \"-Wl,-rpath,\(ghcLibPath.path!)\""
+    try (contents + rpathOption).writeToFile(builtin_rtsPath, atomically: false, encoding: NSUTF8StringEncoding)
+
+  } catch _ {
+    NSLog("Failed to add RPATH to buildin_rts.conf")
+    exit(1)
+  }
 }
 
   // Refresh the package db cache.
