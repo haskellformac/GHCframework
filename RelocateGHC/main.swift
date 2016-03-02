@@ -67,8 +67,10 @@ let bundleLocation = NSURL(fileURLWithPath: NSBundle.mainBundle().bundlePath)
 
 let relativeBin   = "usr/bin",
     relativeLib   = "usr/lib/ghc",
+    relativeShare = "usr/share",
     executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"],
     ghcLibPath    = location.URLByAppendingPathComponent(relativeLib),
+    embeddedShare = location.URLByAppendingPathComponent(relativeShare),
     packageDBPath = ghcLibPath.URLByAppendingPathComponent("package.conf.d")
 
 let rtsConfPath   = packageDBPath.URLByAppendingPathComponent("builtin_rts.conf"),
@@ -116,7 +118,7 @@ if Process.argc == 4 && Process.arguments[1] == "--sandboxed" {
 
     // To consider the package database up to date, the following three conditions must hold:
     // (1) The current 'bundleVersion' and that stored in the app container need to be the same.
-    // (2) The location of the library embedded HfM and the location encoded in the package specs in the package
+    // (2) The location of the library embedded in HfM and the location encoded in the package specs in the package
     //     database located in the app container need to match.
     // (3) The package cache embedded in HfM needs to be older than that in the app container.
   let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
@@ -233,7 +235,7 @@ if let packageDBPath = appContainerPackageDBPath {
 }
 
 let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath.path!))
-                  ?!  ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
+                  ?! ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
     ghcLibFiles = ghcLibDir.filter{ $0 != "package.conf.d" }
 
   // In sandboxed mode, create symbolic links in the app container too all files in the embedded GHC root directory
@@ -245,6 +247,34 @@ if let packageDBPath = appContainerPackageDBPath {
         target = appContainerGHCLib!.URLByAppendingPathComponent(ghcRootFile)
     try defaultFileManager.createSymbolicLinkAtURL(target, withDestinationURL: source)
 
+  }
+}
+
+let shareFiles = (try? defaultFileManager.contentsOfDirectoryAtPath(embeddedShare.path!))
+                 ?! ("fatal error: could not read share/ directory at \(embeddedShare)")
+
+  // In sandboxed mode, create the share/ directory if it doesn't exist yet and populate it with symbolic links to the
+  // files in the share/ directory embedded in the app.
+if let sharePath = appContainerShare {
+
+  let shareDirExists = defaultFileManager.fileExistsAtPath(sharePath.path!, isDirectory: nil)
+  if !shareDirExists {                            // doesn't exist => create directory
+
+    do {
+      try defaultFileManager.createDirectoryAtPath(sharePath.path!,
+                                                   withIntermediateDirectories: true,
+                                                   attributes: nil)
+    } catch var error as NSError {
+      NSLog("failed to create share directory in app container: %@", error)
+      exit(1)
+    }
+    for shareFile in shareFiles {
+
+      let source = embeddedShare.URLByAppendingPathComponent(shareFile),
+          target = appContainerShare!.URLByAppendingPathComponent(shareFile)
+      try defaultFileManager.createSymbolicLinkAtURL(target, withDestinationURL: source)
+
+    }
   }
 }
 
