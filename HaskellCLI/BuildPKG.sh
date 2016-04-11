@@ -6,10 +6,10 @@
 #  Created by Manuel M T Chakravarty on 6/01/2016.
 #  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
 
-# FIRST TWO MUST MATCH HfM APP — third one is package version
-VERSION=1.1.0
+# Matches the GHC.framework version
+VERSION=`plutil -extract CFBundleShortVersionString xml1 $SOURCE_ROOT/../GHC/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
 
-FULL_PRODUCT_NAME=$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME.pkg
+FULL_PRODUCT_NAME=$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME-$VERSION.pkg
 CLITREE_CONTENTS=$CONFIGURATION_BUILD_DIR/CLITree.bundle/Contents
 CLITREE_PKG=$CONFIGURATION_BUILD_DIR/CLI.pkg
 DISTRIBUTION_PATH=$CONFIGURATION_BUILD_DIR/Distribution
