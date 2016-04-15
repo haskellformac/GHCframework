@@ -77,7 +77,7 @@
 /* Begin PBXFileReference section */
 		E71989C41C37ADB300FE353B /* HaskellCLI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HaskellCLI.xcodeproj; path = HaskellCLI/HaskellCLI.xcodeproj; sourceTree = "<group>"; };
 		E75BC68D1B688D15000134CF /* GHC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GHC.swift; sourceTree = "<group>"; };
-		E78F46201B5CDEA400FB6200 /* ghc-pkg.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "ghc-pkg.entitlements"; sourceTree = "<group>"; };
+		E78F46201B5CDEA400FB6200 /* haskell-binary.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "haskell-binary.entitlements"; sourceTree = "<group>"; };
 		E791CF1E19F8AEC900DECDC4 /* GHC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GHC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E791CF2219F8AEC900DECDC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E791CF2319F8AEC900DECDC4 /* GHC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GHC.h; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 		E791CF1419F8AEC900DECDC4 = {
 			isa = PBXGroup;
 			children = (
-				E78F46201B5CDEA400FB6200 /* ghc-pkg.entitlements */,
+				E78F46201B5CDEA400FB6200 /* haskell-binary.entitlements */,
 				E791CF2019F8AEC900DECDC4 /* GHC */,
 				E791CF1F19F8AEC900DECDC4 /* Products */,
 				E7C4FF901ADE9B7C00E652AA /* RelocateGHC.xcodeproj */,
@@ -189,7 +189,7 @@
 			buildPhases = (
 				E791CF4919F9135F00DECDC4 /* CopyFiles */,
 				E791CF4819F8CF0800DECDC4 /* Copy GHC build */,
-				E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg and Create Buildtime Executables */,
+				E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg & cpphs and Create Buildtime Executables */,
 				E74DEA5E1B659DB800EACD6D /* Relocate Copied GHC Tree */,
 				E7F983B61B661C6500956431 /* Sources */,
 				E7F983871B65E6C600956431 /* Frameworks */,
@@ -327,19 +327,19 @@
 			shellScript = "# Unique build numbers calculated from Git commits http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode/\n\nbranch='master'\nbuildNumber=$(expr $(git rev-list $branch --count) - $(git rev-list HEAD..$branch --count))\necho \"Updating build number to $buildNumber using branch '$branch'.\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# The following command checks the source corresponding to a particular build number out\n#\n#   git checkout `git rev-list master | tail -n $1 | head -n 1`";
 			showEnvVarsInLog = 0;
 		};
-		E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg and Create Buildtime Executables */ = {
+		E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg & cpphs and Create Buildtime Executables */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Sign ghc-pkg and Create Buildtime Executables";
+			name = "Sign ghc-pkg & cpphs and Create Buildtime Executables";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "CONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Create a signed copy of 'ghc-pkg' with entitlements, so it can be shipped in th bundle. (HfM needs it to create the binary package cache.)\n\necho \"Creating signed copy of 'ghc-pkg'...\"\nmkdir -p ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg\ncp -f ${CONTENTS_PATH}/usr/lib/ghc/bin/ghc-pkg ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg/\nln -hfs ../usr/lib/ghc/ghc-pkg/ghc-pkg ${CONTENTS_PATH}/Executables/\n\n# FIXME: The hardcoded code signing details are not great...\nexport CODESIGN_ALLOCATE=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 --entitlements $SOURCE_ROOT/ghc-pkg.entitlements --requirements '=designated => anchor apple generic  and identifier \"$self.identifier\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or ( certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists  and certificate leaf[subject.OU] = \"K46KPXLRKW\" ))' ${CONTENTS_PATH}/usr/lib/ghc/ghc-pkg/ghc-pkg\n\n# Copies of the two tools without sandboxing, so we can use them during builds (re-signing deletes the old entitelments by default)\n\ncp -f ${CONTENTS_PATH}/Executables/RelocateGHC ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\ncp -f ${CONTENTS_PATH}/Executables/StandardizePath ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n";
+			shellScript = "CONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\n\n# Create a signed copy of 'ghc-pkg' & 'ccphs' with entitlements, so it can be shipped in the bundle. (HfM needs 'ghc-pkg' to create the binary package cache.)\n\necho \"Creating signed copy of 'ghc-pkg' and 'cpphs'...\"\nmkdir -p ${CONTENTS_PATH}/usr/lib/ghc/signed_bin\ncp -f ${CONTENTS_PATH}/usr/lib/ghc/bin/ghc-pkg ${CONTENTS_PATH}/usr/lib/ghc/signed_bin/\nln -hfs ../usr/lib/ghc/signed_bin/ghc-pkg ${CONTENTS_PATH}/Executables/\ncp -f ${CONTENTS_PATH}/usr/lib/ghc/bin/cpphs ${CONTENTS_PATH}/usr/lib/ghc/signed_bin/\nln -hfs ../usr/lib/ghc/signed_bin/cpphs ${CONTENTS_PATH}/Executables/\n\n# FIXME: The hardcoded code signing details are not great...\nexport CODESIGN_ALLOCATE=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 --entitlements $SOURCE_ROOT/haskell-binary.entitlements --requirements '=designated => anchor apple generic  and identifier \"$self.identifier\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or ( certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists  and certificate leaf[subject.OU] = \"K46KPXLRKW\" ))' ${CONTENTS_PATH}/usr/lib/ghc/signed_bin/ghc-pkg\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 --entitlements $SOURCE_ROOT/haskell-binary.entitlements --requirements '=designated => anchor apple generic  and identifier \"$self.identifier\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or ( certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists  and certificate leaf[subject.OU] = \"K46KPXLRKW\" ))' ${CONTENTS_PATH}/usr/lib/ghc/signed_bin/cpphs\n\n# Copies of the two tools without sandboxing, so we can use them during builds (re-signing deletes the old entitelments by default)\n\ncp -f ${CONTENTS_PATH}/Executables/RelocateGHC ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/RelocateGHC.buildtime\ncp -f ${CONTENTS_PATH}/Executables/StandardizePath ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n/usr/bin/codesign --force --sign F6F5082B07AC26376C5288CA4D476F79C2660CD5 ${CONTENTS_PATH}/Executables/StandardizePath.buildtime\n";
 			showEnvVarsInLog = 0;
 		};
 		E791CF4819F8CF0800DECDC4 /* Copy GHC build */ = {
