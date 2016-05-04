@@ -7,9 +7,10 @@
 #  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
 #
 #  Create hard links from the application container to the CLI tools at the location given in the first command line
-#  argument (something like '/usr/local/lib/ghc-7.10.2/bin'). Links to all binaries at the latter location are created.
+#  argument (something like '/usr/local/lib/ghc-7.10.3/bin'). Links to all binaries at the latter location are created.
 
 appContainer="$HOME/Library/Containers/com.haskellformac.Haskell.basic/Data/Library/Application Support"
+appContainerGHCVersionPath="$appContainer/lib/Version"
 appContainerBin="$appContainer/lib/ghc/bin"
 appContainerPackageDB="$appContainer/lib/ghc/package.conf.d"
 appContainerPackageCache="$appContainerPackageDB/package.cache"
@@ -21,6 +22,12 @@ cliLocation="$1"
 
 appContainerIsOutdated="false"
 if [ ! -d "$appContainerBin" ]; then
+  appContainerIsOutdated="true"
+fi
+
+appContainerGHCVersion=`cat "$appContainerGHCVersionPath" || echo 0`
+cliGHCVersion=`cat "$cliLocation/../Version"`
+if [ $appContainerGHCVersion -ne $cliGHCVersion ]; then
   appContainerIsOutdated="true"
 fi
 
@@ -42,6 +49,9 @@ if `$appContainerIsOutdated`; then
   echo "$0: incomplete set up"
   echo "  Before you can use the Haskell for Mac command line tools, please start"
   echo "  Haskell.app (so that it can configure the Haskell package database)."
+  echo "  If that doesn't help, there is a version mismatch:"
+  echo "    Haskell for Mac GHC.framework version:    $appContainerGHCVersion"
+  echo "    Command line tools GHC.framework version: $cliGHCVersion"
   exit 1
 fi
 
