@@ -88,6 +88,7 @@
 				TargetAttributes = {
 					E7E54FF5195D6CEE0019278B = {
 						CreatedOnToolsVersion = 6.0;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -239,6 +240,7 @@
 				PRODUCT_NAME = GHCBuild;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -253,6 +255,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = GHCBuild;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

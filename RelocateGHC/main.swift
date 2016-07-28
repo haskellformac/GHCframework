@@ -59,7 +59,7 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
 // MARK: Determine target location
 
 let bundleLocation = NSURL(fileURLWithPath: NSBundle.mainBundle().bundlePath)
-                     .URLByAppendingPathComponent("..")
+                     .URLByAppendingPathComponent("..")!
                      .URLByResolvingSymlinksInPath!,
     location       = bundleLocation.path!.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
                      ? bundleLocation
@@ -69,12 +69,12 @@ let relativeBin   = "usr/bin",
     relativeLib   = "usr/lib/ghc",
     relativeShare = "usr/share",
     executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"],
-    ghcLibPath    = location.URLByAppendingPathComponent(relativeLib),
-    embeddedShare = location.URLByAppendingPathComponent(relativeShare),
-    packageDBPath = ghcLibPath.URLByAppendingPathComponent("package.conf.d")
+    ghcLibPath    = location!.URLByAppendingPathComponent(relativeLib),
+    embeddedShare = location!.URLByAppendingPathComponent(relativeShare),
+    packageDBPath = ghcLibPath!.URLByAppendingPathComponent("package.conf.d")
 
-let rtsConfPath   = packageDBPath.URLByAppendingPathComponent("builtin_rts.conf"),
-    rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path!))
+let rtsConfPath   = packageDBPath!.URLByAppendingPathComponent("builtin_rts.conf"),
+    rtsConfData   = (try? String(contentsOfFile: rtsConfPath!.path!))
                     ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
 let oldLocation   = libraryLocation(rtsConfData)
@@ -83,7 +83,7 @@ let oldLocation   = libraryLocation(rtsConfData)
 if location == NSURL(fileURLWithPath: oldLocation) {
   exit(0)  // location is already up to date
 }
-print("Relocating from \(oldLocation) to \(location.path!)")
+print("Relocating from \(oldLocation) to \(location!.path!)")
 
 
 // MARK: Process arguments
@@ -124,17 +124,17 @@ if Process.argc == 4 && Process.arguments[1] == "--sandboxed" {
   let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
     // FIXME: the following needs to have error handling cleaned up
   let appContainerBundleVersion = (try? String(contentsOfFile: appContainerBundleVersionPath!.path!)) ?? "UNKNOWN",
-      str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath.path!)
+      str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath!.path!)
   if let appContainerRtsConfData = str,
 //  if let appContainerRtsConfData = try String(contentsOfFile: appContainerRtsConfPath.path!),
          appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
   {
     if NSURL(fileURLWithPath: appContainerLocation) == location && appContainerBundleVersion == bundleVersion {
 
-      let embeddedCachePath      = packageDBPath.URLByAppendingPathComponent("package.cache"),
-          embeddedCacheAttrs     = try? defaultFileManager.attributesOfItemAtPath(embeddedCachePath.path!),
+      let embeddedCachePath      = packageDBPath!.URLByAppendingPathComponent("package.cache"),
+          embeddedCacheAttrs     = try? defaultFileManager.attributesOfItemAtPath(embeddedCachePath!.path!),
           appContainerCachePath  = appContainerPackageDBPath!.URLByAppendingPathComponent("package.cache"),
-          appContainerCacheAttrs = try? defaultFileManager.attributesOfItemAtPath(appContainerCachePath.path!)
+          appContainerCacheAttrs = try? defaultFileManager.attributesOfItemAtPath(appContainerCachePath!.path!)
       if let embeddedCacheDate      = (embeddedCacheAttrs as NSDictionary?)?.fileModificationDate(),
               appContainerCacheDate = (appContainerCacheAttrs as NSDictionary?)?.fileModificationDate()
         where appContainerCacheDate.compare(embeddedCacheDate) == .OrderedDescending
@@ -178,9 +178,9 @@ var sandboxed: Bool { get { return appContainerPackageDBPath != nil } }
   // Rewrite the location in all executables if not in sandboxed mode.
 if !sandboxed {
   for executable in
-    (executables.map{ location.URLByAppendingPathComponent(relativeBin).URLByAppendingPathComponent($0) })
+    (executables.map{ location!.URLByAppendingPathComponent(relativeBin)!.URLByAppendingPathComponent($0) })
   {
-    replaceInFile(executable.path!, string: oldLocation, withString: location.path!)
+    replaceInFile(executable!.path!, string: oldLocation, withString: location!.path!)
   }
 }
 
@@ -196,7 +196,7 @@ if let packageDBPath = appContainerPackageDBPath {
       try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin").path!,
+      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin")!.path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
       defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
@@ -220,7 +220,7 @@ if let packageDBPath = appContainerPackageDBPath {
       try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin").path!,
+      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin")!.path!,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
       defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
@@ -234,7 +234,7 @@ if let packageDBPath = appContainerPackageDBPath {
   }
 }
 
-let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath.path!))
+let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath!.path!))
                   ?! ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
     ghcLibFiles = ghcLibDir.filter{ $0 != "package.conf.d" }
 
@@ -243,14 +243,14 @@ let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath.
 if let packageDBPath = appContainerPackageDBPath {
   for ghcRootFile in ghcLibFiles {
 
-    let source = ghcLibPath.URLByAppendingPathComponent(ghcRootFile),
+    let source = ghcLibPath!.URLByAppendingPathComponent(ghcRootFile),
         target = appContainerGHCLib!.URLByAppendingPathComponent(ghcRootFile)
-    try defaultFileManager.createSymbolicLinkAtURL(target, withDestinationURL: source)
+    try defaultFileManager.createSymbolicLinkAtURL(target!, withDestinationURL: source!)
 
   }
 }
 
-let shareFiles = (try? defaultFileManager.contentsOfDirectoryAtPath(embeddedShare.path!))
+let shareFiles = (try? defaultFileManager.contentsOfDirectoryAtPath(embeddedShare!.path!))
                  ?! ("fatal error: could not read share/ directory at \(embeddedShare)")
 
   // In sandboxed mode, create the share/ directory if it doesn't exist yet and populate it with symbolic links to the
@@ -270,35 +270,35 @@ if let sharePath = appContainerShare {
     }
     for shareFile in shareFiles {
 
-      let source = embeddedShare.URLByAppendingPathComponent(shareFile),
+      let source = embeddedShare!.URLByAppendingPathComponent(shareFile),
           target = appContainerShare!.URLByAppendingPathComponent(shareFile)
-      try defaultFileManager.createSymbolicLinkAtURL(target, withDestinationURL: source)
+      try defaultFileManager.createSymbolicLinkAtURL(target!, withDestinationURL: source!)
 
     }
   }
 }
 
-let packagesDir = (try? defaultFileManager.contentsOfDirectoryAtPath(packageDBPath.path!))
+let packagesDir = (try? defaultFileManager.contentsOfDirectoryAtPath(packageDBPath!.path!))
                   ?!  ("fatal error: could not read directory containing GHC package database at \(packageDBPath)"),
     packages    = packagesDir.filter{ $0.hasSuffix("conf") }
 
   // Rewrite the location in all package 'conf' files, writing to the app container in sandboxed mode.
 for package in packages {
 
-  let source = packageDBPath.URLByAppendingPathComponent(package),
+  let source = packageDBPath!.URLByAppendingPathComponent(package),
       target = appContainerPackageDBPath?.URLByAppendingPathComponent(package)
-  replaceInFile(source.path!, string: oldLocation, withString: location.path!, writingTo: target?.path)
+  replaceInFile(source!.path!, string: oldLocation, withString: location!.path!, writingTo: target?.path)
 
 }
 
   // In sandboxed mode, add an rpath linker option pointing to the app container GHC library path to the RTS conf.
 if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).first,
-       builtin_rtsPath = appContainerPackageDBPath?.URLByAppendingPathComponent(builtin_rts).path
+       builtin_rtsPath = appContainerPackageDBPath?.URLByAppendingPathComponent(builtin_rts)!.path
 {
   do {
 
     let contents    = try String(contentsOfFile: builtin_rtsPath),
-        rpathOption = "            \"-Wl,-rpath,\(ghcLibPath.path!)\""
+        rpathOption = "            \"-Wl,-rpath,\(ghcLibPath!.path!)\""
     try (contents + rpathOption).writeToFile(builtin_rtsPath, atomically: false, encoding: NSUTF8StringEncoding)
 
   } catch _ {
@@ -311,15 +311,15 @@ if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).f
 let ghcPkgTask: NSTask
 if let packageDBPath = appContainerPackageDBPath {
 
-  let ghcPkgPath = location.URLByAppendingPathComponent("Executables/ghc-pkg")
-  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath.path!, arguments: ["--global-package-db", packageDBPath.path!, "recache"])
+  let ghcPkgPath = location!.URLByAppendingPathComponent("Executables/ghc-pkg")
+  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath!.path!, arguments: ["--global-package-db", packageDBPath.path!, "recache"])
 
 } else {
 
     // In the non-sandboxed case, we use the script on purpose as an extra sanity check (that the scripts have been
     // rewritten properly).
-  let ghcPkgPath = location.URLByAppendingPathComponent(relativeBin).URLByAppendingPathComponent("ghc-pkg")
-  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath.path!, arguments: ["recache"])
+  let ghcPkgPath = location!.URLByAppendingPathComponent(relativeBin)!.URLByAppendingPathComponent("ghc-pkg")
+  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath!.path!, arguments: ["recache"])
 
 }
 ghcPkgTask.waitUntilExit()
