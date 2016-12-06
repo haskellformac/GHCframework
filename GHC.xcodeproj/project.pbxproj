@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		E75BC68E1B688D15000134CF /* GHC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75BC68D1B688D15000134CF /* GHC.swift */; };
 		E791CF2419F8AEC900DECDC4 /* GHC.h in Headers */ = {isa = PBXBuildFile; fileRef = E791CF2319F8AEC900DECDC4 /* GHC.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF961ADE9B7C00E652AA /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FF981ADE9B7C00E652AA /* StandardizePath */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		E7C4FFA31ADE9FE800E652AA /* ToolWrapper in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in Copy Files */ = {isa = PBXBuildFile; fileRef = E7C4FF961ADE9B7C00E652AA /* RelocateGHC */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in Copy Files */ = {isa = PBXBuildFile; fileRef = E7C4FF981ADE9B7C00E652AA /* StandardizePath */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E7C4FFA31ADE9FE800E652AA /* ToolWrapper in Copy Files */ = {isa = PBXBuildFile; fileRef = E7C4FFA21ADE9E9B00E652AA /* ToolWrapper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,16 +60,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		E791CF4919F9135F00DECDC4 /* CopyFiles */ = {
+		E791CF4919F9135F00DECDC4 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = Executables;
 			dstSubfolderSpec = 6;
 			files = (
-				E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in CopyFiles */,
-				E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in CopyFiles */,
-				E7C4FFA31ADE9FE800E652AA /* ToolWrapper in CopyFiles */,
+				E7C4FF9B1ADE9E4A00E652AA /* RelocateGHC in Copy Files */,
+				E7C4FF9C1ADE9E4E00E652AA /* StandardizePath in Copy Files */,
+				E7C4FFA31ADE9FE800E652AA /* ToolWrapper in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -187,7 +188,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E791CF3419F8AEC900DECDC4 /* Build configuration list for PBXNativeTarget "GHC" */;
 			buildPhases = (
-				E791CF4919F9135F00DECDC4 /* CopyFiles */,
+				E791CF4919F9135F00DECDC4 /* Copy Files */,
 				E791CF4819F8CF0800DECDC4 /* Copy GHC build */,
 				E78F461F1B5CDAF000FB6200 /* Sign ghc-pkg & cpphs and Create Buildtime Executables */,
 				E74DEA5E1B659DB800EACD6D /* Relocate Copied GHC Tree */,
