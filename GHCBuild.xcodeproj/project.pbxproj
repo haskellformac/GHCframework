@@ -11,7 +11,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E71924131DF93332007758D1 /* cc-dylib-rpath-wrapper.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cc-dylib-rpath-wrapper.sh"; sourceTree = "<group>"; };
 		E73EF1B11DF7E8D800F9BFED /* InstallPackages.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = InstallPackages.sh; sourceTree = "<group>"; };
+		E73EF1B21DF7EA2600F9BFED /* ghc-dylib-rpath-wrapper.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-dylib-rpath-wrapper.sh"; sourceTree = "<group>"; };
+		E73EF1B31DF813C600F9BFED /* BuildGHC.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildGHC.sh; sourceTree = "<group>"; };
 		E78812051B68F6100072E192 /* cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cabal.config; sourceTree = "<group>"; };
 		E7C4FFC01ADEA7C400E652AA /* build.mk.debug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.debug; sourceTree = "<group>"; };
 		E7C4FFC11ADEA7C400E652AA /* build.mk.release */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.release; sourceTree = "<group>"; };
@@ -53,7 +56,10 @@
 				E7C4FFC11ADEA7C400E652AA /* build.mk.release */,
 				E7C4FFC21ADEA7C400E652AA /* extra-packages */,
 				E7C4FFC41ADEA7C400E652AA /* Info.plist */,
+				E73EF1B31DF813C600F9BFED /* BuildGHC.sh */,
 				E73EF1B11DF7E8D800F9BFED /* InstallPackages.sh */,
+				E73EF1B21DF7EA2600F9BFED /* ghc-dylib-rpath-wrapper.sh */,
+				E71924131DF93332007758D1 /* cc-dylib-rpath-wrapper.sh */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -150,7 +156,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TARGET_TEMP_BINDIR=$TARGET_TEMP_DIR/bin\nmkdir -p $TARGET_TEMP_BINDIR\nexport PATH=$TARGET_TEMP_BINDIR:$PATH\n\n# Determine a version of nm suitable for the GHC build system\nNM=`which nm-classic`\nif [ $? -ne 0 ]; then\n  NM=`which nm`\nfi\n\n# Install location\nPREFIX=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr\necho \"Install location $PREFIX\"\n\n# Clean to recompile\nif [ -x ${PREFIX}/bin/ghc ]; then\n  exit 0\nfi\n\n# Put linkw to all tools into a bin/ directory in the build arena\nln -sf /Library/Haskell/bin/cabal    $TARGET_TEMP_BINDIR/cabal\nln -sf /Library/Haskell/bin/alex     $TARGET_TEMP_BINDIR/alex\nln -sf /Library/Haskell/bin/happy    $TARGET_TEMP_BINDIR/happy\nln -sf /Library/Haskell/bin/HsColour $TARGET_TEMP_BINDIR/HsColour\nln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc $TARGET_TEMP_BINDIR/ghc\nln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc-pkg $TARGET_TEMP_BINDIR/ghc-pkg\n\n# Compile 'lndir' to create the build tree\n(cd GHCBuild/ghc/utils/lndir/; clang -O -o $TARGET_TEMP_BINDIR/lndir lndir.c)\nmkdir -p $TARGET_TEMP_DIR/ghc/\n(cd $TARGET_TEMP_DIR/ghc/; lndir $SOURCE_ROOT/GHCBuild/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHCBuild/ghc/.git $TARGET_TEMP_DIR/ghc/)\n\n# Select the appropriate 'build.mk' setup\nif [ $CONFIGURATION = \"Debug\" ];\nthen\n  cp -f $SOURCE_ROOT/GHCBuild/build.mk.debug $TARGET_TEMP_DIR/ghc/mk/build.mk\nelse\n  cp -f $SOURCE_ROOT/GHCBuild/build.mk.release $TARGET_TEMP_DIR/ghc/mk/build.mk\nfi\n\n# Actual GHC build (we extend PATH to get 'autoreconf')\n(cd $TARGET_TEMP_DIR/ghc; env PATH=$PATH:/usr/local/bin perl boot)\n(cd $TARGET_TEMP_DIR/ghc; ./configure --prefix=$PREFIX --with-nm=$NM)\n(cd $TARGET_TEMP_DIR/ghc; make -j7)\n(cd $TARGET_TEMP_DIR/ghc; make install)\n\n# Create a link to the library directory that is not versioned.\n# (We only ever have got one version in the framework and this simplifies other scripts.)\nGHC_VERSION=`${PREFIX}/bin/ghc --numeric-version`\n(cd ${PREFIX}/lib; ln -hfs ghc-${GHC_VERSION} ghc)\n";
+			shellScript = "source GHCBuild/BuildGHC.sh\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
