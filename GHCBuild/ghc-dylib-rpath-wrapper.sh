@@ -4,7 +4,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 07.12.16.
-#  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
 #
 #  Rewrite ghc invocations by cabal install that build dynamic libraries (for a Haskell package) such that the library
 #  name is relative to $GHCLIB and that we avoid the individual RPATHs for each library this package depends on.
@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do
   arg="$1"
   shift
   case "$arg" in
-    -optl-Wl,-rpath*usr/lib/ghc*)
+    -optl-Wl,-rpath*/lib/ghc*)
       continue;;
     -this-package-key)
       if [ $# -gt 0 ]; then
