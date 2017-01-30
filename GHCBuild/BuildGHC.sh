@@ -6,9 +6,9 @@
 #  Created by Manuel M T Chakravarty on 07.12.16.
 #  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
 
-TARGET_TEMP_BINDIR=$TARGET_TEMP_DIR/bin
-mkdir -p $TARGET_TEMP_BINDIR
-export PATH=$TARGET_TEMP_BINDIR:$PATH
+TARGET_TEMP_BINDIR="$TARGET_TEMP_DIR/bin"
+mkdir -p "$TARGET_TEMP_BINDIR"
+export PATH="$TARGET_TEMP_BINDIR:$PATH"
 
 # Determine a version of nm suitable for the GHC build system
 NM=`which nm-classic`
@@ -32,7 +32,7 @@ ln -sf /Library/Haskell/bin/happy    $TARGET_TEMP_BINDIR/happy
 ln -sf /Library/Haskell/bin/HsColour $TARGET_TEMP_BINDIR/HsColour
 ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc $TARGET_TEMP_BINDIR/ghc
 ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc-pkg $TARGET_TEMP_BINDIR/ghc-pkg
-ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/hsc2hs $TARGET_TEMP_BINDIR/ghc-pkg
+ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/hsc2hs $TARGET_TEMP_BINDIR/hsc2hs
 
 # Compile 'lndir' to create the build tree
 (cd GHCBuild/ghc/utils/lndir/; clang -O -o $TARGET_TEMP_BINDIR/lndir lndir.c)
