@@ -32,6 +32,7 @@ ln -sf /Library/Haskell/bin/happy    $TARGET_TEMP_BINDIR/happy
 ln -sf /Library/Haskell/bin/HsColour $TARGET_TEMP_BINDIR/HsColour
 ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc $TARGET_TEMP_BINDIR/ghc
 ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc-pkg $TARGET_TEMP_BINDIR/ghc-pkg
+ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/hsc2hs $TARGET_TEMP_BINDIR/ghc-pkg
 
 # Compile 'lndir' to create the build tree
 (cd GHCBuild/ghc/utils/lndir/; clang -O -o $TARGET_TEMP_BINDIR/lndir lndir.c)
