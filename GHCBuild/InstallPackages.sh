@@ -30,7 +30,7 @@ fi
 # Current cabal version doesn't let us leave out the global or user package DB. We
 # must use --reinstall to avoid that an existing package in the global or user DB with
 # the same version suppresses the installation.
-CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --allow-newer --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} $EXTRA_ARGS"
+CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --with-hsc2hs=$GHCBIN/hsc2hs --allow-newer --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} $EXTRA_ARGS"
 echo "$CABAL_CMD <PACKAGE LIST>"
 $CABAL_CMD $PKGS
 

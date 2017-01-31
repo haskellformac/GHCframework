@@ -7,7 +7,7 @@
 #  Created by Manuel M T Chakravarty on 08.12.16.
 #  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
 #
-#  Same function as 'ghc-dylib-rpath-wrapper.sh', but for internal invocations from GHC for linking executables and
+#  Same purpose as 'ghc-dylib-rpath-wrapper.sh', but for internal invocations from GHC for linking executables and
 #  for TH and similar.
 
 rsp_file=""
@@ -27,17 +27,17 @@ if [ -n $rsp_file ]; then
     case $arg in
       -Wl,-rpath)
         rpath="rpath";;
-      -Wl,/*usr/lib/ghc/*)
+      -Wl,/*usr/lib/ghc*)
         rpath=""
         final_embed_rpath=`dirname "${arg:4}"`;;
-      -Wl,-rpath,/*usr/lib/ghc/*)
+      -Wl,-rpath,/*usr/lib/ghc*)
         final_embed_rpath=`dirname ${arg:11}`;;
-      -Wl,/*Support/lib/ghc/*)
+      -Wl,/*Support/lib/ghc*)
         rpath=""
         final_container_rpath=`dirname "${arg:4}"`;;
-      -Wl,-rpath,/*Support/lib/ghc/*)
+      -Wl,-rpath,/*Support/lib/ghc*)
         final_container_rpath=`dirname "${arg:11}"`;;
-      -L/*Support/lib/ghc/*)
+      -L/*Support/lib/ghc*)
         echo "\"$arg\""           >>$rsp_file
         final_container_rpath=`dirname "${arg:2}"`;;
       *)
