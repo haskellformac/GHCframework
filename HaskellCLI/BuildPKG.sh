@@ -21,7 +21,8 @@ if [ "x$1" == "xclean" ]; then
 else
 
   echo "** Build PKG"
-  /usr/bin/pkgbuild --identifier com.haskellformac.pkg.CLI --version $VERSION --install-location /usr/local --root $CLITREE_CONTENTS/usr/local $CLITREE_PKG
+  /usr/bin/pkgbuild --identifier com.haskellformac.pkg.CLI --version $VERSION --install-location /usr/local --root $CLITREE_CONTENTS/usr/local --scripts $CLITREE_CONTENTS/InstallScripts $CLITREE_PKG
+  if [ $? -ne 0 ]; then exit 1; fi
 #  echo "Synthesise"
 #  /usr/bin/productbuild --identifier com.haskellformac.app.$PRODUCT_NAME --version $VERSION --synthesize --package $CLITREE_PKG $DISTRIBUTION_PATH
   echo "** Build Product"
