@@ -9,16 +9,29 @@
 #  Run an executable of a Haskell for Mac project in a Terminal.app window. Ensure that the window isn't automatically
 #  closed when execution finishes.
 #
-#  * The first argument is the main Haskell module to execute. All remaining arguments are arguments to the Haskell code.
-#  * The current working directory must be the Haskell project. The HASKELL_DATA_FOLDER environment variable must
-#    contain the current data folder if any is set; otherwise, the variable must not be set.
+#  * The first argument is the name of the project executable that is being executed.
+#  * The second argument is the working directory (which ought to be the Haskell project).
+#  * The third argument is the data folder, or "none" if no data folder has been set.
+#  * The fourth argument is the main Haskell module to execute, *relative* to the working directory. All remaining
+#    arguments are arguments to the Haskell code.
+#  * The HASKELL_DATA_FOLDER environment variable must contain the current data folder if any is set; otherwise, the
+#    variable must not be set.
 
 CLITOOLS=BIN_PATH
 
 executable=$1
 shift
+wd=$1
+shift
+data_folder=$1
+shift
 
-command="cd ${PWD}; ${CLITOOLS}/runhaskell $@"
+if [ ${data_folder} = "none" ];
+then
+  command="cd ${wd}; ${CLITOOLS}/runhaskell $@"
+else
+  command="cd ${wd}; env HASKELL_DATA_FOLDER=${data_folder} ${CLITOOLS}/runhaskell $@"
+fi
 tab=`osascript -e 'tell app "Terminal" to do script "'"${command}"'"'`
 
 osascript -e 'tell app "Terminal" to set title displays window size of current settings of '"${tab}"' to "No"'
