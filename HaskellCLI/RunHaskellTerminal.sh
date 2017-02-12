@@ -28,9 +28,9 @@ shift
 
 if [ ${data_folder} = "none" ];
 then
-  command="cd ${wd}; ${CLITOOLS}/runhaskell $@"
+  command="cd ${wd}; clear; ${CLITOOLS}/runhaskell $@"
 else
-  command="cd ${wd}; env HASKELL_DATA_FOLDER=${data_folder} ${CLITOOLS}/runhaskell $@"
+  command="cd ${wd}; clear; env HASKELL_DATA_FOLDER=${data_folder} ${CLITOOLS}/runhaskell $@"
 fi
 tab=`osascript -e 'tell app "Terminal" to do script "'"${command}"'"'`
 
@@ -39,3 +39,4 @@ osascript -e 'tell app "Terminal" to set title displays file name of current set
 osascript -e 'tell app "Terminal" to set title displays device name of current settings of '"${tab}"' to "No"'
 osascript -e 'tell app "Terminal" to set title displays shell path of current settings of '"${tab}"' to "No"'
 osascript -e 'tell app "Terminal" to set custom title of '"${tab}"' to "Haskell for Mac: '"${executable}"'"'
+osascript -e 'tell app "Terminal" to activate'
