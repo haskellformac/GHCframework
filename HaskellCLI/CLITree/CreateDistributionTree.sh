@@ -12,6 +12,7 @@ GHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents
 GHCBIN=$GHCROOT/usr/bin
 GHC_VERSION=`$GHCBIN/ghc --numeric-version`
 CLI_VERSION=`plutil -extract CFBundleShortVersionString xml1 $SOURCE_ROOT/../GHC/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
+LTS_VERSION=`echo ${CLI_VERSION} | cut -d '-' -f2`
 
 echo "GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION; CLI_VERSION = $CLI_VERSION"
 
@@ -93,19 +94,28 @@ cp -f $GHCROOT/usr/lib/ghc/bin/cabal ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cpphs ${GHC_CONTENTS_PATH}/bin
 
 
-# Build the to be installed cabal.config
-echo -n "-- Haskell for Mac CLI for GHC.framework "                                >${GHC_CONTENTS_PATH}/cabal.config
-echo ${CLI_VERSION}                                                               >>${GHC_CONTENTS_PATH}/cabal.config
-grep '\-- remote-repo:' $SOURCE_ROOT/../GHCBuild/cabal.config | sed -e 's/-- //'  >>${GHC_CONTENTS_PATH}/cabal.config
-cat $SOURCE_ROOT/cabal.config                                                     >>${GHC_CONTENTS_PATH}/cabal.config
+# Build cabal.config
+echo -n "-- Haskell for Mac CLI for GHC.framework "                                  >${GHC_CONTENTS_PATH}/cabal.config
+echo ${CLI_VERSION}                                                                 >>${GHC_CONTENTS_PATH}/cabal.config
+grep '\-- remote-repo:' ${SOURCE_ROOT}/../GHCBuild/cabal.config | sed -e 's/-- //'  >>${GHC_CONTENTS_PATH}/cabal.config
+cat ${SOURCE_ROOT}/Cabal/cabal.config                                               >>${GHC_CONTENTS_PATH}/cabal.config
 
-# Embed build version to enable acurate version check by HfM
+# Populate repo-cache
+CABAL_FILE_TREE=${PROJECT_TEMP_DIR}/cabal
+mkdir -p ${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}
+cp -f ${SOURCE_ROOT}/Cabal/00-index.* ${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}
+mkdir -p ${CABAL_FILE_TREE}
+tar -C ${CABAL_FILE_TREE} -xf ${SOURCE_ROOT}/Cabal/00-index.tar.gz
+for cabal in ${CABAL_FILE_TREE}/*/*/*.cabal; do grep -i -e '^name:' -e '^version:' -e '^synopsis:' $cabal; done \
+  >${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
+
+# Embed build version to enable accurate version check by HfM
 if [ $CONFIGURATION = "Release" ]; then
   GhcInfoPlist="${PROJECT_TEMP_DIR}/../../../GHC/BuildProductsPath/Release/GHC.framework/Resources/Info.plist"
 else
   GhcInfoPlist="${TARGET_BUILD_DIR}/GHC.framework/Resources/Info.plist"
 fi
-plutil -extract CFBundleVersion xml1 "$GhcInfoPlist" -o - | grep string | sed -e 's|<string>||' -e 's|</string>||' >>${GHC_CONTENTS_PATH}/Version
+plutil -extract CFBundleVersion xml1 "$GhcInfoPlist" -o - | grep string | sed -e 's|<string>||' -e 's|</string>||' >${GHC_CONTENTS_PATH}/Version
 
 # Scripts in /usr/local/lib/HaskellCLI-${CLI_VERSION}/hfm
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/RunHaskellTerminal.sh >${HFM_CONTENTS_PATH}/RunHaskellTerminal

@@ -18,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildPKG.sh; sourceTree = "<group>"; };
+		E70AE3921E5EF488009B175A /* Cabal */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Cabal; sourceTree = "<group>"; };
 		E71989C81C37CFA300FE353B /* SetupCLI.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = SetupCLI.sh; sourceTree = "<group>"; };
 		E71989CA1C39275700FE353B /* ghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghc.sh; sourceTree = "<group>"; };
 		E71989CB1C392A0400FE353B /* ghc-pkg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-pkg.sh"; sourceTree = "<group>"; };
@@ -30,7 +31,6 @@
 		E71989D21C3935F000FE353B /* cabal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = cabal.sh; sourceTree = "<group>"; };
 		E71989D71C3A02E300FE353B /* CLITree.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CLITree.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E71989DA1C3A02E300FE353B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E71989E61C3A774300FE353B /* cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cabal.config; sourceTree = "<group>"; };
 		E748C25D1C3CE76100027019 /* Distribution */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Distribution; sourceTree = "<group>"; };
 		E760757D1E497295009498D5 /* CreateDistributionTree.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = CreateDistributionTree.sh; sourceTree = "<group>"; };
 		E760757F1E497BA3009498D5 /* RunHaskellTerminal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = RunHaskellTerminal.sh; sourceTree = "<group>"; };
@@ -74,8 +74,8 @@
 				E764319E1C4E1C51002091F0 /* Resources */,
 				E76075821E4AEFC7009498D5 /* InstallScripts */,
 				E748C25D1C3CE76100027019 /* Distribution */,
+				E70AE3921E5EF488009B175A /* Cabal */,
 				E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */,
-				E71989E61C3A774300FE353B /* cabal.config */,
 				E71989D91C3A02E300FE353B /* CLITree */,
 			);
 			name = HaskellCLI;
@@ -268,6 +268,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 			};
@@ -302,6 +303,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 			};
 			name = Release;

@@ -4,7 +4,7 @@
 #  HaskellCLI
 #
 #  Created by Manuel M T Chakravarty on 2/01/2016.
-#  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
 #
 #  Create hard links from the application container to the CLI tools at the location given in the first command line
 #  argument (something like '/usr/local/lib/ghc-7.10.3/bin'). Links to all binaries at the latter location are created.
@@ -66,6 +66,10 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
   done
   ln -f "$appContainerBin/unlit" "$appContainerBin/.."
 
-  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|HOME_DIR|$HOME|g" "$cliLocation/../cabal.config" >"$appContainer/cabal.config"
+  mkdir -p "$appContainer/Cabal"
+  sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|HOME_DIR|$HOME|g" "$cliLocation/../cabal.config" >"$appContainer/Cabal/cabal.config"
+  mkdir -p "$appContainer/Cabal/repo-cache"
+  ditto "$cliLocation/../repo-cache" "$appContainer/Cabal/repo-cache"
+  gunzip -f "$appContainer/Cabal/repo-cache"/stackage-lts-*/00-index.tar.gz
 
 fi
