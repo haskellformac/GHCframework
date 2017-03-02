@@ -19,6 +19,7 @@
 /* Begin PBXFileReference section */
 		E70916831C3CCDAA00F5E0E4 /* BuildPKG.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildPKG.sh; sourceTree = "<group>"; };
 		E70AE3921E5EF488009B175A /* Cabal */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Cabal; sourceTree = "<group>"; };
+		E70AE3951E65599A009B175A /* RunCLICommand.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = RunCLICommand.sh; sourceTree = "<group>"; };
 		E71989C81C37CFA300FE353B /* SetupCLI.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = SetupCLI.sh; sourceTree = "<group>"; };
 		E71989CA1C39275700FE353B /* ghc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ghc.sh; sourceTree = "<group>"; };
 		E71989CB1C392A0400FE353B /* ghc-pkg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-pkg.sh"; sourceTree = "<group>"; };
@@ -104,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				E760757F1E497BA3009498D5 /* RunHaskellTerminal.sh */,
+				E70AE3951E65599A009B175A /* RunCLICommand.sh */,
 			);
 			name = HfMScripts;
 			sourceTree = "<group>";

@@ -14,8 +14,6 @@
 #  * The third argument is the data folder, or "none" if no data folder has been set.
 #  * The fourth argument is the main Haskell module to execute, *relative* to the working directory. All remaining
 #    arguments are arguments to the Haskell code.
-#  * The HASKELL_DATA_FOLDER environment variable must contain the current data folder if any is set; otherwise, the
-#    variable must not be set.
 
 CLITOOLS=BIN_PATH
 
