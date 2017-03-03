@@ -19,4 +19,13 @@ shift
 tmp=`mktemp -d -t runcli` || exit 1
 
 cd ${tmp}
-exec ${CLITOOLS}/${command} "$@"
+if [ -x ${CLITOOLS}/${command} ]; then
+
+  exec ${CLITOOLS}/${command} "$@"
+
+else
+
+  echo "No such Haskell CLI command: ${command}"
+  exit 1
+
+fi
