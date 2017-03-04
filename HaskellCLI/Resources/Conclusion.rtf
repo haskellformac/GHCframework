@@ -7,29 +7,21 @@
 
 \f0\fs28 \cf0 You successfully installed the Haskell Command Line Tools.\
 \
-
-\b Next:
-\b0  configure the command line tools with the following command\
+The command line tools are available in\
 \
-	
-\f1 /usr/local/bin/ghc --version
+   
+\f1 /usr/local/lib/HaskellCLI-7.10.3-6.29/bin
 \f0 \
 \
-(execute this in a command line shell in Terminal.app).\
-\
-If you go into the Preferences window of Haskell for Mac and select the \'94Command Line\'94 tab, it should now say \'94Command line tools successfully configured\'94 at the bottom.\
+To install them as the default Haskell command line tools on this Mac (in 
+\f1 /usr/local/bin
+\f0 ), open the Preferences window of Haskell for Mac and select the \'94Command Line\'94 tab. It contains a checkbox that provides this option.\
 \
 
 \b Do you want to install new packages?
 \b0 \
 \
-You can do so with the Cabal CLI tool at 
-\f1 /usr/local/bin/cabal
-\f0 . To prepare it for package installation by downloading the metadata of all available packages from the Stackage package repository, please execute\
-\
-  
-\f1 /usr/local/bin/cabal update
-\f0 \
+In Haskell for Mac, select the item "Package Management" in the "Target" menu activated by the installation of the command line tools.\
 \
 The package set of the current version of Haskell for Mac is based on LTS Haskell 6.29. You can get a complete list of the available packages including their documentation at\
 \

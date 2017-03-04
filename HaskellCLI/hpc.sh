@@ -1,7 +1,7 @@
 #!/bin/sh
 
 appContainer="$HOME/Library/Containers/com.haskellformac.Haskell.basic/Data/Library/Application Support"
-libGHC="/usr/local/lib/ghc-VERSION"
+libGHC="/usr/local/lib/HaskellCLI-VERSION/ghc"
 exedir="$appContainer/lib/ghc/bin"
 exeprog="hpc"
 topdir="$appContainer/lib/ghc"

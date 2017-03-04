@@ -44,5 +44,5 @@ fi
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
 
-echo $GHCBIN/ghc "${args[@]}" >&2
+#echo $GHCBIN/ghc "${args[@]}" >&2
 exec $GHCBIN/ghc "${args[@]}"

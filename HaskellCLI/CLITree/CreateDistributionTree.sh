@@ -21,36 +21,38 @@ echo "GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION; CLI_VERSION = $CLI_VERSION
 # BIN_CONTENTS: launch scripts for the CLI tools
 # HFM_CONTENTS: scripts for HfM user script folder
 # INSTALL_CONTENTS_PATH: scripts for the package installer
-CONTENTS_PATH=${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}
-GHC_CONTENTS_PATH=${CONTENTS_PATH}/usr/local/lib/ghc-${GHC_VERSION}
+CONTENTS_PREFIX=${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}
+LIB_PREFIX=/usr/local/lib/HaskellCLI-${CLI_VERSION}
 
-BIN_PATH=/usr/local/bin
-BIN_CONTENTS_PATH=${CONTENTS_PATH}${BIN_PATH}
+GHC_CONTENTS_PATH=${CONTENTS_PREFIX}${LIB_PREFIX}/ghc
 
-HFM_PATH=/usr/local/lib/HaskellCLI-${CLI_VERSION}/hfm
-HFM_CONTENTS_PATH=${CONTENTS_PATH}${HFM_PATH}
+BIN_PATH=${LIB_PREFIX}/bin
+BIN_CONTENTS_PATH=${CONTENTS_PREFIX}${BIN_PATH}
 
-INSTALL_CONTENTS_PATH=${CONTENTS_PATH}/InstallScripts
+HFM_PATH=${LIB_PREFIX}/hfm
+HFM_CONTENTS_PATH=${CONTENTS_PREFIX}${HFM_PATH}
+
+INSTALL_CONTENTS_PATH=${CONTENTS_PREFIX}/InstallScripts
 
 mkdir -p ${BIN_CONTENTS_PATH}
 mkdir -p ${GHC_CONTENTS_PATH}/bin
 mkdir -p ${HFM_CONTENTS_PATH}
 mkdir -p ${INSTALL_CONTENTS_PATH}
 
-# Scripts in /usr/local/bin
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/ghc.sh >${BIN_CONTENTS_PATH}/ghc-$GHC_VERSION
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/ghci.sh >${BIN_CONTENTS_PATH}/ghci-$GHC_VERSION
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/runghc.sh >${BIN_CONTENTS_PATH}/runghc-$GHC_VERSION
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/ghc-pkg.sh >${BIN_CONTENTS_PATH}/ghc-pkg-$GHC_VERSION
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/haddock.sh >${BIN_CONTENTS_PATH}/haddock-$GHC_VERSION
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/alex.sh >${BIN_CONTENTS_PATH}/alex
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/happy.sh >${BIN_CONTENTS_PATH}/happy
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/cabal.sh >${BIN_CONTENTS_PATH}/cabal
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/hpc.sh >${BIN_CONTENTS_PATH}/hpc
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/hsc2hs.sh >${BIN_CONTENTS_PATH}/hsc2hs
-sed -e "s/VERSION/$GHC_VERSION/g" $SOURCE_ROOT/cpphs.sh >${BIN_CONTENTS_PATH}/cpphs
+# Scripts in ${LIB_PREFIX}/bin
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/ghc.sh >${BIN_CONTENTS_PATH}/ghc-$GHC_VERSION
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/ghci.sh >${BIN_CONTENTS_PATH}/ghci-$GHC_VERSION
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/runghc.sh >${BIN_CONTENTS_PATH}/runghc-$GHC_VERSION
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/ghc-pkg.sh >${BIN_CONTENTS_PATH}/ghc-pkg-$GHC_VERSION
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/haddock.sh >${BIN_CONTENTS_PATH}/haddock-$GHC_VERSION
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/alex.sh >${BIN_CONTENTS_PATH}/alex
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/happy.sh >${BIN_CONTENTS_PATH}/happy
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/cabal.sh >${BIN_CONTENTS_PATH}/cabal
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/hpc.sh >${BIN_CONTENTS_PATH}/hpc
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/hsc2hs.sh >${BIN_CONTENTS_PATH}/hsc2hs
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/cpphs.sh >${BIN_CONTENTS_PATH}/cpphs
 cat $SOURCE_ROOT/../GHCBuild/cc-dylib-rpath-wrapper.sh >${BIN_CONTENTS_PATH}/cc-dylib-rpath-wrapper
-sed -e "s|\$CONFIGURATION_BUILD_DIR/\$CONTENTS_FOLDER_PATH/usr|/usr/local|g" $SOURCE_ROOT/../GHCBuild/ghc-dylib-rpath-wrapper.sh >${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
+sed -e "s|\$CONFIGURATION_BUILD_DIR/\$CONTENTS_FOLDER_PATH/usr|${LIB_PREFIX}|g" $SOURCE_ROOT/../GHCBuild/ghc-dylib-rpath-wrapper.sh >${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 chmod a+x ${BIN_CONTENTS_PATH}/ghc-$GHC_VERSION
 chmod a+x ${BIN_CONTENTS_PATH}/ghci-$GHC_VERSION
 chmod a+x ${BIN_CONTENTS_PATH}/runghc-$GHC_VERSION
@@ -67,7 +69,7 @@ chmod a+x ${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 
 cp -f $GHCROOT/usr/bin/hp2ps ${BIN_CONTENTS_PATH}
 
-# Links in /usr/local/bin
+# Links in ${LIB_PREFIX}/bin
 ln -hfs ghc-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghc
 ln -hfs ghci-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghci
 ln -hfs runghc-$GHC_VERSION ${BIN_CONTENTS_PATH}/runghc
@@ -75,7 +77,7 @@ ln -hfs runghc ${BIN_CONTENTS_PATH}/runhaskell
 ln -hfs ghc-pkg-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghc-pkg
 ln -hfs haddock-$GHC_VERSION ${BIN_CONTENTS_PATH}/haddock
 
-# Scripts in /usr/local/lib
+# Scripts in ${LIB_PREFIX}/ghc
 cp -f $SOURCE_ROOT/SetupCLI.sh ${GHC_CONTENTS_PATH}/SetupCLI
 chmod a+x ${GHC_CONTENTS_PATH}/SetupCLI
 
@@ -98,7 +100,7 @@ cp -f $GHCROOT/usr/lib/ghc/bin/cpphs ${GHC_CONTENTS_PATH}/bin
 echo -n "-- Haskell for Mac CLI for GHC.framework "                                  >${GHC_CONTENTS_PATH}/cabal.config
 echo ${CLI_VERSION}                                                                 >>${GHC_CONTENTS_PATH}/cabal.config
 grep '\-- remote-repo:' ${SOURCE_ROOT}/../GHCBuild/cabal.config | sed -e 's/-- //'  >>${GHC_CONTENTS_PATH}/cabal.config
-cat ${SOURCE_ROOT}/Cabal/cabal.config                                               >>${GHC_CONTENTS_PATH}/cabal.config
+sed -e "s/VERSION/$CLI_VERSION/g" ${SOURCE_ROOT}/Cabal/cabal.config                 >>${GHC_CONTENTS_PATH}/cabal.config
 
 # Populate repo-cache
 CABAL_FILE_TREE="${PROJECT_TEMP_DIR}/cabal"
@@ -123,11 +125,13 @@ else
 fi
 plutil -extract CFBundleVersion xml1 "$GhcInfoPlist" -o - | grep string | sed -e 's|<string>||' -e 's|</string>||' >${GHC_CONTENTS_PATH}/Version
 
-# Scripts in /usr/local/lib/HaskellCLI-${CLI_VERSION}/hfm
+# Scripts in ${LIB_PREFIX}/hfm
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/RunHaskellTerminal.sh >${HFM_CONTENTS_PATH}/RunHaskellTerminal
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/RunCLICommand.sh >${HFM_CONTENTS_PATH}/RunCLICommand
+sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/MakeHaskellCLIDefault.sh >${HFM_CONTENTS_PATH}/MakeHaskellCLIDefault
 chmod a+x ${HFM_CONTENTS_PATH}/RunHaskellTerminal
 chmod a+x ${HFM_CONTENTS_PATH}/RunCLICommand
+chmod a+x ${HFM_CONTENTS_PATH}/MakeHaskellCLIDefault
 
 # Copy the install scripts for the installer package in its own subtree
 sed -e "s|HFM_PATH|${HFM_PATH}|g" ${SOURCE_ROOT}/InstallScripts/postinstall.sh >${INSTALL_CONTENTS_PATH}/postinstall

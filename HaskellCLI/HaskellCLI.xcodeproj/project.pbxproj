@@ -32,6 +32,7 @@
 		E71989D21C3935F000FE353B /* cabal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = cabal.sh; sourceTree = "<group>"; };
 		E71989D71C3A02E300FE353B /* CLITree.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CLITree.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E71989DA1C3A02E300FE353B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E72167DA1E6A9AA300CA3734 /* MakeHaskellCLIDefault.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = MakeHaskellCLIDefault.sh; sourceTree = "<group>"; };
 		E748C25D1C3CE76100027019 /* Distribution */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Distribution; sourceTree = "<group>"; };
 		E760757D1E497295009498D5 /* CreateDistributionTree.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = CreateDistributionTree.sh; sourceTree = "<group>"; };
 		E760757F1E497BA3009498D5 /* RunHaskellTerminal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = RunHaskellTerminal.sh; sourceTree = "<group>"; };
@@ -106,6 +107,7 @@
 			children = (
 				E760757F1E497BA3009498D5 /* RunHaskellTerminal.sh */,
 				E70AE3951E65599A009B175A /* RunCLICommand.sh */,
+				E72167DA1E6A9AA300CA3734 /* MakeHaskellCLIDefault.sh */,
 			);
 			name = HfMScripts;
 			sourceTree = "<group>";
