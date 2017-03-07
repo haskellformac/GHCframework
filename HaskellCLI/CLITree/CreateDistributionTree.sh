@@ -129,9 +129,11 @@ plutil -extract CFBundleVersion xml1 "$GhcInfoPlist" -o - | grep string | sed -e
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/RunHaskellTerminal.sh >${HFM_CONTENTS_PATH}/RunHaskellTerminal
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/RunCLICommand.sh >${HFM_CONTENTS_PATH}/RunCLICommand
 sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/MakeHaskellCLIDefault.sh >${HFM_CONTENTS_PATH}/MakeHaskellCLIDefault
+sed -e "s|BIN_PATH|${BIN_PATH}|g" ${SOURCE_ROOT}/HaskellCLIStatus.sh >${HFM_CONTENTS_PATH}/HaskellCLIStatus
 chmod a+x ${HFM_CONTENTS_PATH}/RunHaskellTerminal
 chmod a+x ${HFM_CONTENTS_PATH}/RunCLICommand
 chmod a+x ${HFM_CONTENTS_PATH}/MakeHaskellCLIDefault
+chmod a+x ${HFM_CONTENTS_PATH}/HaskellCLIStatus
 
 # Copy the install scripts for the installer package in its own subtree
 sed -e "s|HFM_PATH|${HFM_PATH}|g" ${SOURCE_ROOT}/InstallScripts/postinstall.sh >${INSTALL_CONTENTS_PATH}/postinstall
