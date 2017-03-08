@@ -21,7 +21,8 @@ tmp=`mktemp -d -t runcli` || exit 1
 cd ${tmp}
 if [ -x ${CLITOOLS}/${command} ]; then
 
-  exec ${CLITOOLS}/${command} "$@"
+  # Don't exec, so that 'StopCLICommand' can do its job.
+  ${CLITOOLS}/${command} "$@"
 
 else
 
