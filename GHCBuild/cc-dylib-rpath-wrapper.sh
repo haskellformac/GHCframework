@@ -27,17 +27,17 @@ if [ -n $rsp_file ]; then
     case $arg in
       -Wl,-rpath)
         rpath="rpath";;
-      -Wl,/*usr/lib/ghc*)
+      -Wl,/*usr/lib/ghc*/*)
         rpath=""
         final_embed_rpath=`dirname "${arg:4}"`;;
-      -Wl,-rpath,/*usr/lib/ghc*)
+      -Wl,-rpath,/*usr/lib/ghc*/*)
         final_embed_rpath=`dirname ${arg:11}`;;
-      -Wl,/*Support/lib/ghc*)
+      -Wl,/*Support/lib/ghc*/*)
         rpath=""
         final_container_rpath=`dirname "${arg:4}"`;;
-      -Wl,-rpath,/*Support/lib/ghc*)
+      -Wl,-rpath,/*Support/lib/ghc*/*)
         final_container_rpath=`dirname "${arg:11}"`;;
-      -L/*Support/lib/ghc*)
+      -L/*Support/lib/ghc*/*)
         echo "\"$arg\""           >>$rsp_file
         final_container_rpath=`dirname "${arg:2}"`;;
       *)

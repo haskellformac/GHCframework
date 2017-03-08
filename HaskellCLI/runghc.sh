@@ -10,4 +10,4 @@ executablename="$exedir/$exeprog"
 if [ ! "$executablename" -ef "$libGHC/bin/$exeprog" ]; then
   $libGHC/SetupCLI $libGHC/bin || exit 1
 fi
-exec "$executablename" -f "$bindir/ghc" ${1+"$@"}
+exec "$executablename" -f "$libGHC/../bin/ghc" ${1+"$@"}
