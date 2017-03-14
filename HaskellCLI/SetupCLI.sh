@@ -66,6 +66,9 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
   done
   ln -f "$appContainerBin/unlit" "$appContainerBin/.."
 
+    # Remove the cabal.config of the old setup
+  rm -f "$appContainer/cabal.config"
+
   mkdir -p "$appContainer/Cabal"
   sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|HOME_DIR|$HOME|g" "$cliLocation/../cabal.config" >"$appContainer/Cabal/cabal.config"
   mkdir -p "$appContainer/Cabal/repo-cache"

@@ -11,7 +11,7 @@
 
 CLITOOLS=BIN_PATH
 
-${CLITOOLS}/../ghc/SetupCLI ${CLITOOLS}/bin >/dev/null 2>/dev/null
+${CLITOOLS}/../ghc/SetupCLI ${CLITOOLS}/../ghc/bin >/dev/null 2>/dev/null
 setup_exit=$?
 ghc_framework_version=`head -1 ${CLITOOLS}/../ghc/cabal.config | sed -e 's/^.*GHC.framework //'`
 ghc_framework_build=`head -1 ${CLITOOLS}/../ghc/Version`
