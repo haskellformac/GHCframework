@@ -2,10 +2,13 @@
 
 bundle_id=com.haskellformac.Haskell.basic
 user_scripts="/Users/${USER}/Library/Containers/${bundle_id}/Data/Library/Application Scripts/${bundle_id}"
+user_scripts_real="/Users/${USER}/Library/Application Scripts/${bundle_id}"
 hfm_path="HFM_PATH"
 
 echo "Installing Haskell for Mac user scripts in ${user_scripts}"
-mkdir -p "${user_scripts}"
+
+# NB: the directory in the container is a symbolic link to a directory outside of the container
+mkdir -p "${user_scripts_real}"
 cp -f "${hfm_path}/RunHaskellTerminal" "${user_scripts}/RunHaskellTerminal"
 cp -f "${hfm_path}/RunCLICommand" "${user_scripts}/RunCLICommand"
 cp -f "${hfm_path}/StopCLICommand" "${user_scripts}/StopCLICommand"
