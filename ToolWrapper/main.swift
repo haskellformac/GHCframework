@@ -10,8 +10,8 @@ import Foundation
 
 //NSLog("Arguments: %@", Process.arguments.description)
 
-for i in 1..<Process.arguments.count {
-  if Process.arguments[i] == "--print-file-name" && i + 1 < Process.arguments.count {
-    print(Process.arguments[i + 1])
+for i in 1..<CommandLine.arguments.count {
+  if CommandLine.arguments[i] == "--print-file-name" && i + 1 < CommandLine.arguments.count {
+    print(CommandLine.arguments[i + 1])
   }
 }

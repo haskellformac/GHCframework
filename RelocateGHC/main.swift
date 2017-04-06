@@ -20,7 +20,7 @@ import Foundation
 
 // MARK: Helpers
 
-infix operator ?! { }
+infix operator ?!
 
 // Abort if nil.
 //
@@ -35,9 +35,9 @@ func ?!<A>(v: A?, msg: String) -> A {
 
 // Determine the location at which the libraries for the given package conf file are.
 //
-func libraryLocation(conf: String) -> String? {
-  if let startOfLoc  = conf.rangeOfString("library-dirs: ")?.endIndex,
-         endOfLoc    = conf.rangeOfString("/usr/lib", options: [], range: startOfLoc..<conf.endIndex)?.startIndex
+func libraryLocation(_ conf: String) -> String? {
+  if let startOfLoc  = conf.range(of: "library-dirs: ")?.upperBound,
+         let endOfLoc    = conf.range(of: "/usr/lib", options: [], range: startOfLoc..<conf.endIndex)?.lowerBound
   {
     return conf[startOfLoc..<endOfLoc]
   } else { return nil }
@@ -45,11 +45,11 @@ func libraryLocation(conf: String) -> String? {
 
 // Replace all occurences of one string in a file by a new string, possibly writing the result to a new file
 //
-func replaceInFile(source: String, string oldString: String, withString newString: String, writingTo target: String? = nil)
+func replaceInFile(_ source: String, string oldString: String, withString newString: String, writingTo target: String? = nil)
 {
   do {
-    try String(contentsOfFile: source).stringByReplacingOccurrencesOfString(oldString, withString: newString)
-      .writeToFile(target ?? source, atomically: false, encoding: NSUTF8StringEncoding)
+    try String(contentsOfFile: source).replacingOccurrences(of: oldString, with: newString)
+      .write(toFile: target ?? source, atomically: false, encoding: String.Encoding.utf8)
                                         // ^^^^if we'd do it atomically, we'd kill the executable permissions on the scripts
   } catch _ {
   }
@@ -58,29 +58,28 @@ func replaceInFile(source: String, string oldString: String, withString newStrin
 
 // MARK: Determine target location
 
-let bundleLocation = NSURL(fileURLWithPath: NSBundle.mainBundle().bundlePath)
-                     .URLByAppendingPathComponent("..")!
-                     .URLByResolvingSymlinksInPath!,
-    location       = bundleLocation.path!.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
+let bundleLocation = (NSURL(fileURLWithPath: Bundle.main.bundlePath) as NSURL)
+                     .appendingPathComponent("..")!.resolvingSymlinksInPath(),
+    location       = bundleLocation.path.hasSuffix("GHC.framework/Versions/A") // NB: need to use 'A', not 'Current', as this is canonical
                      ? bundleLocation
-                     : NSURL(fileURLWithPath: NSFileManager.defaultManager().currentDirectoryPath).URLByAppendingPathComponent("GHC.framework/Versions/A")
+                     : URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("GHC.framework/Versions/A")
 
 let relativeBin   = "usr/bin",
     relativeLib   = "usr/lib/ghc",
     relativeShare = "usr/share",
     executables   = ["ghc", "ghci", "ghc-pkg", "hpc", "hsc2hs", "runghc"],
-    ghcLibPath    = location!.URLByAppendingPathComponent(relativeLib),
-    embeddedShare = location!.URLByAppendingPathComponent(relativeShare),
-    packageDBPath = ghcLibPath!.URLByAppendingPathComponent("package.conf.d")
+    ghcLibPath    = location.appendingPathComponent(relativeLib),
+    embeddedShare = location.appendingPathComponent(relativeShare),
+    packageDBPath = ghcLibPath.appendingPathComponent("package.conf.d")
 
-let rtsConfPath   = packageDBPath!.URLByAppendingPathComponent("builtin_rts.conf"),
+let rtsConfPath   = packageDBPath.appendingPathComponent("builtin_rts.conf"),
     rtsConfData   = (try? String(contentsOfFile: rtsConfPath!.path!))
                     ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
 let oldLocation   = libraryLocation(rtsConfData)
                     ?! ("fatal error: could not extract library path from 'library-dirs' field")
 
-if location == NSURL(fileURLWithPath: oldLocation) {
+if location == URL(fileURLWithPath: oldLocation) {
   exit(0)  // location is already up to date
 }
 print("Relocating from \(oldLocation) to \(location!.path!)")
@@ -88,56 +87,55 @@ print("Relocating from \(oldLocation) to \(location!.path!)")
 
 // MARK: Process arguments
 
-let defaultFileManager = NSFileManager.defaultManager()
+let defaultFileManager = FileManager.default
 
-var appContainerGHCRoot:           NSURL? = nil
-var appContainerLib:               NSURL? { get {
-  return appContainerGHCRoot?.URLByAppendingPathComponent("lib")
+var appContainerGHCRoot:           URL? = nil
+var appContainerLib:               URL? { get {
+  return appContainerGHCRoot?.appendingPathComponent("lib")
 } }
-var appContainerGHCLib:            NSURL? { get {
-  return appContainerLib?.URLByAppendingPathComponent("ghc")
+var appContainerGHCLib:            URL? { get {
+  return appContainerLib?.appendingPathComponent("ghc")
 } }
-var appContainerBundleVersionPath: NSURL? { get {
-  return appContainerLib?.URLByAppendingPathComponent("Version")
+var appContainerBundleVersionPath: URL? { get {
+  return appContainerLib?.appendingPathComponent("Version")
 } }
-var appContainerBin:               NSURL? { get {
-  return appContainerGHCRoot?.URLByAppendingPathComponent("bin")
+var appContainerBin:               URL? { get {
+  return appContainerGHCRoot?.appendingPathComponent("bin")
 } }
-var appContainerShare:             NSURL? { get {
-  return appContainerGHCRoot?.URLByAppendingPathComponent("share")
+var appContainerShare:             URL? { get {
+  return appContainerGHCRoot?.appendingPathComponent("share")
 } }
-var appContainerPackageDBPath:     NSURL? { get {
-  return appContainerGHCLib?.URLByAppendingPathComponent("package.conf.d")
+var appContainerPackageDBPath:     URL? { get {
+  return appContainerGHCLib?.appendingPathComponent("package.conf.d")
 } }
 var bundleVersion: NSString? = nil
 
-if Process.argc == 4 && Process.arguments[1] == "--sandboxed" {
+if CommandLine.argc == 4 && CommandLine.arguments[1] == "--sandboxed" {
 
-  appContainerGHCRoot = NSURL(fileURLWithPath: Process.arguments[2])
-  bundleVersion       = Process.arguments[3]
+  appContainerGHCRoot = URL(fileURLWithPath: CommandLine.arguments[2])
+  bundleVersion       = CommandLine.arguments[3] as NSString?
 
     // To consider the package database up to date, the following three conditions must hold:
     // (1) The current 'bundleVersion' and that stored in the app container need to be the same.
     // (2) The location of the library embedded in HfM and the location encoded in the package specs in the package
     //     database located in the app container need to match.
     // (3) The package cache embedded in HfM needs to be older than that in the app container.
-  let appContainerRtsConfPath    = appContainerPackageDBPath!.URLByAppendingPathComponent("builtin_rts.conf")
+  let appContainerRtsConfPath    = appContainerPackageDBPath!.appendingPathComponent("builtin_rts.conf")
     // FIXME: the following needs to have error handling cleaned up
-  let appContainerBundleVersion = (try? String(contentsOfFile: appContainerBundleVersionPath!.path!)) ?? "UNKNOWN",
-      str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath!.path!)
+  let appContainerBundleVersion = (try? String(contentsOfFile: appContainerBundleVersionPath!.path)) ?? "UNKNOWN",
+      str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath.path)
   if let appContainerRtsConfData = str,
 //  if let appContainerRtsConfData = try String(contentsOfFile: appContainerRtsConfPath.path!),
-         appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
+         let appContainerLocation    = libraryLocation(appContainerRtsConfData)    // library location used in app container DB
   {
-    if NSURL(fileURLWithPath: appContainerLocation) == location && appContainerBundleVersion == bundleVersion {
+    if URL(fileURLWithPath: appContainerLocation) == location && appContainerBundleVersion == bundleVersion {
 
-      let embeddedCachePath      = packageDBPath!.URLByAppendingPathComponent("package.cache"),
-          embeddedCacheAttrs     = try? defaultFileManager.attributesOfItemAtPath(embeddedCachePath!.path!),
-          appContainerCachePath  = appContainerPackageDBPath!.URLByAppendingPathComponent("package.cache"),
-          appContainerCacheAttrs = try? defaultFileManager.attributesOfItemAtPath(appContainerCachePath!.path!)
+      let embeddedCachePath      = packageDBPath.appendingPathComponent("package.cache"),
+          embeddedCacheAttrs     = try? defaultFileManager.attributesOfItem(atPath: embeddedCachePath!.path!),
+          appContainerCachePath  = appContainerPackageDBPath!.appendingPathComponent("package.cache"),
+          appContainerCacheAttrs = try? defaultFileManager.attributesOfItem(atPath: appContainerCachePath.path)
       if let embeddedCacheDate      = (embeddedCacheAttrs as NSDictionary?)?.fileModificationDate(),
-              appContainerCacheDate = (appContainerCacheAttrs as NSDictionary?)?.fileModificationDate()
-        where appContainerCacheDate.compare(embeddedCacheDate) == .OrderedDescending
+              let appContainerCacheDate = (appContainerCacheAttrs as NSDictionary?)?.fileModificationDate(), appContainerCacheDate.compare(embeddedCacheDate) == .orderedDescending
       {
         exit(0)  // location and timestamp of app-container package-db are up to date
       }
@@ -147,12 +145,12 @@ if Process.argc == 4 && Process.arguments[1] == "--sandboxed" {
       // different package sets, versions, or package IDs, in which case, droppings of the old may remain if we
       // just write over the old root directory.)
     print("Removing old GHC root directory including package DB in app container")
-    if let lib = appContainerLib, bin = appContainerBin, share = appContainerShare {
+    if let lib = appContainerLib, let bin = appContainerBin, let share = appContainerShare {
 
       do {
-        if defaultFileManager.fileExistsAtPath(lib.path!)   { try defaultFileManager.removeItemAtPath(lib.path!) }
-        if defaultFileManager.fileExistsAtPath(bin.path!)   { try defaultFileManager.removeItemAtPath(bin.path!) }
-        if defaultFileManager.fileExistsAtPath(share.path!) { try defaultFileManager.removeItemAtPath(share.path!) }
+        if defaultFileManager.fileExists(atPath: lib.path)   { try defaultFileManager.removeItem(atPath: lib.path) }
+        if defaultFileManager.fileExists(atPath: bin.path)   { try defaultFileManager.removeItem(atPath: bin.path) }
+        if defaultFileManager.fileExists(atPath: share.path) { try defaultFileManager.removeItem(atPath: share.path) }
       }
       catch let error {
         NSLog("failed to remove existing file at GHC root directory location in app container: \(error)")
@@ -178,7 +176,7 @@ var sandboxed: Bool { get { return appContainerPackageDBPath != nil } }
   // Rewrite the location in all executables if not in sandboxed mode.
 if !sandboxed {
   for executable in
-    (executables.map{ location!.URLByAppendingPathComponent(relativeBin)!.URLByAppendingPathComponent($0) })
+    (executables.map{ location.appendingPathComponent(relativeBin).appendingPathComponent($0) })
   {
     replaceInFile(executable!.path!, string: oldLocation, withString: location!.path!)
   }
@@ -189,18 +187,18 @@ if let packageDBPath = appContainerPackageDBPath {
 
   var error:       NSError?
   var isDirectory: ObjCBool = false
-  let package_conf_d_exists = defaultFileManager.fileExistsAtPath(packageDBPath.path!, isDirectory: &isDirectory)
+  let package_conf_d_exists = defaultFileManager.fileExists(atPath: packageDBPath.path, isDirectory: &isDirectory)
   if !package_conf_d_exists {                         // doesn't exist => create directory
 
     do {
-      try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
+      try defaultFileManager.createDirectory(atPath: packageDBPath.path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin")!.path!,
+      try defaultFileManager.createDirectory(atPath: appContainerGHCLib!.appendingPathComponent("bin").path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
-                                          contents: bundleVersion!.dataUsingEncoding(NSUTF8StringEncoding),
+      defaultFileManager.createFile(atPath: appContainerBundleVersionPath!.path,
+                                          contents: bundleVersion!.data(using: String.Encoding.utf8.rawValue),
                                           attributes: nil)
     } catch var error as NSError {
       NSLog("failed to create package DB (or bin directory) in app container: %@", error)
@@ -210,21 +208,21 @@ if let packageDBPath = appContainerPackageDBPath {
   } else if !isDirectory {                            // plain file exists => remove & create directory
 
     do {
-      try defaultFileManager.removeItemAtPath(packageDBPath.path!)
+      try defaultFileManager.removeItem(atPath: packageDBPath.path)
     } catch var error as NSError {
       NSLog("failed to remove existing file at package DB location in app container: %@", error)
       exit(1)
     }
     do {
       // FIXME: de-duplicate by using a local function
-      try defaultFileManager.createDirectoryAtPath(packageDBPath.path!,
+      try defaultFileManager.createDirectory(atPath: packageDBPath.path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      try defaultFileManager.createDirectoryAtPath(appContainerGHCLib!.URLByAppendingPathComponent("bin")!.path!,
+      try defaultFileManager.createDirectory(atPath: appContainerGHCLib!.appendingPathComponent("bin").path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-      defaultFileManager.createFileAtPath(appContainerBundleVersionPath!.path!,
-                                          contents: bundleVersion!.dataUsingEncoding(NSUTF8StringEncoding),
+      defaultFileManager.createFile(atPath: appContainerBundleVersionPath!.path,
+                                          contents: bundleVersion!.data(using: String.Encoding.utf8.rawValue),
                                           attributes: nil)
     } catch var error as NSError {
       NSLog("failed to create package DB in app container: %@", error)
@@ -234,7 +232,7 @@ if let packageDBPath = appContainerPackageDBPath {
   }
 }
 
-let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath!.path!))
+let ghcLibDir   = (try? defaultFileManager.contentsOfDirectory(atPath: ghcLibPath.path))
                   ?! ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
     ghcLibFiles = ghcLibDir.filter{ $0 != "package.conf.d" }
 
@@ -243,25 +241,25 @@ let ghcLibDir   = (try? defaultFileManager.contentsOfDirectoryAtPath(ghcLibPath!
 if let packageDBPath = appContainerPackageDBPath {
   for ghcRootFile in ghcLibFiles {
 
-    let source = ghcLibPath!.URLByAppendingPathComponent(ghcRootFile),
-        target = appContainerGHCLib!.URLByAppendingPathComponent(ghcRootFile)
-    try defaultFileManager.createSymbolicLinkAtURL(target!, withDestinationURL: source!)
+    let source = ghcLibPath!.appendingPathComponent(ghcRootFile),
+        target = appContainerGHCLib!.appendingPathComponent(ghcRootFile)
+    try defaultFileManager.createSymbolicLink(at: target!, withDestinationURL: source!)
 
   }
 }
 
-let shareFiles = (try? defaultFileManager.contentsOfDirectoryAtPath(embeddedShare!.path!))
+let shareFiles = (try? defaultFileManager.contentsOfDirectory(atPath: embeddedShare.path))
                  ?! ("fatal error: could not read share/ directory at \(embeddedShare)")
 
   // In sandboxed mode, create the share/ directory if it doesn't exist yet and populate it with symbolic links to the
   // files in the share/ directory embedded in the app.
 if let sharePath = appContainerShare {
 
-  let shareDirExists = defaultFileManager.fileExistsAtPath(sharePath.path!, isDirectory: nil)
+  let shareDirExists = defaultFileManager.fileExists(atPath: sharePath.path, isDirectory: nil)
   if !shareDirExists {                            // doesn't exist => create directory
 
     do {
-      try defaultFileManager.createDirectoryAtPath(sharePath.path!,
+      try defaultFileManager.createDirectory(atPath: sharePath.path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
     } catch var error as NSError {
@@ -270,36 +268,36 @@ if let sharePath = appContainerShare {
     }
     for shareFile in shareFiles {
 
-      let source = embeddedShare!.URLByAppendingPathComponent(shareFile),
-          target = appContainerShare!.URLByAppendingPathComponent(shareFile)
-      try defaultFileManager.createSymbolicLinkAtURL(target!, withDestinationURL: source!)
+      let source = embeddedShare!.appendingPathComponent(shareFile),
+          target = appContainerShare!.appendingPathComponent(shareFile)
+      try defaultFileManager.createSymbolicLink(at: target!, withDestinationURL: source!)
 
     }
   }
 }
 
-let packagesDir = (try? defaultFileManager.contentsOfDirectoryAtPath(packageDBPath!.path!))
+let packagesDir = (try? defaultFileManager.contentsOfDirectory(atPath: packageDBPath.path!))
                   ?!  ("fatal error: could not read directory containing GHC package database at \(packageDBPath)"),
     packages    = packagesDir.filter{ $0.hasSuffix("conf") }
 
   // Rewrite the location in all package 'conf' files, writing to the app container in sandboxed mode.
 for package in packages {
 
-  let source = packageDBPath!.URLByAppendingPathComponent(package),
-      target = appContainerPackageDBPath?.URLByAppendingPathComponent(package)
+  let source = packageDBPath!.appendingPathComponent(package),
+      target = appContainerPackageDBPath?.appendingPathComponent(package)
   replaceInFile(source!.path!, string: oldLocation, withString: location!.path!, writingTo: target?.path)
 
 }
 
   // In sandboxed mode, add an rpath linker option pointing to the app container GHC library path to the RTS conf.
 if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).first,
-       builtin_rtsPath = appContainerPackageDBPath?.URLByAppendingPathComponent(builtin_rts)!.path
+       let builtin_rtsPath = appContainerPackageDBPath?.appendingPathComponent(builtin_rts)!.path
 {
   do {
 
     let contents    = try String(contentsOfFile: builtin_rtsPath),
-        rpathOption = "            \"-Wl,-rpath,\(ghcLibPath!.path!)\""
-    try (contents + rpathOption).writeToFile(builtin_rtsPath, atomically: false, encoding: NSUTF8StringEncoding)
+        rpathOption = "            \"-Wl,-rpath,\(ghcLibPath.path)\""
+    try (contents + rpathOption).write(toFile: builtin_rtsPath, atomically: false, encoding: String.Encoding.utf8)
 
   } catch _ {
     NSLog("Failed to add RPATH to buildin_rts.conf")
@@ -308,18 +306,18 @@ if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).f
 }
 
   // Refresh the package db cache.
-let ghcPkgTask: NSTask
+let ghcPkgTask: Process
 if let packageDBPath = appContainerPackageDBPath {
 
-  let ghcPkgPath = location!.URLByAppendingPathComponent("Executables/ghc-pkg")
-  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath!.path!, arguments: ["--global-package-db", packageDBPath.path!, "recache"])
+  let ghcPkgPath = location.appendingPathComponent("Executables/ghc-pkg")
+  ghcPkgTask = Process.launchedProcess(launchPath: ghcPkgPath.path, arguments: ["--global-package-db", packageDBPath.path!, "recache"])
 
 } else {
 
     // In the non-sandboxed case, we use the script on purpose as an extra sanity check (that the scripts have been
     // rewritten properly).
-  let ghcPkgPath = location!.URLByAppendingPathComponent(relativeBin)!.URLByAppendingPathComponent("ghc-pkg")
-  ghcPkgTask = NSTask.launchedTaskWithLaunchPath(ghcPkgPath!.path!, arguments: ["recache"])
+  let ghcPkgPath = location.appendingPathComponent(relativeBin).appendingPathComponent("ghc-pkg")
+  ghcPkgTask = Process.launchedProcess(launchPath: ghcPkgPath.path!, arguments: ["recache"])
 
 }
 ghcPkgTask.waitUntilExit()
