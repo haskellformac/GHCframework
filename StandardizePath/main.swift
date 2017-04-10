@@ -9,4 +9,4 @@
 
 import Foundation
 
-print(NSURL(fileURLWithPath: Process.arguments[1]).resolvingSymlinksInPath()!.path!)
+print(NSURL(fileURLWithPath: CommandLine.arguments[1]).resolvingSymlinksInPath!.path)
