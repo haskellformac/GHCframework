@@ -2,8 +2,7 @@
 # A Sample build.mk
 #
 # Uncomment one of the following BuildFlavour settings to get the desired
-# overall build type, and then tweak the options in the relevant section
-# below.
+# overall build type.
 
 # -------- Build profiles -----------------------------------------------------
 # Uncomment one of these to select a build profile below:
@@ -51,14 +50,30 @@ BuildFlavour = perf
 # Bench build configured for a cross-compiler
 #BuildFlavour = bench-cross
 
+# Use the same settings as validate.
+#BuildFlavour = validate
+
+ifneq "$(BuildFlavour)" ""
+include mk/flavours/$(BuildFlavour).mk
+endif
+
+GhcLibHcOpts    = -O2 -optl-Wl,-headerpad_max_install_names
+# To ensure sufficient space for changing RPATH and for code signing, we use -optl-Wl,-headerpad_max_install_names
+BUILD_SPHINX_HTML  = NO
+BUILD_SPHINX_PDF   = NO
+BUILD_MAN          = NO
+
 # -------- Miscellaneous variables --------------------------------------------
 
 # Set to V = 0 to get prettier build output.
-# Please use V = 1 when reporting GHC bugs.
-V = 0
+# Please use V=1 (the default) when reporting GHC bugs.
+#V=0
+
+# Should all enabled warnings (see mk/warnings.mk) be turned into errors while
+# building stage 2?
+#WERROR=-Werror
 
 # After stage 1 and the libraries have been built, you can uncomment this line:
-
 #stage=2
 
 # Then stage 1 will not be touched by the build system, until
@@ -66,257 +81,20 @@ V = 0
 # working on stage 2 and want to freeze stage 1 and the libraries for
 # a while.
 
+# Build the "extra" packages (see ./packages). This enables more tests. See:
+# https://ghc.haskell.org/trac/ghc/wiki/Building/RunningTests/Running#AdditionalPackages
+#BUILD_EXTRA_PKGS=YES
+
 # Uncomment the following line to enable building DPH
 #BUILD_DPH=YES
 
-GhcLibWays = $(if $(filter $(DYNAMIC_GHC_PROGRAMS),YES),v dyn,v)
-
-# Only use -fasm by default on platforms that support it.
-GhcFAsm = $(if $(filter $(GhcWithNativeCodeGen),YES),-fasm,)
-
-# ----------- A Performance/Distribution build --------------------------------
-
-ifeq "$(BuildFlavour)" "perf"
-
-# perf matches the default settings, repeated here for comparison:
-
-SRC_HC_OPTS     = -O -H64m
-GhcStage1HcOpts = -O $(GhcFAsm)
-GhcStage2HcOpts = -O2 $(GhcFAsm)
-GhcHcOpts       = -Rghc-timing
-GhcLibHcOpts    = -O2 -optl-Wl,-headerpad_max_install_names
-# To ensure sufficient space for changing RPATH and for code signing, we use -optl-Wl,-headerpad_max_install_names
-# GhcLibWays     += p
-# no profiling support for now
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-HADDOCK_DOCS       = YES
-
-
-ifeq "$(PlatformSupportsSharedLibs)" "YES"
-GhcLibWays += dyn
-endif
-
-endif
-
-# ---------------- Perf build using LLVM --------------------------------------
-
-ifeq "$(BuildFlavour)" "perf-llvm"
-
-SRC_HC_OPTS     = -O -H64m -fllvm
-GhcStage1HcOpts = -O -fllvm
-GhcStage2HcOpts = -O2 -fllvm
-GhcHcOpts       = -Rghc-timing
-GhcLibHcOpts    = -O2
-GhcLibWays     += p
-
-endif
-
-# ------- A Perf build configured for cross-compilation ----------------------
-
-ifeq "$(BuildFlavour)" "perf-cross"
-
-SRC_HC_OPTS     = -O -H64m -fllvm
-GhcStage1HcOpts = -O2
-GhcStage2HcOpts = -O2 -fllvm
-GhcHcOpts       = -Rghc-timing
-GhcLibHcOpts    = -O2
-GhcLibWays     += p
-INTEGER_LIBRARY    = integer-simple
-Stage1Only         = YES
-
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-DYNAMIC_BY_DEFAULT   = NO
-DYNAMIC_GHC_PROGRAMS = NO
-
-endif
-
-# -------- A Fast build -------------------------------------------------------
-
-ifeq "$(BuildFlavour)" "quickest"
-
-SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
-GhcStage1HcOpts    = -O $(GhcFAsm)
-GhcStage2HcOpts    = -O0 $(GhcFAsm)
-GhcLibHcOpts       = -O0 $(GhcFAsm)
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# -------- A Fast build with optimised libs -----------------------------------
-
-ifeq "$(BuildFlavour)" "quick"
-
-SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
-GhcStage1HcOpts    = -O $(GhcFAsm)
-GhcStage2HcOpts    = -O0 $(GhcFAsm)
-GhcLibHcOpts       = -O $(GhcFAsm)
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# -------- A Fast build with optimised libs using LLVM ------------------------
-
-ifeq "$(BuildFlavour)" "quick-llvm"
-
-SRC_HC_OPTS        = -H64m -O0 -fllvm
-GhcStage1HcOpts    = -O -fllvm
-GhcStage2HcOpts    = -O0 -fllvm
-GhcLibHcOpts       = -O -fllvm
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# -------- A Fast build configured for cross-compilation ----------------------
-
-ifeq "$(BuildFlavour)" "quick-cross"
-
-SRC_HC_OPTS        = -H64m -O0
-GhcStage1HcOpts    = -O
-GhcStage2HcOpts    = -O0 -fllvm
-GhcLibHcOpts       = -O -fllvm
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-INTEGER_LIBRARY    = integer-simple
-Stage1Only         = YES
-
-DYNAMIC_BY_DEFAULT   = NO
-DYNAMIC_GHC_PROGRAMS = NO
-
-endif
-
-# -------- Profile the stage2 compiler ----------------------------------------
-
-ifeq "$(BuildFlavour)" "prof"
-
-SRC_HC_OPTS        = -H64m -O0 $(GhcFAsm)
-GhcStage1HcOpts    = -O $(GhcFAsm)
-GhcStage2HcOpts    = -O $(GhcFAsm)
-GhcLibHcOpts       = -O $(GhcFAsm)
-
-GhcLibWays         += p
-GhcProfiled        = YES
-
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# -------- A Development build (stage 1) --------------------------------------
-
-ifeq "$(BuildFlavour)" "devel1"
-
-SRC_HC_OPTS        = -H64m -O $(GhcFAsm)
-GhcLibHcOpts       = -O -dcore-lint
-GhcStage1HcOpts    = -Rghc-timing -O0 -DDEBUG
-GhcStage2HcOpts    = -Rghc-timing -O $(GhcFAsm)
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-LAX_DEPENDENCIES   = YES
-
-endif
-
-# -------- A Development build (stage 2) --------------------------------------
-
-ifeq "$(BuildFlavour)" "devel2"
-
-SRC_HC_OPTS        = -H64m -O $(GhcFAsm)
-GhcLibHcOpts       = -O -dcore-lint
-GhcStage1HcOpts    = -Rghc-timing -O $(GhcFAsm)
-GhcStage2HcOpts    = -Rghc-timing -O0 -DDEBUG
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-LAX_DEPENDENCIES   = YES
-
-endif
-
-# -------- A bench build with optimised libs -----------------------------------
-
-ifeq "$(BuildFlavour)" "bench"
-
-SRC_HC_OPTS        = -O -H64m
-GhcStage1HcOpts    = -O $(GhcFAsm)
-GhcStage2HcOpts    = -O0 $(GhcFAsm)
-GhcLibHcOpts       = -O2 $(GhcFAsm)
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# ---------------- Bench build using LLVM --------------------------------------
-
-ifeq "$(BuildFlavour)" "bench-llvm"
-
-SRC_HC_OPTS        = -O -H64m
-GhcStage1HcOpts    = -O -fllvm
-GhcStage2HcOpts    = -O0 -fllvm
-GhcLibHcOpts       = -O2 -fllvm
-SplitObjs          = NO
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-endif
-
-# ------- A Bench build configured for cross-compilation ----------------------
-
-ifeq "$(BuildFlavour)" "bench-cross"
-
-SRC_HC_OPTS        = -O -H64m
-GhcStage1HcOpts    = -O $(GhcFAsm)
-GhcStage2HcOpts    = -O0 $(GhcFAsm)
-GhcLibHcOpts       = -O2 $(GhcFAsm)
-SplitObjs          = NO
-INTEGER_LIBRARY    = integer-simple
-Stage1Only         = YES
-HADDOCK_DOCS       = NO
-BUILD_DOCBOOK_HTML = NO
-BUILD_DOCBOOK_PS   = NO
-BUILD_DOCBOOK_PDF  = NO
-
-DYNAMIC_BY_DEFAULT   = NO
-DYNAMIC_GHC_PROGRAMS = NO
-
-endif
-
-# -----------------------------------------------------------------------------
-# Other settings that might be useful
-
-# NoFib settings
-NoFibWays =
+# Uncomment the following to force `integer-gmp` to use the in-tree GMP 5.0.4
+# (other sometimes useful configure-options: `--with-gmp-{includes,libraries}`)
+#libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-intree-gmp
+
+# Enable pretty hyperlinked sources
+#HADDOCK_DOCS = YES
+#EXTRA_HADDOCK_OPTS += --hyperlinked-source
+
+# Don't strip debug and other unneeded symbols from libraries and executables.
 STRIP_CMD = :
-
