@@ -25,6 +25,7 @@ blaze-html
 blaze-markup
 blaze-svg
 bmp
+cabal-doctest
 colour
 comonad
 contravariant
