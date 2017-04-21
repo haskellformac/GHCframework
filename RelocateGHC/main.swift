@@ -72,7 +72,7 @@ let relativeBin   = "usr/bin",
     embeddedShare = location.appendingPathComponent(relativeShare),
     packageDBPath = ghcLibPath.appendingPathComponent("package.conf.d")
 
-let rtsConfPath   = packageDBPath.appendingPathComponent("builtin_rts.conf"),
+let rtsConfPath   = packageDBPath.appendingPathComponent("rts.conf"),
     rtsConfData   = (try? String(contentsOfFile: rtsConfPath.path))
                     ?! ("fatal error: could not load RTS package configuration \(rtsConfPath)")
 
@@ -120,7 +120,7 @@ if CommandLine.argc == 4 && CommandLine.arguments[1] == "--sandboxed" {
     // (2) The location of the library embedded in HfM and the location encoded in the package specs in the package
     //     database located in the app container need to match.
     // (3) The package cache embedded in HfM needs to be older than that in the app container.
-  let appContainerRtsConfPath    = appContainerPackageDBPath!.appendingPathComponent("builtin_rts.conf")
+  let appContainerRtsConfPath    = appContainerPackageDBPath!.appendingPathComponent("rts.conf")
     // FIXME: the following needs to have error handling cleaned up
   let appContainerBundleVersion = (try? String(contentsOfFile: appContainerBundleVersionPath!.path)) ?? "UNKNOWN",
       str:           String?    = try? String(contentsOfFile: appContainerRtsConfPath.path)
@@ -290,7 +290,7 @@ for package in packages {
 }
 
   // In sandboxed mode, add an rpath linker option pointing to the app container GHC library path to the RTS conf.
-if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).first,
+if let builtin_rts     = (packages.filter{ $0.hasSuffix("rts.conf") }).first,
        let builtin_rtsPath = appContainerPackageDBPath?.appendingPathComponent(builtin_rts).path
 {
   do {
@@ -300,7 +300,7 @@ if let builtin_rts     = (packages.filter{ $0.hasSuffix("builtin_rts.conf") }).f
     try (contents + rpathOption).write(toFile: builtin_rtsPath, atomically: false, encoding: String.Encoding.utf8)
 
   } catch _ {
-    NSLog("Failed to add RPATH to buildin_rts.conf")
+    NSLog("Failed to add RPATH to rts.conf")
     exit(1)
   }
 }
