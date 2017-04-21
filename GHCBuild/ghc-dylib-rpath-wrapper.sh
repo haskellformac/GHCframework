@@ -9,6 +9,9 @@
 #  Rewrite ghc invocations by cabal install that build dynamic libraries (for a Haskell package) such that the library
 #  name is relative to $GHCLIB and that we avoid the individual RPATHs for each library this package depends on.
 
+echo "$*" >&2
+echo "------------" >&2
+
 declare -a args
 i=0
 package_key=""
@@ -44,5 +47,5 @@ fi
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
 
-#echo $GHCBIN/ghc "${args[@]}" >&2
+echo $GHCBIN/ghc "${args[@]}" >&2
 exec $GHCBIN/ghc "${args[@]}"

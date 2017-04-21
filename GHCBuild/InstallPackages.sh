@@ -34,6 +34,13 @@ CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.
 echo "$CABAL_CMD <PACKAGE LIST>"
 $CABAL_CMD $PKGS
 
+#### !!!TEMPORARY
+echo "INSTALLING PRELIMINARY VERSIONS: language-c-quote, language-c-inline"
+$GHCBASE/bin/ghc-pkg --package-db=$GHCLIB/package.conf.d unregister language-c-inline
+$GHCBASE/bin/ghc-pkg --package-db=$GHCLIB/package.conf.d unregister language-c-quote
+(cd /Users/chak/Code/language-c-quote; $CABAL_CMD)
+(cd /Users/chak/Code/language-c-inline; $CABAL_CMD)
+
 for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut -d ' ' -f 11`; do
   install_name_tool -delete_rpath $path $GHCLIB/bin/cpphs
   install_name_tool -add_rpath "@loader_path/../`basename $path`" $GHCLIB/bin/cpphs

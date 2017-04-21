@@ -18,13 +18,21 @@ esac
 
 if [ -n $rsp_file ]; then
 
+  cat $rsp_file           >&2
+  echo "------------"     >&2
+
   eval args=(`cat $rsp_file`)
   echo -n ""                       >$rsp_file
   rpath=""
   final_embed_rpath=""
   final_container_rpath=""
+  loader_rpath=""
+  include_rpath=true
   for arg in "${args[@]}"; do
     case $arg in
+      -Wl,-r)
+        echo "\"-Wl,-r\""    >>$rsp_file
+        include_rpath=false;;
       -Wl,-rpath)
         rpath="rpath";;
       -Wl,/*usr/lib/ghc*/*)
@@ -37,25 +45,39 @@ if [ -n $rsp_file ]; then
         final_container_rpath=`dirname "${arg:4}"`;;
       -Wl,-rpath,/*Support/lib/ghc*/*)
         final_container_rpath=`dirname "${arg:11}"`;;
+      -rpath)
+        rpath="rpath_cc";;
+      @loader_path/..)
+        rpath=""
+        loader_rpath="${arg}";;
       -L/*Support/lib/ghc*/*)
-        echo "\"$arg\""           >>$rsp_file
+        echo "\"$arg\""            >>$rsp_file
         final_container_rpath=`dirname "${arg:2}"`;;
       *)
         if [ "x$rpath" = "xrpath" ]; then
-          echo "\"-Wl,-rpath\""   >>$rsp_file
+          echo "\"-Wl,-rpath\""    >>$rsp_file
+          rpath=""
+        elif [ "x$rpath" = "xrpath_cc" ]; then
+          echo "\"-rpath\""        >>$rsp_file
           rpath=""
         fi
-        echo "\"$arg\""           >>$rsp_file
+        echo "\"$arg\""            >>$rsp_file
         ;;
     esac
   done
-  if [ -n "$final_embed_rpath" ]; then
-    echo "\"-Wl,-rpath\""         >>$rsp_file
-    echo "\"-Wl,${final_embed_rpath}\"" >>$rsp_file
-  fi
-  if [ -n "$final_container_rpath" ]; then
-    echo "\"-Wl,-rpath\""         >>$rsp_file
-    echo "\"-Wl,${final_container_rpath}\"" >>$rsp_file
+  if `$include_rpath`; then
+    if [ -n "$final_embed_rpath" ]; then
+      echo "\"-Wl,-rpath\""        >>$rsp_file
+      echo "\"-Wl,${final_embed_rpath}\"" >>$rsp_file
+    fi
+    if [ -n "$final_container_rpath" ]; then
+      echo "\"-Wl,-rpath\""        >>$rsp_file
+      echo "\"-Wl,${final_container_rpath}\"" >>$rsp_file
+    fi
+    if [ -n "$loader_rpath" ]; then
+      echo "\"-rpath\""            >>$rsp_file
+      echo "\"@loader_path/..\""   >>$rsp_file
+    fi
   fi
 
   cat $rsp_file           >&2
