@@ -185,7 +185,6 @@ if !sandboxed {
   // In sandboxed mode, create the GHC root directory, package DB & ghc/bin path in the app container if they don't exit yet.
 if let packageDBPath = appContainerPackageDBPath {
 
-  var error:       NSError?
   var isDirectory: ObjCBool = false
   let package_conf_d_exists = defaultFileManager.fileExists(atPath: packageDBPath.path, isDirectory: &isDirectory)
   if !package_conf_d_exists {                         // doesn't exist => create directory
@@ -232,6 +231,16 @@ if let packageDBPath = appContainerPackageDBPath {
   }
 }
 
+  // Remove all old .conf files
+if let packageDBPath = appContainerPackageDBPath {
+
+  let ghcPackageDBDir   = (try? defaultFileManager.contentsOfDirectory(atPath: packageDBPath.path))
+                          ?! ("fatal error: could not read package DB directory at \(packageDBPath)"),
+      packageConfFiles  = ghcPackageDBDir.filter{ $0.hasSuffix(".conf") }
+
+  for confFile in packageConfFiles { try defaultFileManager.removeItem(at: URL(fileURLWithPath: confFile)) }
+}
+
 let ghcLibDir   = (try? defaultFileManager.contentsOfDirectory(atPath: ghcLibPath.path))
                   ?! ("fatal error: could not read directory containing the GHC library at \(ghcLibPath)"),
     ghcLibFiles = ghcLibDir.filter{ $0 != "package.conf.d" }
@@ -239,12 +248,20 @@ let ghcLibDir   = (try? defaultFileManager.contentsOfDirectory(atPath: ghcLibPat
   // In sandboxed mode, create symbolic links in the app container too all files in the embedded GHC root directory
   // with the exception of the package DB.
 if let packageDBPath = appContainerPackageDBPath {
-  for ghcRootFile in ghcLibFiles {
+  do {
+    for ghcRootFile in ghcLibFiles {
 
-    let source = ghcLibPath.appendingPathComponent(ghcRootFile),
-        target = appContainerGHCLib!.appendingPathComponent(ghcRootFile)
-    try defaultFileManager.createSymbolicLink(at: target, withDestinationURL: source)
+      let source = ghcLibPath.appendingPathComponent(ghcRootFile),
+          target = appContainerGHCLib!.appendingPathComponent(ghcRootFile)
+      if defaultFileManager.fileExists(atPath: target.path) {
+        try defaultFileManager.removeItem(at: target)
+      }
+      try defaultFileManager.createSymbolicLink(at: target, withDestinationURL: source)
 
+    }
+  } catch var error as NSError {
+    NSLog("failed to create symbolic links to populate GHCLIB directory in app container: %@", error)
+    exit(1)
   }
 }
 
