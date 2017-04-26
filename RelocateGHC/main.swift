@@ -3,7 +3,7 @@
 //  RelocateGHC
 //
 //  Created by Manuel M T Chakravarty on 12/09/2014.
-//  Copyright (c) [2014..2016] Manuel M T Chakravarty. All rights reserved.
+//  Copyright (c) [2014..2017] Manuel M T Chakravarty. All rights reserved.
 //
 //  Rewrite the launch scripts and package database configuration files to the current location of the 'GHC.framework'.
 //

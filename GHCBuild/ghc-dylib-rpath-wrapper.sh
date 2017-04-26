@@ -9,8 +9,8 @@
 #  Rewrite ghc invocations by cabal install that build dynamic libraries (for a Haskell package) such that the library
 #  name is relative to $GHCLIB and that we avoid the individual RPATHs for each library this package depends on.
 
-echo "$*" >&2
-echo "------------" >&2
+#echo "$*"           >&2
+#echo "------------" >>&2
 
 declare -a args
 i=0
@@ -22,15 +22,17 @@ while [ $# -gt 0 ]; do
   case "$arg" in
     -optl-Wl,-rpath*/lib/ghc*)
       continue;;
-    -this-package-key)
-      if [ $# -gt 0 ]; then
-        package_key="$1"
-      fi;;
+# Link command has no -this-unit-id in GHC 8 anymore
+#    -this-unit-id)
+#      if [ $# -gt 0 ]; then
+#        package_key="$1"
+#      fi;;
     -o)
       if [ $# -gt 0 ]; then
         case "$1" in
           *.dylib)
-            dylib=`basename "$1"`;;
+            dylib=`basename "$1"`
+            package_key=`echo "$1" | sed -e 's/.*libHS//' -e 's/-ghc.*.dylib//'`;;
           *) ;;
         esac
       fi;;
@@ -47,5 +49,5 @@ fi
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
 
-echo $GHCBIN/ghc "${args[@]}" >&2
+#echo $GHCBIN/ghc "${args[@]}" >>&2
 exec $GHCBIN/ghc "${args[@]}"
