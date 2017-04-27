@@ -31,7 +31,7 @@ if [ $appContainerGHCVersion -ne $cliGHCVersion ]; then
   appContainerIsOutdated="true"
 fi
 
-appBundleRTS=`grep library-dirs "$appContainerPackageDB/builtin_rts.conf" | cut -f 2 -d ' '`
+appBundleRTS=`grep library-dirs "$appContainerPackageDB/rts.conf" | cut -f 2 -d ' '`
 appBundleGHC=`dirname "$appBundleRTS"`
 appBundlePackageCache="$appBundleGHC/package.conf.d/package.cache"
 

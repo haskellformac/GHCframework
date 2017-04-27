@@ -84,12 +84,15 @@ chmod a+x ${GHC_CONTENTS_PATH}/SetupCLI
 cp -f $GHCROOT/usr/lib/ghc/bin/ghc ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/runghc ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/ghc-pkg ${GHC_CONTENTS_PATH}/bin
+cp -f $GHCROOT/usr/lib/ghc/bin/ghc-split ${GHC_CONTENTS_PATH}/bin
+cp -f $GHCROOT/usr/lib/ghc/bin/ghc-iserv ${GHC_CONTENTS_PATH}/bin
+cp -f $GHCROOT/usr/lib/ghc/bin/ghc-iserv-dyn ${GHC_CONTENTS_PATH}/bin
 if [ $CONFIGURATION = "Release" ]; then
 cp -f $GHCROOT/usr/lib/ghc/bin/haddock ${GHC_CONTENTS_PATH}/bin
 fi
 cp -f $GHCROOT/usr/lib/ghc/bin/hpc ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/hsc2hs ${GHC_CONTENTS_PATH}/bin
-cp -f $GHCROOT/usr/lib/ghc/unlit ${GHC_CONTENTS_PATH}/bin
+cp -f $GHCROOT/usr/lib/ghc/bin/unlit ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/alex ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/happy ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cabal ${GHC_CONTENTS_PATH}/bin
@@ -112,7 +115,7 @@ tar -C "${CABAL_FILE_TREE}" -xf ${SOURCE_ROOT}/Cabal/00-index.tar.gz
 
 echo -n "" >${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 for cabal in ${CABAL_FILE_TREE}/*/*/*.cabal; do
-  sed -e ':a' -e 'N' -e '$!ba' -e 's/^name:\n/name: /' -e 's/version:\n/version: /' -e 's/synopsis:\n/synopsis: /' ${cabal} \
+  sed -E -e ':a' -e 'N' -e '$!ba' -e 's/^name:.?\n/name: /' -e 's/version:.?\n/version: /' -e 's/synopsis:.?\n/synopsis: /' ${cabal} \
   | grep -i -e '^name:' -e '^version:' -e '^synopsis:' \
   >>${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 done
