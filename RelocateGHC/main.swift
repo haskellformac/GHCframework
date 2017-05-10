@@ -238,7 +238,7 @@ if let packageDBPath = appContainerPackageDBPath {
                           ?! ("fatal error: could not read package DB directory at \(packageDBPath)"),
       packageConfFiles  = ghcPackageDBDir.filter{ $0.hasSuffix(".conf") }
 
-  for confFile in packageConfFiles { try defaultFileManager.removeItem(at: URL(fileURLWithPath: confFile)) }
+  for confFile in packageConfFiles { try defaultFileManager.removeItem(at: packageDBPath.appendingPathComponent(confFile)) }
 }
 
 let ghcLibDir   = (try? defaultFileManager.contentsOfDirectory(atPath: ghcLibPath.path))
