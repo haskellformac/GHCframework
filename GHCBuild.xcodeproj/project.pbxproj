@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E748FAD61F17952C0067388C /* container-cabal.config in Resources */ = {isa = PBXBuildFile; fileRef = E748FAD51F17952C0067388C /* container-cabal.config */; };
 		E7C4FFC91ADEA7C400E652AA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E7C4FFC41ADEA7C400E652AA /* Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -15,6 +16,9 @@
 		E73EF1B11DF7E8D800F9BFED /* InstallPackages.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = InstallPackages.sh; sourceTree = "<group>"; };
 		E73EF1B21DF7EA2600F9BFED /* ghc-dylib-rpath-wrapper.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ghc-dylib-rpath-wrapper.sh"; sourceTree = "<group>"; };
 		E73EF1B31DF813C600F9BFED /* BuildGHC.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildGHC.sh; sourceTree = "<group>"; };
+		E748FAD21F163AEF0067388C /* BuildContainer.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = BuildContainer.sh; sourceTree = "<group>"; };
+		E748FAD31F171D670067388C /* Dockerfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dockerfile; sourceTree = "<group>"; };
+		E748FAD51F17952C0067388C /* container-cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "container-cabal.config"; sourceTree = "<group>"; };
 		E78812051B68F6100072E192 /* cabal.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cabal.config; sourceTree = "<group>"; };
 		E7C4FFC01ADEA7C400E652AA /* build.mk.debug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.debug; sourceTree = "<group>"; };
 		E7C4FFC11ADEA7C400E652AA /* build.mk.release */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = build.mk.release; sourceTree = "<group>"; };
@@ -52,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				E78812051B68F6100072E192 /* cabal.config */,
+				E748FAD51F17952C0067388C /* container-cabal.config */,
 				E7C4FFC01ADEA7C400E652AA /* build.mk.debug */,
 				E7C4FFC11ADEA7C400E652AA /* build.mk.release */,
 				E7C4FFC21ADEA7C400E652AA /* extra-packages */,
@@ -60,11 +65,30 @@
 				E73EF1B11DF7E8D800F9BFED /* InstallPackages.sh */,
 				E73EF1B21DF7EA2600F9BFED /* ghc-dylib-rpath-wrapper.sh */,
 				E71924131DF93332007758D1 /* cc-dylib-rpath-wrapper.sh */,
+				E748FAD21F163AEF0067388C /* BuildContainer.sh */,
+				E748FAD31F171D670067388C /* Dockerfile */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		E748FACE1F163A7F0067388C /* GHCContainer */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(SOURCE_ROOT)/GHCBuild/BuildContainer.sh $(ACTION)";
+			buildConfigurationList = E748FAD11F163A7F0067388C /* Build configuration list for PBXLegacyTarget "GHCContainer" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/bash;
+			buildWorkingDirectory = "";
+			dependencies = (
+			);
+			name = GHCContainer;
+			passBuildSettingsInEnvironment = 1;
+			productName = GHCContainer;
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		E7E54FF5195D6CEE0019278B /* GHCBuild */ = {
@@ -94,6 +118,11 @@
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {
+					E748FACE1F163A7F0067388C = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = Z3JA6XMHD3;
+						ProvisioningStyle = Automatic;
+					};
 					E7E54FF5195D6CEE0019278B = {
 						CreatedOnToolsVersion = 6.0;
 						LastSwiftMigration = 0800;
@@ -113,6 +142,7 @@
 			projectRoot = "";
 			targets = (
 				E7E54FF5195D6CEE0019278B /* GHCBuild */,
+				E748FACE1F163A7F0067388C /* GHCContainer */,
 			);
 		};
 /* End PBXProject section */
@@ -123,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7C4FFC91ADEA7C400E652AA /* Info.plist in Resources */,
+				E748FAD61F17952C0067388C /* container-cabal.config in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +193,40 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		E748FACF1F163A7F0067388C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Z3JA6XMHD3;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E748FAD01F163A7F0067388C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z3JA6XMHD3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		E7E54FFB195D6CEE0019278B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -275,6 +340,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E748FAD11F163A7F0067388C /* Build configuration list for PBXLegacyTarget "GHCContainer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E748FACF1F163A7F0067388C /* Debug */,
+				E748FAD01F163A7F0067388C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		E7E54FF1195D6CEE0019278B /* Build configuration list for PBXProject "GHCBuild" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
