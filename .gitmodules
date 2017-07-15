@@ -1,4 +1,4 @@
 [submodule "GHCBuild/ghc"]
 	path = GHCBuild/ghc
-	url = https://github.com/mchakravarty/ghc.git
-	branch = ghc-7.8
+	url = https://github.com/haskellformac/ghc.git
+	branch = ghc-8.0.2-macOS10.12
