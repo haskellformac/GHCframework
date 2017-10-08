@@ -27,6 +27,9 @@ else
   EXTRA_ARGS="$EXTRA_ARGS --with-haddock=$GHCBIN/haddock"
 fi
 
+echo "/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config update"
+/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config update
+
 # Current cabal version doesn't let us leave out the global or user package DB. We
 # must use --reinstall to avoid that an existing package in the global or user DB with
 # the same version suppresses the installation.
@@ -49,6 +52,10 @@ for BIN in $BINS; do
     install_name_tool -delete_rpath $path $GHCLIB/bin/$BIN
   done
 done
+
+echo "Download stack 1.5.1"
+curl -fSL https://github.com/commercialhaskell/stack/releases/download/v1.5.1/stack-1.5.1-linux-x86_64-static.tar.gz -o ${TARGET_TEMP_DIR}/stack.tar.gz
+tar --strip-components 1 -C ${GHCBIN} -xzf ${TARGET_TEMP_DIR}/stack.tar.gz stack-1.5.1-linux-x86_64-static/stack
 
 # We don't want sample etc binaries of library packages.
 rm -f $GHCLIB/bin/operational-TicTacToe

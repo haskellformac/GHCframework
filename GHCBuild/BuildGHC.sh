@@ -18,6 +18,7 @@ fi
 
 # Install location
 PREFIX=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
+
 echo "Install location $PREFIX"
 
 # Clean to recompile
@@ -48,10 +49,11 @@ else
 fi
 
 # Actual GHC build (we extend PATH to get 'autoreconf')
-(cd $TARGET_TEMP_DIR/ghc; env PATH=$PATH:/usr/local/bin perl boot)
-(cd $TARGET_TEMP_DIR/ghc; ./configure --prefix=$PREFIX --with-nm=$NM)
-(cd $TARGET_TEMP_DIR/ghc; make -j7)
-(cd $TARGET_TEMP_DIR/ghc; make install)
+echo "Building in $TARGET_TEMP_DIR/ghc"
+(cd $TARGET_TEMP_DIR/ghc; env PATH=$PATH:/usr/local/bin perl boot ) || exit 1
+(cd $TARGET_TEMP_DIR/ghc; ./configure --prefix=$PREFIX --with-nm=$NM) || exit 1
+(cd $TARGET_TEMP_DIR/ghc; make -j7) || exit 1
+(cd $TARGET_TEMP_DIR/ghc; make install) || exit 1
 
 # Create a link to the library directory that is not versioned.
 # (We only ever have got one version in the framework and this simplifies other scripts.)
