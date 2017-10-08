@@ -39,7 +39,7 @@ func libraryLocation(_ conf: String) -> String? {
   if let startOfLoc  = conf.range(of: "library-dirs: ")?.upperBound,
          let endOfLoc    = conf.range(of: "/usr/lib", options: [], range: startOfLoc..<conf.endIndex)?.lowerBound
   {
-    return conf[startOfLoc..<endOfLoc]
+    return String(conf[startOfLoc..<endOfLoc])
   } else { return nil }
 }
 
