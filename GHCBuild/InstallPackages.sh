@@ -4,7 +4,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 07.12.16.
-#  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
 
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
@@ -33,13 +33,6 @@ fi
 CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --with-hsc2hs=$GHCBIN/hsc2hs --allow-newer --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} $EXTRA_ARGS"
 echo "$CABAL_CMD <PACKAGE LIST>"
 $CABAL_CMD $PKGS
-
-#### !!!TEMPORARY
-echo "INSTALLING PRELIMINARY VERSIONS: language-c-quote, language-c-inline"
-$GHCBASE/bin/ghc-pkg --package-db=$GHCLIB/package.conf.d unregister language-c-inline
-$GHCBASE/bin/ghc-pkg --package-db=$GHCLIB/package.conf.d unregister language-c-quote
-(cd /Users/chak/Code/language-c-quote; $CABAL_CMD)
-(cd /Users/chak/Code/language-c-inline; $CABAL_CMD)
 
 for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut -d ' ' -f 11`; do
   install_name_tool -delete_rpath $path $GHCLIB/bin/cpphs
