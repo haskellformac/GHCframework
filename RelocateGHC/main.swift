@@ -199,7 +199,7 @@ if let packageDBPath = appContainerPackageDBPath {
       defaultFileManager.createFile(atPath: appContainerBundleVersionPath!.path,
                                           contents: bundleVersion!.data(using: String.Encoding.utf8),
                                           attributes: nil)
-    } catch var error as NSError {
+    } catch let error as NSError {
       NSLog("failed to create package DB (or bin directory) in app container: %@", error)
       exit(1)
     }
@@ -208,7 +208,7 @@ if let packageDBPath = appContainerPackageDBPath {
 
     do {
       try defaultFileManager.removeItem(atPath: packageDBPath.path)
-    } catch var error as NSError {
+    } catch let error as NSError {
       NSLog("failed to remove existing file at package DB location in app container: %@", error)
       exit(1)
     }
@@ -223,7 +223,7 @@ if let packageDBPath = appContainerPackageDBPath {
       defaultFileManager.createFile(atPath: appContainerBundleVersionPath!.path,
                                           contents: bundleVersion!.data(using: String.Encoding.utf8),
                                           attributes: nil)
-    } catch var error as NSError {
+    } catch let error as NSError {
       NSLog("failed to create package DB in app container: %@", error)
       exit(1)
     }
@@ -247,7 +247,7 @@ let ghcLibDir   = (try? defaultFileManager.contentsOfDirectory(atPath: ghcLibPat
 
   // In sandboxed mode, create symbolic links in the app container too all files in the embedded GHC root directory
   // with the exception of the package DB.
-if let packageDBPath = appContainerPackageDBPath {
+if appContainerPackageDBPath != nil {
   do {
     for ghcRootFile in ghcLibFiles {
 
@@ -259,7 +259,7 @@ if let packageDBPath = appContainerPackageDBPath {
       try defaultFileManager.createSymbolicLink(at: target, withDestinationURL: source)
 
     }
-  } catch var error as NSError {
+  } catch let error as NSError {
     NSLog("failed to create symbolic links to populate GHCLIB directory in app container: %@", error)
     exit(1)
   }
@@ -279,7 +279,7 @@ if let sharePath = appContainerShare {
       try defaultFileManager.createDirectory(atPath: sharePath.path,
                                                    withIntermediateDirectories: true,
                                                    attributes: nil)
-    } catch var error as NSError {
+    } catch let error as NSError {
       NSLog("failed to create share directory in app container: %@", error)
       exit(1)
     }
