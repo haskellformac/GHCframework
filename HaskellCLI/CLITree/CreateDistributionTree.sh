@@ -4,7 +4,7 @@
 #  HaskellCLI
 #
 #  Created by Manuel M T Chakravarty on 07.02.17.
-#  Copyright © 2017 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2017..2018] Manuel M T Chakravarty. All rights reserved.
 
 
 GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellCLI/GHC/`
@@ -76,7 +76,9 @@ ln -hfs ghci-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghci
 ln -hfs runghc-$GHC_VERSION ${BIN_CONTENTS_PATH}/runghc
 ln -hfs runghc ${BIN_CONTENTS_PATH}/runhaskell
 ln -hfs ghc-pkg-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghc-pkg
-ln -hfs haddock-$GHC_VERSION ${BIN_CONTENTS_PATH}/haddock
+if [ $CONFIGURATION = "Release" ]; then
+  ln -hfs haddock-$GHC_VERSION ${BIN_CONTENTS_PATH}/haddock
+fi
 
 # Scripts in ${LIB_PREFIX}/ghc
 cp -f $SOURCE_ROOT/SetupCLI.sh ${GHC_CONTENTS_PATH}/SetupCLI
@@ -89,7 +91,7 @@ cp -f $GHCROOT/usr/lib/ghc/bin/ghc-split ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/ghc-iserv ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/ghc-iserv-dyn ${GHC_CONTENTS_PATH}/bin
 if [ $CONFIGURATION = "Release" ]; then
-cp -f $GHCROOT/usr/lib/ghc/bin/haddock ${GHC_CONTENTS_PATH}/bin
+  cp -f $GHCROOT/usr/lib/ghc/bin/haddock ${GHC_CONTENTS_PATH}/bin
 fi
 cp -f $GHCROOT/usr/lib/ghc/bin/hpc ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/hsc2hs ${GHC_CONTENTS_PATH}/bin
