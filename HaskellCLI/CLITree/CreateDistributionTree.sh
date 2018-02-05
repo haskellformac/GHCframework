@@ -68,6 +68,7 @@ chmod a+x ${BIN_CONTENTS_PATH}/cc-dylib-rpath-wrapper
 chmod a+x ${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 
 cp -f $GHCROOT/usr/bin/hp2ps ${BIN_CONTENTS_PATH}
+cp -f $GHCROOT/usr/bin/c2hs ${BIN_CONTENTS_PATH}
 cp -f $GHCROOT/usr/bin/stack ${BIN_CONTENTS_PATH}
 
 # Links in ${LIB_PREFIX}/bin

@@ -57,6 +57,7 @@ haskell-src-meta
 http-client
 http-client-tls
 language-c-inline-0.7.11.0
+language-c
 lens
 lens-aeson
 linear

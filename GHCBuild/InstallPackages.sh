@@ -4,7 +4,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 07.12.16.
-#  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2018] Manuel M T Chakravarty. All rights reserved.
 
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
@@ -43,10 +43,10 @@ for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut
 done
 
 # We build the executables separately, so they already get the RPATHs and names of the relocatable libs.
-$CABAL_CMD alex happy cabal-install
+$CABAL_CMD alex happy cabal-install c2hs
 
 # Remove absolute RPATHs embedded in the binaries
-BINS="alex cabal happy"
+BINS="alex cabal happy c2hs"
 for BIN in $BINS; do
   for path in `otool -l $GHCLIB/bin/$BIN | grep ' path ' | grep DerivedData | cut -d ' ' -f 11`; do
     install_name_tool -delete_rpath $path $GHCLIB/bin/$BIN
