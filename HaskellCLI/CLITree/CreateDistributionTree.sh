@@ -51,6 +51,7 @@ sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/cabal.sh >${BIN_CONTENTS_PATH}/ca
 sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/hpc.sh >${BIN_CONTENTS_PATH}/hpc
 sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/hsc2hs.sh >${BIN_CONTENTS_PATH}/hsc2hs
 sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/cpphs.sh >${BIN_CONTENTS_PATH}/cpphs
+sed -e "s/VERSION/$CLI_VERSION/g" $SOURCE_ROOT/c2hs.sh >${BIN_CONTENTS_PATH}/c2hs
 cat $SOURCE_ROOT/../GHCBuild/cc-dylib-rpath-wrapper.sh >${BIN_CONTENTS_PATH}/cc-dylib-rpath-wrapper
 sed -e "s|\$CONFIGURATION_BUILD_DIR/\$CONTENTS_FOLDER_PATH/usr|${LIB_PREFIX}|g" $SOURCE_ROOT/../GHCBuild/ghc-dylib-rpath-wrapper.sh >${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 chmod a+x ${BIN_CONTENTS_PATH}/ghc-$GHC_VERSION
@@ -64,12 +65,12 @@ chmod a+x ${BIN_CONTENTS_PATH}/cabal
 chmod a+x ${BIN_CONTENTS_PATH}/hpc
 chmod a+x ${BIN_CONTENTS_PATH}/hsc2hs
 chmod a+x ${BIN_CONTENTS_PATH}/cpphs
+chmod a+x ${BIN_CONTENTS_PATH}/c2hs
 chmod a+x ${BIN_CONTENTS_PATH}/cc-dylib-rpath-wrapper
 chmod a+x ${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 
 cp -f $GHCROOT/usr/bin/hp2ps ${BIN_CONTENTS_PATH}
 cp -f $GHCROOT/usr/bin/stack ${BIN_CONTENTS_PATH}
-cp -f $GHCROOT/usr/lib/ghc/bin/c2hs ${BIN_CONTENTS_PATH}
 
 # Links in ${LIB_PREFIX}/bin
 ln -hfs ghc-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghc
@@ -101,6 +102,7 @@ cp -f $GHCROOT/usr/lib/ghc/bin/alex ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/happy ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cabal ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cpphs ${GHC_CONTENTS_PATH}/bin
+cp -f $GHCROOT/usr/lib/ghc/bin/c2hs ${GHC_CONTENTS_PATH}/bin
 
 
 # Build cabal.config

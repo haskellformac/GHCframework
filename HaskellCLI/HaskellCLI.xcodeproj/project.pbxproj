@@ -41,6 +41,7 @@
 		E76075821E4AEFC7009498D5 /* InstallScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = InstallScripts; sourceTree = "<group>"; };
 		E761CC961C83F6AA00352AE5 /* haddock.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = haddock.sh; sourceTree = "<group>"; };
 		E764319E1C4E1C51002091F0 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		E7F571672029397A0061670D /* c2hs.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = c2hs.sh; sourceTree = "<group>"; };
 		E7FC2B1B1CC0AE100048E8C8 /* cpphs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = cpphs.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,6 +100,7 @@
 				E71989CD1C392C4B00FE353B /* hsc2hs.sh */,
 				E71989CE1C392D1100FE353B /* runghc.sh */,
 				E7FC2B1B1CC0AE100048E8C8 /* cpphs.sh */,
+				E7F571672029397A0061670D /* c2hs.sh */,
 				E71989C81C37CFA300FE353B /* SetupCLI.sh */,
 			);
 			name = CLITools;
