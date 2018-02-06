@@ -4,7 +4,7 @@
 #  HaskellCLI
 #
 #  Created by Manuel M T Chakravarty on 07.02.17.
-#  Copyright © 2017 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2017..2018] Manuel M T Chakravarty. All rights reserved.
 #
 #  Run an executable of a Haskell for Mac project in a Terminal.app window. Ensure that the window isn't automatically
 #  closed when execution finishes.
@@ -26,9 +26,9 @@ shift
 
 if [ ${data_folder} = "none" ];
 then
-  command="cd ${wd}; clear; ${CLITOOLS}/runhaskell $@"
+  command="cd ${wd}; clear; ${CLITOOLS}/runhaskell -- -fdefer-type-errors -fno-ghci-sandbox $@"
 else
-  command="cd ${wd}; clear; env HASKELL_DATA_FOLDER=${data_folder} ${CLITOOLS}/runhaskell -- -fdefer-type-errors $@"
+  command="cd ${wd}; clear; env HASKELL_DATA_FOLDER=${data_folder} ${CLITOOLS}/runhaskell -- -fdefer-type-errors -fno-ghci-sandbox $@"
 fi
 tab=`osascript -e 'tell app "Terminal" to do script "'"${command}"'"'`
 
