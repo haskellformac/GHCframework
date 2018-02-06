@@ -119,7 +119,7 @@ tar -C "${CABAL_FILE_TREE}" -xf ${SOURCE_ROOT}/Cabal/00-index.tar.gz
 
 echo -n "" >${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 for cabal in ${CABAL_FILE_TREE}/*/*/*.cabal; do
-  sed -E -e ':a' -e 'N' -e '$!ba' -e 's/^name:.?\n/name: /' -e 's/version:.?\n/version: /' -e 's/synopsis:.?\n/synopsis: /' ${cabal} \
+  sed -E -e ':a' -e 'N' -e '$!ba' -e 's/[[:<:]]name:.?\n/name: /' -e 's/[[:<:]]version:.?\n/version: /' -e 's/[[:<:]]synopsis:.?\n/synopsis: /' ${cabal} \
   | grep -i -e '^name:' -e '^version:' -e '^synopsis:' \
   >>${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 done
