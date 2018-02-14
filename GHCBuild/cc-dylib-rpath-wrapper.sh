@@ -50,6 +50,11 @@ if [ -n $rsp_file ]; then
       @loader_path/..)
         rpath=""
         loader_rpath="${arg}";;
+      -L/*Application_Support/lib/ghc*/*)
+        # Crude hack to get around 'cabal' infelicity with spaces in file names
+        arg_space="`echo "$arg" | sed -e 's/Application_Support/Application Support/'`"
+        echo "\"$arg_space\""        >>$rsp_file
+        final_container_rpath=`dirname "${arg_space:2}"`;;
       -L/*Support/lib/ghc*/*)
         echo "\"$arg\""            >>$rsp_file
         final_container_rpath=`dirname "${arg:2}"`;;
