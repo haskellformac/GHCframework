@@ -18,8 +18,8 @@ esac
 
 if [ -n $rsp_file ]; then
 
-  cat $rsp_file           >&2
-  echo "------------"     >&2
+#  cat $rsp_file           >&2
+#  echo "------------"     >&2
 
   eval args=(`cat $rsp_file`)
   echo -n ""                       >$rsp_file
@@ -85,6 +85,6 @@ if [ -n $rsp_file ]; then
     fi
   fi
 
-  cat $rsp_file           >&2
+#  cat $rsp_file           >&2
 fi
 exec /usr/bin/gcc ${1+"$@"}
