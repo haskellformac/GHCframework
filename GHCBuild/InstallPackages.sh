@@ -54,8 +54,8 @@ for BIN in $BINS; do
 done
 
 echo "Download stack 1.5.1"
-curl -fSL https://github.com/commercialhaskell/stack/releases/download/v1.5.1/stack-1.5.1-linux-x86_64-static.tar.gz -o ${TARGET_TEMP_DIR}/stack.tar.gz
-tar --strip-components 1 -C ${GHCBIN} -xzf ${TARGET_TEMP_DIR}/stack.tar.gz stack-1.5.1-linux-x86_64-static/stack
+curl -fSL https://github.com/commercialhaskell/stack/releases/download/v1.5.1/stack-1.5.1-osx-x86_64.tar.gz -o ${TARGET_TEMP_DIR}/stack.tar.gz
+tar --strip-components 1 -C ${GHCBIN} -xzf ${TARGET_TEMP_DIR}/stack.tar.gz stack-1.5.1-osx-x86_64/stack
 
 # We don't want sample etc binaries of library packages.
 rm -f $GHCLIB/bin/operational-TicTacToe
