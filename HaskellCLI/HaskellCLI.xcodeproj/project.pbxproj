@@ -203,8 +203,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "pwd\nsource CLITree/CreateDistributionTree.sh";
+			shellPath = /bin/bash;
+			shellScript = "pwd\nsource CLITree/CreateDistributionTree.sh\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

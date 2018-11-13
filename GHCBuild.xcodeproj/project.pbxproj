@@ -171,7 +171,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
+			shellPath = /bin/bash;
 			shellScript = "source GHCBuild/InstallPackages.sh\n";
 			showEnvVarsInLog = 0;
 		};
@@ -186,7 +186,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
+			shellPath = /bin/bash;
 			shellScript = "source GHCBuild/BuildGHC.sh\n";
 			showEnvVarsInLog = 0;
 		};
