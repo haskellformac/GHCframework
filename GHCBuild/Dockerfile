@@ -2,7 +2,7 @@
 
 # FIXME: Dockerfile doesn't support variable expansion in FROM and RUN commands; hence, we have GHC version
 #        hardcoded. Should maybe pre-process a Dockerfile template...
-FROM haskell:8.0.2
+FROM haskell:8.6.4
 
 LABEL maintainer "Manuel M T Chakravarty <chak@applicative.co>"
 

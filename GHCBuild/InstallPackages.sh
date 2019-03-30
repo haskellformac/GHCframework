@@ -4,7 +4,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 07.12.16.
-#  Copyright © [2016..2018] Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2019] Manuel M T Chakravarty. All rights reserved.
 
 GHCBASE=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH/usr
 GHCBIN=$GHCBASE/bin
@@ -27,15 +27,17 @@ else
   EXTRA_ARGS="$EXTRA_ARGS --with-haddock=$GHCBIN/haddock"
 fi
 
-echo "/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config update"
-/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config update
+echo "/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-update"
+/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-update
 
 # Current cabal version doesn't let us leave out the global or user package DB. We
 # must use --reinstall to avoid that an existing package in the global or user DB with
 # the same version suppresses the installation.
-CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --with-hsc2hs=$GHCBIN/hsc2hs --allow-newer --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} $EXTRA_ARGS"
-echo "$CABAL_CMD <PACKAGE LIST>"
-$CABAL_CMD $PKGS
+# NB: --flags="-bytestring--LT-0_10_4" is required by cassava due to using "--allow-newer" and a stupid hack in
+#     cassava's .cabal file
+CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --with-hsc2hs=$GHCBIN/hsc2hs --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} --allow-newer --flags=-bytestring--LT-0_10_4 $EXTRA_ARGS"
+echo "${CABAL_CMD} ${PKGS}"
+${CABAL_CMD} ${PKGS}
 
 for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut -d ' ' -f 11`; do
   install_name_tool -delete_rpath $path $GHCLIB/bin/cpphs
@@ -53,9 +55,9 @@ for BIN in $BINS; do
   done
 done
 
-echo "Download stack 1.5.1"
-curl -fSL https://github.com/commercialhaskell/stack/releases/download/v1.5.1/stack-1.5.1-osx-x86_64.tar.gz -o ${TARGET_TEMP_DIR}/stack.tar.gz
-tar --strip-components 1 -C ${GHCBIN} -xzf ${TARGET_TEMP_DIR}/stack.tar.gz stack-1.5.1-osx-x86_64/stack
+echo "Download stack 1.9.3"
+curl -fSL https://github.com/commercialhaskell/stack/releases/download/v1.9.3/stack-1.9.3-osx-x86_64.tar.gz -o ${TARGET_TEMP_DIR}/stack.tar.gz
+tar --strip-components 1 -C ${GHCBIN} -xzf ${TARGET_TEMP_DIR}/stack.tar.gz stack-1.9.3-osx-x86_64/stack
 
 # We don't want sample etc binaries of library packages.
 rm -f $GHCLIB/bin/operational-TicTacToe

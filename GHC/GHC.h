@@ -16,4 +16,5 @@ FOUNDATION_EXPORT const unsigned char GHCVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <GHC/PublicHeader.h>
 
+// The interface of the GHC framework module is the Haskell C FFI.
 #import "GHC/HsFFI.h"

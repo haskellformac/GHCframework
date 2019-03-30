@@ -4,7 +4,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 07.12.16.
-#  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2019] Manuel M T Chakravarty. All rights reserved.
 
 TARGET_TEMP_BINDIR="$TARGET_TEMP_DIR/bin"
 mkdir -p "$TARGET_TEMP_BINDIR"
@@ -36,9 +36,10 @@ ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/ghc-pkg $TARGE
 ln -sf /Library/Frameworks/GHC.framework/Versions/Current/usr/bin/hsc2hs $TARGET_TEMP_BINDIR/hsc2hs
 
 # Compile 'lndir' to create the build tree
-(cd GHCBuild/ghc/utils/lndir/; clang -O -o $TARGET_TEMP_BINDIR/lndir lndir.c)
+(cd GHCBuild/ghc/utils/lndir/; clang -I../fs -O -o $TARGET_TEMP_BINDIR/lndir lndir.c ../fs/fs.c)
 mkdir -p $TARGET_TEMP_DIR/ghc/
-(cd $TARGET_TEMP_DIR/ghc/; lndir $SOURCE_ROOT/GHCBuild/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHCBuild/ghc/.git $TARGET_TEMP_DIR/ghc/)
+#(cd $TARGET_TEMP_DIR/ghc/; lndir $SOURCE_ROOT/GHCBuild/ghc >/dev/null; ln -sf $SOURCE_ROOT/GHCBuild/ghc/.git $TARGET_TEMP_DIR/ghc/)
+(cd $TARGET_TEMP_DIR/ghc/; lndir $SOURCE_ROOT/GHCBuild/ghc >/dev/null; rm -f .git)
 
 # Select the appropriate 'build.mk' setup
 if [ $CONFIGURATION = "Debug" ];
@@ -50,9 +51,10 @@ fi
 
 # Actual GHC build (we extend PATH to get 'autoreconf')
 echo "Building in $TARGET_TEMP_DIR/ghc"
+#echo "8.6.4" >$TARGET_TEMP_DIR/ghc/VERSION
 (cd $TARGET_TEMP_DIR/ghc; env PATH=$PATH:/usr/local/bin perl boot ) || exit 1
 (cd $TARGET_TEMP_DIR/ghc; ./configure --prefix=$PREFIX --with-nm=$NM) || exit 1
-(cd $TARGET_TEMP_DIR/ghc; make -j7) || exit 1
+(cd $TARGET_TEMP_DIR/ghc; make -j3) || exit 1
 (cd $TARGET_TEMP_DIR/ghc; make install) || exit 1
 
 # Create a link to the library directory that is not versioned.

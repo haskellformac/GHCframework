@@ -27,6 +27,7 @@ blaze-svg
 bmp
 cabal-doctest
 call-stack
+cassava
 colour
 comonad
 contravariant
@@ -56,8 +57,8 @@ haskell-src-exts
 haskell-src-meta
 http-client
 http-client-tls
-language-c-inline-0.7.11.0
 language-c
+language-c-inline-0.7.11.0
 lens
 lens-aeson
 linear

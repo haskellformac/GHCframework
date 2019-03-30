@@ -215,7 +215,7 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Manuel M T Chakravarty";
 				TargetAttributes = {
 					E791CF1D19F8AEC900DECDC4 = {
@@ -359,7 +359,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# Copy the GHC build\necho \"Copying GHC build to $CONTENTS_PATH (not yet relocated)\"\nditto $GHCROOT/usr $CONTENTS_PATH/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|stg/Types.h|Types.h|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc${GHC_VERSION}.dylib\nln -hfs ../usr/lib/ghc/rts/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\nln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n\n# Remove references to Xcode embedded toolchain in GHC settings file\nsed -e 's|/Applications/Xcode.*app/Contents/Developer.*/usr|/usr|g' $CONTENTS_PATH/usr/lib/ghc/settings >$CONTENTS_PATH/usr/lib/ghc/settings.clean\nmv -f $CONTENTS_PATH/usr/lib/ghc/settings.clean $CONTENTS_PATH/usr/lib/ghc/settings";
+			shellScript = "GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellForMac/GHCBuild/`\nGHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents\nCONTENTS_PATH=$CONFIGURATION_BUILD_DIR/$CONTENTS_FOLDER_PATH\nGHCBIN=$GHCROOT/usr/bin\nGHC_VERSION=`$GHCBIN/ghc --numeric-version`\n\necho \"GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION\"\n\n# Copy the GHC build\necho \"Copying GHC build (not yet relocated)\"\necho \"  FROM ${GHCROOT}/usr TO ${CONTENTS_PATH}/usr\"\nditto ${GHCROOT}/usr ${CONTENTS_PATH}/usr\n# NB: We cannot relocate yet, as we first need to fix code signatures.\n\n# This framework's public API is the Haskell C API.\n#\n# NB: We can just link them all, as the module mechanisms doesn't allow headers that are not\n#     mentioned in the umbrella header.\nditto $CONTENTS_PATH/usr/lib/ghc/include/HsFFI.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|stg/Types.h|Types.h|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/HsFFI.h\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcconfig.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcautoconf.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/ghcplatform.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nditto $CONTENTS_PATH/usr/lib/ghc/include/stg/Types.h $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/\nsed -i '' -e's|#include <inttypes.h>|/* #include <inttypes.h> */|' $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/Types.h\n\n# We need a Libraries/ directory in the framework to link the RTS dylib\n/bin/mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries\n/bin/ln -sfh Versions/Current/Libraries ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Libraries\n\n# Select the RTS flavour to be used when linking against this framwork.\nRTS_DYLIB=libHSrts_thr-ghc${GHC_VERSION}.dylib\nln -hfs ../usr/lib/ghc/rts/$RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/\nln -hfs $RTS_DYLIB ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Libraries/GHC.dylib\n\n# Remove references to Xcode embedded toolchain in GHC settings file\nsed -e 's|/Applications/Xcode.*app/Contents/Developer.*/usr|/usr|g' $CONTENTS_PATH/usr/lib/ghc/settings >$CONTENTS_PATH/usr/lib/ghc/settings.clean\nmv -f $CONTENTS_PATH/usr/lib/ghc/settings.clean $CONTENTS_PATH/usr/lib/ghc/settings\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -430,7 +430,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -481,7 +481,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -506,7 +506,7 @@
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.haskellformac.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -532,7 +532,7 @@
 				INFOPLIST_FILE = GHC/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.haskellformac.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

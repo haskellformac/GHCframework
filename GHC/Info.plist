@@ -15,13 +15,13 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>8.0.2-9.6-2</string>
+	<string>8.6.4-13.14-1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © [2014..2017] Manuel M T Chakravarty. All rights reserved.</string>
+	<string>Copyright © [2014..2019] Manuel M T Chakravarty. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
