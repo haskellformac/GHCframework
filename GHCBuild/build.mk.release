@@ -57,7 +57,7 @@ ifneq "$(BuildFlavour)" ""
 include mk/flavours/$(BuildFlavour).mk
 endif
 
-GhcLibHcOpts    = -O2 -optl-Wl,-headerpad_max_install_names
+GhcLibHcOpts    = -O2 -optl-Wl,-headerpad_max_install_names -haddock
 # To ensure sufficient space for changing RPATH and for code signing, we use -optl-Wl,-headerpad_max_install_names
 BUILD_SPHINX_HTML  = NO
 BUILD_SPHINX_PDF   = NO

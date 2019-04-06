@@ -40,10 +40,13 @@ diagrams-lib
 diagrams-postscript
 diagrams-rasterific
 diagrams-svg
+digest
 distributive
 dlist
 dual-tree
+echo
 ed25519
+edit-distance
 exceptions
 extensible-exceptions
 fclabels
@@ -88,6 +91,7 @@ regex-posix
 repa
 repa-algorithms
 repa-io
+resolv
 scientific
 semigroupoids
 semigroups
@@ -115,4 +119,5 @@ wreq
 xhtml
 xml
 xmlgen
+zip-archive
 zlib

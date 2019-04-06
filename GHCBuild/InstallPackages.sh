@@ -26,6 +26,8 @@ then
 else
   EXTRA_ARGS="$EXTRA_ARGS --with-haddock=$GHCBIN/haddock"
 fi
+# We want iface-docs in either case
+DOC_ARGS="--ghc-option=-haddock"
 
 echo "/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-update"
 /Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-update
@@ -36,8 +38,8 @@ echo "/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.confi
 # NB: --flags="-bytestring--LT-0_10_4" is required by cassava due to using "--allow-newer" and a stupid hack in
 #     cassava's .cabal file
 CABAL_CMD="/Library/Haskell/bin/cabal --config-file=$SOURCE_ROOT/GHCBuild/cabal.config v1-install -j --prefix=$GHCLIB --bindir=$GHCLIB/bin --libdir=$GHCLIB --libexecdir=$GHCLIB/libexec --datadir=$GHCSHARE --package-db=$GHCLIB/package.conf.d --with-compiler=$GHC_WRAPPER --with-hc-pkg=$GHCBIN/ghc-pkg --with-alex=/Library/Haskell/bin/alex --with-happy=/Library/Haskell/bin/happy --with-hsc2hs=$GHCBIN/hsc2hs --ghc-option=-optl-Wl,-headerpad_max_install_names --ghc-option=-pgml${CC_WRAPPER} --allow-newer --flags=-bytestring--LT-0_10_4 $EXTRA_ARGS"
-echo "${CABAL_CMD} ${PKGS}"
-${CABAL_CMD} ${PKGS}
+echo "${CABAL_CMD} ${DOC_ARGS} ${PKGS}"
+${CABAL_CMD} ${DOC_ARGS} ${PKGS}
 
 for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut -d ' ' -f 11`; do
   install_name_tool -delete_rpath $path $GHCLIB/bin/cpphs
@@ -45,6 +47,7 @@ for path in `otool -l $GHCLIB/bin/cpphs | grep ' path ' | grep DerivedData | cut
 done
 
 # We build the executables separately, so they already get the RPATHs and names of the relocatable libs.
+# NB: No DOC_ARGS for now as that leads to problems with c2hs
 $CABAL_CMD alex happy cabal-install c2hs
 
 # Remove absolute RPATHs embedded in the binaries
