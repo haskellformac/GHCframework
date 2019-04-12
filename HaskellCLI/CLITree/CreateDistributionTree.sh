@@ -108,22 +108,32 @@ cp -f $GHCROOT/usr/lib/ghc/bin/c2hs ${GHC_CONTENTS_PATH}/bin
 # Build cabal.config
 echo -n "-- Haskell for Mac CLI for GHC.framework "                                  >${GHC_CONTENTS_PATH}/cabal.config
 echo ${CLI_VERSION}                                                                 >>${GHC_CONTENTS_PATH}/cabal.config
-grep '\-- remote-repo:' ${SOURCE_ROOT}/../GHCBuild/cabal.config | sed -e 's/-- //'  >>${GHC_CONTENTS_PATH}/cabal.config
+#grep '\-- remote-repo:' ${SOURCE_ROOT}/../GHCBuild/cabal.config | sed -e 's/-- //'  >>${GHC_CONTENTS_PATH}/cabal.config
 sed -e "s/VERSION/$CLI_VERSION/g" ${SOURCE_ROOT}/Cabal/cabal.config                 >>${GHC_CONTENTS_PATH}/cabal.config
+grep 'constraint:' ${SOURCE_ROOT}/../GHCBuild/cabal.config                          >>${GHC_CONTENTS_PATH}/cabal.config
 
 # Populate repo-cache
 CABAL_FILE_TREE="${PROJECT_TEMP_DIR}/cabal"
 mkdir -p ${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}
-cp -f ${SOURCE_ROOT}/Cabal/00-index.* ${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}
+#cp -f ${SOURCE_ROOT}/Cabal/00-index.* ${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}
 rm -rf "${CABAL_FILE_TREE}"
 mkdir -p "${CABAL_FILE_TREE}"
-tar -C "${CABAL_FILE_TREE}" -xf ${SOURCE_ROOT}/Cabal/00-index.tar.gz
+# The following location is obvisouly a bad choice — we need to put the index file somewhere else!!!
+tar -C "${CABAL_FILE_TREE}" -xf /Users/chak/Library/Haskell/repo-cache/hackage.haskell.org/01-index.tar.gz
 
+echo "BUILDING summary"
+packages=`grep "constraint:" ${GHC_CONTENTS_PATH}/cabal.config | sed -e 's/constraint: //' -e 's/ ==/-/'`
 echo -n "" >${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 for cabal in ${CABAL_FILE_TREE}/*/*/*.cabal; do
-  sed -E -e ':a' -e 'N' -e '$!ba' -e 's/[[:<:]]name:.?\n/name: /' -e 's/[[:<:]]version:.?\n/version: /' -e 's/[[:<:]]synopsis:.?\n/synopsis: /' ${cabal} \
-  | grep -i -e '^name:' -e '^version:' -e '^synopsis:' \
-  >>${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
+  # Only include .cabal files from packages that are in our LTS version.
+  name=`echo ${cabal} | sed -e 's|.*/||' -e 's/.cabal//'`
+  vers=`echo ${cabal} | sed -e "s|/${name}.cabal||" -e 's|.*/||' -e 's/\./\\\./g'`
+  if (echo ${packages}" " | grep -q "${name}-${vers} "); then
+    echo ${name}-${vers}
+    sed -E -e ':a' -e 'N' -e '$!ba' -e 's/[[:<:]]name:.?\n/name: /' -e 's/[[:<:]]version:.?\n/version: /' -e 's/[[:<:]]synopsis:.?\n/synopsis: /' ${cabal} \
+    | grep -i -e '^name:' -e '^version:' -e '^synopsis:' \
+    >>${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
+  fi
 done
 
 # Embed build version to enable accurate version check by HfM
