@@ -4,6 +4,7 @@ bundle_id=com.haskellformac.Haskell.basic
 user_scripts="${HOME}/Library/Containers/${bundle_id}/Data/Library/Application Scripts/${bundle_id}"
 user_scripts_real="${HOME}/Library/Application Scripts/${bundle_id}"
 hfm_path="HFM_PATH"
+version=`echo $1 | sed -e 's|.*/||' -e 's/HaskellCLI-//' -e 's/.pkg//'`
 
 echo "Installing Haskell for Mac user scripts in ${user_scripts}"
 
@@ -19,3 +20,7 @@ chown -f ${USER}:staff "${user_scripts}/RunCLICommand"
 chown -f ${USER}:staff "${user_scripts}/StopCLICommand"
 chown -f ${USER}:staff "${user_scripts}/MakeHaskellCLIDefault"
 chown -f ${USER}:staff "${user_scripts}/HaskellCLIStatus"
+
+echo "Downloading Hackage repository index"
+
+sudo -u ${USER} /usr/local/lib/HaskellCLI-${version}/bin/cabal v1-update

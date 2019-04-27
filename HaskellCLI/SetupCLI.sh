@@ -73,6 +73,5 @@ if [ "$cliLocation/ghc" -nt "$appContainerBin/ghc" ]; then
   sed -e "s|APPLICATION_SUPPORT|$appContainer|g" -e "s|HOME_DIR|$HOME|g" "$cliLocation/../cabal.config" >"$appContainer/Cabal/cabal.config"
   mkdir -p "$appContainer/Cabal/repo-cache"
   ditto "$cliLocation/../repo-cache" "$appContainer/Cabal/repo-cache"
-  gunzip -f "$appContainer/Cabal/repo-cache"/stackage-lts-*/00-index.tar.gz
 
 fi

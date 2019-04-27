@@ -126,9 +126,11 @@ packages=`grep "constraint:" ${GHC_CONTENTS_PATH}/cabal.config | sed -e 's/const
 echo -n "" >${GHC_CONTENTS_PATH}/repo-cache/stackage-lts-${LTS_VERSION}/00-index.summary
 for cabal in ${CABAL_FILE_TREE}/*/*/*.cabal; do
   # Only include .cabal files from packages that are in our LTS version.
-  name=`echo ${cabal} | sed -e 's|.*/||' -e 's/.cabal//'`
-  vers=`echo ${cabal} | sed -e "s|/${name}.cabal||" -e 's|.*/||' -e 's/\./\\\./g'`
-  if (echo ${packages}" " | grep -q "${name}-${vers} "); then
+  fullname=${cabal##*/}
+  name=${fullname%.cabal}
+  vers_path=${cabal%/${name}.cabal}
+  vers=${vers_path##*/}
+  if [[ "${packages} " =~ .*${name}-${vers}[[:space:]].* ]]; then
     echo ${name}-${vers}
     sed -E -e ':a' -e 'N' -e '$!ba' -e 's/[[:<:]]name:.?\n/name: /' -e 's/[[:<:]]version:.?\n/version: /' -e 's/[[:<:]]synopsis:.?\n/synopsis: /' ${cabal} \
     | grep -i -e '^name:' -e '^version:' -e '^synopsis:' \
