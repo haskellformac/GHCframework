@@ -66,7 +66,7 @@ lens
 lens-aeson
 linear
 lucid
-lucid-svg
+lucid-svg-0.7.1
 mmap
 monad-par
 monoid-extras
