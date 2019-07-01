@@ -97,7 +97,7 @@
 				TargetAttributes = {
 					E720D61619E14D7A008D8C8E = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = Z3JA6XMHD3;
+						DevelopmentTeam = CW7SX798PS;
 						DevelopmentTeamName = "Manuel Chakravarty";
 						LastSwiftMigration = 0900;
 					};
@@ -239,6 +239,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ToolWrapper.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
@@ -250,6 +251,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ToolWrapper.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;

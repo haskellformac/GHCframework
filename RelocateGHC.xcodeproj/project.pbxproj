@@ -145,13 +145,13 @@
 				TargetAttributes = {
 					E72F537A19C288DB002692E6 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = Z3JA6XMHD3;
+						DevelopmentTeam = CW7SX798PS;
 						DevelopmentTeamName = "Manuel Chakravarty";
 						LastSwiftMigration = 0900;
 					};
 					E73120C41A1566AA00E9535A = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = Z3JA6XMHD3;
+						DevelopmentTeam = CW7SX798PS;
 						DevelopmentTeamName = "Manuel Chakravarty";
 						LastSwiftMigration = 0900;
 					};
@@ -302,6 +302,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RelocateGHC.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
@@ -313,6 +314,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RelocateGHC.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
@@ -324,6 +326,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StandardizePath.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -340,6 +343,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StandardizePath.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = CW7SX798PS;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
