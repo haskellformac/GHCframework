@@ -16,7 +16,7 @@ case $1 in
   *) ;;
 esac
 
-if [ -n $rsp_file ]; then
+if [ -n "$rsp_file" ]; then
 
 #  cat $rsp_file           >&2
 #  echo "------------"     >&2
