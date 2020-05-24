@@ -4,10 +4,11 @@
 #  HaskellCLI
 #
 #  Created by Manuel M T Chakravarty on 6/01/2016.
-#  Copyright © 2016 Manuel M T Chakravarty. All rights reserved.
+#  Copyright © 2020 Manuel M T Chakravarty. All rights reserved.
 
 # Matches the GHC.framework version
-VERSION=`plutil -extract CFBundleShortVersionString xml1 $SOURCE_ROOT/../GHC/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
+GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellCLI/GHC/`
+VERSION=`plutil -extract CFBundleShortVersionString xml1 $GHCBUILD_CONFIGURATION_BUILD_DIR/GHC.framework/Resources/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
 
 FULL_PRODUCT_NAME=$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME-$VERSION.pkg
 CLITREE_CONTENTS=$CONFIGURATION_BUILD_DIR/CLITree.bundle/Contents

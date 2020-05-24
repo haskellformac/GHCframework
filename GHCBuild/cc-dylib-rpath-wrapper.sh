@@ -5,7 +5,7 @@
 #  GHCBuild
 #
 #  Created by Manuel M T Chakravarty on 08.12.16.
-#  Copyright © [2016..2017] Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2016..2020] Manuel M T Chakravarty. All rights reserved.
 #
 #  Same purpose as 'ghc-dylib-rpath-wrapper.sh', but for internal invocations from GHC for linking executables and
 #  for TH and similar.

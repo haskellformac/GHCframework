@@ -4,14 +4,14 @@
 #  HaskellCLI
 #
 #  Created by Manuel M T Chakravarty on 07.02.17.
-#  Copyright © [2017..2018] Manuel M T Chakravarty. All rights reserved.
+#  Copyright © [2017..2020] Manuel M T Chakravarty. All rights reserved.
 
 
 GHCBUILD_CONFIGURATION_BUILD_DIR=`echo $CONFIGURATION_BUILD_DIR | sed s/HaskellCLI/GHC/`
 GHCROOT=$GHCBUILD_CONFIGURATION_BUILD_DIR/GHCBuild.bundle/Contents
 GHCBIN=$GHCROOT/usr/bin
 GHC_VERSION=`$GHCBIN/ghc --numeric-version`
-CLI_VERSION=`plutil -extract CFBundleShortVersionString xml1 $SOURCE_ROOT/../GHC/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
+CLI_VERSION=`plutil -extract CFBundleShortVersionString xml1 $GHCBUILD_CONFIGURATION_BUILD_DIR/GHC.framework/Resources/Info.plist -o - | grep string | sed -e 's|<string>||' -e 's|</string>||'`
 LTS_VERSION=`echo ${CLI_VERSION} | cut -d '-' -f2`
 
 echo "GHCROOT = $GHCROOT; GHC_VERSION = $GHC_VERSION; CLI_VERSION = $CLI_VERSION"
