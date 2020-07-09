@@ -35,6 +35,7 @@
 		E72167DA1E6A9AA300CA3734 /* MakeHaskellCLIDefault.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = MakeHaskellCLIDefault.sh; sourceTree = "<group>"; };
 		E72167DB1E6D2B7900CA3734 /* HaskellCLIStatus.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = HaskellCLIStatus.sh; sourceTree = "<group>"; };
 		E72167DC1E6F968A00CA3734 /* StopCLICommand.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = StopCLICommand.sh; sourceTree = "<group>"; };
+		E72AF9DB24B60E1600ABBB58 /* runtime.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = runtime.entitlements; sourceTree = "<group>"; };
 		E748C25D1C3CE76100027019 /* Distribution */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Distribution; sourceTree = "<group>"; };
 		E760757D1E497295009498D5 /* CreateDistributionTree.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = CreateDistributionTree.sh; sourceTree = "<group>"; };
 		E760757F1E497BA3009498D5 /* RunHaskellTerminal.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = RunHaskellTerminal.sh; sourceTree = "<group>"; };
@@ -67,6 +68,7 @@
 			children = (
 				E71989DA1C3A02E300FE353B /* Info.plist */,
 				E760757D1E497295009498D5 /* CreateDistributionTree.sh */,
+				E72AF9DB24B60E1600ABBB58 /* runtime.entitlements */,
 			);
 			path = CLITree;
 			sourceTree = "<group>";
@@ -348,7 +350,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CLITree/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.haskellformac.CLITree;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -365,7 +367,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CLITree/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.haskellformac.CLITree;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

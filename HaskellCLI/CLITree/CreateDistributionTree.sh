@@ -71,6 +71,7 @@ chmod a+x ${BIN_CONTENTS_PATH}/ghc-dylib-rpath-wrapper
 
 cp -f $GHCROOT/usr/bin/hp2ps ${BIN_CONTENTS_PATH}
 cp -f $GHCROOT/usr/bin/stack ${BIN_CONTENTS_PATH}
+/usr/bin/codesign --sign "Developer ID" --timestamp --options runtime ${BIN_CONTENTS_PATH}/stack
 
 # Links in ${LIB_PREFIX}/bin
 ln -hfs ghc-$GHC_VERSION ${BIN_CONTENTS_PATH}/ghc
@@ -103,7 +104,11 @@ cp -f $GHCROOT/usr/lib/ghc/bin/happy ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cabal ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/cpphs ${GHC_CONTENTS_PATH}/bin
 cp -f $GHCROOT/usr/lib/ghc/bin/c2hs ${GHC_CONTENTS_PATH}/bin
-
+for f in ${GHC_CONTENTS_PATH}/bin/*; do
+  if file -b $f | grep -q "Mach-O 64-bit executable"; then
+    /usr/bin/codesign --sign "Developer ID" --timestamp --options runtime --entitlements $SOURCE_ROOT/CLITree/runtime.entitlements $f
+  fi
+done
 
 # Build cabal.config
 echo -n "-- Haskell for Mac CLI for GHC.framework "                                  >${GHC_CONTENTS_PATH}/cabal.config
